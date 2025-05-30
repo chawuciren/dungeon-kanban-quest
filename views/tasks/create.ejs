@@ -46,23 +46,23 @@
                         <% if (!parentTask) { %>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="projectId" class="form-label">所属项目 <span class="text-danger">*</span></label>
+                                    <label for="projectId" class="form-label">所属地下城 <span class="text-danger">*</span></label>
                                     <select class="form-select" id="projectId" name="projectId" required>
-                                        <option value="">选择项目</option>
+                                        <option value="">选择地下城</option>
                                         <% projects.forEach(project => { %>
                                             <option value="<%= project.id %>"><%= project.name %> (<%= project.key %>)</option>
                                         <% }) %>
                                     </select>
-                                    <div class="invalid-feedback">请选择项目</div>
+                                    <div class="invalid-feedback">请选择地下城</div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="taskType" class="form-label">任务类型</label>
                                     <select class="form-select" id="taskType" name="taskType">
-                                        <option value="task">任务</option>
-                                        <option value="requirement">需求</option>
-                                        <option value="bug">Bug</option>
-                                        <option value="epic">史诗</option>
-                                        <option value="story">故事</option>
+                                        <option value="task">探险行动（任务）</option>
+                                        <option value="requirement">探险计划（需求）</option>
+                                        <option value="bug">魔物讨伐（Bug）</option>
+                                        <option value="epic">史诗委托（史诗）</option>
+                                        <option value="story">探险委托（故事）</option>
                                     </select>
                                 </div>
                             </div>
