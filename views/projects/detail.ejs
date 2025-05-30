@@ -1,0 +1,296 @@
+<%- include('../partials/header', { title: title }) %>
+
+<div class="row">
+        <!-- 主要内容 -->
+        <div class="col-lg-8">
+            <!-- 项目标题和基本信息 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <!-- 面包屑导航 -->
+                    <nav aria-label="breadcrumb" class="mb-3">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/projects">地下城管理（项目管理）</a></li>
+                            <% if (project.organization) { %>
+                                <li class="breadcrumb-item"><%= project.organization.name %></li>
+                            <% } %>
+                            <li class="breadcrumb-item active"><%= project.name %></li>
+                        </ol>
+                    </nav>
+
+                    <!-- 项目标题 -->
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="badge bg-<%
+                                    if (project.projectType === 'construction') { %>primary<%
+                                    } else if (project.projectType === 'maintenance') { %>warning<%
+                                    } else if (project.projectType === 'research') { %>info<%
+                                    } else if (project.projectType === 'operation') { %>success<%
+                                    } else { %>secondary<% } %> me-2">
+                                    <%
+                                    if (project.projectType === 'construction') { %>🏗️<%
+                                    } else if (project.projectType === 'maintenance') { %>🔧<%
+                                    } else if (project.projectType === 'research') { %>🔬<%
+                                    } else if (project.projectType === 'operation') { %>⚙️<%
+                                    } else { %>📋<% } %>
+                                </span>
+                                <h6 class="mb-0 text-muted"><%= project.key %></h6>
+                            </div>
+                            <h2 class="mb-0"><%= project.name %></h2>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-<%
+                                if (project.status === 'planning') { %>secondary<%
+                                } else if (project.status === 'active') { %>success<%
+                                } else if (project.status === 'completed') { %>dark<%
+                                } else if (project.status === 'archived') { %>muted<%
+                                } else { %>secondary<% } %> fs-6 mb-2">
+                                <%
+                                if (project.status === 'planning') { %>规划中<%
+                                } else if (project.status === 'active') { %>进行中<%
+                                } else if (project.status === 'completed') { %>已完成<%
+                                } else if (project.status === 'archived') { %>已归档<%
+                                } else { %><%= project.status %><% } %>
+                            </span>
+                            <div>
+                                <span class="badge bg-warning">
+                                    <%= '⭐'.repeat(project.starLevel) %>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 项目描述 -->
+                    <% if (project.description) { %>
+                        <div class="mb-4">
+                            <h5>探险描述</h5>
+                            <div class="border rounded p-3 bg-light">
+                                <%= project.description %>
+                            </div>
+                        </div>
+                    <% } %>
+
+                    <!-- 项目统计 -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <h3 class="mb-0"><%= stats.total %></h3>
+                                    <small>总任务数</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center">
+                                    <h3 class="mb-0"><%= stats.published %></h3>
+                                    <small>可接单</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body text-center">
+                                    <h3 class="mb-0"><%= stats.assigned %></h3>
+                                    <small>进行中</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-dark text-white">
+                                <div class="card-body text-center">
+                                    <h3 class="mb-0"><%= stats.completed %></h3>
+                                    <small>已完成</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 快速操作 -->
+                    <div class="d-flex gap-2">
+                        <a href="/tasks/create?project=<%= project.id %>" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>创建任务
+                        </a>
+                        <a href="/tasks?projectId=<%= project.id %>" class="btn btn-outline-primary">
+                            <i class="fas fa-tasks me-2"></i>查看任务
+                        </a>
+                        <a href="/tasks/tree?projectId=<%= project.id %>" class="btn btn-outline-secondary">
+                            <i class="fas fa-sitemap me-2"></i>任务树
+                        </a>
+                        <a href="/tasks/kanban?projectId=<%= project.id %>" class="btn btn-outline-info">
+                            <i class="fas fa-columns me-2"></i>看板
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 最近任务 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>最近任务
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <% if (recentTasks && recentTasks.length > 0) { %>
+                        <div class="list-group list-group-flush">
+                            <% recentTasks.forEach(task => { %>
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                <a href="/tasks/<%= task.id %>" class="text-decoration-none">
+                                                    <%= task.title %>
+                                                </a>
+                                            </h6>
+                                            <p class="mb-1 text-muted">
+                                                <%= task.description ? (task.description.length > 100 ?
+                                                    task.description.substring(0, 100) + '...' :
+                                                    task.description) : '暂无描述' %>
+                                            </p>
+                                            <small class="text-muted">
+                                                发布者：<%= task.publisher ? (task.publisher.firstName + ' ' + task.publisher.lastName) : '未知' %>
+                                                <% if (task.assignee) { %>
+                                                    | 接单者：<%= task.assignee.firstName + ' ' + task.assignee.lastName %>
+                                                <% } %>
+                                            </small>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="mb-1">
+                                                <span class="badge bg-warning">
+                                                    <%= '⭐'.repeat(task.starLevel) %>
+                                                </span>
+                                            </div>
+                                            <div class="mb-1">
+                                                <span class="badge bg-<%
+                                                    if (task.status === 'published') { %>success<%
+                                                    } else if (task.status === 'assigned') { %>primary<%
+                                                    } else if (task.status === 'completed') { %>dark<%
+                                                    } else { %>secondary<% } %>">
+                                                    <%
+                                                    if (task.status === 'published') { %>可接单<%
+                                                    } else if (task.status === 'assigned') { %>进行中<%
+                                                    } else if (task.status === 'completed') { %>已完成<%
+                                                    } else { %><%= task.status %><% } %>
+                                                </span>
+                                            </div>
+                                            <small class="text-muted">
+                                                <% if (task.rewardCurrency === 'diamond') { %>💎
+                                                <% } else if (task.rewardCurrency === 'gold') { %>🥇
+                                                <% } else if (task.rewardCurrency === 'silver') { %>🥈
+                                                <% } else { %>🥉<% } %>
+                                                <%= task.totalBudget %>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="/tasks?project=<%= project.id %>" class="btn btn-outline-primary">
+                                查看全部任务
+                            </a>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-4">
+                            <i class="fas fa-tasks fa-2x text-muted mb-3"></i>
+                            <h6 class="text-muted">暂无任务</h6>
+                            <p class="text-muted mb-3">还没有创建任何任务</p>
+                            <a href="/tasks/create?project=<%= project.id %>" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>创建第一个任务
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- 侧边栏 -->
+        <div class="col-lg-4">
+            <!-- 项目信息 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>探险信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <strong>地下城标识：</strong>
+                            <span class="ms-2"><%= project.key %></span>
+                        </div>
+                        <div class="col-12">
+                            <strong>地下城类型：</strong>
+                            <span class="ms-2">
+                                <%
+                                if (project.projectType === 'construction') { %>🏗️ 开拓远征型（建设项目）<%
+                                } else if (project.projectType === 'maintenance') { %>🔧 守备巡逻型（维护项目）<%
+                                } else if (project.projectType === 'research') { %>🔬 秘境调查型（研发项目）<%
+                                } else if (project.projectType === 'operation') { %>⚙️ 商队贸易型（运营项目）<%
+                                } else { %>📋 其他项目<% } %>
+                            </span>
+                        </div>
+                        <div class="col-12">
+                            <strong>探险负责人：</strong>
+                            <span class="ms-2">
+                                <%= project.leader ? (project.leader.firstName + ' ' + project.leader.lastName) : '未指定' %>
+                            </span>
+                        </div>
+                        <div class="col-12">
+                            <strong>探险发起人：</strong>
+                            <span class="ms-2">
+                                <%= project.owner ? (project.owner.firstName + ' ' + project.owner.lastName) : '未知' %>
+                            </span>
+                        </div>
+                        <% if (project.startDate) { %>
+                            <div class="col-12">
+                                <strong>开始时间：</strong>
+                                <span class="ms-2"><%= new Date(project.startDate).toLocaleDateString('zh-CN') %></span>
+                            </div>
+                        <% } %>
+                        <% if (project.endDate) { %>
+                            <div class="col-12">
+                                <strong>结束时间：</strong>
+                                <span class="ms-2"><%= new Date(project.endDate).toLocaleDateString('zh-CN') %></span>
+                            </div>
+                        <% } %>
+                        <div class="col-12">
+                            <strong>创建时间：</strong>
+                            <span class="ms-2"><%= new Date(project.createdAt).toLocaleDateString('zh-CN') %></span>
+                        </div>
+                        <div class="col-12">
+                            <strong>可见性：</strong>
+                            <span class="ms-2">
+                                <% if (project.visibility === 'public') { %>
+                                    <span class="badge bg-success">公开</span>
+                                <% } else { %>
+                                    <span class="badge bg-secondary">私有</span>
+                                <% } %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 所属组织 -->
+            <% if (project.organization) { %>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-building me-2"></i>所属组织
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <h6><%= project.organization.name %></h6>
+                        <p class="text-muted mb-2"><%= project.organization.description || '暂无描述' %></p>
+                        <a href="/organizations/<%= project.organization.id %>" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-external-link-alt me-1"></i>查看组织
+                        </a>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,241 @@
+<%- include('partials/header', { title: title }) %>
+
+<!-- 英雄区域 -->
+<div class="hero-section bg-gradient-primary text-white py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-gamepad me-3"></i>
+                    游戏化项目管理
+                </h1>
+                <p class="lead mb-4">
+                    摆脱传统项目管理的束缚，用星级评价和赏金任务让工作变得更有趣、更高效！
+                </p>
+                <div class="d-flex gap-3">
+                    <% if (!user) { %>
+                        <a href="/register" class="btn btn-light btn-lg">
+                            <i class="fas fa-rocket me-2"></i>
+                            立即开始
+                        </a>
+                        <a href="/login" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            登录
+                        </a>
+                    <% } else { %>
+                        <a href="/dashboard" class="btn btn-light btn-lg">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            进入仪表板
+                        </a>
+                        <a href="/tasks" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-tasks me-2"></i>
+                            浏览任务
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="hero-image">
+                    <i class="fas fa-trophy display-1 text-warning mb-3"></i>
+                    <div class="row justify-content-center">
+                        <div class="col-auto">
+                            <div class="card bg-light text-dark mb-2">
+                                <div class="card-body py-2 px-3">
+                                    <small><i class="fas fa-star text-warning"></i> ⭐⭐⭐⭐⭐ 五星任务</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="card bg-warning text-dark mb-2">
+                                <div class="card-body py-2 px-3">
+                                    <small><i class="fas fa-coins"></i> 1000 金币奖励</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 特性介绍 -->
+<div class="container mb-5">
+    <div class="row text-center mb-5">
+        <div class="col-12">
+            <h2 class="display-5 fw-bold mb-3">为什么选择我们？</h2>
+            <p class="lead text-muted">创新的游戏化设计，让项目管理变得简单有趣</p>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <!-- 星级评价 -->
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-star fa-3x text-warning"></i>
+                    </div>
+                    <h4 class="card-title">星级评价体系</h4>
+                    <p class="card-text text-muted">
+                        用⭐-⭐⭐⭐⭐⭐直观标注任务难度，告别复杂的评估指标，让每个人都能快速理解任务要求。
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 赏金任务 -->
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-coins fa-3x text-success"></i>
+                    </div>
+                    <h4 class="card-title">赏金任务系统</h4>
+                    <p class="card-text text-muted">
+                        需求方发布赏金，开发者接单完成，按时达标获得全额奖励，超时按比例扣除，激励高效完成。
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 灵活管理 -->
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-puzzle-piece fa-3x text-info"></i>
+                    </div>
+                    <h4 class="card-title">灵活项目模式</h4>
+                    <p class="card-text text-muted">
+                        探索型🗺️、建设型🏗️、竞速型🏃、维护型🔧、混合型🎭，根据项目特点选择最适合的管理方式。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 游戏化元素展示 -->
+<div class="bg-light py-5 mb-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold mb-3">游戏化元素</h2>
+                <p class="lead text-muted">让工作变得像游戏一样有趣</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <!-- 虚拟货币 -->
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-gem fa-2x text-info"></i>
+                        <i class="fas fa-coins fa-2x text-warning mx-2"></i>
+                        <i class="fas fa-circle fa-2x text-secondary"></i>
+                        <i class="fas fa-circle fa-2x text-dark ms-2"></i>
+                    </div>
+                    <h5>虚拟货币体系</h5>
+                    <p class="text-muted small">钻石、金币、银币、铜币四级货币，满足不同任务需求</p>
+                </div>
+            </div>
+            
+            <!-- 技能等级 -->
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <span class="badge bg-light text-dark me-1">🔰</span>
+                        <span class="badge bg-dark me-1">🥉</span>
+                        <span class="badge bg-secondary me-1">🥈</span>
+                        <span class="badge bg-warning me-1">🥇</span>
+                        <span class="badge bg-info">💎</span>
+                    </div>
+                    <h5>技能等级认证</h5>
+                    <p class="text-muted small">从新手到专家，清晰的技能等级体系</p>
+                </div>
+            </div>
+            
+            <!-- 排行榜 -->
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-trophy fa-2x text-warning"></i>
+                    </div>
+                    <h5>排行榜系统</h5>
+                    <p class="text-muted small">财富榜、效率榜、贡献榜、信誉榜多维度排名</p>
+                </div>
+            </div>
+            
+            <!-- 成就系统 -->
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-medal fa-2x text-success"></i>
+                    </div>
+                    <h5>成就徽章</h5>
+                    <p class="text-muted small">解锁各种成就，展示你的专业能力</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 统计数据 -->
+<div class="container mb-5">
+    <div class="row text-center">
+        <div class="col-md-3 col-6 mb-4">
+            <div class="stat-item">
+                <h3 class="display-6 fw-bold text-primary">1000+</h3>
+                <p class="text-muted">活跃用户</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-4">
+            <div class="stat-item">
+                <h3 class="display-6 fw-bold text-success">500+</h3>
+                <p class="text-muted">完成项目</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-4">
+            <div class="stat-item">
+                <h3 class="display-6 fw-bold text-warning">10000+</h3>
+                <p class="text-muted">任务完成</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-4">
+            <div class="stat-item">
+                <h3 class="display-6 fw-bold text-info">95%</h3>
+                <p class="text-muted">满意度</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA区域 -->
+<div class="bg-primary text-white py-5">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-3">准备开始你的游戏化项目管理之旅？</h2>
+        <p class="lead mb-4">加入我们，体验不一样的项目管理方式</p>
+        <% if (!user) { %>
+            <a href="/register" class="btn btn-light btn-lg me-3">
+                <i class="fas fa-user-plus me-2"></i>
+                免费注册
+            </a>
+            <a href="/demo" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-play me-2"></i>
+                观看演示
+            </a>
+        <% } else { %>
+            <a href="/projects/create" class="btn btn-light btn-lg me-3">
+                <i class="fas fa-plus me-2"></i>
+                创建项目
+            </a>
+            <a href="/tasks" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-search me-2"></i>
+                寻找任务
+            </a>
+        <% } %>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

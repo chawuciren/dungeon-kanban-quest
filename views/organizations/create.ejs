@@ -1,0 +1,141 @@
+<%- include('../partials/header', { title: title }) %>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- 页面标题 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    创建公会（创建组织）
+                </h1>
+                <a href="/organizations" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    返回列表
+                </a>
+            </div>
+
+            <!-- 创建表单 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-plus me-2"></i>
+                        公会基本信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/organizations/create">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">
+                                    公会名称 <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="name" name="name" required
+                                       placeholder="请输入公会名称">
+                                <div class="form-text">公会的正式名称，将在各处显示</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="slug" class="form-label">
+                                    公会标识符 <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="slug" name="slug" required
+                                       placeholder="guild-name" pattern="[a-z0-9-]+">
+                                <div class="form-text">用于URL的唯一标识符，只能包含小写字母、数字和连字符</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">公会描述</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                      placeholder="请描述公会的宗旨、目标或特色"></textarea>
+                            <div class="form-text">简要介绍公会的背景和目标</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="website" class="form-label">官方网站</label>
+                                <input type="url" class="form-control" id="website" name="website"
+                                       placeholder="https://example.com">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">联系邮箱</label>
+                                <input type="email" class="form-control" id="email" name="email"
+                                       placeholder="contact@guild.com">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">联系电话</label>
+                                <input type="tel" class="form-control" id="phone" name="phone"
+                                       placeholder="+86 138-0000-0000">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="address" class="form-label">公会地址</label>
+                                <input type="text" class="form-control" id="address" name="address"
+                                       placeholder="公会总部地址">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="/organizations" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>
+                                取消
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>
+                                创建公会
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 创建提示 -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        创建说明
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>公会是管理项目和成员的基本组织单位</li>
+                        <li>创建后您将自动成为该公会的会长</li>
+                        <li>公会标识符创建后不可修改，请谨慎填写</li>
+                        <li>您可以在公会中创建多个地下城（项目）</li>
+                        <li>公会成员可以参与公会内的各种探险活动</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 自动生成标识符
+    const nameInput = document.getElementById('name');
+    const slugInput = document.getElementById('slug');
+    
+    nameInput.addEventListener('input', function() {
+        if (!slugInput.dataset.userModified) {
+            const slug = this.value
+                .toLowerCase()
+                .replace(/[^a-z0-9\u4e00-\u9fa5]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+            slugInput.value = slug;
+        }
+    });
+    
+    slugInput.addEventListener('input', function() {
+        this.dataset.userModified = 'true';
+        // 确保只包含允许的字符
+        this.value = this.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

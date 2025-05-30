@@ -1,0 +1,253 @@
+<%- include('../partials/header') %>
+<%- include('../helpers/roleHelper') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- 页面标题 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    勇者管理
+                </h1>
+                <a href="/users/create" class="btn btn-primary">
+                    <i class="fas fa-user-plus me-1"></i>
+                    招募勇者
+                </a>
+            </div>
+
+            <!-- 筛选和搜索 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="GET" action="/users" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="search" class="form-label">搜索</label>
+                            <input type="text" class="form-control" id="search" name="search"
+                                   value="<%= filters.search %>" placeholder="用户名、邮箱、姓名">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="role" class="form-label">角色</label>
+                            <select class="form-select" id="role" name="role">
+                                <option value="">全部角色</option>
+                                <option value="guild_master" <%= filters.role === 'guild_master' ? 'selected' : '' %>>👑 公会管理员 (管理员)</option>
+                                <option value="quest_captain" <%= filters.role === 'quest_captain' ? 'selected' : '' %>>⚔️ 探险队长 (项目经理)</option>
+                                <option value="swordsman" <%= filters.role === 'swordsman' ? 'selected' : '' %>>🛡️ 剑士 (开发者)</option>
+                                <option value="ranger" <%= filters.role === 'ranger' ? 'selected' : '' %>>🏹 游侠 (测试员)</option>
+                                <option value="quest_giver" <%= filters.role === 'quest_giver' ? 'selected' : '' %>>💰 任务委托人 (客户)</option>
+                                <option value="enchanter" <%= filters.role === 'enchanter' ? 'selected' : '' %>>✨ 附魔师 (UI设计师)</option>
+                                <option value="alchemist" <%= filters.role === 'alchemist' ? 'selected' : '' %>>🧪 炼金术师 (运维工程师)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="status" class="form-label">状态</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">全部状态</option>
+                                <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>活跃</option>
+                                <option value="inactive" <%= filters.status === 'inactive' ? 'selected' : '' %>>未激活</option>
+                                <option value="suspended" <%= filters.status === 'suspended' ? 'selected' : '' %>>已禁用</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="skillLevel" class="form-label">技能等级</label>
+                            <select class="form-select" id="skillLevel" name="skillLevel">
+                                <option value="">全部等级</option>
+                                <option value="novice" <%= filters.skillLevel === 'novice' ? 'selected' : '' %>>🔰 新手</option>
+                                <option value="bronze" <%= filters.skillLevel === 'bronze' ? 'selected' : '' %>>🥉 青铜</option>
+                                <option value="silver" <%= filters.skillLevel === 'silver' ? 'selected' : '' %>>🥈 白银</option>
+                                <option value="gold" <%= filters.skillLevel === 'gold' ? 'selected' : '' %>>🥇 黄金</option>
+                                <option value="diamond" <%= filters.skillLevel === 'diamond' ? 'selected' : '' %>>💎 钻石</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-outline-primary me-2">
+                                <i class="fas fa-search me-1"></i>
+                                搜索
+                            </button>
+                            <a href="/users" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>
+                                清除
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 用户列表 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        冒险者名册
+                        <span class="badge bg-secondary ms-2"><%= pagination.total %></span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <% if (users.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>冒险者信息</th>
+                                        <th>职业角色</th>
+                                        <th>技能等级</th>
+                                        <th>状态</th>
+                                        <th>钱包余额</th>
+                                        <th>入会时间</th>
+                                        <th>最后活动</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% users.forEach(user => { %>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-circle me-3">
+                                                        <% if (user.avatar) { %>
+                                                            <img src="<%= user.avatar %>" alt="<%= user.getFullName() %>" class="rounded-circle" width="40" height="40">
+                                                        <% } else { %>
+                                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                                <%= user.firstName.charAt(0).toUpperCase() %>
+                                                            </div>
+                                                        <% } %>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold"><%= user.getFullName() %></div>
+                                                        <div class="text-muted small">@<%= user.username %></div>
+                                                        <div class="text-muted small"><%= user.email %></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <%- renderRoleBadge(user.role, true) %>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-<%= user.skillLevel === 'diamond' ? 'info' : user.skillLevel === 'gold' ? 'warning' : user.skillLevel === 'silver' ? 'secondary' : user.skillLevel === 'bronze' ? 'dark' : 'light' %>">
+                                                    <% if (user.skillLevel === 'diamond') { %>💎 钻石
+                                                    <% } else if (user.skillLevel === 'gold') { %>🥇 黄金
+                                                    <% } else if (user.skillLevel === 'silver') { %>🥈 白银
+                                                    <% } else if (user.skillLevel === 'bronze') { %>🥉 青铜
+                                                    <% } else { %>🔰 新手<% } %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-<%= user.status === 'active' ? 'success' : user.status === 'inactive' ? 'warning' : 'danger' %>">
+                                                    <% if (user.status === 'active') { %>✅ 活跃
+                                                    <% } else if (user.status === 'inactive') { %>⏸️ 未激活
+                                                    <% } else { %>🚫 已禁用<% } %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <% if (user.wallet) { %>
+                                                    <div class="small">
+                                                        <div>💎 <%= user.wallet.diamondBalance %></div>
+                                                        <div>🥇 <%= user.wallet.goldBalance %></div>
+                                                    </div>
+                                                <% } else { %>
+                                                    <span class="text-muted">-</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <div class="small">
+                                                    <%= moment(user.createdAt).format('YYYY-MM-DD') %>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="small">
+                                                    <% if (user.lastLoginAt) { %>
+                                                        <%= moment(user.lastLoginAt).format('YYYY-MM-DD HH:mm') %>
+                                                    <% } else { %>
+                                                        <span class="text-muted">从未登录</span>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="/users/<%= user.id %>/edit" class="btn btn-outline-primary btn-sm">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <% if (user.id !== user.id) { %>
+                                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                                                onclick="confirmDelete('<%= user.id %>', '<%= user.username %>')">
+                                                            <i class="fas fa-ban"></i>
+                                                        </button>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-5">
+                            <i class="fas fa-castle fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">冒险者公会空无一人</h5>
+                            <p class="text-muted">点击上方"招募冒险者"按钮开始组建你的冒险团队</p>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- 分页 -->
+                <% if (pagination.totalPages > 1) { %>
+                    <div class="card-footer">
+                        <nav aria-label="用户列表分页">
+                            <ul class="pagination justify-content-center mb-0">
+                                <li class="page-item <%= !pagination.hasPrev ? 'disabled' : '' %>">
+                                    <a class="page-link" href="?page=<%= pagination.page - 1 %>&search=<%= filters.search %>&role=<%= filters.role %>&status=<%= filters.status %>&skillLevel=<%= filters.skillLevel %>">
+                                        上一页
+                                    </a>
+                                </li>
+
+                                <% for (let i = Math.max(1, pagination.page - 2); i <= Math.min(pagination.totalPages, pagination.page + 2); i++) { %>
+                                    <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
+                                        <a class="page-link" href="?page=<%= i %>&search=<%= filters.search %>&role=<%= filters.role %>&status=<%= filters.status %>&skillLevel=<%= filters.skillLevel %>">
+                                            <%= i %>
+                                        </a>
+                                    </li>
+                                <% } %>
+
+                                <li class="page-item <%= !pagination.hasNext ? 'disabled' : '' %>">
+                                    <a class="page-link" href="?page=<%= pagination.page + 1 %>&search=<%= filters.search %>&role=<%= filters.role %>&status=<%= filters.status %>&skillLevel=<%= filters.skillLevel %>">
+                                        下一页
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 删除确认模态框 -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">确认驱逐冒险者</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>确定要将冒险者 <strong id="deleteUsername"></strong> 驱逐出公会吗？</p>
+                <p class="text-muted small">驱逐后该冒险者将无法登录系统，但档案数据不会被删除。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">确认驱逐</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(userId, username) {
+    document.getElementById('deleteUsername').textContent = username;
+    document.getElementById('deleteForm').action = '/users/' + userId + '/delete';
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
+
+<%- include('../partials/footer') %>

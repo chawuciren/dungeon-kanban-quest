@@ -1,0 +1,217 @@
+<%- include('../partials/header') %>
+<%- include('../helpers/roleHelper') %>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- 页面标题 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-user-plus me-2"></i>
+                    🏰 招募冒险者
+                </h1>
+                <a href="/users" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    返回名册
+                </a>
+            </div>
+
+            <!-- 添加用户表单 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">冒险者档案</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/users/create">
+                        <div class="row">
+                            <!-- 基本信息 -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3">基本信息</h6>
+
+                                <div class="mb-3">
+                                    <label for="firstName" class="form-label">姓名 <span class="text-danger">*</span></label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="firstName" name="firstName"
+                                                   placeholder="姓" required>
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="lastName" name="lastName"
+                                                   placeholder="名" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">用户名 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="username" name="username"
+                                           placeholder="用户登录名" required>
+                                    <div class="form-text">用户名只能包含字母和数字，3-50个字符</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">邮箱 <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                           placeholder="user@example.com" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">手机号</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone"
+                                           placeholder="手机号码（可选）">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">密码 <span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control" id="password" name="password"
+                                           placeholder="至少6位密码" required minlength="6">
+                                    <div class="form-text">密码长度至少6位</div>
+                                </div>
+                            </div>
+
+                            <!-- 角色和权限 -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3">角色和权限</h6>
+
+                                <div class="mb-3">
+                                    <label for="role" class="form-label">职业角色 <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="role" name="role" required>
+                                        <option value="">请选择职业</option>
+                                        <option value="guild_master">👑 公会管理员 (管理员) - 冒险者公会总管</option>
+                                        <option value="quest_captain">⚔️ 探险队长 (项目经理) - 地下城攻略规划师</option>
+                                        <option value="swordsman" selected>🛡️ 剑士 (开发者) - 挥剑斩敌的勇者</option>
+                                        <option value="ranger">🏹 游侠 (测试员) - 侦察和陷阱专家</option>
+                                        <option value="quest_giver">💰 任务委托人 (客户) - 发布地下城探险委托</option>
+                                        <option value="enchanter">✨ 附魔师 (UI设计师) - 装备美化大师</option>
+                                        <option value="alchemist">🧪 炼金术师 (运维工程师) - 药剂和装备维护专家</option>
+                                    </select>
+                                    <div class="form-text">
+                                        <small>
+                                            <strong>职业说明：</strong><br>
+                                            • 公会管理员 (管理员)：拥有所有权限，管理整个冒险者公会<br>
+                                            • 探险队长 (项目经理)：负责地下城攻略规划和团队管理<br>
+                                            • 剑士 (开发者)：前线战斗专家，负责任务开发和实现<br>
+                                            • 游侠 (测试员)：侦察专家，负责质量保证和测试<br>
+                                            • 任务委托人 (客户)：发布探险委托的需求方<br>
+                                            • 附魔师 (UI设计师)：装备美化专家，负责界面设计<br>
+                                            • 炼金术师 (运维工程师)：维护专家，负责系统运维
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="skillLevel" class="form-label">技能等级</label>
+                                    <select class="form-select" id="skillLevel" name="skillLevel">
+                                        <option value="novice" selected>🔰 新手 - 初学者</option>
+                                        <option value="bronze">🥉 青铜 - 有一定经验</option>
+                                        <option value="silver">🥈 白银 - 经验丰富</option>
+                                        <option value="gold">🥇 黄金 - 技能精湛</option>
+                                        <option value="diamond">💎 钻石 - 顶级专家</option>
+                                    </select>
+                                    <div class="form-text">技能等级影响可接取的任务难度</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">账户状态</label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="active" selected>✅ 活跃 - 正常使用</option>
+                                        <option value="inactive">⏸️ 未激活 - 需要激活</option>
+                                        <option value="suspended">🚫 已禁用 - 禁止登录</option>
+                                    </select>
+                                </div>
+
+                                <!-- 游戏化信息提示 -->
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">
+                                        <i class="fas fa-gift me-1"></i>
+                                        新用户福利
+                                    </h6>
+                                    <p class="mb-0">新用户将自动获得：</p>
+                                    <ul class="mb-0 mt-2">
+                                        <li>🥇 100金币 新手奖励</li>
+                                        <li>🎯 完整的虚拟钱包</li>
+                                        <li>📊 个人数据统计</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 提交按钮 -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <hr>
+                                <div class="d-flex justify-content-end">
+                                    <a href="/users" class="btn btn-secondary me-2">
+                                        <i class="fas fa-times me-1"></i>
+                                        取消
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-user-plus me-1"></i>
+                                        招募冒险者
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 表单验证
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const usernameInput = document.getElementById('username');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    // 用户名验证
+    usernameInput.addEventListener('input', function() {
+        const value = this.value;
+        const isValid = /^[a-zA-Z0-9]{3,50}$/.test(value);
+
+        if (value && !isValid) {
+            this.classList.add('is-invalid');
+            this.setCustomValidity('用户名只能包含字母和数字，3-50个字符');
+        } else {
+            this.classList.remove('is-invalid');
+            this.setCustomValidity('');
+        }
+    });
+
+    // 密码强度提示
+    passwordInput.addEventListener('input', function() {
+        const value = this.value;
+        const strength = getPasswordStrength(value);
+
+        // 移除之前的提示
+        const existingFeedback = this.parentNode.querySelector('.password-strength');
+        if (existingFeedback) {
+            existingFeedback.remove();
+        }
+
+        if (value) {
+            const feedback = document.createElement('div');
+            feedback.className = 'password-strength form-text';
+            feedback.innerHTML = `密码强度: <span class="badge bg-${strength.color}">${strength.text}</span>`;
+            this.parentNode.appendChild(feedback);
+        }
+    });
+
+    function getPasswordStrength(password) {
+        if (password.length < 6) {
+            return { color: 'danger', text: '太弱' };
+        } else if (password.length < 8) {
+            return { color: 'warning', text: '一般' };
+        } else if (password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password)) {
+            return { color: 'success', text: '强' };
+        } else {
+            return { color: 'info', text: '中等' };
+        }
+    }
+});
+</script>
+
+<%- include('../partials/footer') %>

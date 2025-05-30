@@ -1,0 +1,236 @@
+<%- include('../partials/header', { title: title }) %>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- 左侧主要内容 -->
+        <div class="col-lg-8">
+            <!-- 页面标题 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    <%= organization.name %>
+                    <span class="badge bg-<%= organization.status === 'active' ? 'success' : organization.status === 'inactive' ? 'secondary' : 'warning' %> ms-2">
+                        <%= organization.status === 'active' ? '活跃' : organization.status === 'inactive' ? '非活跃' : '暂停' %>
+                    </span>
+                </h1>
+                <div class="btn-group">
+                    <a href="/organizations" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>
+                        返回列表
+                    </a>
+                    <% if (user && user.role === 'guild_master') { %>
+                        <a href="/organizations/<%= organization.id %>/edit" class="btn btn-primary">
+                            <i class="fas fa-edit me-1"></i>
+                            编辑公会
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- 公会描述 -->
+            <% if (organization.description) { %>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-scroll me-2"></i>
+                            公会简介
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0"><%= organization.description %></p>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- 地下城列表 -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-map me-2"></i>
+                        公会探险
+                        <span class="badge bg-primary ms-2"><%= organization.projects ? organization.projects.length : 0 %></span>
+                    </h5>
+                    <a href="/projects/create?organizationId=<%= organization.id %>" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i>
+                        创建探险
+                    </a>
+                </div>
+                <div class="card-body">
+                    <% if (organization.projects && organization.projects.length > 0) { %>
+                        <div class="row">
+                            <% organization.projects.forEach(project => { %>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="card-title mb-0">
+                                                    <a href="/projects/<%= project.id %>" class="text-decoration-none">
+                                                        <%= project.name %>
+                                                    </a>
+                                                </h6>
+                                                <span class="badge bg-<%= project.status === 'active' ? 'success' : project.status === 'planning' ? 'info' : project.status === 'completed' ? 'secondary' : 'warning' %>">
+                                                    <%= project.status === 'active' ? '进行中' : project.status === 'planning' ? '规划中' : project.status === 'completed' ? '已完成' : '暂停' %>
+                                                </span>
+                                            </div>
+                                            <p class="card-text small text-muted">
+                                                <%= project.description || '暂无描述' %>
+                                            </p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <% for (let i = 0; i < (project.starLevel || 3); i++) { %>⭐<% } %>
+                                                </small>
+                                                <small class="text-muted">
+                                                    队长: <%= project.leader ? project.leader.firstName + ' ' + project.leader.lastName : '未指定' %>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-4">
+                            <i class="fas fa-map fa-2x text-muted mb-3"></i>
+                            <h6 class="text-muted">暂无地下城</h6>
+                            <p class="text-muted mb-3">该公会还没有创建任何地下城</p>
+                            <a href="/projects/create?organizationId=<%= organization.id %>" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>创建第一个地下城
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧信息栏 -->
+        <div class="col-lg-4">
+            <!-- 公会信息 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        公会信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <strong>标识符：</strong>
+                            <span class="ms-2 font-monospace"><%= organization.slug %></span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <strong>会长：</strong>
+                            <span class="ms-2">
+                                <% if (organization.owner) { %>
+                                    <%= organization.owner.firstName %> <%= organization.owner.lastName %>
+                                    <small class="text-muted">(@<%= organization.owner.username %>)</small>
+                                <% } else { %>
+                                    未知
+                                <% } %>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <strong>创建时间：</strong>
+                            <span class="ms-2"><%= new Date(organization.createdAt).toLocaleDateString('zh-CN') %></span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <strong>状态：</strong>
+                            <span class="ms-2">
+                                <span class="badge bg-<%= organization.status === 'active' ? 'success' : organization.status === 'inactive' ? 'secondary' : 'warning' %>">
+                                    <%= organization.status === 'active' ? '活跃' : organization.status === 'inactive' ? '非活跃' : '暂停' %>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 联系信息 -->
+            <% if (organization.website || organization.email || organization.phone || organization.address) { %>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-address-book me-2"></i>
+                            联系信息
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (organization.website) { %>
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <i class="fas fa-globe me-2"></i>
+                                    <a href="<%= organization.website %>" target="_blank" class="text-decoration-none">
+                                        <%= organization.website %>
+                                    </a>
+                                </div>
+                            </div>
+                        <% } %>
+                        <% if (organization.email) { %>
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    <a href="mailto:<%= organization.email %>" class="text-decoration-none">
+                                        <%= organization.email %>
+                                    </a>
+                                </div>
+                            </div>
+                        <% } %>
+                        <% if (organization.phone) { %>
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <i class="fas fa-phone me-2"></i>
+                                    <a href="tel:<%= organization.phone %>" class="text-decoration-none">
+                                        <%= organization.phone %>
+                                    </a>
+                                </div>
+                            </div>
+                        <% } %>
+                        <% if (organization.address) { %>
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <i class="fas fa-map-marker-alt me-2"></i>
+                                    <%= organization.address %>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- 统计信息 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        统计信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h4 class="mb-0 text-primary"><%= organization.projects ? organization.projects.length : 0 %></h4>
+                                <small class="text-muted">地下城总数</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="mb-0 text-success">
+                                <%= organization.projects ? organization.projects.filter(p => p.status === 'active').length : 0 %>
+                            </h4>
+                            <small class="text-muted">进行中</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

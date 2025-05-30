@@ -1,0 +1,288 @@
+<%- include('../partials/header', { title: title }) %>
+
+<!-- 页面标题和控制栏 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2>
+                    <i class="fas fa-columns me-2 text-primary"></i>
+                    任务看板
+                </h2>
+                <p class="text-muted mb-0">可视化任务流程和状态管理</p>
+            </div>
+            <div class="btn-group">
+                <%
+                    const currentQuery = new URLSearchParams();
+                    if (projectId) currentQuery.set('projectId', projectId);
+                    const queryString = currentQuery.toString();
+                    const queryPrefix = queryString ? '?' + queryString : '';
+                %>
+                <a href="/tasks<%= queryPrefix %>" class="btn btn-outline-secondary">
+                    <i class="fas fa-list me-1"></i>列表视图
+                </a>
+                <a href="/tasks/tree<%= queryPrefix %>" class="btn btn-outline-secondary">
+                    <i class="fas fa-sitemap me-1"></i>树形视图
+                </a>
+                <a href="/tasks/kanban<%= queryPrefix %>" class="btn btn-primary active">
+                    <i class="fas fa-columns me-1"></i>看板视图
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 看板列 -->
+<div class="row kanban-board">
+    <% Object.keys(kanbanColumns).forEach(status => { %>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="kanban-column">
+                <div class="kanban-header bg-<%= kanbanColumns[status].color %> text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-circle me-2"></i>
+                        <%= kanbanColumns[status].title %>
+                        <span class="badge bg-light text-dark ms-2">
+                            <%= kanbanColumns[status].tasks.length %>
+                        </span>
+                    </h5>
+                </div>
+                <div class="kanban-body" data-status="<%= status %>">
+                    <% if (kanbanColumns[status].tasks.length > 0) { %>
+                        <% kanbanColumns[status].tasks.forEach(task => { %>
+                            <div class="kanban-card" data-task-id="<%= task.id %>">
+                                <div class="card mb-3">
+                                    <div class="card-body p-3">
+                                        <!-- 任务标题 -->
+                                        <h6 class="card-title mb-2">
+                                            <a href="/tasks/<%= task.id %>" class="text-decoration-none">
+                                                <%= task.title %>
+                                            </a>
+                                        </h6>
+                                        
+                                        <!-- 任务元信息 -->
+                                        <div class="task-meta mb-2">
+                                            <span class="badge bg-warning me-1">
+                                                <% for(let i = 0; i < task.starLevel; i++) { %>⭐<% } %>
+                                            </span>
+                                            <span class="badge bg-secondary me-1">
+                                                <% if (task.skillRequired === 'novice') { %>🔰
+                                                <% } else if (task.skillRequired === 'bronze') { %>🥉
+                                                <% } else if (task.skillRequired === 'silver') { %>🥈
+                                                <% } else if (task.skillRequired === 'gold') { %>🥇
+                                                <% } else if (task.skillRequired === 'diamond') { %>💎<% } %>
+                                            </span>
+                                            <span class="badge bg-info">
+                                                <% if (task.urgencyLevel === 'urgent') { %>🔥
+                                                <% } else if (task.urgencyLevel === 'important') { %>⚡
+                                                <% } else if (task.urgencyLevel === 'normal') { %>📅
+                                                <% } else if (task.urgencyLevel === 'delayed') { %>🕐<% } %>
+                                            </span>
+                                        </div>
+
+                                        <!-- 任务描述 -->
+                                        <% if (task.description) { %>
+                                            <p class="card-text text-muted small mb-2">
+                                                <%= task.description.length > 60 ? 
+                                                    task.description.substring(0, 60) + '...' : 
+                                                    task.description %>
+                                            </p>
+                                        <% } %>
+
+                                        <!-- 奖励信息 -->
+                                        <div class="reward-info mb-2">
+                                            <small class="text-muted">
+                                                <% if (task.rewardCurrency === 'diamond') { %>💎
+                                                <% } else if (task.rewardCurrency === 'gold') { %>🥇
+                                                <% } else if (task.rewardCurrency === 'silver') { %>🥈
+                                                <% } else if (task.rewardCurrency === 'copper') { %>🥉<% } %>
+                                                <%= (task.baseReward || 0) + (task.bonusReward || 0) %>
+                                            </small>
+                                        </div>
+
+                                        <!-- 任务信息 -->
+                                        <div class="task-info">
+                                            <% if (task.assignee) { %>
+                                                <div class="d-flex align-items-center mb-1">
+                                                    <i class="fas fa-user text-muted me-1" style="font-size: 12px;"></i>
+                                                    <small class="text-muted">
+                                                        <%= task.assignee.firstName + ' ' + task.assignee.lastName %>
+                                                    </small>
+                                                </div>
+                                            <% } %>
+                                            <% if (task.dueDate) { %>
+                                                <div class="d-flex align-items-center mb-1">
+                                                    <i class="fas fa-calendar text-muted me-1" style="font-size: 12px;"></i>
+                                                    <small class="text-muted">
+                                                        <%= new Date(task.dueDate).toLocaleDateString('zh-CN') %>
+                                                    </small>
+                                                </div>
+                                            <% } %>
+                                            <% if (task.project) { %>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-project-diagram text-muted me-1" style="font-size: 12px;"></i>
+                                                    <small class="text-muted">
+                                                        <%= task.project.name %>
+                                                    </small>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="empty-column text-center py-4">
+                            <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-0">暂无任务</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    <% }); %>
+</div>
+
+<style>
+.kanban-board {
+    min-height: 600px;
+}
+
+.kanban-column {
+    background: #f8f9fa;
+    border-radius: 8px;
+    overflow: hidden;
+    height: fit-content;
+    min-height: 500px;
+}
+
+.kanban-header {
+    padding: 15px;
+    border-radius: 8px 8px 0 0;
+}
+
+.kanban-body {
+    padding: 15px;
+    min-height: 450px;
+}
+
+.kanban-card {
+    cursor: move;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kanban-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.kanban-card .card {
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.kanban-card .card:hover {
+    border-color: #007bff;
+}
+
+.empty-column {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.task-meta .badge {
+    font-size: 0.7em;
+}
+
+.reward-info {
+    font-weight: 500;
+}
+
+.task-info {
+    font-size: 0.8em;
+}
+
+/* 拖拽样式 */
+.kanban-card.dragging {
+    opacity: 0.5;
+    transform: rotate(5deg);
+}
+
+.kanban-body.drag-over {
+    background-color: #e3f2fd;
+    border: 2px dashed #2196f3;
+}
+</style>
+
+<script>
+$(document).ready(function() {
+    // 初始化拖拽功能
+    initDragAndDrop();
+    
+    // 任务卡片点击事件
+    $('.kanban-card').click(function(e) {
+        if (!$(e.target).closest('a').length) {
+            const taskId = $(this).data('task-id');
+            window.location.href = `/tasks/${taskId}`;
+        }
+    });
+});
+
+// 初始化拖拽功能
+function initDragAndDrop() {
+    // 使任务卡片可拖拽
+    $('.kanban-card').attr('draggable', true);
+    
+    // 拖拽开始
+    $(document).on('dragstart', '.kanban-card', function(e) {
+        $(this).addClass('dragging');
+        e.originalEvent.dataTransfer.setData('text/plain', $(this).data('task-id'));
+    });
+    
+    // 拖拽结束
+    $(document).on('dragend', '.kanban-card', function(e) {
+        $(this).removeClass('dragging');
+        $('.kanban-body').removeClass('drag-over');
+    });
+    
+    // 拖拽进入列
+    $(document).on('dragover', '.kanban-body', function(e) {
+        e.preventDefault();
+        $(this).addClass('drag-over');
+    });
+    
+    // 拖拽离开列
+    $(document).on('dragleave', '.kanban-body', function(e) {
+        $(this).removeClass('drag-over');
+    });
+    
+    // 放置任务
+    $(document).on('drop', '.kanban-body', function(e) {
+        e.preventDefault();
+        $(this).removeClass('drag-over');
+        
+        const taskId = e.originalEvent.dataTransfer.getData('text/plain');
+        const newStatus = $(this).data('status');
+        const $taskCard = $(`.kanban-card[data-task-id="${taskId}"]`);
+        
+        // 移动卡片到新列
+        $taskCard.appendTo(this);
+        
+        // 这里应该调用API更新任务状态
+        updateTaskStatus(taskId, newStatus);
+    });
+}
+
+// 更新任务状态
+function updateTaskStatus(taskId, newStatus) {
+    // 显示加载状态
+    KanbanApp.showAlert('正在更新任务状态...', 'info');
+    
+    // 这里应该调用实际的API
+    setTimeout(() => {
+        KanbanApp.showAlert('任务状态更新功能正在开发中...', 'warning');
+    }, 1000);
+}
+</script>
+
+<%- include('../partials/footer') %>

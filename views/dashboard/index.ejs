@@ -1,0 +1,311 @@
+<%- include('../partials/header', { title: title }) %>
+
+<!-- 页面标题和控制栏 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2>
+                    <i class="fas fa-tachometer-alt me-2 text-primary"></i>
+                    仪表板
+                </h2>
+                <p class="text-muted mb-0">欢迎回来，<%= user ? user.firstName : '用户' %>！今天是开始新任务的好日子</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-success btn-sm" id="dailyCheckinBtn">
+                    <i class="fas fa-calendar-check me-1"></i>
+                    每日签到
+                </button>
+                <button class="btn btn-outline-warning btn-sm" id="monthlyRechargeBtn">
+                    <i class="fas fa-gem me-1"></i>
+                    月度充值
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- 统计卡片 -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-tasks fa-2x text-primary"></i>
+                </div>
+                <h4 class="mb-1"><%= taskStats.total %></h4>
+                <p class="text-muted mb-0">进行中的任务</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-check-circle fa-2x text-success"></i>
+                </div>
+                <h4 class="mb-1"><%= taskStats.completed %></h4>
+                <p class="text-muted mb-0">已完成任务</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-coins fa-2x text-warning"></i>
+                </div>
+                <h4 class="mb-1"><%= (wallet.totalEarned || 0).toLocaleString() %></h4>
+                <p class="text-muted mb-0">累计收入</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-trophy fa-2x text-info"></i>
+                </div>
+                <h4 class="mb-1" id="currentRank">-</h4>
+                <p class="text-muted mb-0">当前排名</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 主要内容区域 -->
+<div class="row">
+    <!-- 左侧内容 -->
+    <div class="col-lg-8">
+        <!-- 我的任务 -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    我的任务
+                </h5>
+                <a href="/tasks" class="btn btn-outline-primary btn-sm">
+                    查看全部
+                </a>
+            </div>
+            <div class="card-body">
+                <% if (recentTasks && recentTasks.length > 0) { %>
+                    <div class="list-group list-group-flush">
+                        <% recentTasks.forEach(task => { %>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1"><%= task.title %></h6>
+                                    <small class="text-muted">
+                                        <%
+                                        const stars = '⭐'.repeat(task.starRating || 1);
+                                        const urgencyIcons = {
+                                            'urgent': '🔥',
+                                            'high': '⚡',
+                                            'normal': '📅',
+                                            'low': '🕐',
+                                            'very_low': '❄️'
+                                        };
+                                        const urgencyIcon = urgencyIcons[task.urgency] || '📅';
+                                        %>
+                                        <%= stars %> <%= task.starRating || 1 %>星任务 • <%= urgencyIcon %> <%= task.urgency === 'urgent' ? '紧急' : task.urgency === 'high' ? '高' : task.urgency === 'low' ? '低' : task.urgency === 'very_low' ? '很低' : '普通' %>
+                                        <% if (task.project) { %>
+                                            • <%= task.project.name %>
+                                        <% } %>
+                                    </small>
+                                </div>
+                                <%
+                                const statusBadges = {
+                                    'pending': { class: 'bg-secondary', text: '待分配' },
+                                    'in_progress': { class: 'bg-warning', text: '进行中' },
+                                    'pending_review': { class: 'bg-info', text: '待审核' },
+                                    'completed': { class: 'bg-success', text: '已完成' },
+                                    'cancelled': { class: 'bg-danger', text: '已取消' }
+                                };
+                                const statusBadge = statusBadges[task.status] || statusBadges.pending;
+                                %>
+                                <span class="badge <%= statusBadge.class %>"><%= statusBadge.text %></span>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="text-center py-4">
+                        <i class="fas fa-tasks fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">暂无任务</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- 最新活动 -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock me-2"></i>
+                    最新活动
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="recentActivities">
+                    <div class="text-center py-4">
+                        <i class="fas fa-history fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">暂无活动记录</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右侧边栏 -->
+    <div class="col-lg-4">
+        <!-- 钱包概览 -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-wallet me-2"></i>
+                    我的钱包
+                </h5>
+                <a href="/wallet" class="btn btn-outline-primary btn-sm">
+                    详情
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="text-center p-2 bg-light rounded">
+                            <div class="mb-1">💎</div>
+                            <div class="fw-bold"><%= wallet.diamondBalance || 0 %></div>
+                            <small class="text-muted">钻石</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center p-2 bg-light rounded">
+                            <div class="mb-1">🥇</div>
+                            <div class="fw-bold"><%= wallet.goldBalance || 0 %></div>
+                            <small class="text-muted">金币</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center p-2 bg-light rounded">
+                            <div class="mb-1">🥈</div>
+                            <div class="fw-bold"><%= wallet.silverBalance || 0 %></div>
+                            <small class="text-muted">银币</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center p-2 bg-light rounded">
+                            <div class="mb-1">🥉</div>
+                            <div class="fw-bold"><%= wallet.copperBalance || 0 %></div>
+                            <small class="text-muted">铜币</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 技能等级 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-medal me-2"></i>
+                    技能等级
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <span class="badge bg-primary fs-1"><%= userSkill.icon %></span>
+                </div>
+                <h6><%= userSkill.name %></h6>
+                <div class="progress mb-2" style="height: 8px;">
+                    <div class="progress-bar" role="progressbar" style="width: <%= userSkill.progress %>%"></div>
+                </div>
+                <small class="text-muted">完成更多任务提升等级</small>
+            </div>
+        </div>
+
+        <!-- 快速操作 -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>
+                    快速操作
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/tasks" class="btn btn-outline-primary">
+                        <i class="fas fa-search me-2"></i>
+                        浏览任务市场
+                    </a>
+                    <a href="/projects/create" class="btn btn-outline-success">
+                        <i class="fas fa-plus me-2"></i>
+                        创建新项目
+                    </a>
+                    <a href="/leaderboard" class="btn btn-outline-info">
+                        <i class="fas fa-trophy me-2"></i>
+                        查看排行榜
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // 每日签到
+    $('#dailyCheckinBtn').click(function() {
+        const btn = $(this);
+        KanbanApp.setLoading(btn, true);
+
+        $.post('/api/wallet/daily-checkin')
+            .done(function(response) {
+                if (response.success) {
+                    KanbanApp.showAlert(response.message, 'success');
+                    // 刷新页面以更新钱包数据
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    KanbanApp.showAlert(response.message, 'warning');
+                }
+            })
+            .fail(function(xhr) {
+                const response = xhr.responseJSON;
+                KanbanApp.showAlert(response?.message || '签到失败', 'danger');
+            })
+            .always(function() {
+                KanbanApp.setLoading(btn, false);
+            });
+    });
+
+    // 月度充值
+    $('#monthlyRechargeBtn').click(function() {
+        const btn = $(this);
+        KanbanApp.setLoading(btn, true);
+
+        $.post('/api/wallet/monthly-recharge')
+            .done(function(response) {
+                if (response.success) {
+                    KanbanApp.showAlert(response.message, 'success');
+                    // 刷新页面以更新钱包数据
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    KanbanApp.showAlert(response.message, 'warning');
+                }
+            })
+            .fail(function(xhr) {
+                const response = xhr.responseJSON;
+                KanbanApp.showAlert(response?.message || '充值失败', 'danger');
+            })
+            .always(function() {
+                KanbanApp.setLoading(btn, false);
+            });
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

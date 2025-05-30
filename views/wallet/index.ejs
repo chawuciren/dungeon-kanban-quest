@@ -1,0 +1,467 @@
+<%- include('../partials/header', { title: title }) %>
+
+<!-- 页面标题 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h2>
+            <i class="fas fa-wallet me-2 text-primary"></i>
+            我的钱包
+        </h2>
+        <p class="text-muted mb-0">管理您的虚拟货币资产</p>
+    </div>
+</div>
+
+<!-- 钱包概览 -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-gem fa-3x text-info"></i>
+                </div>
+                <h3 class="mb-1" id="diamondBalance">0</h3>
+                <p class="text-muted mb-2">钻石</p>
+                <small class="text-success">
+                    <i class="fas fa-lock me-1"></i>
+                    冻结: <span id="frozenDiamond">0</span>
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-coins fa-3x text-warning"></i>
+                </div>
+                <h3 class="mb-1" id="goldBalance">0</h3>
+                <p class="text-muted mb-2">金币</p>
+                <small class="text-success">
+                    <i class="fas fa-lock me-1"></i>
+                    冻结: <span id="frozenGold">0</span>
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-circle fa-3x text-secondary"></i>
+                </div>
+                <h3 class="mb-1" id="silverBalance">0</h3>
+                <p class="text-muted mb-2">银币</p>
+                <small class="text-success">
+                    <i class="fas fa-lock me-1"></i>
+                    冻结: <span id="frozenSilver">0</span>
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-circle fa-3x text-dark"></i>
+                </div>
+                <h3 class="mb-1" id="copperBalance">0</h3>
+                <p class="text-muted mb-2">铜币</p>
+                <small class="text-success">
+                    <i class="fas fa-lock me-1"></i>
+                    冻结: <span id="frozenCopper">0</span>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 统计信息 -->
+<div class="row mb-4">
+    <div class="col-lg-4 col-md-6 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h4 class="mb-1" id="totalEarned">0</h4>
+                <p class="mb-0">累计收入</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 mb-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body text-center">
+                <h4 class="mb-1" id="totalSpent">0</h4>
+                <p class="mb-0">累计支出</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h4 class="mb-1" id="totalAssets">0</h4>
+                <p class="mb-0">总资产（铜币）</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 操作区域 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>
+                    钱包操作
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <button class="btn btn-success" id="dailyCheckinBtn">
+                                <i class="fas fa-calendar-check me-2"></i>
+                                每日签到
+                            </button>
+                        </div>
+                        <small class="text-muted d-block mt-1 text-center">
+                            每日可获得100金币
+                        </small>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <button class="btn btn-primary" id="monthlyRechargeBtn">
+                                <i class="fas fa-gem me-2"></i>
+                                月度充值
+                            </button>
+                        </div>
+                        <small class="text-muted d-block mt-1 text-center">
+                            每月可获得3000金币+10钻石
+                        </small>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <button class="btn btn-warning" id="exchangeBtn">
+                                <i class="fas fa-exchange-alt me-2"></i>
+                                货币兑换
+                            </button>
+                        </div>
+                        <small class="text-muted d-block mt-1 text-center">
+                            不同货币间兑换
+                        </small>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <button class="btn btn-info" id="transferBtn">
+                                <i class="fas fa-paper-plane me-2"></i>
+                                转账
+                            </button>
+                        </div>
+                        <small class="text-muted d-block mt-1 text-center">
+                            向其他用户转账
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 交易历史 -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i>
+                    交易历史
+                </h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-primary active" data-filter="all">全部</button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="income">收入</button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="expense">支出</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="transactionsList">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">加载中...</span>
+                        </div>
+                        <p class="mt-2 text-muted">正在加载交易记录...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 货币兑换模态框 -->
+<div class="modal fade" id="exchangeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exchange-alt me-2"></i>
+                    货币兑换
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="exchangeForm">
+                    <div class="mb-3">
+                        <label class="form-label">兑换方向</label>
+                        <select class="form-select" id="exchangeDirection">
+                            <option value="gold_to_silver">金币 → 银币 (1:100)</option>
+                            <option value="silver_to_copper">银币 → 铜币 (1:100)</option>
+                            <option value="diamond_to_gold">钻石 → 金币 (1:1000)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exchangeAmount" class="form-label">兑换数量</label>
+                        <input type="number" class="form-control" id="exchangeAmount" min="1" required>
+                        <div class="form-text" id="exchangePreview"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="confirmExchange">确认兑换</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // 加载钱包数据
+    loadWalletData();
+    loadTransactions();
+    
+    // 每日签到
+    $('#dailyCheckinBtn').click(function() {
+        const btn = $(this);
+        KanbanApp.setLoading(btn, true);
+        
+        $.post('/api/wallet/daily-checkin')
+            .done(function(response) {
+                if (response.success) {
+                    KanbanApp.showAlert(response.message, 'success');
+                    loadWalletData();
+                } else {
+                    KanbanApp.showAlert(response.message, 'warning');
+                }
+            })
+            .fail(function(xhr) {
+                const response = xhr.responseJSON;
+                KanbanApp.showAlert(response?.message || '签到失败', 'danger');
+            })
+            .always(function() {
+                KanbanApp.setLoading(btn, false);
+            });
+    });
+    
+    // 月度充值
+    $('#monthlyRechargeBtn').click(function() {
+        const btn = $(this);
+        KanbanApp.setLoading(btn, true);
+        
+        $.post('/api/wallet/monthly-recharge')
+            .done(function(response) {
+                if (response.success) {
+                    KanbanApp.showAlert(response.message, 'success');
+                    loadWalletData();
+                } else {
+                    KanbanApp.showAlert(response.message, 'warning');
+                }
+            })
+            .fail(function(xhr) {
+                const response = xhr.responseJSON;
+                KanbanApp.showAlert(response?.message || '充值失败', 'danger');
+            })
+            .always(function() {
+                KanbanApp.setLoading(btn, false);
+            });
+    });
+    
+    // 货币兑换
+    $('#exchangeBtn').click(function() {
+        $('#exchangeModal').modal('show');
+    });
+    
+    // 转账功能
+    $('#transferBtn').click(function() {
+        KanbanApp.showAlert('转账功能正在开发中...', 'info');
+    });
+    
+    // 兑换预览
+    $('#exchangeAmount, #exchangeDirection').on('input change', function() {
+        updateExchangePreview();
+    });
+    
+    // 确认兑换
+    $('#confirmExchange').click(function() {
+        KanbanApp.showAlert('货币兑换功能正在开发中...', 'info');
+        $('#exchangeModal').modal('hide');
+    });
+    
+    // 交易历史筛选
+    $('[data-filter]').click(function() {
+        $('[data-filter]').removeClass('active');
+        $(this).addClass('active');
+        loadTransactions($(this).data('filter'));
+    });
+});
+
+// 加载钱包数据
+function loadWalletData() {
+    $.get('/api/wallet/stats')
+        .done(function(response) {
+            if (response.success) {
+                const data = response.data;
+                
+                // 更新余额显示
+                $('#diamondBalance').text(data.balances.diamond.toLocaleString());
+                $('#goldBalance').text(data.balances.gold.toLocaleString());
+                $('#silverBalance').text(data.balances.silver.toLocaleString());
+                $('#copperBalance').text(data.balances.copper.toLocaleString());
+                
+                // 更新冻结金额
+                $('#frozenDiamond').text(data.frozenBalances.diamond.toLocaleString());
+                $('#frozenGold').text(data.frozenBalances.gold.toLocaleString());
+                $('#frozenSilver').text(data.frozenBalances.silver.toLocaleString());
+                $('#frozenCopper').text(data.frozenBalances.copper.toLocaleString());
+                
+                // 更新统计信息
+                $('#totalEarned').text(data.totalEarned.toLocaleString());
+                $('#totalSpent').text(data.totalSpent.toLocaleString());
+                $('#totalAssets').text(data.totalAssets.toLocaleString());
+                
+                // 更新导航栏钱包显示
+                KanbanApp.updateWalletDisplay(data.balances);
+            }
+        })
+        .fail(function() {
+            KanbanApp.showAlert('无法加载钱包数据', 'danger');
+        });
+}
+
+// 加载交易记录
+function loadTransactions(filter = 'all') {
+    $('#transactionsList').html(`
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">加载中...</span>
+            </div>
+            <p class="mt-2 text-muted">正在加载交易记录...</p>
+        </div>
+    `);
+    
+    // 模拟加载延迟
+    setTimeout(() => {
+        const transactionsHtml = generateTransactionsHTML(filter);
+        $('#transactionsList').html(transactionsHtml);
+    }, 500);
+}
+
+// 生成交易记录HTML
+function generateTransactionsHTML(filter) {
+    const sampleTransactions = [
+        {
+            type: 'income',
+            description: '每日签到奖励',
+            amount: 100,
+            currency: 'gold',
+            date: '2024-01-10 09:00:00'
+        },
+        {
+            type: 'income',
+            description: '完成任务：实现用户登录功能',
+            amount: 100,
+            currency: 'gold',
+            date: '2024-01-09 15:30:00'
+        },
+        {
+            type: 'expense',
+            description: '发布任务：优化数据库性能',
+            amount: 200,
+            currency: 'gold',
+            date: '2024-01-08 10:15:00'
+        }
+    ];
+    
+    let filteredTransactions = sampleTransactions;
+    if (filter !== 'all') {
+        filteredTransactions = sampleTransactions.filter(t => t.type === filter);
+    }
+    
+    if (filteredTransactions.length === 0) {
+        return `
+            <div class="text-center py-4">
+                <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                <p class="text-muted mb-0">暂无交易记录</p>
+            </div>
+        `;
+    }
+    
+    let html = '<div class="list-group list-group-flush">';
+    filteredTransactions.forEach(transaction => {
+        const currencyIcon = {
+            diamond: '💎',
+            gold: '🥇',
+            silver: '🥈',
+            copper: '🥉'
+        }[transaction.currency];
+        
+        const typeClass = transaction.type === 'income' ? 'text-success' : 'text-danger';
+        const typeIcon = transaction.type === 'income' ? 'fa-plus' : 'fa-minus';
+        const sign = transaction.type === 'income' ? '+' : '-';
+        
+        html += `
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1">${transaction.description}</h6>
+                        <small class="text-muted">${transaction.date}</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="${typeClass} fw-bold">
+                            <i class="fas ${typeIcon} me-1"></i>
+                            ${sign}${currencyIcon} ${transaction.amount.toLocaleString()}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    return html;
+}
+
+// 更新兑换预览
+function updateExchangePreview() {
+    const direction = $('#exchangeDirection').val();
+    const amount = parseInt($('#exchangeAmount').val()) || 0;
+    
+    if (amount <= 0) {
+        $('#exchangePreview').text('');
+        return;
+    }
+    
+    let preview = '';
+    switch (direction) {
+        case 'gold_to_silver':
+            preview = `将获得 ${(amount * 100).toLocaleString()} 银币`;
+            break;
+        case 'silver_to_copper':
+            preview = `将获得 ${(amount * 100).toLocaleString()} 铜币`;
+            break;
+        case 'diamond_to_gold':
+            preview = `将获得 ${(amount * 1000).toLocaleString()} 金币`;
+            break;
+    }
+    
+    $('#exchangePreview').text(preview);
+}
+</script>
+
+<%- include('../partials/footer') %>

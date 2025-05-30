@@ -1,0 +1,306 @@
+<%- include('../partials/header') %>
+<%- include('../helpers/roleHelper') %>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- 页面标题 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-user-edit me-2"></i>
+                    🏰 编辑冒险者档案
+                </h1>
+                <a href="/users" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    返回名册
+                </a>
+            </div>
+
+            <!-- 用户信息卡片 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-circle me-3">
+                            <% if (editUser.avatar) { %>
+                                <img src="<%= editUser.avatar %>" alt="<%= editUser.getFullName() %>" class="rounded-circle" width="50" height="50">
+                            <% } else { %>
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                    <h5 class="mb-0"><%= editUser.firstName.charAt(0).toUpperCase() %></h5>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0"><%= editUser.getFullName() %></h5>
+                            <p class="text-muted mb-0">@<%= editUser.username %> • <%= editUser.email %></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <strong>当前职业：</strong><br>
+                            <%- renderRoleBadge(editUser.role, true) %>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>技能等级：</strong><br>
+                            <span class="badge bg-<%= editUser.skillLevel === 'diamond' ? 'info' : editUser.skillLevel === 'gold' ? 'warning' : editUser.skillLevel === 'silver' ? 'secondary' : editUser.skillLevel === 'bronze' ? 'dark' : 'light' %>">
+                                <% if (editUser.skillLevel === 'diamond') { %>💎 钻石
+                                <% } else if (editUser.skillLevel === 'gold') { %>🥇 黄金
+                                <% } else if (editUser.skillLevel === 'silver') { %>🥈 白银
+                                <% } else if (editUser.skillLevel === 'bronze') { %>🥉 青铜
+                                <% } else { %>🔰 新手<% } %>
+                            </span>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>账户状态：</strong><br>
+                            <span class="badge bg-<%= editUser.status === 'active' ? 'success' : editUser.status === 'inactive' ? 'warning' : 'danger' %>">
+                                <% if (editUser.status === 'active') { %>✅ 活跃
+                                <% } else if (editUser.status === 'inactive') { %>⏸️ 未激活
+                                <% } else { %>🚫 已禁用<% } %>
+                            </span>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>注册时间：</strong><br>
+                            <span class="text-muted"><%= moment(editUser.createdAt).format('YYYY-MM-DD') %></span>
+                        </div>
+                    </div>
+
+                    <% if (editUser.wallet) { %>
+                        <hr>
+                        <div class="row">
+                            <div class="col-12">
+                                <strong>钱包余额：</strong>
+                                <div class="d-flex gap-3 mt-2">
+                                    <span class="badge bg-info">💎 <%= editUser.wallet.diamondBalance %></span>
+                                    <span class="badge bg-warning">🥇 <%= editUser.wallet.goldBalance %></span>
+                                    <span class="badge bg-secondary">🥈 <%= editUser.wallet.silverBalance %></span>
+                                    <span class="badge bg-dark">🥉 <%= editUser.wallet.copperBalance %></span>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- 编辑表单 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">编辑用户信息</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/users/<%= editUser.id %>/edit">
+                        <div class="row">
+                            <!-- 基本信息 -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3">基本信息</h6>
+
+                                <div class="mb-3">
+                                    <label for="firstName" class="form-label">姓名 <span class="text-danger">*</span></label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="firstName" name="firstName"
+                                                   value="<%= editUser.firstName %>" placeholder="姓" required>
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="lastName" name="lastName"
+                                                   value="<%= editUser.lastName %>" placeholder="名" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">用户名 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="username" name="username"
+                                           value="<%= editUser.username %>" placeholder="用户登录名" required>
+                                    <div class="form-text">用户名只能包含字母和数字，3-50个字符</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">邮箱 <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                           value="<%= editUser.email %>" placeholder="user@example.com" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">手机号</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone"
+                                           value="<%= editUser.phone || '' %>" placeholder="手机号码（可选）">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">新密码</label>
+                                    <input type="password" class="form-control" id="password" name="password"
+                                           placeholder="留空则不修改密码" minlength="6">
+                                    <div class="form-text">如需修改密码，请输入新密码（至少6位）</div>
+                                </div>
+                            </div>
+
+                            <!-- 角色和权限 -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3">角色和权限</h6>
+
+                                <div class="mb-3">
+                                    <label for="role" class="form-label">职业角色 <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="role" name="role" required>
+                                        <option value="guild_master" <%= editUser.role === 'guild_master' ? 'selected' : '' %>>👑 公会管理员 (管理员) - 冒险者公会总管</option>
+                                        <option value="quest_captain" <%= editUser.role === 'quest_captain' ? 'selected' : '' %>>⚔️ 探险队长 (项目经理) - 地下城攻略规划师</option>
+                                        <option value="swordsman" <%= editUser.role === 'swordsman' ? 'selected' : '' %>>🛡️ 剑士 (开发者) - 挥剑斩敌的勇者</option>
+                                        <option value="ranger" <%= editUser.role === 'ranger' ? 'selected' : '' %>>🏹 游侠 (测试员) - 侦察和陷阱专家</option>
+                                        <option value="quest_giver" <%= editUser.role === 'quest_giver' ? 'selected' : '' %>>💰 任务委托人 (客户) - 发布地下城探险委托</option>
+                                        <option value="enchanter" <%= editUser.role === 'enchanter' ? 'selected' : '' %>>✨ 附魔师 (UI设计师) - 装备美化大师</option>
+                                        <option value="alchemist" <%= editUser.role === 'alchemist' ? 'selected' : '' %>>🧪 炼金术师 (运维工程师) - 药剂和装备维护专家</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="skillLevel" class="form-label">技能等级</label>
+                                    <select class="form-select" id="skillLevel" name="skillLevel">
+                                        <option value="novice" <%= editUser.skillLevel === 'novice' ? 'selected' : '' %>>🔰 新手 - 初学者</option>
+                                        <option value="bronze" <%= editUser.skillLevel === 'bronze' ? 'selected' : '' %>>🥉 青铜 - 有一定经验</option>
+                                        <option value="silver" <%= editUser.skillLevel === 'silver' ? 'selected' : '' %>>🥈 白银 - 经验丰富</option>
+                                        <option value="gold" <%= editUser.skillLevel === 'gold' ? 'selected' : '' %>>🥇 黄金 - 技能精湛</option>
+                                        <option value="diamond" <%= editUser.skillLevel === 'diamond' ? 'selected' : '' %>>💎 钻石 - 顶级专家</option>
+                                    </select>
+                                    <div class="form-text">技能等级影响可接取的任务难度</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">账户状态</label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="active" <%= editUser.status === 'active' ? 'selected' : '' %>>✅ 活跃 - 正常使用</option>
+                                        <option value="inactive" <%= editUser.status === 'inactive' ? 'selected' : '' %>>⏸️ 未激活 - 需要激活</option>
+                                        <option value="suspended" <%= editUser.status === 'suspended' ? 'selected' : '' %>>🚫 已禁用 - 禁止登录</option>
+                                    </select>
+                                </div>
+
+                                <!-- 危险操作区域 -->
+                                <div class="alert alert-warning">
+                                    <h6 class="alert-heading">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                        危险操作
+                                    </h6>
+                                    <div class="d-grid gap-2">
+                                        <button type="button" class="btn btn-outline-warning btn-sm"
+                                                onclick="showResetPasswordModal()">
+                                            <i class="fas fa-key me-1"></i>
+                                            重置密码
+                                        </button>
+                                        <% if (editUser.id !== user.id) { %>
+                                            <button type="button" class="btn btn-outline-danger btn-sm"
+                                                    onclick="confirmDelete('<%= editUser.id %>', '<%= editUser.username %>')">
+                                                <i class="fas fa-ban me-1"></i>
+                                                禁用账户
+                                            </button>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 提交按钮 -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <hr>
+                                <div class="d-flex justify-content-end">
+                                    <a href="/users" class="btn btn-secondary me-2">
+                                        <i class="fas fa-times me-1"></i>
+                                        取消
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-1"></i>
+                                        保存修改
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 重置密码模态框 -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">重置用户密码</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="/users/<%= editUser.id %>/reset-password">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">新密码</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword"
+                               placeholder="请输入新密码" required minlength="6">
+                        <div class="form-text">密码长度至少6位</div>
+                    </div>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        重置密码后，用户需要使用新密码重新登录。
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-warning">确认重置</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 删除确认模态框 -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">确认禁用用户</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>确定要禁用用户 <strong id="deleteUsername"></strong> 吗？</p>
+                <p class="text-muted small">禁用后用户将无法登录系统，但数据不会被删除。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">确认禁用</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showResetPasswordModal() {
+    new bootstrap.Modal(document.getElementById('resetPasswordModal')).show();
+}
+
+function confirmDelete(userId, username) {
+    document.getElementById('deleteUsername').textContent = username;
+    document.getElementById('deleteForm').action = '/users/' + userId + '/delete';
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+
+// 表单验证
+document.addEventListener('DOMContentLoaded', function() {
+    const usernameInput = document.getElementById('username');
+
+    // 用户名验证
+    usernameInput.addEventListener('input', function() {
+        const value = this.value;
+        const isValid = /^[a-zA-Z0-9]{3,50}$/.test(value);
+
+        if (value && !isValid) {
+            this.classList.add('is-invalid');
+            this.setCustomValidity('用户名只能包含字母和数字，3-50个字符');
+        } else {
+            this.classList.remove('is-invalid');
+            this.setCustomValidity('');
+        }
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

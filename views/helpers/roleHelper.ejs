@@ -1,0 +1,80 @@
+<%
+// 角色配置助手函数
+global.roleConfig = {
+  guild_master: {
+    name: '管理员',
+    alias: '公会管理员',
+    icon: '👑',
+    color: 'danger'
+  },
+  quest_captain: {
+    name: '项目经理',
+    alias: '探险队长',
+    icon: '⚔️',
+    color: 'warning'
+  },
+  swordsman: {
+    name: '开发者',
+    alias: '剑士',
+    icon: '🛡️',
+    color: 'primary'
+  },
+  ranger: {
+    name: '测试员',
+    alias: '游侠',
+    icon: '🏹',
+    color: 'info'
+  },
+  quest_giver: {
+    name: '客户',
+    alias: '任务委托人',
+    icon: '💰',
+    color: 'secondary'
+  },
+  enchanter: {
+    name: 'UI设计师',
+    alias: '附魔师',
+    icon: '✨',
+    color: 'success'
+  },
+  alchemist: {
+    name: '运维工程师',
+    alias: '炼金术师',
+    icon: '🧪',
+    color: 'dark'
+  }
+};
+
+// 获取角色配置
+global.getRoleConfig = function(role) {
+  return global.roleConfig[role] || {
+    name: '未知角色',
+    alias: '流浪者',
+    icon: '❓',
+    color: 'secondary'
+  };
+};
+
+// 获取角色显示名称
+global.getRoleDisplayName = function(role, useAlias = true) {
+  const config = global.getRoleConfig(role);
+  return useAlias ? config.alias : config.name;
+};
+
+// 获取角色图标
+global.getRoleIcon = function(role) {
+  return global.getRoleConfig(role).icon;
+};
+
+// 获取角色颜色
+global.getRoleColor = function(role) {
+  return global.getRoleConfig(role).color;
+};
+
+// 渲染角色徽章
+global.renderRoleBadge = function(role, useAlias = true) {
+  const config = global.getRoleConfig(role);
+  const displayName = useAlias ? config.alias : config.name;
+  return `<span class="badge bg-${config.color}">${config.icon} ${displayName}</span>`;
+};
+%>

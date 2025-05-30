@@ -1,0 +1,236 @@
+<%- include('../partials/header', { title: title }) %>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+            <!-- 页面标题 -->
+            <div class="mb-4">
+                <h2>
+                    <i class="fas fa-plus me-2 text-primary"></i>
+                    <%= parentTask ? '创建子任务' : '创建任务' %>
+                </h2>
+                <% if (parentTask) { %>
+                    <p class="text-muted mb-0">
+                        父任务：<a href="/tasks/<%= parentTask.id %>" class="text-decoration-none"><%= parentTask.title %></a>
+                    </p>
+                <% } %>
+            </div>
+
+            <!-- 创建表单 -->
+            <div class="card">
+                <div class="card-body">
+                    <form action="/tasks/create" method="POST" class="needs-validation" novalidate>
+                        <!-- 隐藏字段 -->
+                        <% if (parentTask) { %>
+                            <input type="hidden" name="parentTaskId" value="<%= parentTask.id %>">
+                            <input type="hidden" name="projectId" value="<%= parentTask.projectId %>">
+                        <% } %>
+
+                        <!-- 基本信息 -->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="title" class="form-label">任务标题 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                                <div class="invalid-feedback">请输入任务标题</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="description" class="form-label">任务描述 <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                                <div class="invalid-feedback">请输入任务描述</div>
+                            </div>
+                        </div>
+
+                        <!-- 项目选择 -->
+                        <% if (!parentTask) { %>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="projectId" class="form-label">所属项目 <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="projectId" name="projectId" required>
+                                        <option value="">选择项目</option>
+                                        <% projects.forEach(project => { %>
+                                            <option value="<%= project.id %>"><%= project.name %> (<%= project.key %>)</option>
+                                        <% }) %>
+                                    </select>
+                                    <div class="invalid-feedback">请选择项目</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="taskType" class="form-label">任务类型</label>
+                                    <select class="form-select" id="taskType" name="taskType">
+                                        <option value="task">任务</option>
+                                        <option value="requirement">需求</option>
+                                        <option value="bug">Bug</option>
+                                        <option value="epic">史诗</option>
+                                        <option value="story">故事</option>
+                                    </select>
+                                </div>
+                            </div>
+                        <% } %>
+
+                        <!-- 任务属性 -->
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="starLevel" class="form-label">星级难度 <span class="text-danger">*</span></label>
+                                <select class="form-select" id="starLevel" name="starLevel" required>
+                                    <option value="">选择难度</option>
+                                    <option value="1">⭐ 一星 - 简单任务（半天内）</option>
+                                    <option value="2">⭐⭐ 二星 - 常规任务（1-2天）</option>
+                                    <option value="3">⭐⭐⭐ 三星 - 复杂任务（3-5天）</option>
+                                    <option value="4">⭐⭐⭐⭐ 四星 - 核心任务（1-2周）</option>
+                                    <option value="5">⭐⭐⭐⭐⭐ 五星 - 关键任务（2周以上）</option>
+                                </select>
+                                <div class="invalid-feedback">请选择任务难度</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="skillRequired" class="form-label">技能要求 <span class="text-danger">*</span></label>
+                                <select class="form-select" id="skillRequired" name="skillRequired" required>
+                                    <option value="">选择技能</option>
+                                    <option value="novice">🔰 新手</option>
+                                    <option value="bronze">🥉 铜牌</option>
+                                    <option value="silver">🥈 银牌</option>
+                                    <option value="gold">🥇 金牌</option>
+                                    <option value="diamond">💎 钻石</option>
+                                </select>
+                                <div class="invalid-feedback">请选择技能要求</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="urgencyLevel" class="form-label">紧急程度</label>
+                                <select class="form-select" id="urgencyLevel" name="urgencyLevel">
+                                    <option value="normal">📅 普通</option>
+                                    <option value="important">⚡ 重要</option>
+                                    <option value="urgent">🔥 紧急</option>
+                                    <option value="delayed">🕐 延后</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 奖励设置 -->
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="baseReward" class="form-label">基础奖励 <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="baseReward" name="baseReward" min="1" required>
+                                <div class="invalid-feedback">请输入基础奖励</div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="bonusReward" class="form-label">奖励金</label>
+                                <input type="number" class="form-control" id="bonusReward" name="bonusReward" min="0" value="0">
+                                <div class="form-text">按时完成可获得</div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="rewardCurrency" class="form-label">奖励货币</label>
+                                <select class="form-select" id="rewardCurrency" name="rewardCurrency">
+                                    <option value="gold">🥇 金币</option>
+                                    <option value="silver">🥈 银币</option>
+                                    <option value="copper">🥉 铜币</option>
+                                    <option value="diamond">💎 钻石</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">总预算</label>
+                                <div class="form-control-plaintext fw-bold" id="totalBudget">0</div>
+                            </div>
+                        </div>
+
+                        <!-- 时间设置 -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="estimatedHours" class="form-label">预估工时（小时）</label>
+                                <input type="number" class="form-control" id="estimatedHours" name="estimatedHours" min="0.5" step="0.5">
+                                <div class="form-text">用于工时管理和奖励计算</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="dueDate" class="form-label">截止日期</label>
+                                <input type="date" class="form-control" id="dueDate" name="dueDate">
+                            </div>
+                        </div>
+
+                        <!-- 提交按钮 -->
+                        <div class="row">
+                            <div class="col-12">
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <a href="/tasks" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>返回
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane me-2"></i>
+                                        <%= parentTask ? '创建子任务' : '发布任务' %>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // 计算总预算
+    function updateTotalBudget() {
+        const baseReward = parseInt($('#baseReward').val()) || 0;
+        const bonusReward = parseInt($('#bonusReward').val()) || 0;
+        const total = baseReward + bonusReward;
+        $('#totalBudget').text(total.toLocaleString());
+    }
+
+    // 监听奖励输入变化
+    $('#baseReward, #bonusReward').on('input', updateTotalBudget);
+
+    // 根据星级推荐奖励
+    $('#starLevel').change(function() {
+        const starLevel = parseInt($(this).val());
+        const currency = $('#rewardCurrency').val();
+
+        let suggestedReward = 0;
+        switch (starLevel) {
+            case 1: suggestedReward = currency === 'gold' ? 50 : 500; break;
+            case 2: suggestedReward = currency === 'gold' ? 100 : 1000; break;
+            case 3: suggestedReward = currency === 'gold' ? 200 : 2000; break;
+            case 4: suggestedReward = currency === 'gold' ? 500 : 5000; break;
+            case 5: suggestedReward = currency === 'gold' ? 1000 : 10000; break;
+        }
+
+        if (suggestedReward > 0 && !$('#baseReward').val()) {
+            $('#baseReward').val(suggestedReward);
+            $('#bonusReward').val(Math.round(suggestedReward * 0.2));
+            updateTotalBudget();
+        }
+    });
+
+    // 根据星级推荐工时
+    $('#starLevel').change(function() {
+        const starLevel = parseInt($(this).val());
+        let suggestedHours = 0;
+
+        switch (starLevel) {
+            case 1: suggestedHours = 4; break;
+            case 2: suggestedHours = 12; break;
+            case 3: suggestedHours = 32; break;
+            case 4: suggestedHours = 80; break;
+            case 5: suggestedHours = 160; break;
+        }
+
+        if (suggestedHours > 0 && !$('#estimatedHours').val()) {
+            $('#estimatedHours').val(suggestedHours);
+        }
+    });
+
+    // 表单验证
+    $('form').on('submit', function(e) {
+        const form = this;
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+
+    // 初始化总预算显示
+    updateTotalBudget();
+});
+</script>
+
+<%- include('../partials/footer') %>

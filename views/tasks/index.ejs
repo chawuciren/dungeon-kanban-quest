@@ -1,0 +1,417 @@
+<%- include('../partials/header', { title: title }) %>
+
+<!-- 页面标题 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2>
+                    <i class="fas fa-<%= filters.projectId ? 'project-diagram' : 'store' %> me-2 text-primary"></i>
+                    <%= filters.projectId ? '地下城任务（项目任务）' : '酒馆（任务市场）' %>
+                </h2>
+                <p class="text-muted mb-0">
+                    <%= filters.projectId ? '管理项目内的所有任务' : '发现适合您技能等级的赏金任务' %>
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <!-- 视图切换按钮 -->
+                <div class="btn-group">
+                    <%
+                        const currentQuery = new URLSearchParams();
+                        Object.keys(filters).forEach(key => {
+                            if (filters[key] && filters[key] !== '') {
+                                currentQuery.set(key, filters[key]);
+                            }
+                        });
+                        const queryString = currentQuery.toString();
+                        const queryPrefix = queryString ? '?' + queryString : '';
+                    %>
+                    <a href="/tasks<%= queryPrefix %>" class="btn btn-primary active">
+                        <i class="fas fa-list me-1"></i>列表视图
+                    </a>
+                    <a href="/tasks/tree<%= queryPrefix %>" class="btn btn-outline-secondary">
+                        <i class="fas fa-sitemap me-1"></i>树形视图
+                    </a>
+                    <a href="/tasks/kanban<%= queryPrefix %>" class="btn btn-outline-secondary">
+                        <i class="fas fa-columns me-1"></i>看板视图
+                    </a>
+                </div>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#publishTaskModal">
+                    <i class="fas fa-plus me-2"></i>
+                    发布任务
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 筛选器 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" action="/tasks" id="filterForm">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">星级难度</label>
+                            <select class="form-select" name="starLevel">
+                                <option value="">全部星级</option>
+                                <option value="1" <%= filters.starLevel == '1' ? 'selected' : '' %>>⭐ 一星任务</option>
+                                <option value="2" <%= filters.starLevel == '2' ? 'selected' : '' %>>⭐⭐ 二星任务</option>
+                                <option value="3" <%= filters.starLevel == '3' ? 'selected' : '' %>>⭐⭐⭐ 三星任务</option>
+                                <option value="4" <%= filters.starLevel == '4' ? 'selected' : '' %>>⭐⭐⭐⭐ 四星任务</option>
+                                <option value="5" <%= filters.starLevel == '5' ? 'selected' : '' %>>⭐⭐⭐⭐⭐ 五星任务</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">技能要求</label>
+                            <select class="form-select" name="skillRequired">
+                                <option value="">全部技能</option>
+                                <option value="novice" <%= filters.skillRequired == 'novice' ? 'selected' : '' %>>🔰 新手</option>
+                                <option value="bronze" <%= filters.skillRequired == 'bronze' ? 'selected' : '' %>>🥉 铜牌</option>
+                                <option value="silver" <%= filters.skillRequired == 'silver' ? 'selected' : '' %>>🥈 银牌</option>
+                                <option value="gold" <%= filters.skillRequired == 'gold' ? 'selected' : '' %>>🥇 金牌</option>
+                                <option value="diamond" <%= filters.skillRequired == 'diamond' ? 'selected' : '' %>>💎 钻石</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">紧急程度</label>
+                            <select class="form-select" name="urgencyLevel">
+                                <option value="">全部程度</option>
+                                <option value="urgent" <%= filters.urgencyLevel == 'urgent' ? 'selected' : '' %>>🔥 紧急</option>
+                                <option value="important" <%= filters.urgencyLevel == 'important' ? 'selected' : '' %>>⚡ 重要</option>
+                                <option value="normal" <%= filters.urgencyLevel == 'normal' ? 'selected' : '' %>>📅 普通</option>
+                                <option value="delayed" <%= filters.urgencyLevel == 'delayed' ? 'selected' : '' %>>🕐 延后</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">奖励货币</label>
+                            <select class="form-select" name="rewardCurrency">
+                                <option value="">全部货币</option>
+                                <option value="diamond" <%= filters.rewardCurrency == 'diamond' ? 'selected' : '' %>>💎 钻石</option>
+                                <option value="gold" <%= filters.rewardCurrency == 'gold' ? 'selected' : '' %>>🥇 金币</option>
+                                <option value="silver" <%= filters.rewardCurrency == 'silver' ? 'selected' : '' %>>🥈 银币</option>
+                                <option value="copper" <%= filters.rewardCurrency == 'copper' ? 'selected' : '' %>>🥉 铜币</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <label class="form-label">搜索关键词</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="search" value="<%= filters.search || '' %>" placeholder="搜索任务标题或描述...">
+                                <button class="btn btn-outline-secondary" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <div class="btn-group" role="group">
+                                <%
+                                    function buildQueryString(params) {
+                                        const queryParts = [];
+                                        Object.keys(params).forEach(key => {
+                                            if (params[key] && params[key] !== '') {
+                                                queryParts.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+                                            }
+                                        });
+                                        return queryParts.join('&');
+                                    }
+
+                                    const sortParams = {...filters};
+                                    delete sortParams.sort;
+                                %>
+                                <a href="?<%= buildQueryString(sortParams) %>"
+                                   class="btn btn-outline-primary <%= !filters.sort || filters.sort === '' ? 'active' : '' %>">
+                                    <i class="fas fa-clock me-1"></i>最新
+                                </a>
+                                <a href="?<%= buildQueryString({...sortParams, sort: 'reward'}) %>"
+                                   class="btn btn-outline-primary <%= filters.sort === 'reward' ? 'active' : '' %>">
+                                    <i class="fas fa-coins me-1"></i>奖励
+                                </a>
+                                <a href="?<%= buildQueryString({...sortParams, sort: 'deadline'}) %>"
+                                   class="btn btn-outline-primary <%= filters.sort === 'deadline' ? 'active' : '' %>">
+                                    <i class="fas fa-calendar me-1"></i>截止
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-filter me-1"></i>应用筛选
+                            </button>
+                            <a href="/tasks" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>清除筛选
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 任务列表 -->
+<div class="row">
+    <div class="col-12">
+        <div id="tasksList">
+            <% if (tasks && tasks.length > 0) { %>
+                <% tasks.forEach(function(task) { %>
+                    <div class="card mb-3 task-card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title mb-0"><%= task.title %></h5>
+                                        <div class="task-meta">
+                                            <span class="badge bg-warning me-1">
+                                                <% for(let i = 0; i < task.starLevel; i++) { %>⭐<% } %>
+                                            </span>
+                                            <span class="badge bg-secondary me-1">
+                                                <% if (task.skillRequired === 'novice') { %>🔰
+                                                <% } else if (task.skillRequired === 'bronze') { %>🥉
+                                                <% } else if (task.skillRequired === 'silver') { %>🥈
+                                                <% } else if (task.skillRequired === 'gold') { %>🥇
+                                                <% } else if (task.skillRequired === 'diamond') { %>💎<% } %>
+                                            </span>
+                                            <span class="badge bg-info">
+                                                <% if (task.urgencyLevel === 'urgent') { %>🔥
+                                                <% } else if (task.urgencyLevel === 'important') { %>⚡
+                                                <% } else if (task.urgencyLevel === 'normal') { %>📅
+                                                <% } else if (task.urgencyLevel === 'delayed') { %>🕐<% } %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <p class="card-text text-muted"><%= task.description %></p>
+                                    <div class="task-footer">
+                                        <small class="text-muted">
+                                            <i class="fas fa-user me-1"></i>发布者：<%= task.publisher ? (task.publisher.firstName + ' ' + task.publisher.lastName) : '未知' %>
+                                            <% if (task.estimatedHours) { %>
+                                                <i class="fas fa-clock ms-3 me-1"></i>预估：<%= task.estimatedHours %>小时
+                                            <% } %>
+                                            <% if (task.dueDate) { %>
+                                                <i class="fas fa-calendar ms-3 me-1"></i>截止：<%= new Date(task.dueDate).toLocaleDateString('zh-CN') %>
+                                            <% } %>
+                                            <% if (task.project) { %>
+                                                <i class="fas fa-project-diagram ms-3 me-1"></i>项目：<%= task.project.name %>
+                                            <% } %>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <div class="reward-info mb-3">
+                                        <div class="h4 mb-1">
+                                            <% if (task.rewardCurrency === 'diamond') { %>💎
+                                            <% } else if (task.rewardCurrency === 'gold') { %>🥇
+                                            <% } else if (task.rewardCurrency === 'silver') { %>🥈
+                                            <% } else if (task.rewardCurrency === 'copper') { %>🥉<% } %>
+                                            <%= (task.baseReward || 0) + (task.bonusReward || 0) %>
+                                        </div>
+                                        <small class="text-muted">
+                                            基础 <%= task.baseReward || 0 %> + 奖励 <%= task.bonusReward || 0 %>
+                                        </small>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <% if (task.status === 'published' && (!user || task.publisherId !== user.id) && !task.assigneeId) { %>
+                                            <a href="/tasks/<%= task.id %>/bid" class="btn btn-primary">
+                                                <i class="fas fa-hand-paper me-2"></i>
+                                                接单
+                                            </a>
+                                        <% } else if (task.assigneeId) { %>
+                                            <span class="btn btn-secondary disabled">
+                                                <i class="fas fa-user-check me-2"></i>
+                                                已接单
+                                            </span>
+                                        <% } %>
+                                        <a href="/tasks/<%= task.id %>" class="btn btn-outline-secondary btn-sm">
+                                            查看详情
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="text-center py-5">
+                    <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">暂无任务</h5>
+                    <p class="text-muted mb-3">当前筛选条件下没有找到任务</p>
+                    <a href="/tasks" class="btn btn-outline-primary">
+                        <i class="fas fa-refresh me-2"></i>查看所有任务
+                    </a>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- 分页 -->
+        <% if (pagination && pagination.totalPages > 1) { %>
+            <nav aria-label="任务分页" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <% if (pagination.hasPrev) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?<%= buildQueryString({...filters, page: pagination.page - 1}) %>">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                    <% } %>
+
+                    <% for (let i = Math.max(1, pagination.page - 2); i <= Math.min(pagination.totalPages, pagination.page + 2); i++) { %>
+                        <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
+                            <a class="page-link" href="?<%= buildQueryString({...filters, page: i}) %>">
+                                <%= i %>
+                            </a>
+                        </li>
+                    <% } %>
+
+                    <% if (pagination.hasNext) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?<%= buildQueryString({...filters, page: pagination.page + 1}) %>">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+
+                <div class="text-center mt-2">
+                    <small class="text-muted">
+                        第 <%= pagination.page %> 页，共 <%= pagination.totalPages %> 页，总计 <%= pagination.total %> 个任务
+                    </small>
+                </div>
+            </nav>
+        <% } %>
+    </div>
+</div>
+
+<!-- 发布任务模态框 -->
+<div class="modal fade" id="publishTaskModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus me-2"></i>
+                    发布赏金任务
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="publishTaskForm" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="taskTitle" class="form-label">任务标题</label>
+                        <input type="text" class="form-control" id="taskTitle" name="title" required>
+                        <div class="invalid-feedback">请输入任务标题</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="taskDescription" class="form-label">任务描述</label>
+                        <textarea class="form-control" id="taskDescription" name="description" rows="4" required></textarea>
+                        <div class="invalid-feedback">请输入任务描述</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="taskStarLevel" class="form-label">星级难度</label>
+                            <select class="form-select" id="taskStarLevel" name="starLevel" required>
+                                <option value="">选择难度</option>
+                                <option value="1">⭐ 一星 - 简单任务</option>
+                                <option value="2">⭐⭐ 二星 - 常规任务</option>
+                                <option value="3">⭐⭐⭐ 三星 - 复杂任务</option>
+                                <option value="4">⭐⭐⭐⭐ 四星 - 核心任务</option>
+                                <option value="5">⭐⭐⭐⭐⭐ 五星 - 关键任务</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="taskSkillRequired" class="form-label">技能要求</label>
+                            <select class="form-select" id="taskSkillRequired" name="skillRequired" required>
+                                <option value="">选择技能</option>
+                                <option value="novice">🔰 新手</option>
+                                <option value="bronze">🥉 铜牌</option>
+                                <option value="silver">🥈 银牌</option>
+                                <option value="gold">🥇 金牌</option>
+                                <option value="diamond">💎 钻石</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="taskUrgency" class="form-label">紧急程度</label>
+                            <select class="form-select" id="taskUrgency" name="urgencyLevel" required>
+                                <option value="">选择程度</option>
+                                <option value="normal">📅 普通</option>
+                                <option value="important">⚡ 重要</option>
+                                <option value="urgent">🔥 紧急</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="taskDueDate" class="form-label">截止日期</label>
+                            <input type="date" class="form-control" id="taskDueDate" name="dueDate" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="baseReward" class="form-label">基础奖励</label>
+                            <input type="number" class="form-control" id="baseReward" name="baseReward" min="1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="bonusReward" class="form-label">奖励金</label>
+                            <input type="number" class="form-control" id="bonusReward" name="bonusReward" min="0" value="0">
+                            <div class="form-text">按时完成可获得</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="rewardCurrency" class="form-label">奖励货币</label>
+                            <select class="form-select" id="rewardCurrency" name="rewardCurrency" required>
+                                <option value="gold">🥇 金币</option>
+                                <option value="silver">🥈 银币</option>
+                                <option value="copper">🥉 铜币</option>
+                                <option value="diamond">💎 钻石</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="estimatedHours" class="form-label">预估工时（小时）</label>
+                        <input type="number" class="form-control" id="estimatedHours" name="estimatedHours" min="0.5" step="0.5">
+                        <div class="form-text">可选，用于工时管理</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="submit" form="publishTaskForm" class="btn btn-primary">
+                    <i class="fas fa-paper-plane me-2"></i>
+                    发布任务
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // 筛选表单自动提交（当选择框改变时）
+    $('#filterForm select').change(function() {
+        $('#filterForm').submit();
+    });
+
+    // 发布任务表单提交
+    $('#publishTaskForm').submit(function(e) {
+        e.preventDefault();
+
+        const form = this;
+        if (!form.checkValidity()) {
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
+        }
+
+        // 这里应该调用API发布任务
+        KanbanApp.showAlert('任务发布功能正在开发中...', 'info');
+        $('#publishTaskModal').modal('hide');
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

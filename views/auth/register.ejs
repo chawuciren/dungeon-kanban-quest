@@ -1,0 +1,243 @@
+<%- include('../partials/header', { title: title }) %>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <!-- 注册标题 -->
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="fas fa-user-plus fa-3x text-primary"></i>
+                        </div>
+                        <h2 class="h3 mb-2">加入我们</h2>
+                        <p class="text-muted">开始您的游戏化项目管理之旅</p>
+                    </div>
+
+                    <!-- 注册表单 -->
+                    <form id="registerForm" class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label">姓名</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" required>
+                                <div class="invalid-feedback">
+                                    请输入您的姓名
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label">姓氏</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" required>
+                                <div class="invalid-feedback">
+                                    请输入您的姓氏
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label">用户名</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                <input type="text" class="form-control" id="username" name="username" 
+                                       pattern="[a-zA-Z0-9]{3,50}" required>
+                                <div class="invalid-feedback">
+                                    用户名长度3-50个字符，只能包含字母和数字
+                                </div>
+                            </div>
+                            <div class="form-text">用户名将作为您的唯一标识</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">邮箱地址</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                                <div class="invalid-feedback">
+                                    请输入有效的邮箱地址
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">密码</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" class="form-control" id="password" name="password" 
+                                       minlength="6" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <div class="invalid-feedback">
+                                    密码长度至少6个字符
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">确认密码</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                                <div class="invalid-feedback">
+                                    两次输入的密码不一致
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="skillLevel" class="form-label">技能等级</label>
+                            <select class="form-select" id="skillLevel" name="skillLevel">
+                                <option value="novice" selected>🔰 新手 - 刚开始学习编程</option>
+                                <option value="bronze">🥉 铜牌 - 有一定编程经验</option>
+                                <option value="silver">🥈 银牌 - 中级开发者</option>
+                                <option value="gold">🥇 金牌 - 高级开发者</option>
+                                <option value="diamond">💎 钻石 - 专家级开发者</option>
+                            </select>
+                            <div class="form-text">选择您当前的技能等级，这将影响推荐给您的任务</div>
+                        </div>
+
+                        <div class="mb-4 form-check">
+                            <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                            <label class="form-check-label" for="agreeTerms">
+                                我同意 <a href="/terms" target="_blank">服务条款</a> 和 <a href="/privacy" target="_blank">隐私政策</a>
+                            </label>
+                            <div class="invalid-feedback">
+                                请同意服务条款和隐私政策
+                            </div>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-rocket me-2"></i>
+                                立即注册
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- 分隔线 -->
+                    <div class="text-center my-4">
+                        <hr class="my-3">
+                        <span class="text-muted bg-white px-3">或者</span>
+                    </div>
+
+                    <!-- 登录链接 -->
+                    <div class="text-center">
+                        <p class="mb-0">已有账户？</p>
+                        <a href="/login" class="btn btn-outline-primary mt-2">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            立即登录
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 新用户福利 -->
+            <div class="card mt-4 border-success">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-success">
+                        <i class="fas fa-gift me-2"></i>
+                        新用户福利
+                    </h6>
+                    <p class="card-text mb-0">
+                        注册即送 <span class="badge bg-warning">100金币</span> 新手奖励！
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // 密码显示/隐藏切换
+    $('#togglePassword').click(function() {
+        const passwordField = $('#password');
+        const icon = $(this).find('i');
+        
+        if (passwordField.attr('type') === 'password') {
+            passwordField.attr('type', 'text');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+            passwordField.attr('type', 'password');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        }
+    });
+
+    // 密码确认验证
+    $('#confirmPassword').on('input', function() {
+        const password = $('#password').val();
+        const confirmPassword = $(this).val();
+        
+        if (password !== confirmPassword) {
+            this.setCustomValidity('两次输入的密码不一致');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+
+    // 注册表单提交
+    $('#registerForm').submit(function(e) {
+        e.preventDefault();
+        
+        const form = this;
+        if (!form.checkValidity()) {
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
+        }
+
+        const submitBtn = $(this).find('button[type="submit"]');
+        KanbanApp.setLoading(submitBtn, true);
+
+        const formData = {
+            firstName: $('#firstName').val(),
+            lastName: $('#lastName').val(),
+            username: $('#username').val(),
+            email: $('#email').val(),
+            password: $('#password').val(),
+            skillLevel: $('#skillLevel').val()
+        };
+
+        $.ajax({
+            url: '/api/auth/register',
+            method: 'POST',
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    KanbanApp.showAlert('注册成功！正在跳转到仪表板...', 'success', 3000);
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 2000);
+                } else {
+                    KanbanApp.showAlert(response.message || '注册失败', 'danger');
+                }
+            },
+            error: function(xhr) {
+                const response = xhr.responseJSON;
+                if (response?.errors && Array.isArray(response.errors)) {
+                    response.errors.forEach(error => {
+                        KanbanApp.showAlert(error.msg, 'danger');
+                    });
+                } else {
+                    KanbanApp.showAlert(response?.message || '注册失败，请稍后重试', 'danger');
+                }
+            },
+            complete: function() {
+                KanbanApp.setLoading(submitBtn, false);
+            }
+        });
+    });
+
+    // 自动聚焦到第一个输入框
+    $('#firstName').focus();
+});
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,305 @@
+<%- include('../partials/header', { title: title }) %>
+
+<div class="row">
+        <!-- 主要内容 -->
+        <div class="col-lg-8">
+            <!-- 任务标题和基本信息 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <!-- 面包屑导航 -->
+                    <nav aria-label="breadcrumb" class="mb-3">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/tasks">任务市场</a></li>
+                            <% if (task.project) { %>
+                                <li class="breadcrumb-item"><a href="/projects/<%= task.project.id %>"><%= task.project.name %></a></li>
+                            <% } %>
+                            <% if (task.parentTask) { %>
+                                <li class="breadcrumb-item"><a href="/tasks/<%= task.parentTask.id %>"><%= task.parentTask.title %></a></li>
+                            <% } %>
+                            <li class="breadcrumb-item active"><%= task.title %></li>
+                        </ol>
+                    </nav>
+
+                    <!-- 任务标题 -->
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h2 class="mb-0"><%= task.title %></h2>
+                        <div class="task-actions">
+                            <% if (canBid) { %>
+                                <button class="btn btn-primary" id="bidTaskBtn">
+                                    <i class="fas fa-hand-paper me-2"></i>接单
+                                </button>
+                            <% } %>
+                            <% if (task.level < 3) { %>
+                                <a href="/tasks/create?parent=<%= task.id %>" class="btn btn-outline-primary">
+                                    <i class="fas fa-plus me-2"></i>添加子任务
+                                </a>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- 任务元信息 -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-auto">
+                            <span class="badge bg-warning fs-6">
+                                <%= '⭐'.repeat(task.starLevel) %>
+                            </span>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge bg-secondary fs-6">
+                                <% if (task.skillRequired === 'novice') { %>🔰 新手
+                                <% } else if (task.skillRequired === 'bronze') { %>🥉 铜牌
+                                <% } else if (task.skillRequired === 'silver') { %>🥈 银牌
+                                <% } else if (task.skillRequired === 'gold') { %>🥇 金牌
+                                <% } else if (task.skillRequired === 'diamond') { %>💎 钻石
+                                <% } %>
+                            </span>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge bg-info fs-6">
+                                <% if (task.urgencyLevel === 'urgent') { %>🔥 紧急
+                                <% } else if (task.urgencyLevel === 'important') { %>⚡ 重要
+                                <% } else if (task.urgencyLevel === 'normal') { %>📅 普通
+                                <% } else if (task.urgencyLevel === 'delayed') { %>🕐 延后
+                                <% } else if (task.urgencyLevel === 'frozen') { %>❄️ 冻结
+                                <% } %>
+                            </span>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge bg-<%= task.status === 'published' ? 'success' : task.status === 'assigned' ? 'primary' : 'dark' %> fs-6">
+                                <% if (task.status === 'published') { %>可接单
+                                <% } else if (task.status === 'assigned') { %>进行中
+                                <% } else if (task.status === 'completed') { %>已完成
+                                <% } else { %><%= task.status %>
+                                <% } %>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 任务描述 -->
+                    <div class="mb-4">
+                        <h5>任务描述</h5>
+                        <div class="border rounded p-3 bg-light">
+                            <%= task.description %>
+                        </div>
+                    </div>
+
+                    <!-- 子任务列表 -->
+                    <% if (subtasks && subtasks.length > 0) { %>
+                        <div class="mb-4">
+                            <h5>子任务 (<%= subtasks.length %>)</h5>
+                            <div class="list-group">
+                                <% subtasks.forEach(subtask => { %>
+                                    <a href="/tasks/<%= subtask.id %>" class="list-group-item list-group-item-action">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1"><%= subtask.title %></h6>
+                                                <small class="text-muted">
+                                                    <%= '⭐'.repeat(subtask.starLevel) %> •
+                                                    <% if (subtask.skillRequired === 'novice') { %>🔰
+                                                    <% } else if (subtask.skillRequired === 'bronze') { %>🥉
+                                                    <% } else if (subtask.skillRequired === 'silver') { %>🥈
+                                                    <% } else if (subtask.skillRequired === 'gold') { %>🥇
+                                                    <% } else if (subtask.skillRequired === 'diamond') { %>💎
+                                                    <% } %>
+                                                </small>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="badge bg-<%= subtask.status === 'published' ? 'success' : subtask.status === 'assigned' ? 'primary' : 'dark' %>">
+                                                    <% if (subtask.status === 'published') { %>可接单
+                                                    <% } else if (subtask.status === 'assigned') { %>进行中
+                                                    <% } else if (subtask.status === 'completed') { %>已完成
+                                                    <% } else { %><%= subtask.status %>
+                                                    <% } %>
+                                                </span>
+                                                <div class="mt-1">
+                                                    <small class="text-muted">
+                                                        <% if (subtask.rewardCurrency === 'diamond') { %>💎
+                                                        <% } else if (subtask.rewardCurrency === 'gold') { %>🥇
+                                                        <% } else if (subtask.rewardCurrency === 'silver') { %>🥈
+                                                        <% } else { %>🥉<% } %>
+                                                        <%= subtask.totalBudget %>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                <% }) %>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- 侧边栏 -->
+        <div class="col-lg-4">
+            <!-- 奖励信息 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-coins me-2"></i>奖励信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="display-6 fw-bold text-primary">
+                            <% if (task.rewardCurrency === 'diamond') { %>💎
+                            <% } else if (task.rewardCurrency === 'gold') { %>🥇
+                            <% } else if (task.rewardCurrency === 'silver') { %>🥈
+                            <% } else { %>🥉<% } %>
+                            <%= task.totalBudget.toLocaleString() %>
+                        </div>
+                        <small class="text-muted">总奖励</small>
+                    </div>
+
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <div class="fw-bold"><%= task.baseReward.toLocaleString() %></div>
+                                <small class="text-muted">基础奖励</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="fw-bold"><%= task.bonusReward.toLocaleString() %></div>
+                            <small class="text-muted">奖励金</small>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        按时完成可获得全额奖励，超时将按比例扣除奖励金
+                    </small>
+                </div>
+            </div>
+
+            <!-- 任务信息 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>任务信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <strong>发布者：</strong>
+                            <span class="ms-2"><%= task.publisher.firstName %> <%= task.publisher.lastName %></span>
+                        </div>
+                        <% if (task.assignee) { %>
+                            <div class="col-12">
+                                <strong>接单者：</strong>
+                                <span class="ms-2"><%= task.assignee.firstName %> <%= task.assignee.lastName %></span>
+                            </div>
+                        <% } %>
+                        <% if (task.estimatedHours) { %>
+                            <div class="col-12">
+                                <strong>预估工时：</strong>
+                                <span class="ms-2"><%= task.estimatedHours %> 小时</span>
+                            </div>
+                        <% } %>
+                        <% if (task.dueDate) { %>
+                            <div class="col-12">
+                                <strong>截止日期：</strong>
+                                <span class="ms-2"><%= new Date(task.dueDate).toLocaleDateString('zh-CN') %></span>
+                            </div>
+                        <% } %>
+                        <div class="col-12">
+                            <strong>创建时间：</strong>
+                            <span class="ms-2"><%= new Date(task.createdAt).toLocaleDateString('zh-CN') %></span>
+                        </div>
+                        <% if (task.level > 0) { %>
+                            <div class="col-12">
+                                <strong>任务层级：</strong>
+                                <span class="ms-2">第 <%= task.level + 1 %> 级</span>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 项目信息 -->
+            <% if (task.project) { %>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-project-diagram me-2"></i>所属项目
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <h6><%= task.project.name %></h6>
+                        <p class="text-muted mb-2"><%= task.project.description || '暂无描述' %></p>
+                        <a href="/projects/<%= task.project.id %>" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-external-link-alt me-1"></i>查看项目
+                        </a>
+                    </div>
+                </div>
+            <% } %>
+    </div>
+</div>
+
+<!-- 接单确认模态框 -->
+<div class="modal fade" id="bidModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">确认接单</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>您确定要接这个任务吗？</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    接单后，系统将冻结相应的保证金。请确保您有足够的时间和能力完成此任务。
+                </div>
+                <div class="task-summary">
+                    <h6>任务摘要：</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>难度：</strong><%= '⭐'.repeat(task.starLevel) %></li>
+                        <li><strong>奖励：</strong>
+                            <% if (task.rewardCurrency === 'diamond') { %>💎
+                            <% } else if (task.rewardCurrency === 'gold') { %>🥇
+                            <% } else if (task.rewardCurrency === 'silver') { %>🥈
+                            <% } else { %>🥉<% } %>
+                            <%= task.totalBudget.toLocaleString() %>
+                        </li>
+                        <% if (task.estimatedHours) { %>
+                            <li><strong>预估工时：</strong><%= task.estimatedHours %> 小时</li>
+                        <% } %>
+                        <% if (task.dueDate) { %>
+                            <li><strong>截止日期：</strong><%= new Date(task.dueDate).toLocaleDateString('zh-CN') %></li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="confirmBid">确认接单</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // 接单按钮点击
+    $('#bidTaskBtn').click(function() {
+        $('#bidModal').modal('show');
+    });
+
+    // 确认接单
+    $('#confirmBid').click(function() {
+        const btn = $(this);
+        KanbanApp.setLoading(btn, true);
+
+        // 这里应该调用接单API
+        setTimeout(() => {
+            KanbanApp.setLoading(btn, false);
+            $('#bidModal').modal('hide');
+            KanbanApp.showAlert('接单功能正在开发中...', 'info');
+        }, 1000);
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,158 @@
+<%- include('partials/header', { title: title }) %>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="text-center">
+                <!-- 错误图标 -->
+                <div class="error-icon mb-4">
+                    <% if (error.status === 404) { %>
+                        <i class="fas fa-search fa-5x text-muted"></i>
+                    <% } else if (error.status === 403) { %>
+                        <i class="fas fa-lock fa-5x text-warning"></i>
+                    <% } else if (error.status === 500) { %>
+                        <i class="fas fa-exclamation-triangle fa-5x text-danger"></i>
+                    <% } else { %>
+                        <i class="fas fa-question-circle fa-5x text-muted"></i>
+                    <% } %>
+                </div>
+                
+                <!-- 错误状态码 -->
+                <h1 class="display-1 fw-bold text-primary mb-3">
+                    <%= error.status %>
+                </h1>
+                
+                <!-- 错误标题 -->
+                <h2 class="h3 mb-3">
+                    <% if (error.status === 404) { %>
+                        页面未找到
+                    <% } else if (error.status === 403) { %>
+                        访问被拒绝
+                    <% } else if (error.status === 500) { %>
+                        服务器内部错误
+                    <% } else { %>
+                        出现了一些问题
+                    <% } %>
+                </h2>
+                
+                <!-- 错误描述 -->
+                <p class="lead text-muted mb-4">
+                    <%= error.message %>
+                </p>
+                
+                <!-- 建议操作 -->
+                <div class="mb-4">
+                    <% if (error.status === 404) { %>
+                        <p class="text-muted">
+                            您访问的页面可能已被删除、重命名或暂时不可用。
+                        </p>
+                    <% } else if (error.status === 403) { %>
+                        <p class="text-muted">
+                            您没有权限访问此页面，请联系管理员或检查您的登录状态。
+                        </p>
+                    <% } else if (error.status === 500) { %>
+                        <p class="text-muted">
+                            服务器遇到了一个错误，我们正在努力修复。请稍后再试。
+                        </p>
+                    <% } %>
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div class="d-flex justify-content-center gap-3 mb-4">
+                    <a href="/" class="btn btn-primary">
+                        <i class="fas fa-home me-2"></i>
+                        返回首页
+                    </a>
+                    <button onclick="history.back()" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        返回上页
+                    </button>
+                    <% if (error.status === 500) { %>
+                        <a href="/support" class="btn btn-outline-info">
+                            <i class="fas fa-life-ring me-2"></i>
+                            联系支持
+                        </a>
+                    <% } %>
+                </div>
+                
+                <!-- 快速链接 -->
+                <div class="quick-links">
+                    <h6 class="text-muted mb-3">您可能想要：</h6>
+                    <div class="row g-2">
+                        <div class="col-6 col-md-3">
+                            <a href="/dashboard" class="btn btn-outline-primary btn-sm w-100">
+                                <i class="fas fa-tachometer-alt me-1"></i>
+                                仪表板
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <a href="/projects" class="btn btn-outline-success btn-sm w-100">
+                                <i class="fas fa-project-diagram me-1"></i>
+                                项目
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <a href="/tasks" class="btn btn-outline-warning btn-sm w-100">
+                                <i class="fas fa-tasks me-1"></i>
+                                任务
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <a href="/help" class="btn btn-outline-info btn-sm w-100">
+                                <i class="fas fa-question-circle me-1"></i>
+                                帮助
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 开发环境显示错误详情 -->
+                <% if (error.stack && config.app.env === 'development') { %>
+                    <div class="mt-5">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-bug me-2"></i>
+                                    错误详情 (仅开发环境显示)
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <pre class="text-start small text-muted"><%= error.stack %></pre>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 自定义样式 -->
+<style>
+.error-icon {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.quick-links .btn {
+    transition: all 0.3s ease;
+}
+
+.quick-links .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+</style>
+
+<%- include('partials/footer') %>

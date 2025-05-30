@@ -1,0 +1,165 @@
+<%- include('../partials/header', { title: title }) %>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <!-- 登录标题 -->
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="fas fa-gamepad fa-3x text-primary"></i>
+                        </div>
+                        <h2 class="h3 mb-2">欢迎回来</h2>
+                        <p class="text-muted">登录您的游戏化项目管理账户</p>
+                    </div>
+
+                    <!-- Flash消息 -->
+                    <% if (messages.error) { %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <%= messages.error %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <% } %>
+                    <% if (messages.success) { %>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <%= messages.success %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <% } %>
+
+                    <!-- 登录表单 -->
+                    <form action="/login" method="POST" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="login" class="form-label">用户名或邮箱</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                <input type="text" class="form-control" id="login" name="login" required>
+                                <div class="invalid-feedback">
+                                    请输入用户名或邮箱
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">密码</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <div class="invalid-feedback">
+                                    请输入密码
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
+                            <label class="form-check-label" for="rememberMe">
+                                记住我
+                            </label>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                登录
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <a href="/forgot-password" class="text-decoration-none">忘记密码？</a>
+                        </div>
+                    </form>
+
+                    <!-- 分隔线 -->
+                    <div class="text-center my-4">
+                        <hr class="my-3">
+                        <span class="text-muted bg-white px-3">或者</span>
+                    </div>
+
+                    <!-- 注册链接 -->
+                    <div class="text-center">
+                        <p class="mb-0">还没有账户？</p>
+                        <a href="/register" class="btn btn-outline-primary mt-2">
+                            <i class="fas fa-user-plus me-2"></i>
+                            立即注册
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 游戏化特性展示 -->
+            <div class="row mt-4 text-center">
+                <div class="col-4">
+                    <div class="card border-0 bg-transparent">
+                        <div class="card-body py-3">
+                            <i class="fas fa-star fa-2x text-warning mb-2"></i>
+                            <h6 class="card-title">星级评价</h6>
+                            <small class="text-muted">直观的任务难度标注</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card border-0 bg-transparent">
+                        <div class="card-body py-3">
+                            <i class="fas fa-coins fa-2x text-success mb-2"></i>
+                            <h6 class="card-title">赏金任务</h6>
+                            <small class="text-muted">完成任务获得奖励</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card border-0 bg-transparent">
+                        <div class="card-body py-3">
+                            <i class="fas fa-trophy fa-2x text-info mb-2"></i>
+                            <h6 class="card-title">排行榜</h6>
+                            <small class="text-muted">展示你的实力</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // 密码显示/隐藏切换
+    $('#togglePassword').click(function() {
+        const passwordField = $('#password');
+        const icon = $(this).find('i');
+
+        if (passwordField.attr('type') === 'password') {
+            passwordField.attr('type', 'text');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+            passwordField.attr('type', 'password');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        }
+    });
+
+    // 表单验证
+    $('form').on('submit', function(e) {
+        const form = this;
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+
+    // 自动聚焦到第一个输入框
+    $('#login').focus();
+});
+</script>
+
+<%- include('../partials/footer') %>
