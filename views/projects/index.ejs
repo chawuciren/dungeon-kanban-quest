@@ -7,13 +7,13 @@
             <div>
                 <h2>
                     <i class="fas fa-map me-2 text-primary"></i>
-                    地下城（项目管理）
+                    大陆（项目管理）
                 </h2>
                 <p class="text-muted mb-0">管理您的项目和团队协作</p>
             </div>
             <div>
                 <a href="/projects/create" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>创建地下城
+                    <i class="fas fa-plus me-2"></i>创建大陆
                 </a>
             </div>
         </div>
@@ -27,9 +27,9 @@
             <div class="card-body py-3">
                 <form method="GET" class="row g-3 align-items-end">
                     <div class="col-md-4">
-                        <label class="form-label">搜索地下城</label>
+                        <label class="form-label">搜索大陆</label>
                         <input type="text" class="form-control" name="search"
-                               value="<%= filters.search %>" placeholder="地下城名称或描述">
+                               value="<%= filters.search %>" placeholder="大陆名称或描述">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">状态</label>
@@ -141,7 +141,7 @@
                             <div class="d-flex align-items-center">
                                 <% if (project.leader && project.leader.avatar) { %>
                                     <img src="<%= project.leader.avatar %>" class="rounded-circle me-2"
-                                         width="24" height="24" alt="地下城负责人">
+                                         width="24" height="24" alt="大陆负责人">
                                 <% } else { %>
                                     <div class="bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center"
                                          style="width: 24px; height: 24px;">

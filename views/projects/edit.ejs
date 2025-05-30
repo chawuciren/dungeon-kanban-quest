@@ -1,0 +1,263 @@
+<%- include('../partials/header', { title: title }) %>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- 页面标题 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <% if (isCreateMode) { %>
+                        <i class="fas fa-plus me-2"></i>
+                        创建大陆
+                    <% } else { %>
+                        <i class="fas fa-edit me-2"></i>
+                        编辑大陆
+                    <% } %>
+                </h1>
+                <div class="btn-group">
+                    <% if (isCreateMode) { %>
+                        <a href="/projects" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            返回列表
+                        </a>
+                    <% } else { %>
+                        <a href="/projects/<%= project.id %>" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            返回详情
+                        </a>
+                        <a href="/projects" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-1"></i>
+                            大陆列表
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- 编辑表单 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-map me-2"></i>
+                        大陆信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="<% if (isCreateMode) { %>/projects/create<% } else { %>/projects/<%= project.id %>/edit<% } %>">
+                        <div class="row">
+                            <!-- 基本信息 -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3">基本信息</h6>
+
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">
+                                        大陆名称 <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="name" name="name" required
+                                           value="<%= isCreateMode ? '' : project.name %>" placeholder="请输入大陆名称">
+                                    <div class="form-text">大陆的正式名称，将在各处显示</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="key" class="form-label">
+                                        大陆标识 <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="key" name="key" required
+                                           value="<%= isCreateMode ? '' : project.key %>" placeholder="如：PROJ" maxlength="10">
+                                    <div class="form-text">用于任务编号等，建议使用英文缩写，自动转为大写</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">大陆描述</label>
+                                    <textarea class="form-control" id="description" name="description" rows="4"
+                                              placeholder="描述这个大陆的目标和内容..."><%= isCreateMode ? '' : (project.description || '') %></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="projectType" class="form-label">大陆类型</label>
+                                    <select class="form-select" id="projectType" name="projectType">
+                                        <option value="construction" <%= (isCreateMode ? true : project.projectType === 'construction') ? 'selected' : '' %>>
+                                            🏗️ 开拓远征大陆（建设项目）
+                                        </option>
+                                        <option value="maintenance" <%= (!isCreateMode && project.projectType === 'maintenance') ? 'selected' : '' %>>
+                                            🔧 守备巡逻大陆（维护项目）
+                                        </option>
+                                        <option value="research" <%= (!isCreateMode && project.projectType === 'research') ? 'selected' : '' %>>
+                                            🔬 秘境调查大陆（研发项目）
+                                        </option>
+                                        <option value="operation" <%= (!isCreateMode && project.projectType === 'operation') ? 'selected' : '' %>>
+                                            ⚙️ 商队贸易大陆（运营项目）
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="starLevel" class="form-label">难度等级</label>
+                                    <select class="form-select" id="starLevel" name="starLevel">
+                                        <option value="1" <%= (!isCreateMode && project.starLevel === 1) ? 'selected' : '' %>>⭐ 新手级</option>
+                                        <option value="2" <%= (!isCreateMode && project.starLevel === 2) ? 'selected' : '' %>>⭐⭐ 普通级</option>
+                                        <option value="3" <%= (isCreateMode ? true : project.starLevel === 3) ? 'selected' : '' %>>⭐⭐⭐ 困难级</option>
+                                        <option value="4" <%= (!isCreateMode && project.starLevel === 4) ? 'selected' : '' %>>⭐⭐⭐⭐ 专家级</option>
+                                        <option value="5" <%= (!isCreateMode && project.starLevel === 5) ? 'selected' : '' %>>⭐⭐⭐⭐⭐ 传说级</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- 组织和人员 -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3">组织和人员</h6>
+
+                                <div class="mb-3">
+                                    <label for="organizationId" class="form-label">
+                                        所属公会 <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" id="organizationId" name="organizationId" required>
+                                        <option value="">请选择公会</option>
+                                        <% organizations.forEach(org => { %>
+                                            <option value="<%= org.id %>" <%= (!isCreateMode && project.organizationId === org.id) ? 'selected' : '' %>>
+                                                <%= org.name %>
+                                            </option>
+                                        <% }) %>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="leaderId" class="form-label">探险负责人</label>
+                                    <select class="form-select" id="leaderId" name="leaderId">
+                                        <option value="">请选择负责人</option>
+                                        <% potentialLeaders.forEach(user => { %>
+                                            <option value="<%= user.id %>" <%= (!isCreateMode && project.leaderId === user.id) ? 'selected' : '' %>>
+                                                <%= user.firstName %> <%= user.lastName %> (@<%= user.username %>)
+                                            </option>
+                                        <% }) %>
+                                    </select>
+                                    <div class="form-text">负责人将拥有项目管理权限</div>
+                                </div>
+
+                                <% if (!isCreateMode) { %>
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">项目状态</label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="planning" <%= project.status === 'planning' ? 'selected' : '' %>>📋 规划中</option>
+                                        <option value="active" <%= project.status === 'active' ? 'selected' : '' %>>🚀 进行中</option>
+                                        <option value="on_hold" <%= project.status === 'on_hold' ? 'selected' : '' %>>⏸️ 暂停</option>
+                                        <option value="completed" <%= project.status === 'completed' ? 'selected' : '' %>>✅ 已完成</option>
+                                        <option value="cancelled" <%= project.status === 'cancelled' ? 'selected' : '' %>>❌ 已取消</option>
+                                    </select>
+                                </div>
+                                <% } %>
+
+                                <div class="mb-3">
+                                    <label for="visibility" class="form-label">可见性</label>
+                                    <select class="form-select" id="visibility" name="visibility">
+                                        <option value="private" <%= (isCreateMode ? true : project.visibility === 'private') ? 'selected' : '' %>>🔒 私有</option>
+                                        <option value="public" <%= (!isCreateMode && project.visibility === 'public') ? 'selected' : '' %>>🌍 公开</option>
+                                    </select>
+                                    <div class="form-text">公开项目对所有用户可见</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="startDate" class="form-label">开始时间</label>
+                                        <input type="date" class="form-control" id="startDate" name="startDate"
+                                               value="<%= isCreateMode ? '' : (project.startDate ? new Date(project.startDate).toISOString().split('T')[0] : '') %>">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="endDate" class="form-label">结束时间</label>
+                                        <input type="date" class="form-control" id="endDate" name="endDate"
+                                               value="<%= isCreateMode ? '' : (project.endDate ? new Date(project.endDate).toISOString().split('T')[0] : '') %>">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 提交按钮 -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <% if (isCreateMode) { %>
+                                            <i class="fas fa-plus me-2"></i>创建大陆
+                                        <% } else { %>
+                                            <i class="fas fa-save me-2"></i>保存更改
+                                        <% } %>
+                                    </button>
+                                    <% if (isCreateMode) { %>
+                                        <a href="/projects" class="btn btn-secondary">
+                                            <i class="fas fa-times me-2"></i>取消
+                                        </a>
+                                    <% } else { %>
+                                        <a href="/projects/<%= project.id %>" class="btn btn-secondary">
+                                            <i class="fas fa-times me-2"></i>取消
+                                        </a>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    const isCreateMode = <%= isCreateMode ? 'true' : 'false' %>;
+
+    // 创建模式下，项目名称自动生成标识
+    if (isCreateMode) {
+        $('#name').on('input', function() {
+            const name = $(this).val();
+            if (name && !$('#key').val()) {
+                // 简单的拼音转换逻辑（这里可以使用更复杂的拼音库）
+                let key = name.replace(/[\u4e00-\u9fa5]/g, '').replace(/\s+/g, '').toUpperCase();
+                if (!key) {
+                    // 如果没有英文字符，使用默认前缀
+                    key = 'PROJ';
+                }
+                $('#key').val(key.substring(0, 6));
+            }
+        });
+
+        // 自动聚焦到第一个输入框
+        $('#name').focus();
+    }
+
+    // 项目标识自动转大写
+    $('#key').on('input', function() {
+        $(this).val($(this).val().toUpperCase());
+    });
+
+    // 开始时间变化时，自动设置结束时间
+    $('#startDate').change(function() {
+        const startDate = new Date($(this).val());
+        if (startDate && !$('#endDate').val()) {
+            // 默认项目周期为3个月
+            const endDate = new Date(startDate);
+            endDate.setMonth(endDate.getMonth() + 3);
+            $('#endDate').val(endDate.toISOString().split('T')[0]);
+        }
+    });
+
+    // 表单验证
+    $('form').on('submit', function(e) {
+        const name = $('#name').val().trim();
+        const key = $('#key').val().trim();
+        const organizationId = $('#organizationId').val();
+
+        if (!name || !key || !organizationId) {
+            e.preventDefault();
+            alert('请填写所有必填字段');
+            return false;
+        }
+
+        if (key.length < 2 || key.length > 10) {
+            e.preventDefault();
+            alert('项目标识长度应在2-10个字符之间');
+            return false;
+        }
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

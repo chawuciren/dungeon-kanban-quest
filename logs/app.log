@@ -239,3 +239,1500 @@
   message: 'GET /tasks',
   timestamp: '2025-05-30 16:33:28'
 }
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 16:33:37'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 16:33:38'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 16:33:59'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 16:34:08'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 16:34:16'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 16:34:28'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks/tree',
+  timestamp: '2025-05-30 16:34:33'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks/kanban',
+  timestamp: '2025-05-30 16:34:34'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 16:34:38'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 16:34:38'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 16:34:38'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 16:34:38'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 16:34:56'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/dccc4651-9055-4487-bd41-5e4c7ccab179',
+  timestamp: '2025-05-30 16:35:28'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/dccc4651-9055-4487-bd41-5e4c7ccab179/edit',
+  timestamp: '2025-05-30 16:35:36'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 16:35:54'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 16:35:55'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 16:36:50'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 16:36:52'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 16:36:53'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 16:36:59'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 16:37:00'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 16:37:00'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 16:37:08'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 16:38:02'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 16:38:03'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 16:38:06'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 16:38:12'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 16:38:15'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 16:38:16'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 16:38:17'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 16:38:22'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-30 16:39:36'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 16:40:36'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-30 16:40:37'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 16:40:40'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-30 16:44:34'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 16:49:02'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 16:49:06'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 16:49:07'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 16:49:08'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 16:49:12'
+}
+{
+  service: 'kanban-api',
+  ip: '::ffff:192.168.2.190',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /',
+  timestamp: '2025-05-30 16:51:46'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 18:02:21'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /leaderboard',
+  timestamp: '2025-05-30 18:02:22'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 18:03:27'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 18:03:31'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 18:03:32'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /leaderboard',
+  timestamp: '2025-05-30 18:03:33'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 18:03:38'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 18:03:40'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 18:03:42'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /leaderboard',
+  timestamp: '2025-05-30 18:03:43'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-30 18:03:44'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 18:03:45'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-30 18:03:46'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /leaderboard',
+  timestamp: '2025-05-30 18:03:46'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 18:03:48'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 18:03:56'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 18:03:59'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 18:04:01'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /leaderboard',
+  timestamp: '2025-05-30 18:04:02'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 18:04:02'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /leaderboard',
+  timestamp: '2025-05-30 18:04:03'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-30 18:04:04'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 18:04:07'
+}
+{
+  message: '收到 SIGINT 信号，开始优雅关闭...',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:35:05'
+}
+{
+  message: 'HTTP服务器已关闭',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:35:05'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:35:13'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:35:13'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:35:13'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:35:13'
+}
+{
+  service: 'kanban-api',
+  ip: '::ffff:192.168.2.152',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /',
+  timestamp: '2025-05-30 21:37:03'
+}
+{
+  service: 'kanban-api',
+  ip: '::ffff:192.168.2.152',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /',
+  timestamp: '2025-05-30 21:37:23'
+}
+{
+  service: 'kanban-api',
+  ip: '::ffff:192.168.2.152',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /login',
+  timestamp: '2025-05-30 21:37:28'
+}
+{
+  service: 'kanban-api',
+  ip: '::ffff:192.168.2.152',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /login',
+  timestamp: '2025-05-30 21:37:58'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 21:38:12'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 21:38:19'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints/create',
+  timestamp: '2025-05-30 21:38:22'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 21:38:22'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints/create',
+  timestamp: '2025-05-30 21:38:25'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 21:38:25'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 21:39:36'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 21:42:26'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/dccc4651-9055-4487-bd41-5e4c7ccab179',
+  timestamp: '2025-05-30 21:42:30'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/dccc4651-9055-4487-bd41-5e4c7ccab179/edit',
+  timestamp: '2025-05-30 21:42:32'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/dccc4651-9055-4487-bd41-5e4c7ccab179',
+  timestamp: '2025-05-30 21:42:37'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 21:42:39'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/create',
+  timestamp: '2025-05-30 21:42:40'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 21:42:44'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/dccc4651-9055-4487-bd41-5e4c7ccab179',
+  timestamp: '2025-05-30 21:42:47'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/dccc4651-9055-4487-bd41-5e4c7ccab179/edit',
+  timestamp: '2025-05-30 21:42:49'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/dccc4651-9055-4487-bd41-5e4c7ccab179',
+  timestamp: '2025-05-30 21:44:05'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 21:44:09'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/create',
+  timestamp: '2025-05-30 21:44:11'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 21:44:12'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks?projectId=dccc4651-9055-4487-bd41-5e4c7ccab179',
+  timestamp: '2025-05-30 21:44:16'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 21:44:21'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:44:29'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:44:29'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:44:29'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:44:29'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:44:45'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:44:45'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:44:45'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:44:45'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 21:44:49'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 21:44:51'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 21:44:52'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 21:45:00'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 21:45:03'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /leaderboard',
+  timestamp: '2025-05-30 21:45:04'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-30 21:45:05'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 21:45:10'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 21:45:19'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users/5d8be3d0-0380-483b-bee4-1b4bef10caf1/edit',
+  timestamp: '2025-05-30 21:45:29'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 21:46:50'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users/5d8be3d0-0380-483b-bee4-1b4bef10caf1/edit',
+  timestamp: '2025-05-30 21:46:53'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 21:48:15'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-30 21:48:18'
+}
+{
+  message: '收到 SIGINT 信号，开始优雅关闭...',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:53:22'
+}
+{
+  message: 'HTTP服务器已关闭',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:53:22'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:53:25'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:53:25'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:53:25'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:53:25'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-30 21:53:33'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-30 21:53:35'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 21:53:44'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/create',
+  timestamp: '2025-05-30 21:53:46'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 21:53:51'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 21:54:13'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 21:54:15'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/create',
+  timestamp: '2025-05-30 21:54:16'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 21:54:17'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/dccc4651-9055-4487-bd41-5e4c7ccab179',
+  timestamp: '2025-05-30 21:54:20'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/dccc4651-9055-4487-bd41-5e4c7ccab179/edit',
+  timestamp: '2025-05-30 21:54:22'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 21:55:04'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 21:56:04'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks/create?view=list',
+  timestamp: '2025-05-30 21:56:11'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 21:56:30'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 21:57:25'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:58:51'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:58:51'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:58:51'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:58:51'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:59:02'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:59:02'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:59:02'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:59:02'
+}
+{
+  message: '收到 SIGINT 信号，开始优雅关闭...',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:59:30'
+}
+{
+  message: 'HTTP服务器已关闭',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:59:30'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:59:38'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:59:38'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:59:38'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 21:59:38'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 21:59:51'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 21:59:55'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 21:59:58'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-30 21:59:59'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-30 22:02:43'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 22:36:40'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints/create',
+  timestamp: '2025-05-30 22:36:42'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 22:36:42'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints/create',
+  timestamp: '2025-05-30 22:36:47'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 22:36:48'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 22:36:49'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 22:36:50'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 22:37:04'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 22:37:07'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 22:37:08'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks/create?view=list',
+  timestamp: '2025-05-30 22:37:11'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 22:43:01'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-30 22:43:03'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-30 22:45:15'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-30 22:45:19'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-30 22:45:45'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-30 22:46:02'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-30 22:47:36'
+}

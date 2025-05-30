@@ -146,9 +146,19 @@ router.get('/create', requireAuth, async (req, res) => {
       order: [['name', 'ASC']]
     });
 
-    res.render('projects/create', {
-      title: '创建项目',
-      organizations
+    // 获取组织内的用户作为潜在负责人
+    const potentialLeaders = await User.findAll({
+      attributes: ['id', 'firstName', 'lastName', 'username'],
+      order: [['firstName', 'ASC'], ['lastName', 'ASC']]
+    });
+
+    // 使用edit模板，但传入创建模式的参数
+    res.render('projects/edit', {
+      title: '创建大陆',
+      project: null, // 创建模式时project为null
+      organizations,
+      potentialLeaders,
+      isCreateMode: true // 标识这是创建模式
     });
 
   } catch (error) {
@@ -306,6 +316,158 @@ router.get('/:id', requireAuth, async (req, res) => {
     logger.error('获取项目详情失败:', error);
     req.flash('error', '获取项目详情失败');
     res.redirect('/projects');
+  }
+});
+
+// 编辑项目页面
+router.get('/:id/edit', requireAuth, async (req, res) => {
+  try {
+    const projectId = req.params.id;
+
+    const project = await Project.findByPk(projectId, {
+      include: [
+        {
+          model: Organization,
+          as: 'organization'
+        },
+        {
+          model: User,
+          as: 'owner',
+          attributes: ['id', 'firstName', 'lastName']
+        },
+        {
+          model: User,
+          as: 'leader',
+          attributes: ['id', 'firstName', 'lastName']
+        }
+      ]
+    });
+
+    if (!project) {
+      req.flash('error', '项目不存在');
+      return res.redirect('/projects');
+    }
+
+    // 检查权限：只有项目所有者、负责人或管理员可以编辑
+    const hasPermission = project.ownerId === req.session.userId ||
+                         project.leaderId === req.session.userId ||
+                         req.session.userRole === 'guild_master';
+
+    if (!hasPermission) {
+      req.flash('error', '您没有权限编辑此项目');
+      return res.redirect(`/projects/${projectId}`);
+    }
+
+    // 获取用户所属的组织
+    const organizations = await Organization.findAll({
+      where: {
+        [Op.or]: [
+          { ownerId: req.session.userId },
+          // 这里可以添加用户是成员的组织查询
+        ]
+      },
+      order: [['name', 'ASC']]
+    });
+
+    // 获取组织内的用户作为潜在负责人
+    const potentialLeaders = await User.findAll({
+      attributes: ['id', 'firstName', 'lastName', 'username'],
+      order: [['firstName', 'ASC'], ['lastName', 'ASC']]
+    });
+
+    res.render('projects/edit', {
+      title: '编辑大陆',
+      project,
+      organizations,
+      potentialLeaders,
+      isCreateMode: false // 标识这是编辑模式
+    });
+
+  } catch (error) {
+    logger.error('获取项目编辑页面失败:', error);
+    req.flash('error', '获取项目信息失败');
+    res.redirect('/projects');
+  }
+});
+
+// 更新项目处理
+router.post('/:id/edit', requireAuth, async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const {
+      name,
+      key,
+      description,
+      projectType,
+      starLevel,
+      organizationId,
+      leaderId,
+      startDate,
+      endDate,
+      visibility,
+      status
+    } = req.body;
+
+    const project = await Project.findByPk(projectId);
+
+    if (!project) {
+      req.flash('error', '项目不存在');
+      return res.redirect('/projects');
+    }
+
+    // 检查权限：只有项目所有者、负责人或管理员可以编辑
+    const hasPermission = project.ownerId === req.session.userId ||
+                         project.leaderId === req.session.userId ||
+                         req.session.userRole === 'guild_master';
+
+    if (!hasPermission) {
+      req.flash('error', '您没有权限编辑此项目');
+      return res.redirect(`/projects/${projectId}`);
+    }
+
+    // 如果修改了项目key，检查是否在同一组织内重复
+    if (key !== project.key) {
+      const existingProject = await Project.findOne({
+        where: {
+          organizationId: organizationId || project.organizationId,
+          key: key.toUpperCase(),
+          id: { [Op.ne]: projectId }
+        }
+      });
+
+      if (existingProject) {
+        req.flash('error', '项目标识在该组织内已存在');
+        return res.redirect(`/projects/${projectId}/edit`);
+      }
+    }
+
+    // 更新项目信息
+    await project.update({
+      name,
+      key: key.toUpperCase(),
+      description,
+      projectType: projectType || project.projectType,
+      starLevel: parseInt(starLevel) || project.starLevel,
+      status: status || project.status,
+      visibility: visibility || project.visibility,
+      organizationId: organizationId || project.organizationId,
+      leaderId: leaderId || project.leaderId,
+      startDate: startDate || null,
+      endDate: endDate || null
+    });
+
+    logger.info(`项目更新成功: ${project.name}`, {
+      userId: req.session.userId,
+      projectId: project.id
+    });
+
+    req.flash('success', '项目信息更新成功！');
+    res.redirect(`/projects/${project.id}`);
+
+  } catch (error) {
+    logger.error('更新项目失败:', error);
+    req.flash('error', '更新项目失败，请稍后重试');
+    res.redirect(`/projects/${req.params.id}/edit`);
   }
 });
 

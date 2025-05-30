@@ -7,8 +7,13 @@
             <!-- 页面标题 -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="h3 mb-0">
-                    <i class="fas fa-user-edit me-2"></i>
-                    🏰 编辑冒险者档案
+                    <% if (isCreateMode) { %>
+                        <i class="fas fa-user-plus me-2"></i>
+                        招募勇者
+                    <% } else { %>
+                        <i class="fas fa-user-edit me-2"></i>
+                        编辑勇者档案
+                    <% } %>
                 </h1>
                 <a href="/users" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-1"></i>
@@ -16,7 +21,8 @@
                 </a>
             </div>
 
-            <!-- 用户信息卡片 -->
+            <!-- 用户信息卡片 (仅编辑模式显示) -->
+            <% if (!isCreateMode && editUser) { %>
             <div class="card mb-4">
                 <div class="card-header">
                     <div class="d-flex align-items-center">
@@ -81,14 +87,21 @@
                     <% } %>
                 </div>
             </div>
+            <% } %>
 
-            <!-- 编辑表单 -->
+            <!-- 用户表单 -->
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">编辑用户信息</h5>
+                    <h5 class="card-title mb-0">
+                        <% if (isCreateMode) { %>
+                            勇者档案
+                        <% } else { %>
+                            编辑用户信息
+                        <% } %>
+                    </h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="/users/<%= editUser.id %>/edit">
+                    <form method="POST" action="<% if (isCreateMode) { %>/users/create<% } else { %>/users/<%= editUser.id %>/edit<% } %>">
                         <div class="row">
                             <!-- 基本信息 -->
                             <div class="col-md-6">
@@ -99,11 +112,11 @@
                                     <div class="row">
                                         <div class="col-6">
                                             <input type="text" class="form-control" id="firstName" name="firstName"
-                                                   value="<%= editUser.firstName %>" placeholder="姓" required>
+                                                   value="<% if (!isCreateMode && editUser) { %><%= editUser.firstName %><% } %>" placeholder="姓" required>
                                         </div>
                                         <div class="col-6">
                                             <input type="text" class="form-control" id="lastName" name="lastName"
-                                                   value="<%= editUser.lastName %>" placeholder="名" required>
+                                                   value="<% if (!isCreateMode && editUser) { %><%= editUser.lastName %><% } %>" placeholder="名" required>
                                         </div>
                                     </div>
                                 </div>
@@ -111,27 +124,40 @@
                                 <div class="mb-3">
                                     <label for="username" class="form-label">用户名 <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="username" name="username"
-                                           value="<%= editUser.username %>" placeholder="用户登录名" required>
+                                           value="<% if (!isCreateMode && editUser) { %><%= editUser.username %><% } %>" placeholder="用户登录名" required>
                                     <div class="form-text">用户名只能包含字母和数字，3-50个字符</div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="email" class="form-label">邮箱 <span class="text-danger">*</span></label>
                                     <input type="email" class="form-control" id="email" name="email"
-                                           value="<%= editUser.email %>" placeholder="user@example.com" required>
+                                           value="<% if (!isCreateMode && editUser) { %><%= editUser.email %><% } %>" placeholder="user@example.com" required>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="phone" class="form-label">手机号</label>
                                     <input type="tel" class="form-control" id="phone" name="phone"
-                                           value="<%= editUser.phone || '' %>" placeholder="手机号码（可选）">
+                                           value="<% if (!isCreateMode && editUser) { %><%= editUser.phone || '' %><% } %>" placeholder="手机号码（可选）">
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="password" class="form-label">新密码</label>
+                                    <label for="password" class="form-label">
+                                        <% if (isCreateMode) { %>
+                                            密码 <span class="text-danger">*</span>
+                                        <% } else { %>
+                                            新密码
+                                        <% } %>
+                                    </label>
                                     <input type="password" class="form-control" id="password" name="password"
-                                           placeholder="留空则不修改密码" minlength="6">
-                                    <div class="form-text">如需修改密码，请输入新密码（至少6位）</div>
+                                           placeholder="<% if (isCreateMode) { %>至少6位密码<% } else { %>留空则不修改密码<% } %>"
+                                           <% if (isCreateMode) { %>required<% } %> minlength="6">
+                                    <div class="form-text">
+                                        <% if (isCreateMode) { %>
+                                            密码长度至少6位
+                                        <% } else { %>
+                                            如需修改密码，请输入新密码（至少6位）
+                                        <% } %>
+                                    </div>
                                 </div>
                             </div>
 
@@ -142,24 +168,41 @@
                                 <div class="mb-3">
                                     <label for="role" class="form-label">职业角色 <span class="text-danger">*</span></label>
                                     <select class="form-select" id="role" name="role" required>
-                                        <option value="guild_master" <%= editUser.role === 'guild_master' ? 'selected' : '' %>>👑 公会管理员 (管理员) - 冒险者公会总管</option>
-                                        <option value="quest_captain" <%= editUser.role === 'quest_captain' ? 'selected' : '' %>>⚔️ 探险队长 (项目经理) - 地下城攻略规划师</option>
-                                        <option value="swordsman" <%= editUser.role === 'swordsman' ? 'selected' : '' %>>🛡️ 剑士 (开发者) - 挥剑斩敌的勇者</option>
-                                        <option value="ranger" <%= editUser.role === 'ranger' ? 'selected' : '' %>>🏹 游侠 (测试员) - 侦察和陷阱专家</option>
-                                        <option value="quest_giver" <%= editUser.role === 'quest_giver' ? 'selected' : '' %>>💰 任务委托人 (客户) - 发布地下城探险委托</option>
-                                        <option value="enchanter" <%= editUser.role === 'enchanter' ? 'selected' : '' %>>✨ 附魔师 (UI设计师) - 装备美化大师</option>
-                                        <option value="alchemist" <%= editUser.role === 'alchemist' ? 'selected' : '' %>>🧪 炼金术师 (运维工程师) - 药剂和装备维护专家</option>
+                                        <% if (isCreateMode) { %>
+                                            <option value="">请选择职业</option>
+                                        <% } %>
+                                        <option value="guild_master" <% if (!isCreateMode && editUser && editUser.role === 'guild_master') { %>selected<% } %>>⚡ 神域守护者 (管理员)</option>
+                                        <option value="quest_captain" <% if (!isCreateMode && editUser && editUser.role === 'quest_captain') { %>selected<% } %>>🔮 预言师 (产品经理)</option>
+                                        <option value="swordsman" <% if (isCreateMode || (!isCreateMode && editUser && editUser.role === 'swordsman')) { %>selected<% } %>>⚔️ 剑士 (开发者)</option>
+                                        <option value="ranger" <% if (!isCreateMode && editUser && editUser.role === 'ranger') { %>selected<% } %>>🏹 弓箭手 (测试员)</option>
+                                        <option value="quest_giver" <% if (!isCreateMode && editUser && editUser.role === 'quest_giver') { %>selected<% } %>>💎 委托贵族 (客户)</option>
+                                        <option value="enchanter" <% if (!isCreateMode && editUser && editUser.role === 'enchanter') { %>selected<% } %>>🔮 魔法师 (UI设计师)</option>
+                                        <option value="alchemist" <% if (!isCreateMode && editUser && editUser.role === 'alchemist') { %>selected<% } %>>✨ 牧师 (运维工程师)</option>
                                     </select>
+                                    <% if (isCreateMode) { %>
+                                        <div class="form-text">
+                                            <small>
+                                                <strong>职业说明：</strong><br>
+                                                • ⚡ 神域守护 (管理员)：拥有至高权限的神级存在，守护整个异世界<br>
+                                                • 🔮 预言师 (产品经理)：预测和规划未来的神秘学者<br>
+                                                • ⚔️ 剑士 (开发者)：挥剑斩敌的前线战斗专家，负责任务开发和实现<br>
+                                                • 🏹 弓箭手 (测试员)：潜行探查、发现追踪隐患的专业侦察者，负责质量保证和测试<br>
+                                                • 💎 委托贵族 (客户)：发布探险委托的尊贵赞助方<br>
+                                                • ✨ 法师 (UI设计师)： 施展视觉魔法的艺术大师<br>
+                                                • 🌙 牧师 (运维工程师)：维护神秘机械和设施的技术专家，负责系统运维<br>
+                                            </small>
+                                        </div>
+                                    <% } %>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="skillLevel" class="form-label">技能等级</label>
                                     <select class="form-select" id="skillLevel" name="skillLevel">
-                                        <option value="novice" <%= editUser.skillLevel === 'novice' ? 'selected' : '' %>>🔰 新手 - 初学者</option>
-                                        <option value="bronze" <%= editUser.skillLevel === 'bronze' ? 'selected' : '' %>>🥉 青铜 - 有一定经验</option>
-                                        <option value="silver" <%= editUser.skillLevel === 'silver' ? 'selected' : '' %>>🥈 白银 - 经验丰富</option>
-                                        <option value="gold" <%= editUser.skillLevel === 'gold' ? 'selected' : '' %>>🥇 黄金 - 技能精湛</option>
-                                        <option value="diamond" <%= editUser.skillLevel === 'diamond' ? 'selected' : '' %>>💎 钻石 - 顶级专家</option>
+                                        <option value="novice" <% if (isCreateMode || (!isCreateMode && editUser && editUser.skillLevel === 'novice')) { %>selected<% } %>>🔰 新手 - 初学者</option>
+                                        <option value="bronze" <% if (!isCreateMode && editUser && editUser.skillLevel === 'bronze') { %>selected<% } %>>🥉 青铜 - 有一定经验</option>
+                                        <option value="silver" <% if (!isCreateMode && editUser && editUser.skillLevel === 'silver') { %>selected<% } %>>🥈 白银 - 经验丰富</option>
+                                        <option value="gold" <% if (!isCreateMode && editUser && editUser.skillLevel === 'gold') { %>selected<% } %>>🥇 黄金 - 技能精湛</option>
+                                        <option value="diamond" <% if (!isCreateMode && editUser && editUser.skillLevel === 'diamond') { %>selected<% } %>>💎 钻石 - 顶级专家</option>
                                     </select>
                                     <div class="form-text">技能等级影响可接取的任务难度</div>
                                 </div>
@@ -167,33 +210,49 @@
                                 <div class="mb-3">
                                     <label for="status" class="form-label">账户状态</label>
                                     <select class="form-select" id="status" name="status">
-                                        <option value="active" <%= editUser.status === 'active' ? 'selected' : '' %>>✅ 活跃 - 正常使用</option>
-                                        <option value="inactive" <%= editUser.status === 'inactive' ? 'selected' : '' %>>⏸️ 未激活 - 需要激活</option>
-                                        <option value="suspended" <%= editUser.status === 'suspended' ? 'selected' : '' %>>🚫 已禁用 - 禁止登录</option>
+                                        <option value="active" <% if (isCreateMode || (!isCreateMode && editUser && editUser.status === 'active')) { %>selected<% } %>>✅ 活跃 - 正常使用</option>
+                                        <option value="inactive" <% if (!isCreateMode && editUser && editUser.status === 'inactive') { %>selected<% } %>>⏸️ 未激活 - 需要激活</option>
+                                        <option value="suspended" <% if (!isCreateMode && editUser && editUser.status === 'suspended') { %>selected<% } %>>🚫 已禁用 - 禁止登录</option>
                                     </select>
                                 </div>
 
-                                <!-- 危险操作区域 -->
-                                <div class="alert alert-warning">
-                                    <h6 class="alert-heading">
-                                        <i class="fas fa-exclamation-triangle me-1"></i>
-                                        危险操作
-                                    </h6>
-                                    <div class="d-grid gap-2">
-                                        <button type="button" class="btn btn-outline-warning btn-sm"
-                                                onclick="showResetPasswordModal()">
-                                            <i class="fas fa-key me-1"></i>
-                                            重置密码
-                                        </button>
-                                        <% if (editUser.id !== user.id) { %>
-                                            <button type="button" class="btn btn-outline-danger btn-sm"
-                                                    onclick="confirmDelete('<%= editUser.id %>', '<%= editUser.username %>')">
-                                                <i class="fas fa-ban me-1"></i>
-                                                禁用账户
-                                            </button>
-                                        <% } %>
+                                <% if (isCreateMode) { %>
+                                    <!-- 游戏化信息提示 -->
+                                    <div class="alert alert-info">
+                                        <h6 class="alert-heading">
+                                            <i class="fas fa-gift me-1"></i>
+                                            新用户福利
+                                        </h6>
+                                        <p class="mb-0">新用户将自动获得：</p>
+                                        <ul class="mb-0 mt-2">
+                                            <li>🥇 100金币 新手奖励</li>
+                                            <li>🎯 完整的虚拟钱包</li>
+                                            <li>📊 个人数据统计</li>
+                                        </ul>
                                     </div>
-                                </div>
+                                <% } else { %>
+                                    <!-- 危险操作区域 -->
+                                    <div class="alert alert-warning">
+                                        <h6 class="alert-heading">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            危险操作
+                                        </h6>
+                                        <div class="d-grid gap-2">
+                                            <button type="button" class="btn btn-outline-warning btn-sm"
+                                                    onclick="showResetPasswordModal()">
+                                                <i class="fas fa-key me-1"></i>
+                                                重置密码
+                                            </button>
+                                            <% if (editUser.id !== user.id) { %>
+                                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                                        onclick="confirmDelete('<%= editUser.id %>', '<%= editUser.username %>')">
+                                                    <i class="fas fa-ban me-1"></i>
+                                                    禁用账户
+                                                </button>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                <% } %>
                             </div>
                         </div>
 
@@ -207,8 +266,13 @@
                                         取消
                                     </a>
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save me-1"></i>
-                                        保存修改
+                                        <% if (isCreateMode) { %>
+                                            <i class="fas fa-user-plus me-1"></i>
+                                            招募勇者
+                                        <% } else { %>
+                                            <i class="fas fa-save me-1"></i>
+                                            保存修改
+                                        <% } %>
                                     </button>
                                 </div>
                             </div>
@@ -220,6 +284,7 @@
     </div>
 </div>
 
+<% if (!isCreateMode) { %>
 <!-- 重置密码模态框 -->
 <div class="modal fade" id="resetPasswordModal" tabindex="-1">
     <div class="modal-dialog">
@@ -271,8 +336,10 @@
         </div>
     </div>
 </div>
+<% } %>
 
 <script>
+<% if (!isCreateMode) { %>
 function showResetPasswordModal() {
     new bootstrap.Modal(document.getElementById('resetPasswordModal')).show();
 }
@@ -282,10 +349,15 @@ function confirmDelete(userId, username) {
     document.getElementById('deleteForm').action = '/users/' + userId + '/delete';
     new bootstrap.Modal(document.getElementById('deleteModal')).show();
 }
+<% } %>
 
 // 表单验证
 document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
     const usernameInput = document.getElementById('username');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const isCreateMode = <%= isCreateMode ? 'true' : 'false' %>;
 
     // 用户名验证
     usernameInput.addEventListener('input', function() {
@@ -300,6 +372,39 @@ document.addEventListener('DOMContentLoaded', function() {
             this.setCustomValidity('');
         }
     });
+
+    // 密码强度提示（仅创建模式）
+    if (isCreateMode && passwordInput) {
+        passwordInput.addEventListener('input', function() {
+            const value = this.value;
+            const strength = getPasswordStrength(value);
+
+            // 移除之前的提示
+            const existingFeedback = this.parentNode.querySelector('.password-strength');
+            if (existingFeedback) {
+                existingFeedback.remove();
+            }
+
+            if (value) {
+                const feedback = document.createElement('div');
+                feedback.className = 'password-strength form-text';
+                feedback.innerHTML = `密码强度: <span class="badge bg-${strength.color}">${strength.text}</span>`;
+                this.parentNode.appendChild(feedback);
+            }
+        });
+    }
+
+    function getPasswordStrength(password) {
+        if (password.length < 6) {
+            return { color: 'danger', text: '太弱' };
+        } else if (password.length < 8) {
+            return { color: 'warning', text: '一般' };
+        } else if (password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password)) {
+            return { color: 'success', text: '强' };
+        } else {
+            return { color: 'info', text: '中等' };
+        }
+    }
 });
 </script>
 

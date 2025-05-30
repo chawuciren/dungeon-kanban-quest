@@ -9,7 +9,7 @@
                     <!-- 面包屑导航 -->
                     <nav aria-label="breadcrumb" class="mb-3">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/projects">地下城管理（项目管理）</a></li>
+                            <li class="breadcrumb-item"><a href="/projects">大陆管理（项目管理）</a></li>
                             <% if (project.organization) { %>
                                 <li class="breadcrumb-item"><%= project.organization.name %></li>
                             <% } %>
@@ -107,7 +107,7 @@
                     </div>
 
                     <!-- 快速操作 -->
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 flex-wrap">
                         <a href="/tasks/create?project=<%= project.id %>" class="btn btn-primary">
                             <i class="fas fa-plus me-2"></i>创建任务
                         </a>
@@ -120,6 +120,11 @@
                         <a href="/tasks/kanban?projectId=<%= project.id %>" class="btn btn-outline-info">
                             <i class="fas fa-columns me-2"></i>看板
                         </a>
+                        <% if (user && (user.id === project.ownerId || user.id === project.leaderId || user.role === 'guild_master')) { %>
+                            <a href="/projects/<%= project.id %>/edit" class="btn btn-outline-warning">
+                                <i class="fas fa-edit me-2"></i>编辑大陆
+                            </a>
+                        <% } %>
                     </div>
                 </div>
             </div>
@@ -217,17 +222,17 @@
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-12">
-                            <strong>地下城标识：</strong>
+                            <strong>大陆标识：</strong>
                             <span class="ms-2"><%= project.key %></span>
                         </div>
                         <div class="col-12">
-                            <strong>地下城类型：</strong>
+                            <strong>大陆类型：</strong>
                             <span class="ms-2">
                                 <%
-                                if (project.projectType === 'construction') { %>🏗️ 开拓远征型（建设项目）<%
-                                } else if (project.projectType === 'maintenance') { %>🔧 守备巡逻型（维护项目）<%
-                                } else if (project.projectType === 'research') { %>🔬 秘境调查型（研发项目）<%
-                                } else if (project.projectType === 'operation') { %>⚙️ 商队贸易型（运营项目）<%
+                                if (project.projectType === 'construction') { %>🏗️ 开拓远征大陆（建设项目）<%
+                                } else if (project.projectType === 'maintenance') { %>🔧 守备巡逻大陆（维护项目）<%
+                                } else if (project.projectType === 'research') { %>🔬 秘境调查大陆（研发项目）<%
+                                } else if (project.projectType === 'operation') { %>⚙️ 商队贸易大陆（运营项目）<%
                                 } else { %>📋 其他项目<% } %>
                             </span>
                         </div>

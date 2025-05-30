@@ -109,9 +109,11 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
 
 // 添加用户页面
 router.get('/create', requireAuth, requireAdmin, (req, res) => {
-  res.render('users/create', {
+  res.render('users/edit', {
     title: '招募冒险者',
-    roles: getAllRoles()
+    editUser: null, // 创建模式时editUser为null
+    roles: getAllRoles(),
+    isCreateMode: true // 标识这是创建模式
   });
 });
 
@@ -210,7 +212,8 @@ router.get('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
     res.render('users/edit', {
       title: '编辑冒险者档案',
       editUser: user,
-      roles: getAllRoles()
+      roles: getAllRoles(),
+      isCreateMode: false // 标识这是编辑模式
     });
 
   } catch (error) {
