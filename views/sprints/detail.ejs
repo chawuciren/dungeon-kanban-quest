@@ -1,0 +1,341 @@
+<%- include('../partials/header') %>
+
+<!-- 页面标题和操作栏 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h2>
+                    <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                    <%= sprint.name %>
+                </h2>
+                <p class="text-muted mb-2">
+                    <i class="fas fa-map me-1"></i>
+                    项目：[<%= sprint.project.key %>] <%= sprint.project.name %>
+                </p>
+                <div class="d-flex align-items-center gap-3">
+                    <!-- 状态标签 -->
+                    <% if (sprint.status === 'planning') { %>
+                        <span class="badge bg-secondary fs-6">
+                            <i class="fas fa-clock me-1"></i>规划中
+                        </span>
+                    <% } else if (sprint.status === 'active') { %>
+                        <span class="badge bg-success fs-6">
+                            <i class="fas fa-play me-1"></i>进行中
+                        </span>
+                    <% } else if (sprint.status === 'completed') { %>
+                        <span class="badge bg-primary fs-6">
+                            <i class="fas fa-check me-1"></i>已完成
+                        </span>
+                    <% } else if (sprint.status === 'cancelled') { %>
+                        <span class="badge bg-danger fs-6">
+                            <i class="fas fa-times me-1"></i>已取消
+                        </span>
+                    <% } %>
+                    
+                    <!-- 时间信息 -->
+                    <span class="text-muted">
+                        <i class="fas fa-calendar me-1"></i>
+                        <%= moment(sprint.startDate).format('YYYY-MM-DD') %> 至 
+                        <%= moment(sprint.endDate).format('YYYY-MM-DD') %>
+                    </span>
+                    
+                    <!-- 剩余时间 -->
+                    <% if (sprint.status === 'active') { %>
+                        <span class="text-warning">
+                            <i class="fas fa-hourglass-half me-1"></i>
+                            剩余 <%= sprint.getDaysRemaining() %> 天
+                        </span>
+                    <% } %>
+                </div>
+            </div>
+            
+            <div class="d-flex gap-2">
+                <a href="/sprints" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    返回列表
+                </a>
+                <% if (sprint.status === 'planning') { %>
+                    <button class="btn btn-success" onclick="startSprint()">
+                        <i class="fas fa-play me-2"></i>
+                        开始探险季
+                    </button>
+                <% } else if (sprint.status === 'active') { %>
+                    <button class="btn btn-primary" onclick="completeSprint()">
+                        <i class="fas fa-check me-2"></i>
+                        完成探险季
+                    </button>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 探险季概览 -->
+<div class="row mb-4">
+    <!-- 基本信息 -->
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    探险季信息
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- 目标 -->
+                <div class="mb-3">
+                    <h6 class="text-muted mb-2">
+                        <i class="fas fa-bullseye me-1"></i>
+                        探险季目标
+                    </h6>
+                    <p class="mb-0"><%= sprint.goal %></p>
+                </div>
+                
+                <!-- 描述 -->
+                <% if (sprint.description) { %>
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-2">
+                            <i class="fas fa-align-left me-1"></i>
+                            详细描述
+                        </h6>
+                        <p class="mb-0"><%= sprint.description %></p>
+                    </div>
+                <% } %>
+                
+                <!-- 创建信息 -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">
+                            <i class="fas fa-user me-1"></i>
+                            创建者
+                        </h6>
+                        <p class="mb-0"><%= sprint.creator.firstName %> <%= sprint.creator.lastName %></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">
+                            <i class="fas fa-clock me-1"></i>
+                            创建时间
+                        </h6>
+                        <p class="mb-0"><%= moment(sprint.createdAt).format('YYYY-MM-DD HH:mm') %></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 统计信息 -->
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    统计概览
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- 进度条 -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">完成进度</span>
+                        <span class="fw-bold"><%= sprint.getProgress() %>%</span>
+                    </div>
+                    <div class="progress mb-2" style="height: 10px;">
+                        <div class="progress-bar bg-success" 
+                             style="width: <%= sprint.getProgress() %>%"></div>
+                    </div>
+                </div>
+                
+                <!-- 任务统计 -->
+                <div class="row text-center mb-3">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <h4 class="text-primary mb-0"><%= taskStats.total %></h4>
+                            <small class="text-muted">总任务</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-success mb-0"><%= taskStats.completed %></h4>
+                        <small class="text-muted">已完成</small>
+                    </div>
+                </div>
+                
+                <!-- 详细统计 -->
+                <div class="small">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">进行中：</span>
+                        <span class="badge bg-warning"><%= taskStats.inProgress %></span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">待处理：</span>
+                        <span class="badge bg-secondary"><%= taskStats.pending %></span>
+                    </div>
+                </div>
+                
+                <!-- 时间信息 -->
+                <hr>
+                <div class="small">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">持续时间：</span>
+                        <span><%= sprint.getDuration() %> 天</span>
+                    </div>
+                    <% if (sprint.capacity > 0) { %>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">团队容量：</span>
+                            <span><%= sprint.capacity %> 小时</span>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 任务列表 -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tasks me-2"></i>
+                    探险季任务
+                </h5>
+                <a href="/tasks/create?sprintId=<%= sprint.id %>" class="btn btn-sm btn-primary">
+                    <i class="fas fa-plus me-1"></i>
+                    添加任务
+                </a>
+            </div>
+            <div class="card-body">
+                <% if (sprint.tasks && sprint.tasks.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>任务</th>
+                                    <th>类型</th>
+                                    <th>状态</th>
+                                    <th>负责人</th>
+                                    <th>星级</th>
+                                    <th>截止时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% sprint.tasks.forEach(task => { %>
+                                    <tr>
+                                        <td>
+                                            <a href="/tasks/<%= task.id %>" class="text-decoration-none">
+                                                <%= task.title %>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <% if (task.taskType === 'epic') { %>
+                                                <span class="badge bg-purple">史诗</span>
+                                            <% } else if (task.taskType === 'story') { %>
+                                                <span class="badge bg-blue">故事</span>
+                                            <% } else if (task.taskType === 'task') { %>
+                                                <span class="badge bg-green">任务</span>
+                                            <% } else if (task.taskType === 'bug') { %>
+                                                <span class="badge bg-red">缺陷</span>
+                                            <% } else { %>
+                                                <span class="badge bg-gray">需求</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (task.status === 'completed') { %>
+                                                <span class="badge bg-success">已完成</span>
+                                            <% } else if (task.status === 'in_progress') { %>
+                                                <span class="badge bg-warning">进行中</span>
+                                            <% } else if (task.status === 'review') { %>
+                                                <span class="badge bg-info">待审核</span>
+                                            <% } else { %>
+                                                <span class="badge bg-secondary">待处理</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (task.assignee) { %>
+                                                <%= task.assignee.firstName %> <%= task.assignee.lastName %>
+                                            <% } else { %>
+                                                <span class="text-muted">未分配</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% for(let i = 0; i < task.starLevel; i++) { %>⭐<% } %>
+                                        </td>
+                                        <td>
+                                            <% if (task.dueDate) { %>
+                                                <%= moment(task.dueDate).format('MM-DD') %>
+                                            <% } else { %>
+                                                <span class="text-muted">-</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <a href="/tasks/<%= task.id %>" class="btn btn-sm btn-outline-primary">
+                                                查看
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="text-center py-4">
+                        <i class="fas fa-tasks fa-2x text-muted mb-3"></i>
+                        <h5 class="text-muted">暂无任务</h5>
+                        <p class="text-muted">开始为这个探险季添加任务吧</p>
+                        <a href="/tasks/create?sprintId=<%= sprint.id %>" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>
+                            添加第一个任务
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function startSprint() {
+    if (confirm('确定要开始这个探险季吗？开始后将无法修改基本信息。')) {
+        // TODO: 实现开始探险季的功能
+        alert('开始探险季功能正在开发中...');
+    }
+}
+
+function completeSprint() {
+    if (confirm('确定要完成这个探险季吗？完成后将无法再添加或修改任务。')) {
+        // TODO: 实现完成探险季的功能
+        alert('完成探险季功能正在开发中...');
+    }
+}
+</script>
+
+<style>
+.badge.bg-purple { background-color: #6f42c1 !important; }
+.badge.bg-blue { background-color: #0d6efd !important; }
+.badge.bg-green { background-color: #198754 !important; }
+.badge.bg-red { background-color: #dc3545 !important; }
+.badge.bg-gray { background-color: #6c757d !important; }
+
+.progress {
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+</style>
+
+<%- include('../partials/footer') %>

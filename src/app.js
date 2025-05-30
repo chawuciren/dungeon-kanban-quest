@@ -111,6 +111,7 @@ app.use('/', require('./routes/pages'));
 // 功能路由
 app.use('/tasks', require('./routes/tasks'));
 app.use('/projects', require('./routes/projects'));
+app.use('/sprints', require('./routes/sprints'));
 app.use('/organizations', require('./routes/organizations'));
 app.use('/users', require('./routes/users'));
 

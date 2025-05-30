@@ -88,6 +88,15 @@ const BountyTask = sequelize.define('BountyTask', {
       key: 'id'
     }
   },
+  sprintId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    field: 'sprint_id',
+    references: {
+      model: 'sprints',
+      key: 'id'
+    }
+  },
   // 任务层级管理
   level: {
     type: DataTypes.INTEGER,
@@ -221,6 +230,9 @@ const BountyTask = sequelize.define('BountyTask', {
     },
     {
       fields: ['due_date']
+    },
+    {
+      fields: ['sprint_id']
     }
   ]
 });

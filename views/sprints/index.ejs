@@ -1,0 +1,245 @@
+<%- include('../partials/header') %>
+
+<!-- 页面标题和控制栏 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2>
+                    <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                    探险季管理
+                </h2>
+                <p class="text-muted mb-0">管理项目的探险周期和迭代计划</p>
+            </div>
+            <div>
+                <a href="/sprints/create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>
+                    创建探险季
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 筛选器 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" action="/sprints" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="projectId" class="form-label">项目筛选</label>
+                        <select class="form-select" id="projectId" name="projectId">
+                            <option value="">所有项目</option>
+                            <% projects.forEach(project => { %>
+                                <option value="<%= project.id %>" <%= filters.projectId === project.id ? 'selected' : '' %>>
+                                    [<%= project.key %>] <%= project.name %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="status" class="form-label">状态筛选</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>所有状态</option>
+                            <option value="planning" <%= filters.status === 'planning' ? 'selected' : '' %>>规划中</option>
+                            <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>进行中</option>
+                            <option value="completed" <%= filters.status === 'completed' ? 'selected' : '' %>>已完成</option>
+                            <option value="cancelled" <%= filters.status === 'cancelled' ? 'selected' : '' %>>已取消</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-search me-1"></i>
+                            筛选
+                        </button>
+                        <a href="/sprints" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>
+                            清除
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 探险季列表 -->
+<div class="row">
+    <div class="col-12">
+        <% if (sprints && sprints.length > 0) { %>
+            <% sprints.forEach(sprint => { %>
+                <div class="card mb-3 sprint-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0">
+                                        <a href="/sprints/<%= sprint.id %>" class="text-decoration-none">
+                                            <%= sprint.name %>
+                                        </a>
+                                    </h5>
+                                    <div class="sprint-status">
+                                        <% if (sprint.status === 'planning') { %>
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-clock me-1"></i>规划中
+                                            </span>
+                                        <% } else if (sprint.status === 'active') { %>
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-play me-1"></i>进行中
+                                            </span>
+                                        <% } else if (sprint.status === 'completed') { %>
+                                            <span class="badge bg-primary">
+                                                <i class="fas fa-check me-1"></i>已完成
+                                            </span>
+                                        <% } else if (sprint.status === 'cancelled') { %>
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times me-1"></i>已取消
+                                            </span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-muted mb-2">
+                                    <i class="fas fa-map me-1"></i>
+                                    项目：[<%= sprint.project.key %>] <%= sprint.project.name %>
+                                </p>
+                                
+                                <p class="card-text mb-2">
+                                    <strong>目标：</strong><%= sprint.goal %>
+                                </p>
+                                
+                                <% if (sprint.description) { %>
+                                    <p class="card-text text-muted">
+                                        <%= sprint.description.length > 100 ? sprint.description.substring(0, 100) + '...' : sprint.description %>
+                                    </p>
+                                <% } %>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="sprint-info">
+                                    <!-- 时间信息 -->
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            <%= moment(sprint.startDate).format('YYYY-MM-DD') %> 至 
+                                            <%= moment(sprint.endDate).format('YYYY-MM-DD') %>
+                                        </small>
+                                    </div>
+                                    
+                                    <!-- 持续时间 -->
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-hourglass-half me-1"></i>
+                                            持续 <%= sprint.getDuration() %> 天
+                                            <% if (sprint.status === 'active') { %>
+                                                (剩余 <%= sprint.getDaysRemaining() %> 天)
+                                            <% } %>
+                                        </small>
+                                    </div>
+                                    
+                                    <!-- 进度条 -->
+                                    <div class="mb-2">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <small class="text-muted">完成进度</small>
+                                            <small class="text-muted"><%= sprint.getProgress() %>%</small>
+                                        </div>
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar bg-success" 
+                                                 style="width: <%= sprint.getProgress() %>%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 任务统计 -->
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-tasks me-1"></i>
+                                            任务：<%= sprint.stats.completedTasks %>/<%= sprint.stats.totalTasks %>
+                                        </small>
+                                    </div>
+                                    
+                                    <!-- 创建者 -->
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-user me-1"></i>
+                                            创建者：<%= sprint.creator.firstName %> <%= sprint.creator.lastName %>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+            
+            <!-- 分页 -->
+            <% if (pagination.totalPages > 1) { %>
+                <nav aria-label="探险季分页">
+                    <ul class="pagination justify-content-center">
+                        <% if (pagination.hasPrev) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="?page=<%= pagination.page - 1 %>&projectId=<%= filters.projectId %>&status=<%= filters.status %>">
+                                    上一页
+                                </a>
+                            </li>
+                        <% } %>
+                        
+                        <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                            <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>&projectId=<%= filters.projectId %>&status=<%= filters.status %>">
+                                    <%= i %>
+                                </a>
+                            </li>
+                        <% } %>
+                        
+                        <% if (pagination.hasNext) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="?page=<%= pagination.page + 1 %>&projectId=<%= filters.projectId %>&status=<%= filters.status %>">
+                                    下一页
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
+            <% } %>
+            
+        <% } else { %>
+            <!-- 空状态 -->
+            <div class="text-center py-5">
+                <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">暂无探险季</h4>
+                <p class="text-muted">开始创建您的第一个探险季，规划项目的迭代周期</p>
+                <a href="/sprints/create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>
+                    创建探险季
+                </a>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<style>
+.sprint-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.sprint-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.sprint-info small {
+    display: block;
+    line-height: 1.4;
+}
+
+.progress {
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+</style>
+
+<%- include('../partials/footer') %>

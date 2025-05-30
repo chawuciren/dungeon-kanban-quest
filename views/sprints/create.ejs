@@ -1,0 +1,247 @@
+<%- include('../partials/header') %>
+
+<!-- 页面标题 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2>
+                    <i class="fas fa-plus me-2 text-primary"></i>
+                    创建探险季
+                </h2>
+                <p class="text-muted mb-0">规划新的探险周期，设定目标和时间安排</p>
+            </div>
+            <div>
+                <a href="/sprints" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    返回列表
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 创建表单 -->
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-calendar-alt me-2"></i>
+                    探险季信息
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/sprints/create" id="createSprintForm">
+                    <!-- 基本信息 -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">
+                                <i class="fas fa-tag me-1"></i>
+                                探险季名称 <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   placeholder="例如：春季探险季 - 用户系统建设" required>
+                            <div class="form-text">建议包含季节和主要目标</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="projectId" class="form-label">
+                                <i class="fas fa-map me-1"></i>
+                                所属项目 <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="projectId" name="projectId" required>
+                                <option value="">请选择项目</option>
+                                <% projects.forEach(project => { %>
+                                    <option value="<%= project.id %>" <%= selectedProjectId === project.id ? 'selected' : '' %>>
+                                        [<%= project.key %>] <%= project.name %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 探险季目标 -->
+                    <div class="mb-3">
+                        <label for="goal" class="form-label">
+                            <i class="fas fa-bullseye me-1"></i>
+                            探险季目标 <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control" id="goal" name="goal" rows="3" 
+                                  placeholder="描述这个探险季要达成的主要目标..." required></textarea>
+                        <div class="form-text">明确的目标有助于团队聚焦重点</div>
+                    </div>
+
+                    <!-- 详细描述 -->
+                    <div class="mb-3">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-align-left me-1"></i>
+                            详细描述
+                        </label>
+                        <textarea class="form-control" id="description" name="description" rows="4" 
+                                  placeholder="详细描述探险季的背景、范围和期望..."></textarea>
+                    </div>
+
+                    <!-- 时间安排 -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="startDate" class="form-label">
+                                <i class="fas fa-play me-1"></i>
+                                开始时间 <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" class="form-control" id="startDate" name="startDate" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="endDate" class="form-label">
+                                <i class="fas fa-stop me-1"></i>
+                                结束时间 <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" class="form-control" id="endDate" name="endDate" required>
+                        </div>
+                    </div>
+
+                    <!-- 容量设置 -->
+                    <div class="mb-3">
+                        <label for="capacity" class="form-label">
+                            <i class="fas fa-hourglass-half me-1"></i>
+                            团队容量（工时）
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="capacity" name="capacity" 
+                                   min="0" step="0.5" placeholder="例如：80">
+                            <span class="input-group-text">小时</span>
+                        </div>
+                        <div class="form-text">团队在此探险季期间可投入的总工时</div>
+                    </div>
+
+                    <!-- 时间计算显示 -->
+                    <div class="mb-4">
+                        <div class="alert alert-info" id="durationInfo" style="display: none;">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <span id="durationText"></span>
+                        </div>
+                    </div>
+
+                    <!-- 提交按钮 -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="/sprints" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>
+                            取消
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            创建探险季
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    const durationInfo = document.getElementById('durationInfo');
+    const durationText = document.getElementById('durationText');
+
+    // 设置默认开始时间为明天
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    startDateInput.value = tomorrow.toISOString().split('T')[0];
+
+    // 设置默认结束时间为两周后
+    const twoWeeksLater = new Date();
+    twoWeeksLater.setDate(twoWeeksLater.getDate() + 15);
+    endDateInput.value = twoWeeksLater.toISOString().split('T')[0];
+
+    // 计算并显示持续时间
+    function updateDuration() {
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+        
+        if (startDate && endDate && startDate < endDate) {
+            const diffTime = Math.abs(endDate - startDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            durationText.textContent = `探险季持续时间：${diffDays} 天`;
+            durationInfo.style.display = 'block';
+            
+            // 如果时间过长或过短，给出提示
+            if (diffDays > 28) {
+                durationInfo.className = 'alert alert-warning';
+                durationText.textContent += ' (建议探险季不超过4周)';
+            } else if (diffDays < 7) {
+                durationInfo.className = 'alert alert-warning';
+                durationText.textContent += ' (建议探险季至少1周)';
+            } else {
+                durationInfo.className = 'alert alert-info';
+            }
+        } else {
+            durationInfo.style.display = 'none';
+        }
+    }
+
+    // 监听时间变化
+    startDateInput.addEventListener('change', updateDuration);
+    endDateInput.addEventListener('change', updateDuration);
+
+    // 初始计算
+    updateDuration();
+
+    // 表单验证
+    document.getElementById('createSprintForm').addEventListener('submit', function(e) {
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+        
+        if (startDate >= endDate) {
+            e.preventDefault();
+            alert('结束时间必须晚于开始时间');
+            return false;
+        }
+        
+        const diffTime = Math.abs(endDate - startDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays > 42) {
+            if (!confirm('探险季持续时间超过6周，这可能会影响团队的专注度。确定要继续吗？')) {
+                e.preventDefault();
+                return false;
+            }
+        }
+    });
+});
+</script>
+
+<style>
+.form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.input-group-text {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+}
+</style>
+
+<%- include('../partials/footer') %>

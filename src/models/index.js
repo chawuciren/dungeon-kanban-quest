@@ -6,6 +6,7 @@ const UserWallet = require('./UserWallet');
 const Organization = require('./Organization');
 const Project = require('./Project');
 const BountyTask = require('./BountyTask');
+const Sprint = require('./Sprint');
 
 // 定义模型关联关系
 
@@ -104,6 +105,39 @@ BountyTask.hasMany(BountyTask, {
 BountyTask.belongsTo(BountyTask, {
   foreignKey: 'parentTaskId',
   as: 'parentTask'
+});
+
+// Sprint 和 Project 的关联 (N:1)
+Project.hasMany(Sprint, {
+  foreignKey: 'projectId',
+  as: 'sprints',
+  onDelete: 'CASCADE'
+});
+Sprint.belongsTo(Project, {
+  foreignKey: 'projectId',
+  as: 'project'
+});
+
+// Sprint 和 User 的关联 (N:1) - 创建者
+User.hasMany(Sprint, {
+  foreignKey: 'creatorId',
+  as: 'createdSprints',
+  onDelete: 'CASCADE'
+});
+Sprint.belongsTo(User, {
+  foreignKey: 'creatorId',
+  as: 'creator'
+});
+
+// Sprint 和 BountyTask 的关联 (1:N) - 任务可以分配到探险季
+Sprint.hasMany(BountyTask, {
+  foreignKey: 'sprintId',
+  as: 'tasks',
+  onDelete: 'SET NULL'
+});
+BountyTask.belongsTo(Sprint, {
+  foreignKey: 'sprintId',
+  as: 'sprint'
 });
 
 // 同步数据库
@@ -220,6 +254,7 @@ module.exports = {
   Organization,
   Project,
   BountyTask,
+  Sprint,
   syncDatabase,
   createDefaultData
 };
