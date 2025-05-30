@@ -71,7 +71,7 @@
                             荣誉殿堂
                         </a>
                     </li>
-                    <% if (user && user.role === 'guild_master') { %>
+                    <% if (user && user.role === 'admin') { %>
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/organizations') ? 'active' : '' %>" href="/organizations"
                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="公会 - 组织管理">

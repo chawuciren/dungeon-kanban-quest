@@ -3,70 +3,70 @@
 
 const roleConfig = {
   // 👑 公会管理员 (原admin)
-  guild_master: {
+  admin: {
     name: '管理员',
-    alias: '公会管理员',
-    icon: '👑',
+    alias: '神域守护者',
+    icon: '⚡',
     description: '冒险者公会总管，拥有所有权限',
     color: 'danger',
     permissions: ['all']
   },
 
-  // ⚔️ 探险队长 (原manager/产品经理)
-  quest_captain: {
-    name: '项目经理',
-    alias: '探险队长',
-    icon: '⚔️',
+  // 🔮 预言师 (原manager/产品经理)
+  product_manager: {
+    name: '产品经理',
+    alias: '预言师',
+    icon: '🔮',
     description: '地下城攻略规划师，负责项目管理和任务分配',
     color: 'warning',
     permissions: ['project_manage', 'task_assign', 'team_lead']
   },
 
-  // 🛡️ 剑士 (原developer)
-  swordsman: {
+  // ⚔️ 剑士 (原developer)
+  developer: {
     name: '开发者',
     alias: '剑士',
-    icon: '🛡️',
+    icon: '⚔️',
     description: '挥剑斩敌的勇者，负责任务开发和实现',
     color: 'primary',
     permissions: ['task_execute', 'code_develop']
   },
 
-  // 🏹 游侠 (原tester)
-  ranger: {
+  // 🏹 弓箭手 (原tester)
+  tester: {
     name: '测试员',
-    alias: '游侠',
+    alias: '弓箭手',
     icon: '🏹',
     description: '侦察和陷阱专家，负责质量保证和测试',
     color: 'info',
     permissions: ['quality_assurance', 'bug_report']
   },
 
-  // 👤 任务委托人 (原client)
-  quest_giver: {
+  // 💎 委托贵族 (原client)
+  client: {
     name: '客户',
-    alias: '任务委托人',
-    icon: '💰',
+    alias: '委托贵族',
+    icon: '💎',
     description: '发布地下城探险委托的需求方',
     color: 'secondary',
     permissions: ['task_publish', 'requirement_define']
   },
 
-  // ✨ 附魔师 (UI设计师 - 新增)
-  enchanter: {
+  // 🔮 魔法师 (UI设计师)
+  ui_designer: {
     name: 'UI设计师',
-    alias: '附魔师',
-    icon: '✨',
+    alias: '魔法师',
+    icon: '🔮',
     description: '装备美化大师，负责界面设计和用户体验',
     color: 'success',
     permissions: ['ui_design', 'ux_optimize']
   },
 
-  // 🧪 炼金术师 (运维 - 新增)
-  alchemist: {
+  // ✨ 牧师 (运维)
+  devops: {
     name: '运维工程师',
-    alias: '炼金术师',
-    icon: '🧪',
+    alias: '牧师',
+    icon: '✨',
     description: '药剂和装备维护专家，负责系统运维和部署',
     color: 'dark',
     permissions: ['system_maintain', 'deploy_manage']
@@ -125,12 +125,12 @@ const hasPermission = (userRole, permission) => {
 
 // 检查是否为管理员
 const isAdmin = (userRole) => {
-  return userRole === 'guild_master';
+  return userRole === 'admin';
 };
 
 // 检查是否为项目管理者
 const isProjectManager = (userRole) => {
-  return userRole === 'guild_master' || userRole === 'quest_captain';
+  return userRole === 'admin' || userRole === 'product_manager';
 };
 
 module.exports = {

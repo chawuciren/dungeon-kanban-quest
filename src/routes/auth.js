@@ -62,7 +62,7 @@ router.post('/register', [
       password,
       firstName,
       lastName,
-      role: 'swordsman',
+      role: 'developer',
       skillLevel: 'novice',
       status: 'active'
     });

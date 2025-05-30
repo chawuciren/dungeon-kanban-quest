@@ -166,7 +166,7 @@ const createDefaultData = async () => {
       password: 'admin123',
       firstName: '系统',
       lastName: '管理员',
-      role: 'guild_master',
+      role: 'admin',
       skillLevel: 'diamond',
       status: 'active',
       emailVerifiedAt: new Date()

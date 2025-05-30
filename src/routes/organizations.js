@@ -14,7 +14,7 @@ const requireAuth = (req, res, next) => {
 
 // 中间件：检查管理员权限
 const requireAdmin = (req, res, next) => {
-  if (!req.session.user || req.session.user.role !== 'guild_master') {
+  if (!req.session.user || req.session.user.role !== 'admin') {
     req.flash('error', '权限不足');
     return res.redirect('/dashboard');
   }
@@ -236,11 +236,11 @@ router.post('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
 
     // 如果修改了标识符，检查是否已存在
     if (slug !== organization.slug) {
-      const existingOrg = await Organization.findOne({ 
-        where: { 
+      const existingOrg = await Organization.findOne({
+        where: {
           slug: slug.toLowerCase(),
           id: { [Op.ne]: organizationId }
-        } 
+        }
       });
       if (existingOrg) {
         req.flash('error', '公会标识符已存在');

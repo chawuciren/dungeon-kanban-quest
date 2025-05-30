@@ -351,7 +351,7 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
     // 检查权限：只有项目所有者、负责人或管理员可以编辑
     const hasPermission = project.ownerId === req.session.userId ||
                          project.leaderId === req.session.userId ||
-                         req.session.userRole === 'guild_master';
+                         req.session.user.role === 'admin';
 
     if (!hasPermission) {
       req.flash('error', '您没有权限编辑此项目');
@@ -418,7 +418,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
     // 检查权限：只有项目所有者、负责人或管理员可以编辑
     const hasPermission = project.ownerId === req.session.userId ||
                          project.leaderId === req.session.userId ||
-                         req.session.userRole === 'guild_master';
+                         req.session.user.role === 'admin';
 
     if (!hasPermission) {
       req.flash('error', '您没有权限编辑此项目');

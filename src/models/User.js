@@ -56,8 +56,8 @@ const User = sequelize.define('User', {
     defaultValue: 'active'
   },
   role: {
-    type: DataTypes.ENUM('guild_master', 'quest_captain', 'swordsman', 'ranger', 'enchanter', 'alchemist', 'quest_giver'),
-    defaultValue: 'swordsman'
+    type: DataTypes.ENUM('admin', 'product_manager', 'developer', 'tester', 'ui_designer', 'devops', 'client'),
+    defaultValue: 'developer'
   },
   skillLevel: {
     type: DataTypes.ENUM('novice', 'bronze', 'silver', 'gold', 'diamond'),

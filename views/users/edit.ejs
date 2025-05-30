@@ -171,13 +171,13 @@
                                         <% if (isCreateMode) { %>
                                             <option value="">请选择职业</option>
                                         <% } %>
-                                        <option value="guild_master" <% if (!isCreateMode && editUser && editUser.role === 'guild_master') { %>selected<% } %>>⚡ 神域守护者 (管理员)</option>
-                                        <option value="quest_captain" <% if (!isCreateMode && editUser && editUser.role === 'quest_captain') { %>selected<% } %>>🔮 预言师 (产品经理)</option>
-                                        <option value="swordsman" <% if (isCreateMode || (!isCreateMode && editUser && editUser.role === 'swordsman')) { %>selected<% } %>>⚔️ 剑士 (开发者)</option>
-                                        <option value="ranger" <% if (!isCreateMode && editUser && editUser.role === 'ranger') { %>selected<% } %>>🏹 弓箭手 (测试员)</option>
-                                        <option value="quest_giver" <% if (!isCreateMode && editUser && editUser.role === 'quest_giver') { %>selected<% } %>>💎 委托贵族 (客户)</option>
-                                        <option value="enchanter" <% if (!isCreateMode && editUser && editUser.role === 'enchanter') { %>selected<% } %>>🔮 魔法师 (UI设计师)</option>
-                                        <option value="alchemist" <% if (!isCreateMode && editUser && editUser.role === 'alchemist') { %>selected<% } %>>✨ 牧师 (运维工程师)</option>
+                                        <option value="admin" <% if (!isCreateMode && editUser && editUser.role === 'admin') { %>selected<% } %>>⚡ 神域守护者 (管理员)</option>
+                                        <option value="product_manager" <% if (!isCreateMode && editUser && editUser.role === 'product_manager') { %>selected<% } %>>🔮 预言师 (产品经理)</option>
+                                        <option value="developer" <% if (isCreateMode || (!isCreateMode && editUser && editUser.role === 'developer')) { %>selected<% } %>>⚔️ 剑士 (开发者)</option>
+                                        <option value="tester" <% if (!isCreateMode && editUser && editUser.role === 'tester') { %>selected<% } %>>🏹 弓箭手 (测试员)</option>
+                                        <option value="client" <% if (!isCreateMode && editUser && editUser.role === 'client') { %>selected<% } %>>💎 委托贵族 (客户)</option>
+                                        <option value="ui_designer" <% if (!isCreateMode && editUser && editUser.role === 'ui_designer') { %>selected<% } %>>🔮 魔法师 (UI设计师)</option>
+                                        <option value="devops" <% if (!isCreateMode && editUser && editUser.role === 'devops') { %>selected<% } %>>✨ 牧师 (运维工程师)</option>
                                     </select>
                                     <% if (isCreateMode) { %>
                                         <div class="form-text">

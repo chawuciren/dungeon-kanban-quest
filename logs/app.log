@@ -1736,3 +1736,764 @@
   message: 'GET /users/create',
   timestamp: '2025-05-30 22:47:36'
 }
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 22:51:28'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects/create',
+  timestamp: '2025-05-30 22:51:31'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:52:02'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:52:02'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:52:02'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:52:02'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:52:30'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:52:30'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:52:30'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:52:30'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 22:52:35'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks/create?view=list',
+  timestamp: '2025-05-30 22:52:37'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:52:43'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:52:43'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:52:43'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:52:43'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:12'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:12'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:12'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:12'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:24'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:25'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:25'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:25'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:37'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:37'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:37'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:37'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 22:53:40'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 22:53:44'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 22:53:45'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 22:53:46'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:50'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:50'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:50'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:53:50'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 22:53:50'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 22:53:50'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 22:53:54'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 22:54:41'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 22:54:41'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:54:44'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:54:44'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:54:44'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:54:44'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /leaderboard',
+  timestamp: '2025-05-30 22:54:45'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 22:54:46'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 22:54:48'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 22:54:52'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:55:21'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:55:21'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:55:21'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:55:21'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:55:41'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:55:41'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:55:41'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:55:41'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:55:51'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:55:51'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:55:51'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:55:51'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:57:13'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:57:13'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:57:13'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:57:13'
+}
+{
+  message: '收到 SIGINT 信号，开始优雅关闭...',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:57:19'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:57:37'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:57:37'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:57:37'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-30 22:57:37'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 22:57:40'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '5d8be3d0-0380-483b-bee4-1b4bef10caf1',
+  level: 'info',
+  message: 'GET /login',
+  timestamp: '2025-05-30 22:57:40'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 22:57:41'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /login',
+  timestamp: '2025-05-30 22:57:41'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'POST /login',
+  timestamp: '2025-05-30 22:57:47'
+}
+{
+  service: 'kanban-api',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: '用户登录成功: admin',
+  timestamp: '2025-05-30 22:57:48'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 22:57:48'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 22:57:51'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-30 22:57:53'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'POST /users/create',
+  timestamp: '2025-05-30 22:58:57'
+}
+{
+  service: 'kanban-api',
+  userId: 'fa606a05-906f-453c-94cd-b0e181f01a04',
+  createdBy: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: '用户创建成功: ceshikaifa',
+  timestamp: '2025-05-30 22:58:58'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-30 22:58:58'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /logout',
+  timestamp: '2025-05-30 22:59:04'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /',
+  timestamp: '2025-05-30 22:59:05'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /login',
+  timestamp: '2025-05-30 22:59:07'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'POST /login',
+  timestamp: '2025-05-30 22:59:12'
+}
+{
+  service: 'kanban-api',
+  userId: 'fa606a05-906f-453c-94cd-b0e181f01a04',
+  level: 'info',
+  message: '用户登录成功: ceshikaifa',
+  timestamp: '2025-05-30 22:59:13'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'fa606a05-906f-453c-94cd-b0e181f01a04',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 22:59:13'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'fa606a05-906f-453c-94cd-b0e181f01a04',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 22:59:17'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'fa606a05-906f-453c-94cd-b0e181f01a04',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 22:59:18'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'fa606a05-906f-453c-94cd-b0e181f01a04',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-30 22:59:19'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'fa606a05-906f-453c-94cd-b0e181f01a04',
+  level: 'info',
+  message: 'GET /leaderboard',
+  timestamp: '2025-05-30 22:59:20'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'fa606a05-906f-453c-94cd-b0e181f01a04',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 22:59:21'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'fa606a05-906f-453c-94cd-b0e181f01a04',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 22:59:26'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'fa606a05-906f-453c-94cd-b0e181f01a04',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-30 22:59:28'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'fa606a05-906f-453c-94cd-b0e181f01a04',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-30 22:59:32'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'fa606a05-906f-453c-94cd-b0e181f01a04',
+  level: 'info',
+  message: 'GET /projects/d022ab4e-39dd-444b-ad78-03fd0dc64882',
+  timestamp: '2025-05-30 22:59:35'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'fa606a05-906f-453c-94cd-b0e181f01a04',
+  level: 'info',
+  message: 'GET /logout',
+  timestamp: '2025-05-30 22:59:42'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /',
+  timestamp: '2025-05-30 22:59:43'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /login',
+  timestamp: '2025-05-30 22:59:45'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'POST /login',
+  timestamp: '2025-05-30 22:59:51'
+}
+{
+  service: 'kanban-api',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: '用户登录成功: admin',
+  timestamp: '2025-05-30 22:59:52'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-30 22:59:52'
+}

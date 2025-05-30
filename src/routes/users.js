@@ -161,7 +161,7 @@ router.post('/create', requireAuth, requireAdmin, async (req, res) => {
       firstName,
       lastName,
       phone: phone || null,
-      role: role || 'swordsman', // 默认为剑士
+      role: role || 'developer', // 默认为开发者
       skillLevel: skillLevel || 'novice',
       status: status || 'active'
     });
