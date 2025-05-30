@@ -36,10 +36,10 @@
                         <i class="fas fa-columns me-1"></i>看板视图
                     </a>
                 </div>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#publishTaskModal">
+                <a href="/tasks/create<%= queryPrefix ? queryPrefix + '&' : '?' %>view=list" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>
                     发布任务
-                </button>
+                </a>
             </div>
         </div>
     </div>
@@ -284,110 +284,7 @@
     </div>
 </div>
 
-<!-- 发布任务模态框 -->
-<div class="modal fade" id="publishTaskModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-plus me-2"></i>
-                    发布赏金任务
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="publishTaskForm" class="needs-validation" novalidate>
-                    <div class="mb-3">
-                        <label for="taskTitle" class="form-label">任务标题</label>
-                        <input type="text" class="form-control" id="taskTitle" name="title" required>
-                        <div class="invalid-feedback">请输入任务标题</div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label for="taskDescription" class="form-label">任务描述</label>
-                        <textarea class="form-control" id="taskDescription" name="description" rows="4" required></textarea>
-                        <div class="invalid-feedback">请输入任务描述</div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="taskStarLevel" class="form-label">星级难度</label>
-                            <select class="form-select" id="taskStarLevel" name="starLevel" required>
-                                <option value="">选择难度</option>
-                                <option value="1">⭐ 一星 - 简单任务</option>
-                                <option value="2">⭐⭐ 二星 - 常规任务</option>
-                                <option value="3">⭐⭐⭐ 三星 - 复杂任务</option>
-                                <option value="4">⭐⭐⭐⭐ 四星 - 核心任务</option>
-                                <option value="5">⭐⭐⭐⭐⭐ 五星 - 关键任务</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="taskSkillRequired" class="form-label">技能要求</label>
-                            <select class="form-select" id="taskSkillRequired" name="skillRequired" required>
-                                <option value="">选择技能</option>
-                                <option value="novice">🔰 新手</option>
-                                <option value="bronze">🥉 铜牌</option>
-                                <option value="silver">🥈 银牌</option>
-                                <option value="gold">🥇 金牌</option>
-                                <option value="diamond">💎 钻石</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="taskUrgency" class="form-label">紧急程度</label>
-                            <select class="form-select" id="taskUrgency" name="urgencyLevel" required>
-                                <option value="">选择程度</option>
-                                <option value="normal">📅 普通</option>
-                                <option value="important">⚡ 重要</option>
-                                <option value="urgent">🔥 紧急</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="taskDueDate" class="form-label">截止日期</label>
-                            <input type="date" class="form-control" id="taskDueDate" name="dueDate" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="baseReward" class="form-label">基础奖励</label>
-                            <input type="number" class="form-control" id="baseReward" name="baseReward" min="1" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="bonusReward" class="form-label">奖励金</label>
-                            <input type="number" class="form-control" id="bonusReward" name="bonusReward" min="0" value="0">
-                            <div class="form-text">按时完成可获得</div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="rewardCurrency" class="form-label">奖励货币</label>
-                            <select class="form-select" id="rewardCurrency" name="rewardCurrency" required>
-                                <option value="gold">🥇 金币</option>
-                                <option value="silver">🥈 银币</option>
-                                <option value="copper">🥉 铜币</option>
-                                <option value="diamond">💎 钻石</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="estimatedHours" class="form-label">预估工时（小时）</label>
-                        <input type="number" class="form-control" id="estimatedHours" name="estimatedHours" min="0.5" step="0.5">
-                        <div class="form-text">可选，用于工时管理</div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="submit" form="publishTaskForm" class="btn btn-primary">
-                    <i class="fas fa-paper-plane me-2"></i>
-                    发布任务
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
 $(document).ready(function() {
@@ -396,21 +293,7 @@ $(document).ready(function() {
         $('#filterForm').submit();
     });
 
-    // 发布任务表单提交
-    $('#publishTaskForm').submit(function(e) {
-        e.preventDefault();
 
-        const form = this;
-        if (!form.checkValidity()) {
-            e.stopPropagation();
-            form.classList.add('was-validated');
-            return;
-        }
-
-        // 这里应该调用API发布任务
-        KanbanApp.showAlert('任务发布功能正在开发中...', 'info');
-        $('#publishTaskModal').modal('hide');
-    });
 });
 </script>
 

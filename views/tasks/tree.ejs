@@ -11,21 +11,26 @@
                 </h2>
                 <p class="text-muted mb-0">层级化展示任务的从属关系</p>
             </div>
-            <div class="btn-group">
-                <%
-                    const currentQuery = new URLSearchParams();
-                    if (projectId) currentQuery.set('projectId', projectId);
-                    const queryString = currentQuery.toString();
-                    const queryPrefix = queryString ? '?' + queryString : '';
-                %>
-                <a href="/tasks<%= queryPrefix %>" class="btn btn-outline-secondary">
-                    <i class="fas fa-list me-1"></i>列表视图
-                </a>
-                <a href="/tasks/tree<%= queryPrefix %>" class="btn btn-primary active">
-                    <i class="fas fa-sitemap me-1"></i>树形视图
-                </a>
-                <a href="/tasks/kanban<%= queryPrefix %>" class="btn btn-outline-secondary">
-                    <i class="fas fa-columns me-1"></i>看板视图
+            <div class="d-flex gap-2">
+                <div class="btn-group">
+                    <%
+                        const currentQuery = new URLSearchParams();
+                        if (projectId) currentQuery.set('projectId', projectId);
+                        const queryString = currentQuery.toString();
+                        const queryPrefix = queryString ? '?' + queryString : '';
+                    %>
+                    <a href="/tasks<%= queryPrefix %>" class="btn btn-outline-secondary">
+                        <i class="fas fa-list me-1"></i>列表视图
+                    </a>
+                    <a href="/tasks/tree<%= queryPrefix %>" class="btn btn-primary active">
+                        <i class="fas fa-sitemap me-1"></i>树形视图
+                    </a>
+                    <a href="/tasks/kanban<%= queryPrefix %>" class="btn btn-outline-secondary">
+                        <i class="fas fa-columns me-1"></i>看板视图
+                    </a>
+                </div>
+                <a href="/tasks/create<%= queryPrefix ? queryPrefix + '&' : '?' %>view=tree" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>发布任务
                 </a>
             </div>
         </div>
@@ -46,21 +51,11 @@
                             <button type="button" class="btn btn-outline-primary" id="collapseAll">
                                 <i class="fas fa-compress-arrows-alt me-1"></i>全部折叠
                             </button>
-                            <button type="button" class="btn btn-outline-success" onclick="window.location.href='/tasks/create'">
-                                <i class="fas fa-plus me-1"></i>创建根任务
-                            </button>
                         </div>
                     </div>
                     <div class="col-md-6 text-end">
                         <div class="d-flex justify-content-end align-items-center gap-2">
-                            <small class="text-muted">显示层级：</small>
-                            <select class="form-select form-select-sm" id="levelFilter" style="width: auto;">
-                                <option value="all">全部层级</option>
-                                <option value="0">仅根任务</option>
-                                <option value="1">到第2级</option>
-                                <option value="2">到第3级</option>
-                                <option value="3">到第4级</option>
-                            </select>
+                            <small class="text-muted">点击展开按钮查看子任务</small>
                         </div>
                     </div>
                 </div>
@@ -76,7 +71,95 @@
             <div class="card-body">
                 <div id="taskTree" class="task-tree">
                     <% if (rootTasks && rootTasks.length > 0) { %>
-                        <%- include('partials/task-tree-node', { tasks: rootTasks, level: 0 }) %>
+                        <% rootTasks.forEach(task => { %>
+                          <div class="tree-node" data-task-id="<%= task.id %>" data-level="0">
+                            <div class="node-content">
+                              <!-- 展开/折叠按钮 -->
+                              <span class="node-toggle <%= task.hasChildren ? '' : 'no-children' %>" title="hasChildren: <%= task.hasChildren %>">
+                                <% if (task.hasChildren) { %>
+                                  <i class="fas fa-chevron-right"></i>
+                                <% } %>
+                              </span>
+
+                              <!-- 任务图标 -->
+                              <span class="task-icon">
+                                <% if (task.hasChildren) { %>
+                                  <i class="fas fa-folder text-warning"></i>
+                                <% } else { %>
+                                  <i class="fas fa-file-alt text-info"></i>
+                                <% } %>
+                              </span>
+
+                              <!-- 任务标题 -->
+                              <span class="task-title">
+                                <a href="/tasks/<%= task.id %>" class="text-decoration-none text-dark">
+                                  <%= task.title %>
+                                </a>
+                              </span>
+
+                              <!-- 任务元信息 -->
+                              <span class="task-meta">
+                                <!-- 星级 -->
+                                <span class="badge bg-warning">
+                                  <% for(let i = 0; i < task.starLevel; i++) { %>
+                                    <i class="fas fa-star"></i>
+                                  <% } %>
+                                </span>
+
+                                <!-- 技能要求 -->
+                                <span class="badge bg-secondary">
+                                  <% if (task.skillRequired === 'novice') { %><i class="fas fa-seedling text-success"></i>
+                                  <% } else if (task.skillRequired === 'bronze') { %><i class="fas fa-medal text-warning"></i>
+                                  <% } else if (task.skillRequired === 'silver') { %><i class="fas fa-medal text-light"></i>
+                                  <% } else if (task.skillRequired === 'gold') { %><i class="fas fa-crown text-warning"></i>
+                                  <% } else if (task.skillRequired === 'diamond') { %><i class="fas fa-gem text-info"></i>
+                                  <% } else { %><i class="fas fa-seedling text-success"></i><% } %>
+                                </span>
+
+                                <!-- 紧急程度 -->
+                                <span class="badge bg-info">
+                                  <% if (task.urgencyLevel === 'urgent') { %><i class="fas fa-fire text-danger"></i>
+                                  <% } else if (task.urgencyLevel === 'important') { %><i class="fas fa-bolt text-warning"></i>
+                                  <% } else if (task.urgencyLevel === 'normal') { %><i class="fas fa-calendar text-primary"></i>
+                                  <% } else if (task.urgencyLevel === 'delayed') { %><i class="fas fa-clock text-warning"></i>
+                                  <% } else if (task.urgencyLevel === 'frozen') { %><i class="fas fa-snowflake text-info"></i>
+                                  <% } else { %><i class="fas fa-calendar text-primary"></i><% } %>
+                                </span>
+
+                                <!-- 任务状态 -->
+                                <% if (task.status === 'published') { %>
+                                  <span class="badge bg-success">可接单</span>
+                                <% } else if (task.status === 'assigned') { %>
+                                  <span class="badge bg-primary">进行中</span>
+                                <% } else if (task.status === 'completed') { %>
+                                  <span class="badge bg-dark">已完成</span>
+                                <% } else { %>
+                                  <span class="badge bg-secondary"><%= task.status %></span>
+                                <% } %>
+
+                                <!-- 奖励信息 -->
+                                <span class="badge bg-warning text-dark">
+                                  <% if (task.rewardCurrency === 'diamond') { %><i class="fas fa-gem text-info"></i>
+                                  <% } else if (task.rewardCurrency === 'gold') { %><i class="fas fa-coins text-warning"></i>
+                                  <% } else if (task.rewardCurrency === 'silver') { %><i class="fas fa-circle text-secondary"></i>
+                                  <% } else { %><i class="fas fa-circle text-dark"></i><% } %>
+                                  <%= task.totalBudget %>
+                                </span>
+                              </span>
+
+                              <!-- 任务操作按钮 -->
+                              <span class="task-actions">
+                                <button class="btn btn-sm btn-outline-primary add-subtask-btn" data-parent-id="<%= task.id %>" title="添加子任务">
+                                  <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary view-task-btn" data-task-id="<%= task.id %>" title="查看详情">
+                                  <i class="fas fa-eye"></i>
+                                </button>
+                              </span>
+                            </div>
+                            <!-- 子任务容器将通过懒加载动态添加 -->
+                          </div>
+                        <% }) %>
                     <% } else { %>
                         <div class="text-center py-5">
                             <i class="fas fa-sitemap fa-3x text-muted mb-3"></i>
@@ -172,11 +255,15 @@
 }
 
 .node-toggle {
+    display: inline-block;
     width: 20px;
+    height: 20px;
     text-align: center;
+    line-height: 20px;
     cursor: pointer;
     color: #6c757d;
     margin-right: 8px;
+    transition: transform 0.2s ease;
 }
 
 .node-toggle:hover {
@@ -185,6 +272,17 @@
 
 .node-toggle.expanded {
     transform: rotate(90deg);
+}
+
+.node-toggle:empty {
+    cursor: default;
+    pointer-events: none;
+}
+
+.node-toggle.no-children {
+    cursor: default;
+    pointer-events: none;
+    opacity: 0.3;
 }
 
 .task-icon {
@@ -246,86 +344,116 @@
 }
 </style>
 
+
+
+<%- include('../partials/footer') %>
+
 <script>
-$(document).ready(function() {
-    let currentTaskId = null;
+// 等待jQuery加载完成
+(function() {
+    function initTreeView() {
+        if (typeof $ === 'undefined') {
+            setTimeout(initTreeView, 100);
+            return;
+        }
 
-    // 全部展开
-    $('#expandAll').click(function() {
-        $('.node-children').show();
-        $('.node-toggle').addClass('expanded');
-        $('.node-toggle i').removeClass('fa-chevron-right').addClass('fa-chevron-down');
-    });
+        $(document).ready(function() {
+            let currentTaskId = null;
 
-    // 全部折叠
-    $('#collapseAll').click(function() {
-        $('.node-children').hide();
-        $('.node-toggle').removeClass('expanded');
-        $('.node-toggle i').removeClass('fa-chevron-down').addClass('fa-chevron-right');
-    });
+            // 全部展开
+            $('#expandAll').click(function() {
+                $('.node-children').show();
+                $('.node-toggle').addClass('expanded');
+                $('.node-toggle i').removeClass('fa-chevron-right').addClass('fa-chevron-down');
+            });
 
-    // 层级筛选
-    $('#levelFilter').change(function() {
-        const maxLevel = $(this).val();
-        if (maxLevel === 'all') {
-            $('.tree-node').show();
-        } else {
-            $('.tree-node').each(function() {
-                const level = parseInt($(this).data('level'));
-                if (level <= parseInt(maxLevel)) {
-                    $(this).show();
+            // 全部折叠
+            $('#collapseAll').click(function() {
+                $('.node-children').hide();
+                $('.node-toggle').removeClass('expanded');
+                $('.node-toggle i').removeClass('fa-chevron-down').addClass('fa-chevron-right');
+            });
+
+            // 节点展开/折叠
+            $(document).on('click', '.node-toggle:not(.no-children)', function(e) {
+                e.stopPropagation();
+                const $toggle = $(this);
+                const $node = $toggle.closest('.tree-node');
+                const $children = $node.find('> .node-children');
+                const taskId = $node.data('task-id');
+
+                // 确保只有有子任务的节点才能展开
+                if ($toggle.hasClass('no-children')) {
+                    return;
+                }
+
+                if ($children.length === 0) {
+                    // 懒加载子任务
+                    loadSubtasks(taskId, $node);
                 } else {
-                    $(this).hide();
+                    // 切换显示/隐藏
+                    $children.toggle();
+                    $toggle.toggleClass('expanded');
+                    $toggle.find('i').toggleClass('fa-chevron-right fa-chevron-down');
                 }
             });
-        }
-    });
 
-    // 节点展开/折叠
-    $(document).on('click', '.node-toggle', function(e) {
-        e.stopPropagation();
-        const $toggle = $(this);
-        const $node = $toggle.closest('.tree-node');
-        const $children = $node.find('> .node-children');
-        const taskId = $node.data('task-id');
+            // 任务右键菜单
+            $(document).on('contextmenu', '.node-content', function(e) {
+                e.preventDefault();
+                currentTaskId = $(this).closest('.tree-node').data('task-id');
+                $('#taskActionModal').modal('show');
+            });
 
-        if ($children.length === 0) {
-            // 懒加载子任务
-            loadSubtasks(taskId, $node);
-        } else {
-            // 切换显示/隐藏
-            $children.toggle();
-            $toggle.toggleClass('expanded');
-            $toggle.find('i').toggleClass('fa-chevron-right fa-chevron-down');
-        }
-    });
 
-    // 任务右键菜单
-    $(document).on('contextmenu', '.node-content', function(e) {
-        e.preventDefault();
-        currentTaskId = $(this).closest('.tree-node').data('task-id');
-        $('#taskActionModal').modal('show');
-    });
 
-    // 任务操作
-    $('#addSubtaskBtn').click(function() {
-        window.location.href = `/tasks/create?parent=${currentTaskId}`;
-    });
+            // 添加子任务按钮（事件委托）
+            $(document).on('click', '.add-subtask-btn', function(e) {
+                e.stopPropagation();
+                const parentId = $(this).data('parent-id');
+                window.location.href = `/tasks/create?parent=${parentId}`;
+            });
 
-    $('#editTaskBtn').click(function() {
-        KanbanApp.showAlert('编辑功能正在开发中...', 'info');
-    });
+            // 查看任务按钮（事件委托）
+            $(document).on('click', '.view-task-btn', function(e) {
+                e.stopPropagation();
+                const taskId = $(this).data('task-id');
+                window.location.href = `/tasks/${taskId}`;
+            });
 
-    $('#viewTaskBtn').click(function() {
-        window.location.href = `/tasks/${currentTaskId}`;
-    });
+            // 任务操作
+            $('#addSubtaskBtn').click(function() {
+                window.location.href = `/tasks/create?parent=${currentTaskId}`;
+            });
 
-    $('#deleteTaskBtn').click(function() {
-        KanbanApp.confirmAction('确定要删除这个任务吗？', function() {
-            KanbanApp.showAlert('删除功能正在开发中...', 'info');
+            $('#editTaskBtn').click(function() {
+                if (window.KanbanApp && window.KanbanApp.showAlert) {
+                    KanbanApp.showAlert('编辑功能正在开发中...', 'info');
+                } else {
+                    alert('编辑功能正在开发中...');
+                }
+            });
+
+            $('#viewTaskBtn').click(function() {
+                window.location.href = `/tasks/${currentTaskId}`;
+            });
+
+            $('#deleteTaskBtn').click(function() {
+                if (window.KanbanApp && window.KanbanApp.confirmAction) {
+                    KanbanApp.confirmAction('确定要删除这个任务吗？', function() {
+                        KanbanApp.showAlert('删除功能正在开发中...', 'info');
+                    });
+                } else {
+                    if (confirm('确定要删除这个任务吗？')) {
+                        alert('删除功能正在开发中...');
+                    }
+                }
+            });
         });
-    });
-});
+    }
+
+    initTreeView();
+})();
 
 // 懒加载子任务
 function loadSubtasks(taskId, $parentNode) {
@@ -334,7 +462,7 @@ function loadSubtasks(taskId, $parentNode) {
     // 显示加载状态
     $parentNode.append('<div class="loading-subtasks"><i class="fas fa-spinner fa-spin me-2"></i>加载中...</div>');
 
-    $.get(`/tasks/${taskId}/subtasks?level=${level}`)
+    $.get(`/tasks/${taskId}/subtasks?level=1`)
         .done(function(response) {
             if (response.success && response.data.length > 0) {
                 const subtasksHtml = generateSubtasksHtml(response.data, level);
@@ -347,12 +475,18 @@ function loadSubtasks(taskId, $parentNode) {
                 $toggle.find('i').removeClass('fa-chevron-right').addClass('fa-chevron-down');
             } else {
                 $parentNode.find('.loading-subtasks').remove();
-                KanbanApp.showAlert('没有子任务', 'info', 2000);
+                if (window.KanbanApp && window.KanbanApp.showAlert) {
+                    KanbanApp.showAlert('没有子任务', 'info', 2000);
+                }
             }
         })
         .fail(function() {
             $parentNode.find('.loading-subtasks').remove();
-            KanbanApp.showAlert('加载子任务失败', 'danger');
+            if (window.KanbanApp && window.KanbanApp.showAlert) {
+                KanbanApp.showAlert('加载子任务失败', 'danger');
+            } else {
+                alert('加载子任务失败');
+            }
         });
 }
 
@@ -360,40 +494,49 @@ function loadSubtasks(taskId, $parentNode) {
 function generateSubtasksHtml(subtasks, level) {
     let html = '';
     subtasks.forEach(task => {
-        const stars = '⭐'.repeat(task.starLevel);
+        const stars = '<i class="fas fa-star"></i>'.repeat(task.starLevel);
         const skillIcons = {
-            novice: '🔰',
-            bronze: '🥉',
-            silver: '🥈',
-            gold: '🥇',
-            diamond: '💎'
+            novice: '<i class="fas fa-seedling text-success"></i>',
+            bronze: '<i class="fas fa-medal text-warning"></i>',
+            silver: '<i class="fas fa-medal text-light"></i>',
+            gold: '<i class="fas fa-crown text-warning"></i>',
+            diamond: '<i class="fas fa-gem text-info"></i>'
         };
         const urgencyIcons = {
-            normal: '📅',
-            important: '⚡',
-            urgent: '🔥',
-            delayed: '🕐',
-            frozen: '❄️'
+            normal: '<i class="fas fa-calendar text-primary"></i>',
+            important: '<i class="fas fa-bolt text-warning"></i>',
+            urgent: '<i class="fas fa-fire text-danger"></i>',
+            delayed: '<i class="fas fa-clock text-warning"></i>',
+            frozen: '<i class="fas fa-snowflake text-info"></i>'
         };
 
-        const hasChildren = task.hasChildren || task.hasDeepChildren;
+        const hasChildren = task.hasChildren;
         const toggleIcon = hasChildren ? '<i class="fas fa-chevron-right"></i>' : '';
-        const taskIcon = hasChildren ? '📁' : '📝';
+        const taskIcon = hasChildren ? '<i class="fas fa-folder text-warning"></i>' : '<i class="fas fa-file-alt text-info"></i>';
+
+        const toggleClass = hasChildren ? '' : 'no-children';
 
         html += `
             <div class="tree-node" data-task-id="${task.id}" data-level="${level}">
                 <div class="node-content">
-                    <span class="node-toggle">${toggleIcon}</span>
+                    <span class="node-toggle ${toggleClass}">${toggleIcon}</span>
                     <span class="task-icon">${taskIcon}</span>
-                    <span class="task-title">${task.title}</span>
+                    <span class="task-title">
+                        <a href="/tasks/${task.id}" class="text-decoration-none text-dark">
+                            ${task.title}
+                        </a>
+                    </span>
                     <span class="task-meta">
                         <span class="badge bg-warning">${stars}</span>
-                        <span class="badge bg-secondary">${skillIcons[task.skillRequired] || '🔰'}</span>
-                        <span class="badge bg-info">${urgencyIcons[task.urgencyLevel] || '📅'}</span>
+                        <span class="badge bg-secondary">${skillIcons[task.skillRequired] || skillIcons.novice}</span>
+                        <span class="badge bg-info">${urgencyIcons[task.urgencyLevel] || urgencyIcons.normal}</span>
                     </span>
                     <span class="task-actions">
-                        <button class="btn btn-sm btn-outline-primary" onclick="addSubtask('${task.id}')">
+                        <button class="btn btn-sm btn-outline-primary add-subtask-btn" data-parent-id="${task.id}" title="添加子任务">
                             <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary view-task-btn" data-task-id="${task.id}" title="查看详情">
+                            <i class="fas fa-eye"></i>
                         </button>
                     </span>
                 </div>
@@ -403,10 +546,5 @@ function generateSubtasksHtml(subtasks, level) {
     return html;
 }
 
-// 添加子任务
-function addSubtask(parentId) {
-    window.location.href = `/tasks/create?parent=${parentId}`;
-}
-</script>
 
-<%- include('../partials/footer') %>
+</script>

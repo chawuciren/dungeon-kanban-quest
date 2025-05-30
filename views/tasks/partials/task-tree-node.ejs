@@ -2,18 +2,20 @@
   <div class="tree-node" data-task-id="<%= task.id %>" data-level="<%= level %>">
     <div class="node-content">
       <!-- 展开/折叠按钮 -->
-      <span class="node-toggle">
-        <% if (task.hasChildren || (task.subtasks && task.subtasks.length > 0)) { %>
+      <span class="node-toggle" title="hasChildren: <%= task.hasChildren %>">
+        <% if (task.hasChildren) { %>
           <i class="fas fa-chevron-right"></i>
+        <% } else { %>
+          <!-- 无子任务 -->
         <% } %>
       </span>
 
       <!-- 任务图标 -->
       <span class="task-icon">
-        <% if (task.hasChildren || (task.subtasks && task.subtasks.length > 0)) { %>
-          📁
+        <% if (task.hasChildren) { %>
+          <i class="fas fa-folder text-warning"></i>
         <% } else { %>
-          📝
+          <i class="fas fa-file-alt text-info"></i>
         <% } %>
       </span>
 
@@ -28,27 +30,29 @@
       <span class="task-meta">
         <!-- 星级 -->
         <span class="badge bg-warning">
-          <%= '⭐'.repeat(task.starLevel) %>
+          <% for(let i = 0; i < task.starLevel; i++) { %>
+            <i class="fas fa-star"></i>
+          <% } %>
         </span>
 
         <!-- 技能要求 -->
         <span class="badge bg-secondary">
-          <% if (task.skillRequired === 'novice') { %>🔰
-          <% } else if (task.skillRequired === 'bronze') { %>🥉
-          <% } else if (task.skillRequired === 'silver') { %>🥈
-          <% } else if (task.skillRequired === 'gold') { %>🥇
-          <% } else if (task.skillRequired === 'diamond') { %>💎
-          <% } else { %>🔰<% } %>
+          <% if (task.skillRequired === 'novice') { %><i class="fas fa-seedling text-success"></i>
+          <% } else if (task.skillRequired === 'bronze') { %><i class="fas fa-medal text-warning"></i>
+          <% } else if (task.skillRequired === 'silver') { %><i class="fas fa-medal text-light"></i>
+          <% } else if (task.skillRequired === 'gold') { %><i class="fas fa-crown text-warning"></i>
+          <% } else if (task.skillRequired === 'diamond') { %><i class="fas fa-gem text-info"></i>
+          <% } else { %><i class="fas fa-seedling text-success"></i><% } %>
         </span>
 
         <!-- 紧急程度 -->
         <span class="badge bg-info">
-          <% if (task.urgencyLevel === 'urgent') { %>🔥
-          <% } else if (task.urgencyLevel === 'important') { %>⚡
-          <% } else if (task.urgencyLevel === 'normal') { %>📅
-          <% } else if (task.urgencyLevel === 'delayed') { %>🕐
-          <% } else if (task.urgencyLevel === 'frozen') { %>❄️
-          <% } else { %>📅<% } %>
+          <% if (task.urgencyLevel === 'urgent') { %><i class="fas fa-fire text-danger"></i>
+          <% } else if (task.urgencyLevel === 'important') { %><i class="fas fa-bolt text-warning"></i>
+          <% } else if (task.urgencyLevel === 'normal') { %><i class="fas fa-calendar text-primary"></i>
+          <% } else if (task.urgencyLevel === 'delayed') { %><i class="fas fa-clock text-warning"></i>
+          <% } else if (task.urgencyLevel === 'frozen') { %><i class="fas fa-snowflake text-info"></i>
+          <% } else { %><i class="fas fa-calendar text-primary"></i><% } %>
         </span>
 
         <!-- 任务状态 -->
@@ -64,10 +68,10 @@
 
         <!-- 奖励信息 -->
         <span class="badge bg-warning text-dark">
-          <% if (task.rewardCurrency === 'diamond') { %>💎
-          <% } else if (task.rewardCurrency === 'gold') { %>🥇
-          <% } else if (task.rewardCurrency === 'silver') { %>🥈
-          <% } else { %>🥉<% } %>
+          <% if (task.rewardCurrency === 'diamond') { %><i class="fas fa-gem text-info"></i>
+          <% } else if (task.rewardCurrency === 'gold') { %><i class="fas fa-coins text-warning"></i>
+          <% } else if (task.rewardCurrency === 'silver') { %><i class="fas fa-circle text-secondary"></i>
+          <% } else { %><i class="fas fa-circle text-dark"></i><% } %>
           <%= task.totalBudget %>
         </span>
       </span>
@@ -75,22 +79,16 @@
       <!-- 任务操作按钮 -->
       <span class="task-actions">
         <% if (level < 3) { %>
-          <button class="btn btn-sm btn-outline-primary" onclick="window.location.href='/tasks/create?parent=<%= task.id %>'" title="添加子任务">
+          <button class="btn btn-sm btn-outline-primary add-subtask-btn" data-parent-id="<%= task.id %>" title="添加子任务">
             <i class="fas fa-plus"></i>
           </button>
         <% } %>
-        <button class="btn btn-sm btn-outline-secondary" onclick="window.location.href='/tasks/<%= task.id %>'" title="查看详情">
+        <button class="btn btn-sm btn-outline-secondary view-task-btn" data-task-id="<%= task.id %>" title="查看详情">
           <i class="fas fa-eye"></i>
         </button>
       </span>
     </div>
-
-    <!-- 子任务容器 -->
-    <% if (task.subtasks && task.subtasks.length > 0) { %>
-      <div class="node-children" style="display: none;">
-        <%- include('task-tree-node', { tasks: task.subtasks, level: level + 1 }) %>
-      </div>
-    <% } %>
+    <!-- 子任务容器将通过懒加载动态添加 -->
   </div>
 <% }) %>
 

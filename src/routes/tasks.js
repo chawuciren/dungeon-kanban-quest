@@ -173,10 +173,14 @@ router.get('/tree', async (req, res) => {
       offset: (page - 1) * limit
     });
 
-    // 为每个根任务加载子任务（懒加载，只加载第一层）
+    // 检查每个根任务是否有子任务（不预加载子任务）
     for (let task of rootTasks) {
-      task.dataValues.subtasks = await getSubtasks(task.id, 1);
-      task.dataValues.hasChildren = task.dataValues.subtasks.length > 0;
+      const hasChildren = await BountyTask.count({
+        where: { parentTaskId: task.id }
+      });
+      task.dataValues.hasChildren = hasChildren > 0;
+      task.hasChildren = hasChildren > 0; // 同时设置在实例上
+
     }
 
     const totalPages = Math.ceil(count / limit);
@@ -358,9 +362,33 @@ router.get('/:id', async (req, res) => {
 router.get('/:id/subtasks', async (req, res) => {
   try {
     const parentId = req.params.id;
-    const level = parseInt(req.query.level) || 1;
 
-    const subtasks = await getSubtasks(parentId, level);
+    // 直接获取子任务，不递归加载
+    const subtasks = await BountyTask.findAll({
+      where: { parentTaskId: parentId },
+      include: [
+        {
+          model: User,
+          as: 'publisher',
+          attributes: ['id', 'username', 'firstName', 'lastName']
+        },
+        {
+          model: User,
+          as: 'assignee',
+          attributes: ['id', 'username', 'firstName', 'lastName']
+        }
+      ],
+      order: [['createdAt', 'ASC']]
+    });
+
+    // 检查每个子任务是否还有子任务
+    for (let subtask of subtasks) {
+      const hasChildren = await BountyTask.count({
+        where: { parentTaskId: subtask.id }
+      });
+      subtask.dataValues.hasChildren = hasChildren > 0;
+      subtask.hasChildren = hasChildren > 0; // 同时设置在实例上
+    }
 
     res.json({
       success: true,
