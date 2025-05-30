@@ -52,15 +52,7 @@ const Project = sequelize.define('Project', {
     type: DataTypes.ENUM('public', 'private', 'internal'),
     defaultValue: 'private'
   },
-  organizationId: {
-    type: DataTypes.UUID,
-    allowNull: false,
-    field: 'organization_id',
-    references: {
-      model: 'organizations',
-      key: 'id'
-    }
-  },
+  // organizationId 字段已移除，改为通过 project_organizations 表管理多对多关系
   ownerId: {
     type: DataTypes.UUID,
     allowNull: false,
@@ -157,10 +149,7 @@ const Project = sequelize.define('Project', {
   indexes: [
     {
       unique: true,
-      fields: ['organization_id', 'key']
-    },
-    {
-      fields: ['organization_id']
+      fields: ['key'] // 项目key全局唯一
     },
     {
       fields: ['owner_id']
@@ -193,13 +182,13 @@ Project.prototype.updateBudget = async function(currency, amount, operation = 'a
   if (!this.budgetPool[currency]) {
     this.budgetPool[currency] = 0;
   }
-  
+
   if (operation === 'add') {
     this.budgetPool[currency] += amount;
   } else if (operation === 'subtract') {
     this.budgetPool[currency] = Math.max(0, this.budgetPool[currency] - amount);
   }
-  
+
   this.changed('budgetPool', true);
   return this.save();
 };
@@ -208,10 +197,10 @@ Project.prototype.allocateBudget = async function(currency, amount) {
   if (this.budgetPool[currency] < amount) {
     throw new Error('预算不足');
   }
-  
+
   this.budgetPool[currency] -= amount;
   this.budgetPool.allocated[currency] += amount;
-  
+
   this.changed('budgetPool', true);
   return this.save();
 };
@@ -220,10 +209,10 @@ Project.prototype.spendBudget = async function(currency, amount) {
   if (this.budgetPool.allocated[currency] < amount) {
     throw new Error('分配预算不足');
   }
-  
+
   this.budgetPool.allocated[currency] -= amount;
   this.budgetPool.spent[currency] += amount;
-  
+
   this.changed('budgetPool', true);
   return this.save();
 };
@@ -235,12 +224,11 @@ Project.prototype.updateStats = async function(newStats) {
 };
 
 // 类方法
-Project.findByKey = function(organizationId, key) {
-  return this.findOne({ 
-    where: { 
-      organizationId,
-      key 
-    } 
+Project.findByKey = function(key) {
+  return this.findOne({
+    where: {
+      key
+    }
   });
 };
 

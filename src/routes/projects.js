@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Project, Organization, User, BountyTask } = require('../models');
+const { Project, Organization, User, BountyTask, ProjectOrganization, ProjectMember } = require('../models');
 const { Op } = require('sequelize');
 const logger = require('../config/logger');
 
@@ -46,8 +46,9 @@ router.get('/', requireAuth, async (req, res) => {
       include: [
         {
           model: Organization,
-          as: 'organization',
-          attributes: ['id', 'name', 'slug']
+          as: 'organizations',
+          attributes: ['id', 'name', 'slug'],
+          through: { attributes: ['relationshipType'] }
         },
         {
           model: User,
@@ -185,16 +186,15 @@ router.post('/create', requireAuth, async (req, res) => {
     } = req.body;
 
     // 验证必填字段
-    if (!name || !key || !organizationId) {
+    if (!name || !key) {
       req.flash('error', '请填写必填字段');
       return res.redirect('/projects/create');
     }
 
-    // 检查项目key是否重复
+    // 检查项目key是否重复（全局唯一）
     const existingProject = await Project.findOne({
       where: {
-        organizationId,
-        key
+        key: key.toUpperCase()
       }
     });
 
@@ -212,11 +212,37 @@ router.post('/create', requireAuth, async (req, res) => {
       starLevel: parseInt(starLevel) || 3,
       status: 'planning',
       visibility: visibility || 'private',
-      organizationId,
       ownerId: req.session.userId,
       leaderId: leaderId || req.session.userId,
       startDate: startDate || null,
       endDate: endDate || null
+    });
+
+    // 如果选择了组织，创建项目与组织的关联
+    if (organizationId) {
+      await ProjectOrganization.create({
+        projectId: project.id,
+        organizationId: organizationId,
+        relationshipType: 'primary',
+        status: 'active'
+      });
+    }
+
+    // 添加创建者为项目成员
+    await ProjectMember.create({
+      projectId: project.id,
+      userId: req.session.userId,
+      roles: ['admin', 'product_manager'],
+      status: 'active',
+      permissions: {
+        canManageProject: true,
+        canManageMembers: true,
+        canCreateTasks: true,
+        canAssignTasks: true,
+        canDeleteTasks: true,
+        canManageBudget: true,
+        canViewReports: true
+      }
     });
 
     logger.info(`项目创建成功: ${project.name}`, {
@@ -243,7 +269,9 @@ router.get('/:id', requireAuth, async (req, res) => {
       include: [
         {
           model: Organization,
-          as: 'organization'
+          as: 'organizations',
+          attributes: ['id', 'name', 'slug'],
+          through: { attributes: ['relationshipType'] }
         },
         {
           model: User,
@@ -254,6 +282,15 @@ router.get('/:id', requireAuth, async (req, res) => {
           model: User,
           as: 'leader',
           attributes: ['id', 'firstName', 'lastName', 'avatar', 'email']
+        },
+        {
+          model: User,
+          as: 'members',
+          attributes: ['id', 'firstName', 'lastName', 'avatar', 'email'],
+          through: {
+            attributes: ['roles', 'status', 'joinedAt'],
+            as: 'membership'
+          }
         }
       ]
     });
@@ -328,7 +365,9 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
       include: [
         {
           model: Organization,
-          as: 'organization'
+          as: 'organizations',
+          attributes: ['id', 'name', 'slug'],
+          through: { attributes: ['relationshipType'] }
         },
         {
           model: User,
@@ -425,18 +464,17 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       return res.redirect(`/projects/${projectId}`);
     }
 
-    // 如果修改了项目key，检查是否在同一组织内重复
+    // 如果修改了项目key，检查是否全局重复
     if (key !== project.key) {
       const existingProject = await Project.findOne({
         where: {
-          organizationId: organizationId || project.organizationId,
           key: key.toUpperCase(),
           id: { [Op.ne]: projectId }
         }
       });
 
       if (existingProject) {
-        req.flash('error', '项目标识在该组织内已存在');
+        req.flash('error', '项目标识已存在');
         return res.redirect(`/projects/${projectId}/edit`);
       }
     }
@@ -450,11 +488,29 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       starLevel: parseInt(starLevel) || project.starLevel,
       status: status || project.status,
       visibility: visibility || project.visibility,
-      organizationId: organizationId || project.organizationId,
       leaderId: leaderId || project.leaderId,
       startDate: startDate || null,
       endDate: endDate || null
     });
+
+    // 如果修改了组织关联，更新项目与组织的关联
+    if (organizationId) {
+      // 先删除现有的主要关联
+      await ProjectOrganization.destroy({
+        where: {
+          projectId: project.id,
+          relationshipType: 'primary'
+        }
+      });
+
+      // 创建新的主要关联
+      await ProjectOrganization.create({
+        projectId: project.id,
+        organizationId: organizationId,
+        relationshipType: 'primary',
+        status: 'active'
+      });
+    }
 
     logger.info(`项目更新成功: ${project.name}`, {
       userId: req.session.userId,
@@ -468,6 +524,165 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
     logger.error('更新项目失败:', error);
     req.flash('error', '更新项目失败，请稍后重试');
     res.redirect(`/projects/${req.params.id}/edit`);
+  }
+});
+
+// 项目成员管理页面
+router.get('/:id/members', requireAuth, async (req, res) => {
+  try {
+    const projectId = req.params.id;
+
+    const project = await Project.findByPk(projectId, {
+      include: [
+        {
+          model: User,
+          as: 'members',
+          attributes: ['id', 'firstName', 'lastName', 'avatar', 'email', 'username'],
+          through: {
+            attributes: ['roles', 'status', 'joinedAt', 'permissions'],
+            as: 'membership'
+          }
+        },
+        {
+          model: User,
+          as: 'owner',
+          attributes: ['id', 'firstName', 'lastName']
+        }
+      ]
+    });
+
+    if (!project) {
+      req.flash('error', '项目不存在');
+      return res.redirect('/projects');
+    }
+
+    // 检查权限：只有项目所有者、负责人或管理员可以管理成员
+    const hasPermission = project.ownerId === req.session.userId ||
+                         project.leaderId === req.session.userId ||
+                         req.session.user.role === 'admin';
+
+    if (!hasPermission) {
+      req.flash('error', '您没有权限管理此项目的成员');
+      return res.redirect(`/projects/${projectId}`);
+    }
+
+    // 获取所有用户（用于添加新成员）
+    const allUsers = await User.findAll({
+      attributes: ['id', 'firstName', 'lastName', 'username', 'email'],
+      where: {
+        id: {
+          [Op.notIn]: project.members.map(member => member.id)
+        }
+      },
+      order: [['firstName', 'ASC'], ['lastName', 'ASC']]
+    });
+
+    res.render('projects/members', {
+      title: `${project.name} - 成员管理`,
+      project,
+      allUsers
+    });
+
+  } catch (error) {
+    logger.error('获取项目成员失败:', error);
+    req.flash('error', '获取项目成员失败');
+    res.redirect('/projects');
+  }
+});
+
+// 添加项目成员
+router.post('/:id/members', requireAuth, async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const { userId, roles } = req.body;
+
+    const project = await Project.findByPk(projectId);
+    if (!project) {
+      req.flash('error', '项目不存在');
+      return res.redirect('/projects');
+    }
+
+    // 检查权限
+    const hasPermission = project.ownerId === req.session.userId ||
+                         project.leaderId === req.session.userId ||
+                         req.session.user.role === 'admin';
+
+    if (!hasPermission) {
+      req.flash('error', '您没有权限管理此项目的成员');
+      return res.redirect(`/projects/${projectId}`);
+    }
+
+    // 检查用户是否已经是成员
+    const existingMember = await ProjectMember.findOne({
+      where: { projectId, userId }
+    });
+
+    if (existingMember) {
+      req.flash('error', '用户已经是项目成员');
+      return res.redirect(`/projects/${projectId}/members`);
+    }
+
+    // 添加成员
+    await ProjectMember.create({
+      projectId,
+      userId,
+      roles: Array.isArray(roles) ? roles : [roles],
+      status: 'active',
+      invitedBy: req.session.userId,
+      permissions: {
+        canManageProject: false,
+        canManageMembers: false,
+        canCreateTasks: true,
+        canAssignTasks: false,
+        canDeleteTasks: false,
+        canManageBudget: false,
+        canViewReports: true
+      }
+    });
+
+    req.flash('success', '成员添加成功');
+    res.redirect(`/projects/${projectId}/members`);
+
+  } catch (error) {
+    logger.error('添加项目成员失败:', error);
+    req.flash('error', '添加成员失败');
+    res.redirect(`/projects/${req.params.id}/members`);
+  }
+});
+
+// 移除项目成员
+router.delete('/:id/members/:userId', requireAuth, async (req, res) => {
+  try {
+    const { id: projectId, userId } = req.params;
+
+    const project = await Project.findByPk(projectId);
+    if (!project) {
+      return res.status(404).json({ error: '项目不存在' });
+    }
+
+    // 检查权限
+    const hasPermission = project.ownerId === req.session.userId ||
+                         project.leaderId === req.session.userId ||
+                         req.session.user.role === 'admin';
+
+    if (!hasPermission) {
+      return res.status(403).json({ error: '权限不足' });
+    }
+
+    // 不能移除项目所有者
+    if (userId === project.ownerId) {
+      return res.status(400).json({ error: '不能移除项目所有者' });
+    }
+
+    await ProjectMember.destroy({
+      where: { projectId, userId }
+    });
+
+    res.json({ success: true });
+
+  } catch (error) {
+    logger.error('移除项目成员失败:', error);
+    res.status(500).json({ error: '移除成员失败' });
   }
 });
 

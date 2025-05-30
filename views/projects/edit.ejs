@@ -108,16 +108,27 @@
 
                                 <div class="mb-3">
                                     <label for="organizationId" class="form-label">
-                                        所属公会 <span class="text-danger">*</span>
+                                        主要公会
                                     </label>
-                                    <select class="form-select" id="organizationId" name="organizationId" required>
-                                        <option value="">请选择公会</option>
+                                    <select class="form-select" id="organizationId" name="organizationId">
+                                        <option value="">无主要公会（独立项目）</option>
                                         <% organizations.forEach(org => { %>
-                                            <option value="<%= org.id %>" <%= (!isCreateMode && project.organizationId === org.id) ? 'selected' : '' %>>
+                                            <%
+                                                let isSelected = false;
+                                                if (!isCreateMode && project.organizations) {
+                                                    isSelected = project.organizations.some(projOrg =>
+                                                        projOrg.id === org.id &&
+                                                        projOrg.ProjectOrganization &&
+                                                        projOrg.ProjectOrganization.relationshipType === 'primary'
+                                                    );
+                                                }
+                                            %>
+                                            <option value="<%= org.id %>" <%= isSelected ? 'selected' : '' %>>
                                                 <%= org.name %>
                                             </option>
                                         <% }) %>
                                     </select>
+                                    <div class="form-text">选择项目的主要归属公会，可以为空表示独立项目</div>
                                 </div>
 
                                 <div class="mb-3">
@@ -243,9 +254,8 @@ $(document).ready(function() {
     $('form').on('submit', function(e) {
         const name = $('#name').val().trim();
         const key = $('#key').val().trim();
-        const organizationId = $('#organizationId').val();
 
-        if (!name || !key || !organizationId) {
+        if (!name || !key) {
             e.preventDefault();
             alert('请填写所有必填字段');
             return false;

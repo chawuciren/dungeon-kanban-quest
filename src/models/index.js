@@ -4,7 +4,10 @@ const { sequelize } = require('../config/database');
 const User = require('./User');
 const UserWallet = require('./UserWallet');
 const Organization = require('./Organization');
+const OrganizationMember = require('./OrganizationMember');
 const Project = require('./Project');
+const ProjectOrganization = require('./ProjectOrganization');
+const ProjectMember = require('./ProjectMember');
 const BountyTask = require('./BountyTask');
 const Sprint = require('./Sprint');
 
@@ -32,13 +35,54 @@ Organization.belongsTo(User, {
   as: 'owner'
 });
 
-// Organization 和 Project 的关联 (1:N)
-Organization.hasMany(Project, {
-  foreignKey: 'organizationId',
-  as: 'projects',
-  onDelete: 'CASCADE'
+// User 和 Organization 的多对多关联 (通过 OrganizationMember)
+User.belongsToMany(Organization, {
+  through: OrganizationMember,
+  foreignKey: 'userId',
+  otherKey: 'organizationId',
+  as: 'memberOrganizations'
 });
-Project.belongsTo(Organization, {
+Organization.belongsToMany(User, {
+  through: OrganizationMember,
+  foreignKey: 'organizationId',
+  otherKey: 'userId',
+  as: 'members'
+});
+
+// OrganizationMember 的直接关联
+OrganizationMember.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user'
+});
+OrganizationMember.belongsTo(Organization, {
+  foreignKey: 'organizationId',
+  as: 'organization'
+});
+OrganizationMember.belongsTo(User, {
+  foreignKey: 'invitedBy',
+  as: 'inviter'
+});
+
+// Organization 和 Project 的多对多关联 (通过 ProjectOrganization)
+Organization.belongsToMany(Project, {
+  through: ProjectOrganization,
+  foreignKey: 'organizationId',
+  otherKey: 'projectId',
+  as: 'projects'
+});
+Project.belongsToMany(Organization, {
+  through: ProjectOrganization,
+  foreignKey: 'projectId',
+  otherKey: 'organizationId',
+  as: 'organizations'
+});
+
+// ProjectOrganization 的直接关联
+ProjectOrganization.belongsTo(Project, {
+  foreignKey: 'projectId',
+  as: 'project'
+});
+ProjectOrganization.belongsTo(Organization, {
   foreignKey: 'organizationId',
   as: 'organization'
 });
@@ -62,6 +106,34 @@ User.hasMany(Project, {
 Project.belongsTo(User, {
   foreignKey: 'leaderId',
   as: 'leader'
+});
+
+// User 和 Project 的多对多关联 (通过 ProjectMember)
+User.belongsToMany(Project, {
+  through: ProjectMember,
+  foreignKey: 'userId',
+  otherKey: 'projectId',
+  as: 'memberProjects'
+});
+Project.belongsToMany(User, {
+  through: ProjectMember,
+  foreignKey: 'projectId',
+  otherKey: 'userId',
+  as: 'members'
+});
+
+// ProjectMember 的直接关联
+ProjectMember.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user'
+});
+ProjectMember.belongsTo(Project, {
+  foreignKey: 'projectId',
+  as: 'project'
+});
+ProjectMember.belongsTo(User, {
+  foreignKey: 'invitedBy',
+  as: 'inviter'
 });
 
 // Project 和 BountyTask 的关联 (1:N)
@@ -198,7 +270,6 @@ const createDefaultData = async () => {
       projectType: 'construction',
       starLevel: 3,
       status: 'active',
-      organizationId: defaultOrg.id,
       ownerId: adminUser.id,
       leaderId: adminUser.id,
       budgetPool: {
@@ -208,6 +279,31 @@ const createDefaultData = async () => {
         copper: 100000,
         allocated: { diamond: 0, gold: 0, silver: 0, copper: 0 },
         spent: { diamond: 0, gold: 0, silver: 0, copper: 0 }
+      }
+    });
+
+    // 关联项目与组织
+    await ProjectOrganization.create({
+      projectId: sampleProject.id,
+      organizationId: defaultOrg.id,
+      relationshipType: 'primary',
+      status: 'active'
+    });
+
+    // 添加管理员为项目成员
+    await ProjectMember.create({
+      projectId: sampleProject.id,
+      userId: adminUser.id,
+      roles: ['admin', 'product_manager'],
+      status: 'active',
+      permissions: {
+        canManageProject: true,
+        canManageMembers: true,
+        canCreateTasks: true,
+        canAssignTasks: true,
+        canDeleteTasks: true,
+        canManageBudget: true,
+        canViewReports: true
       }
     });
 
@@ -253,6 +349,8 @@ module.exports = {
   UserWallet,
   Organization,
   Project,
+  ProjectOrganization,
+  ProjectMember,
   BountyTask,
   Sprint,
   syncDatabase,
