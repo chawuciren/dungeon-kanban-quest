@@ -16,7 +16,7 @@ const requireAuth = (req, res, next) => {
 
 // 中间件：检查管理员权限
 const requireAdmin = (req, res, next) => {
-  if (!req.session.user || !isAdmin(req.session.user.role)) {
+  if (!req.session.user || !isAdmin(req.session.user.defaultRole)) {
     req.flash('error', '权限不足，只有公会管理员可以访问此功能');
     return res.redirect('/dashboard');
   }

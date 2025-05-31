@@ -231,6 +231,15 @@ const syncDatabase = async (force = false) => {
 // 创建默认数据
 const createDefaultData = async () => {
   try {
+    // 检查是否已有管理员用户
+    const existingAdmin = await User.findOne({ where: { username: 'admin' } });
+    if (existingAdmin) {
+      console.log('⚠️  管理员用户已存在，跳过创建');
+      return;
+    }
+
+    console.log('📊 创建初始数据...');
+
     // 创建默认管理员用户
     const adminUser = await User.create({
       username: 'admin',

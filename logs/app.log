@@ -5189,3 +5189,228 @@
   service: 'kanban-api',
   timestamp: '2025-05-31 15:27:35'
 }
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:27:45'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:27:45'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:27:45'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:27:45'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:27:58'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:27:58'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:27:58'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:27:58'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1a7b3ae6-0324-4fe9-b3fb-c81ddd04c19d',
+  level: 'info',
+  message: 'GET /leaderboard',
+  timestamp: '2025-05-31 15:28:20'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1a7b3ae6-0324-4fe9-b3fb-c81ddd04c19d',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-31 15:28:22'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:28:24'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:28:24'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:28:24'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:28:24'
+}
+{
+  service: 'kanban-api',
+  ip: '::ffff:127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1a7b3ae6-0324-4fe9-b3fb-c81ddd04c19d',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-31 15:28:24'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:28:36'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:28:36'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:28:36'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:28:36'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:28:49'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:28:49'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:28:49'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:28:49'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:29:01'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:29:01'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:29:01'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:29:01'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:30:52'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:30:52'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:30:52'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:30:52'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:31:17'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:31:17'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:31:17'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:31:17'
+}
+{
+  message: '收到 SIGINT 信号，开始优雅关闭...',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:33:00'
+}

@@ -15,7 +15,7 @@ const User = sequelize.define('User', {
     unique: true,
     validate: {
       len: [3, 50],
-      isAlphanumeric: true
+      is: /^[a-zA-Z0-9_]+$/ // 允许字母、数字和下划线
     }
   },
   email: {
