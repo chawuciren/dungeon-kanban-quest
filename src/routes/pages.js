@@ -79,7 +79,7 @@ router.post('/login', async (req, res) => {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      defaultRole: user.defaultRole,
+      role: user.role,
       skillLevel: user.skillLevel
     };
 
@@ -128,7 +128,7 @@ router.get('/dashboard', async (req, res) => {
   try {
     // 获取用户信息
     const user = await User.findByPk(req.session.userId, {
-      attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'defaultRole', 'skillLevel', 'createdAt']
+      attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'role', 'skillLevel', 'createdAt']
     });
 
     if (!user) {

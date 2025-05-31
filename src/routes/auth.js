@@ -62,7 +62,7 @@ router.post('/register', [
       password,
       firstName,
       lastName,
-      defaultRole: 'developer',
+      role: 'developer',
       skillLevel: 'novice',
       status: 'active'
     });
@@ -91,7 +91,7 @@ router.post('/register', [
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      defaultRole: user.defaultRole,
+      role: user.role,
       skillLevel: user.skillLevel
     };
 
@@ -193,7 +193,7 @@ router.post('/login', [
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      defaultRole: user.defaultRole,
+      role: user.role,
       skillLevel: user.skillLevel
     };
 

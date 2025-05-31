@@ -161,16 +161,16 @@
                             <select class="form-select" id="userId" name="userId" required onchange="updateDefaultRoles()">
                                 <option value="">请选择用户</option>
                                 <% allUsers.forEach(user => { %>
-                                    <option value="<%= user.id %>" data-default-role="<%= user.defaultRole || 'developer' %>">
+                                    <option value="<%= user.id %>" data-default-role="<%= user.role || 'developer' %>">
                                         <%= user.firstName %> <%= user.lastName %> (@<%= user.username %>)
-                                        - 默认职业：<%=
-                                            user.defaultRole === 'admin' ? '⚡ 神域守护者' :
-                                            user.defaultRole === 'product_manager' ? '🔮 预言师' :
-                                            user.defaultRole === 'developer' ? '⚔️ 剑士' :
-                                            user.defaultRole === 'tester' ? '🏹 弓箭手' :
-                                            user.defaultRole === 'ui_designer' ? '🔮 魔法师' :
-                                            user.defaultRole === 'devops' ? '✨ 牧师' :
-                                            user.defaultRole === 'client' ? '💎 委托贵族' : '⚔️ 剑士'
+                                        - 职业：<%=
+                                            user.role === 'admin' ? '⚡ 神域守护者' :
+                                            user.role === 'product_manager' ? '🔮 预言师' :
+                                            user.role === 'developer' ? '⚔️ 剑士' :
+                                            user.role === 'tester' ? '🏹 弓箭手' :
+                                            user.role === 'ui_designer' ? '🔮 魔法师' :
+                                            user.role === 'devops' ? '✨ 牧师' :
+                                            user.role === 'client' ? '💎 委托贵族' : '⚔️ 剑士'
                                         %>
                                     </option>
                                 <% }); %>

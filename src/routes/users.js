@@ -16,7 +16,7 @@ const requireAuth = (req, res, next) => {
 
 // 中间件：检查管理员权限
 const requireAdmin = (req, res, next) => {
-  if (!req.session.user || !isAdmin(req.session.user.defaultRole)) {
+  if (!req.session.user || !isAdmin(req.session.user.role)) {
     req.flash('error', '权限不足，只有公会管理员可以访问此功能');
     return res.redirect('/dashboard');
   }
@@ -47,7 +47,7 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
     }
 
     if (role) {
-      whereClause.defaultRole = role;
+      whereClause.role = role;
     }
 
     if (status) {
@@ -127,7 +127,7 @@ router.post('/create', requireAuth, requireAdmin, async (req, res) => {
       firstName,
       lastName,
       phone,
-      defaultRole,
+      role,
       skillLevel,
       status
     } = req.body;
@@ -161,7 +161,7 @@ router.post('/create', requireAuth, requireAdmin, async (req, res) => {
       firstName,
       lastName,
       phone: phone || null,
-      defaultRole: defaultRole || 'developer', // 默认为开发者
+      role: role || 'developer', // 默认为开发者
       skillLevel: skillLevel || 'novice',
       status: status || 'active'
     });
@@ -233,7 +233,7 @@ router.post('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
       firstName,
       lastName,
       phone,
-      defaultRole,
+      role,
       skillLevel,
       status,
       password
@@ -273,7 +273,7 @@ router.post('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
       firstName,
       lastName,
       phone: phone || null,
-      defaultRole: defaultRole || 'developer',
+      role: role || 'developer',
       skillLevel: skillLevel || 'novice',
       status: status || 'active'
     };

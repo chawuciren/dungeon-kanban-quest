@@ -247,7 +247,7 @@ const createDefaultData = async () => {
       password: 'admin123',
       firstName: '系统',
       lastName: '管理员',
-      defaultRole: 'admin', // 使用新的defaultRole字段
+      role: 'admin', // 管理员角色
       skillLevel: 'diamond',
       status: 'active',
       emailVerifiedAt: new Date()
@@ -275,7 +275,7 @@ const createDefaultData = async () => {
     await OrganizationMember.create({
       organizationId: defaultOrg.id,
       userId: adminUser.id,
-      roles: [adminUser.defaultRole, 'admin'], // 包含默认角色和管理员角色
+      roles: [adminUser.role, 'admin'], // 包含用户角色和管理员角色
       status: 'active',
       permissions: {
         canManageOrganization: true,
@@ -319,7 +319,7 @@ const createDefaultData = async () => {
     await ProjectMember.create({
       projectId: sampleProject.id,
       userId: adminUser.id,
-      roles: [adminUser.defaultRole, 'admin'], // 包含默认角色和管理员角色
+      roles: [adminUser.role, 'admin'], // 包含用户角色和管理员角色
       status: 'active',
       permissions: {
         canManageProject: true,
@@ -370,7 +370,7 @@ const createDefaultData = async () => {
         password: 'alice123',
         firstName: '艾丽丝',
         lastName: '产品',
-        defaultRole: 'product_manager',
+        role: 'product_manager',
         skillLevel: 'gold'
       },
       {
@@ -379,7 +379,7 @@ const createDefaultData = async () => {
         password: 'bob123',
         firstName: '鲍勃',
         lastName: '开发',
-        defaultRole: 'developer',
+        role: 'developer',
         skillLevel: 'silver'
       },
       {
@@ -388,7 +388,7 @@ const createDefaultData = async () => {
         password: 'charlie123',
         firstName: '查理',
         lastName: '测试',
-        defaultRole: 'tester',
+        role: 'tester',
         skillLevel: 'bronze'
       },
       {
@@ -397,7 +397,7 @@ const createDefaultData = async () => {
         password: 'diana123',
         firstName: '戴安娜',
         lastName: '设计',
-        defaultRole: 'ui_designer',
+        role: 'ui_designer',
         skillLevel: 'silver'
       }
     ];
@@ -423,13 +423,13 @@ const createDefaultData = async () => {
       await OrganizationMember.create({
         organizationId: defaultOrg.id,
         userId: user.id,
-        roles: [user.defaultRole], // 使用用户的默认角色
+        roles: [user.role], // 使用用户的角色
         status: 'active',
         permissions: {
           canManageOrganization: false,
           canManageMembers: false,
-          canCreateProjects: user.defaultRole === 'product_manager',
-          canManageProjects: user.defaultRole === 'product_manager',
+          canCreateProjects: user.role === 'product_manager',
+          canManageProjects: user.role === 'product_manager',
           canViewReports: true,
           canManageBudget: false
         }
@@ -442,15 +442,15 @@ const createDefaultData = async () => {
       await ProjectMember.create({
         projectId: sampleProject.id,
         userId: user.id,
-        roles: [user.defaultRole], // 使用用户的默认角色
+        roles: [user.role], // 使用用户的角色
         status: 'active',
         permissions: {
-          canManageProject: user.defaultRole === 'product_manager',
-          canManageMembers: user.defaultRole === 'product_manager',
+          canManageProject: user.role === 'product_manager',
+          canManageMembers: user.role === 'product_manager',
           canCreateTasks: true,
-          canAssignTasks: user.defaultRole === 'product_manager',
+          canAssignTasks: user.role === 'product_manager',
           canDeleteTasks: false,
-          canManageBudget: user.defaultRole === 'product_manager',
+          canManageBudget: user.role === 'product_manager',
           canViewReports: true
         }
       });

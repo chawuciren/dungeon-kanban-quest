@@ -166,21 +166,21 @@
                                 <h6 class="text-muted mb-3">角色和权限</h6>
 
                                 <div class="mb-3">
-                                    <label for="defaultRole" class="form-label">
-                                        默认职业 <span class="text-danger">*</span>
+                                    <label for="role" class="form-label">
+                                        职业 <span class="text-danger">*</span>
                                         <small class="text-muted">(仅作参考，实际角色在项目中分配)</small>
                                     </label>
-                                    <select class="form-select" id="defaultRole" name="defaultRole" required>
+                                    <select class="form-select" id="role" name="role" required>
                                         <% if (isCreateMode) { %>
                                             <option value="">请选择默认职业</option>
                                         <% } %>
-                                        <option value="admin" <% if (!isCreateMode && editUser && editUser.defaultRole === 'admin') { %>selected<% } %>>⚡ 神域守护者 (管理员)</option>
-                                        <option value="product_manager" <% if (!isCreateMode && editUser && editUser.defaultRole === 'product_manager') { %>selected<% } %>>🔮 预言师 (产品经理)</option>
-                                        <option value="developer" <% if (isCreateMode || (!isCreateMode && editUser && editUser.defaultRole === 'developer')) { %>selected<% } %>>⚔️ 剑士 (开发者)</option>
-                                        <option value="tester" <% if (!isCreateMode && editUser && editUser.defaultRole === 'tester') { %>selected<% } %>>🏹 弓箭手 (测试员)</option>
-                                        <option value="client" <% if (!isCreateMode && editUser && editUser.defaultRole === 'client') { %>selected<% } %>>💎 委托贵族 (客户)</option>
-                                        <option value="ui_designer" <% if (!isCreateMode && editUser && editUser.defaultRole === 'ui_designer') { %>selected<% } %>>🔮 魔法师 (UI设计师)</option>
-                                        <option value="devops" <% if (!isCreateMode && editUser && editUser.defaultRole === 'devops') { %>selected<% } %>>✨ 牧师 (运维工程师)</option>
+                                        <option value="admin" <% if (!isCreateMode && editUser && editUser.role === 'admin') { %>selected<% } %>>⚡ 神域守护者 (管理员)</option>
+                                        <option value="product_manager" <% if (!isCreateMode && editUser && editUser.role === 'product_manager') { %>selected<% } %>>🔮 预言师 (产品经理)</option>
+                                        <option value="developer" <% if (isCreateMode || (!isCreateMode && editUser && editUser.role === 'developer')) { %>selected<% } %>>⚔️ 剑士 (开发者)</option>
+                                        <option value="tester" <% if (!isCreateMode && editUser && editUser.role === 'tester') { %>selected<% } %>>🏹 弓箭手 (测试员)</option>
+                                        <option value="client" <% if (!isCreateMode && editUser && editUser.role === 'client') { %>selected<% } %>>💎 委托贵族 (客户)</option>
+                                        <option value="ui_designer" <% if (!isCreateMode && editUser && editUser.role === 'ui_designer') { %>selected<% } %>>🔮 魔法师 (UI设计师)</option>
+                                        <option value="devops" <% if (!isCreateMode && editUser && editUser.role === 'devops') { %>selected<% } %>>✨ 牧师 (运维工程师)</option>
                                     </select>
                                     <div class="form-text">
                                         <div class="alert alert-info py-2 px-3 mb-2">

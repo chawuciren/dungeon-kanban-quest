@@ -5414,3 +5414,583 @@
   service: 'kanban-api',
   timestamp: '2025-05-31 15:33:00'
 }
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:33:33'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:33:33'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:33:33'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:33:33'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1a7b3ae6-0324-4fe9-b3fb-c81ddd04c19d',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-31 15:33:36'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1a7b3ae6-0324-4fe9-b3fb-c81ddd04c19d',
+  level: 'info',
+  message: 'GET /login',
+  timestamp: '2025-05-31 15:33:37'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-31 15:33:37'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /login',
+  timestamp: '2025-05-31 15:33:37'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'POST /login',
+  timestamp: '2025-05-31 15:33:47'
+}
+{
+  service: 'kanban-api',
+  userId: 'cc24bcc3-355d-4bfc-91fc-b8d43a65b204',
+  level: 'info',
+  message: '用户登录成功: admin',
+  timestamp: '2025-05-31 15:33:47'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'cc24bcc3-355d-4bfc-91fc-b8d43a65b204',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-31 15:33:47'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:36:51'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:36:51'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:36:51'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:36:51'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  original: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  sql: 'CREATE INDEX `users_role` ON `users` (`role`)',
+  parameters: {},
+  level: 'error',
+  message: '启动服务器失败: SQLITE_ERROR: no such column: role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at async SQLiteQueryInterface.addIndex (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:250:12)\n' +
+    '    at async User.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:999:7)\n' +
+    '    at async Sequelize.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:377:9)\n' +
+    '    at async syncDatabase (E:\\Project\\Node\\dungeon-kanban-quest\\src\\models\\index.js:218:5)\n' +
+    '    at async startServer (E:\\Project\\Node\\dungeon-kanban-quest\\src\\app.js:163:7)',
+  timestamp: '2025-05-31 15:37:01'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  original: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  sql: 'CREATE INDEX `users_role` ON `users` (`role`)',
+  parameters: {},
+  level: 'error',
+  message: '启动服务器失败: SQLITE_ERROR: no such column: role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at async SQLiteQueryInterface.addIndex (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:250:12)\n' +
+    '    at async User.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:999:7)\n' +
+    '    at async Sequelize.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:377:9)\n' +
+    '    at async syncDatabase (E:\\Project\\Node\\dungeon-kanban-quest\\src\\models\\index.js:218:5)\n' +
+    '    at async startServer (E:\\Project\\Node\\dungeon-kanban-quest\\src\\app.js:163:7)',
+  timestamp: '2025-05-31 15:37:12'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  original: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  sql: 'CREATE INDEX `users_role` ON `users` (`role`)',
+  parameters: {},
+  level: 'error',
+  message: '启动服务器失败: SQLITE_ERROR: no such column: role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at async SQLiteQueryInterface.addIndex (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:250:12)\n' +
+    '    at async User.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:999:7)\n' +
+    '    at async Sequelize.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:377:9)\n' +
+    '    at async syncDatabase (E:\\Project\\Node\\dungeon-kanban-quest\\src\\models\\index.js:218:5)\n' +
+    '    at async startServer (E:\\Project\\Node\\dungeon-kanban-quest\\src\\app.js:163:7)',
+  timestamp: '2025-05-31 15:37:22'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  original: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  sql: 'CREATE INDEX `users_role` ON `users` (`role`)',
+  parameters: {},
+  level: 'error',
+  message: '启动服务器失败: SQLITE_ERROR: no such column: role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at async SQLiteQueryInterface.addIndex (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:250:12)\n' +
+    '    at async User.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:999:7)\n' +
+    '    at async Sequelize.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:377:9)\n' +
+    '    at async syncDatabase (E:\\Project\\Node\\dungeon-kanban-quest\\src\\models\\index.js:218:5)\n' +
+    '    at async startServer (E:\\Project\\Node\\dungeon-kanban-quest\\src\\app.js:163:7)',
+  timestamp: '2025-05-31 15:37:34'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  original: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  sql: 'CREATE INDEX `users_role` ON `users` (`role`)',
+  parameters: {},
+  level: 'error',
+  message: '启动服务器失败: SQLITE_ERROR: no such column: role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at async SQLiteQueryInterface.addIndex (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:250:12)\n' +
+    '    at async User.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:999:7)\n' +
+    '    at async Sequelize.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:377:9)\n' +
+    '    at async syncDatabase (E:\\Project\\Node\\dungeon-kanban-quest\\src\\models\\index.js:218:5)\n' +
+    '    at async startServer (E:\\Project\\Node\\dungeon-kanban-quest\\src\\app.js:163:7)',
+  timestamp: '2025-05-31 15:37:44'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  original: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  sql: 'CREATE INDEX `users_role` ON `users` (`role`)',
+  parameters: {},
+  level: 'error',
+  message: '启动服务器失败: SQLITE_ERROR: no such column: role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at async SQLiteQueryInterface.addIndex (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:250:12)\n' +
+    '    at async User.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:999:7)\n' +
+    '    at async Sequelize.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:377:9)\n' +
+    '    at async syncDatabase (E:\\Project\\Node\\dungeon-kanban-quest\\src\\models\\index.js:218:5)\n' +
+    '    at async startServer (E:\\Project\\Node\\dungeon-kanban-quest\\src\\app.js:163:7)',
+  timestamp: '2025-05-31 15:37:55'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  original: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  sql: 'CREATE INDEX `users_role` ON `users` (`role`)',
+  parameters: {},
+  level: 'error',
+  message: '启动服务器失败: SQLITE_ERROR: no such column: role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at async SQLiteQueryInterface.addIndex (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:250:12)\n' +
+    '    at async User.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:999:7)\n' +
+    '    at async Sequelize.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:377:9)\n' +
+    '    at async syncDatabase (E:\\Project\\Node\\dungeon-kanban-quest\\src\\models\\index.js:218:5)\n' +
+    '    at async startServer (E:\\Project\\Node\\dungeon-kanban-quest\\src\\app.js:163:7)',
+  timestamp: '2025-05-31 15:38:05'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  original: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  sql: 'CREATE INDEX `users_role` ON `users` (`role`)',
+  parameters: {},
+  level: 'error',
+  message: '启动服务器失败: SQLITE_ERROR: no such column: role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at async SQLiteQueryInterface.addIndex (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:250:12)\n' +
+    '    at async User.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:999:7)\n' +
+    '    at async Sequelize.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:377:9)\n' +
+    '    at async syncDatabase (E:\\Project\\Node\\dungeon-kanban-quest\\src\\models\\index.js:218:5)\n' +
+    '    at async startServer (E:\\Project\\Node\\dungeon-kanban-quest\\src\\app.js:163:7)',
+  timestamp: '2025-05-31 15:38:14'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  original: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  sql: 'CREATE INDEX `users_role` ON `users` (`role`)',
+  parameters: {},
+  level: 'error',
+  message: '启动服务器失败: SQLITE_ERROR: no such column: role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at async SQLiteQueryInterface.addIndex (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:250:12)\n' +
+    '    at async User.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:999:7)\n' +
+    '    at async Sequelize.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:377:9)\n' +
+    '    at async syncDatabase (E:\\Project\\Node\\dungeon-kanban-quest\\src\\models\\index.js:218:5)\n' +
+    '    at async startServer (E:\\Project\\Node\\dungeon-kanban-quest\\src\\app.js:163:7)',
+  timestamp: '2025-05-31 18:38:32'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 18:39:00'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 18:39:00'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 18:39:00'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 18:39:00'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'cc24bcc3-355d-4bfc-91fc-b8d43a65b204',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-31 18:39:03'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'cc24bcc3-355d-4bfc-91fc-b8d43a65b204',
+  level: 'info',
+  message: 'GET /login',
+  timestamp: '2025-05-31 18:39:03'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-31 18:39:03'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /login',
+  timestamp: '2025-05-31 18:39:04'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'POST /login',
+  timestamp: '2025-05-31 18:39:10'
+}
+{
+  service: 'kanban-api',
+  userId: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: '用户登录成功: admin',
+  timestamp: '2025-05-31 18:39:11'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-31 18:39:11'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 18:39:14'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-31 18:39:20'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 18:39:30'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-31 18:39:32'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: 'POST /users/create',
+  timestamp: '2025-05-31 18:40:05'
+}
+{
+  service: 'kanban-api',
+  userId: 'b368b38d-376f-49ca-91b1-be03f7c3a9ff',
+  createdBy: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: '用户创建成功: ceshitianjia',
+  timestamp: '2025-05-31 18:40:06'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 18:40:06'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-31 18:40:10'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: 'GET /organizations/5ca752a6-c593-48fe-a157-0e31f5a657ff',
+  timestamp: '2025-05-31 18:40:13'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: 'GET /organizations/5ca752a6-c593-48fe-a157-0e31f5a657ff/members',
+  timestamp: '2025-05-31 18:40:21'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 18:40:34'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: 'GET /users/b368b38d-376f-49ca-91b1-be03f7c3a9ff/edit',
+  timestamp: '2025-05-31 18:40:39'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '39313629-4f22-4ed4-8dea-d526056467dc',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 18:40:49'
+}

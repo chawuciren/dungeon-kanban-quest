@@ -30,7 +30,7 @@ const OrganizationMember = sequelize.define('OrganizationMember', {
   roles: {
     type: DataTypes.JSON,
     allowNull: false,
-    defaultValue: ['developer'], // 默认为开发者角色，实际创建时会使用用户的defaultRole
+    defaultValue: ['developer'], // 默认为开发者角色，实际创建时会使用用户的role
     validate: {
       isValidRoles(value) {
         const validRoles = ['admin', 'product_manager', 'developer', 'tester', 'ui_designer', 'devops', 'client'];
