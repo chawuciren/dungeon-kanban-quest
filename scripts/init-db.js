@@ -136,7 +136,8 @@ async function initDatabase() {
       console.log('   成员: 4人 (管理员 + 3个示例用户)');
       console.log('');
       console.log('💡 重要说明：');
-      console.log('   • 用户的职业仅作参考，实际角色在项目/公会中单独管理');
+      console.log('   • 用户的职业仅作参考，实际角色在项目中单独管理');
+      console.log('   • 公会级别不设置角色，只管理成员关系');
       console.log('   • 一个用户可以在不同项目中担任不同角色');
       console.log('   • 项目可以关联多个公会，支持跨组织协作');
     }

@@ -166,7 +166,7 @@ router.get('/:id', requireAuth, async (req, res) => {
           as: 'members',
           attributes: ['id', 'firstName', 'lastName', 'username', 'email', 'avatar'],
           through: {
-            attributes: ['roles', 'status', 'joinedAt'],
+            attributes: ['status', 'joinedAt'],
             as: 'membership'
           }
         },
@@ -297,7 +297,7 @@ router.get('/:id/members', requireAuth, async (req, res) => {
           as: 'members',
           attributes: ['id', 'firstName', 'lastName', 'username', 'email', 'avatar'],
           through: {
-            attributes: ['roles', 'status', 'joinedAt', 'permissions'],
+            attributes: ['status', 'joinedAt', 'permissions'],
             as: 'membership'
           }
         },
@@ -351,7 +351,7 @@ router.get('/:id/members', requireAuth, async (req, res) => {
 router.post('/:id/members', requireAuth, async (req, res) => {
   try {
     const organizationId = req.params.id;
-    const { userId, roles } = req.body;
+    const { userId } = req.body;
 
     const organization = await Organization.findByPk(organizationId);
     if (!organization) {
@@ -378,17 +378,10 @@ router.post('/:id/members', requireAuth, async (req, res) => {
       return res.redirect(`/organizations/${organizationId}/members`);
     }
 
-    // 获取用户的角色
-    const targetUser = await User.findByPk(userId);
-    const defaultRoles = roles && roles.length > 0
-      ? (Array.isArray(roles) ? roles : [roles])
-      : [targetUser.role || 'developer'];
-
-    // 添加成员
+    // 添加成员（组织级别不设置角色，角色在项目级别管理）
     await OrganizationMember.create({
       organizationId,
       userId,
-      roles: defaultRoles,
       status: 'active',
       invitedBy: req.session.userId,
       permissions: {
@@ -458,7 +451,7 @@ router.get('/:id/members/api', requireAuth, async (req, res) => {
           as: 'members',
           attributes: ['id', 'firstName', 'lastName', 'username', 'email'],
           through: {
-            attributes: ['roles', 'status'],
+            attributes: ['status'],
             as: 'membership'
           },
           where: {

@@ -91,28 +91,7 @@
                                                 </div>
                                             </div>
 
-                                            <!-- 角色标签 -->
-                                            <% if (member.membership && member.membership.roles) { %>
-                                                <div class="mb-3">
-                                                    <% member.membership.roles.forEach(role => { %>
-                                                        <%
-                                                            const roleConfig = {
-                                                                'admin': { name: '神域守护者', color: 'danger' },
-                                                                'product_manager': { name: '预言师', color: 'warning' },
-                                                                'developer': { name: '剑士', color: 'primary' },
-                                                                'tester': { name: '弓箭手', color: 'info' },
-                                                                'ui_designer': { name: '魔法师', color: 'success' },
-                                                                'devops': { name: '牧师', color: 'dark' },
-                                                                'client': { name: '委托贵族', color: 'secondary' }
-                                                            };
-                                                            const config = roleConfig[role] || { name: role, color: 'secondary' };
-                                                        %>
-                                                        <span class="badge bg-<%= config.color %> me-1 mb-1" style="font-size: 0.75rem;">
-                                                            <%= config.name %>
-                                                        </span>
-                                                    <% }); %>
-                                                </div>
-                                            <% } %>
+
 
                                             <!-- 成员信息 -->
                                             <div class="small text-muted">

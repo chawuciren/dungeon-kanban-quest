@@ -26,25 +26,7 @@ const OrganizationMember = sequelize.define('OrganizationMember', {
       key: 'id'
     }
   },
-  // 用户在此组织中的角色（可以有多个）
-  roles: {
-    type: DataTypes.JSON,
-    allowNull: false,
-    defaultValue: ['developer'], // 默认为开发者角色，实际创建时会使用用户的role
-    validate: {
-      isValidRoles(value) {
-        const validRoles = ['admin', 'product_manager', 'developer', 'tester', 'ui_designer', 'devops', 'client'];
-        if (!Array.isArray(value) || value.length === 0) {
-          throw new Error('角色必须是非空数组');
-        }
-        for (const role of value) {
-          if (!validRoles.includes(role)) {
-            throw new Error(`无效的角色: ${role}`);
-          }
-        }
-      }
-    }
-  },
+
   // 成员状态
   status: {
     type: DataTypes.ENUM('active', 'inactive', 'pending'),
@@ -105,27 +87,7 @@ const OrganizationMember = sequelize.define('OrganizationMember', {
   ]
 });
 
-// 实例方法
-OrganizationMember.prototype.hasRole = function(role) {
-  return this.roles.includes(role);
-};
 
-OrganizationMember.prototype.addRole = function(role) {
-  if (!this.hasRole(role)) {
-    this.roles.push(role);
-    this.changed('roles', true);
-  }
-  return this;
-};
-
-OrganizationMember.prototype.removeRole = function(role) {
-  const index = this.roles.indexOf(role);
-  if (index > -1) {
-    this.roles.splice(index, 1);
-    this.changed('roles', true);
-  }
-  return this;
-};
 
 OrganizationMember.prototype.hasPermission = function(permission) {
   return this.permissions[permission] === true;

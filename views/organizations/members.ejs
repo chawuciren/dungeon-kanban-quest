@@ -83,28 +83,7 @@
                                             <% } %>
                                         </div>
 
-                                        <!-- 角色标签 -->
-                                        <div class="mb-3">
-                                            <% if (member.membership && member.membership.roles) { %>
-                                                <% member.membership.roles.forEach(role => { %>
-                                                    <%
-                                                        const roleConfig = {
-                                                            'admin': { name: '神域守护者', color: 'danger' },
-                                                            'product_manager': { name: '预言师', color: 'warning' },
-                                                            'developer': { name: '剑士', color: 'primary' },
-                                                            'tester': { name: '弓箭手', color: 'info' },
-                                                            'ui_designer': { name: '魔法师', color: 'success' },
-                                                            'devops': { name: '牧师', color: 'dark' },
-                                                            'client': { name: '委托贵族', color: 'secondary' }
-                                                        };
-                                                        const config = roleConfig[role] || { name: role, color: 'secondary' };
-                                                    %>
-                                                    <span class="badge bg-<%= config.color %> role-badge">
-                                                        <%= config.name %>
-                                                    </span>
-                                                <% }); %>
-                                            <% } %>
-                                        </div>
+
 
                                         <!-- 成员信息 -->
                                         <div class="small text-muted">
@@ -158,10 +137,10 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="userId" class="form-label">选择用户</label>
-                            <select class="form-select" id="userId" name="userId" required onchange="updateDefaultRoles()">
+                            <select class="form-select" id="userId" name="userId" required>
                                 <option value="">请选择用户</option>
                                 <% allUsers.forEach(user => { %>
-                                    <option value="<%= user.id %>" data-default-role="<%= user.role || 'developer' %>">
+                                    <option value="<%= user.id %>">
                                         <%= user.firstName %> <%= user.lastName %> (@<%= user.username %>)
                                         - 职业：<%=
                                             user.role === 'admin' ? '⚡ 神域守护者' :
@@ -175,41 +154,9 @@
                                     </option>
                                 <% }); %>
                             </select>
-                            <div class="form-text">选择用户后，将自动选中其默认职业角色</div>
+                            <div class="form-text">用户将以其默认职业身份加入公会，具体项目角色将在项目中单独分配</div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">角色</label>
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="roles" value="developer" id="role-developer" checked>
-                                        <label class="form-check-label" for="role-developer">剑士 (开发者)</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="roles" value="tester" id="role-tester">
-                                        <label class="form-check-label" for="role-tester">弓箭手 (测试员)</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="roles" value="ui_designer" id="role-ui">
-                                        <label class="form-check-label" for="role-ui">魔法师 (UI设计师)</label>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="roles" value="product_manager" id="role-pm">
-                                        <label class="form-check-label" for="role-pm">预言师 (产品经理)</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="roles" value="devops" id="role-devops">
-                                        <label class="form-check-label" for="role-devops">牧师 (运维)</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="roles" value="client" id="role-client">
-                                        <label class="form-check-label" for="role-client">委托贵族 (客户)</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
@@ -245,27 +192,7 @@
             }
         }
 
-        function updateDefaultRoles() {
-            const userSelect = document.getElementById('userId');
-            const selectedOption = userSelect.options[userSelect.selectedIndex];
 
-            if (selectedOption && selectedOption.value) {
-                const defaultRole = selectedOption.getAttribute('data-default-role');
-
-                // 先取消所有选择
-                document.querySelectorAll('input[name="roles"]').forEach(checkbox => {
-                    checkbox.checked = false;
-                });
-
-                // 选中默认角色
-                if (defaultRole) {
-                    const defaultRoleCheckbox = document.querySelector(`input[name="roles"][value="${defaultRole}"]`);
-                    if (defaultRoleCheckbox) {
-                        defaultRoleCheckbox.checked = true;
-                    }
-                }
-            }
-        }
     </script>
 </body>
 </html>
