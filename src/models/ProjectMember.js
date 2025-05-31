@@ -30,7 +30,7 @@ const ProjectMember = sequelize.define('ProjectMember', {
   roles: {
     type: DataTypes.JSON,
     allowNull: false,
-    defaultValue: ['developer'], // 默认为开发者角色
+    defaultValue: ['developer'], // 默认为开发者角色，实际创建时会使用用户的defaultRole
     validate: {
       isValidRoles(value) {
         const validRoles = ['admin', 'product_manager', 'developer', 'tester', 'ui_designer', 'devops', 'client'];

@@ -4000,3 +4000,1068 @@
   message: 'GET /users/create',
   timestamp: '2025-05-30 23:21:04'
 }
+{
+  message: '收到 SIGINT 信号，开始优雅关闭...',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:25:37'
+}
+{
+  message: 'HTTP服务器已关闭',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:25:37'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:25:46'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:25:46'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:25:46'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:25:46'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-31 13:26:26'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 13:26:29'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-31 13:26:31'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-31 13:26:33'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /projects/create',
+  timestamp: '2025-05-31 13:26:38'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-31 13:29:10'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /projects/d022ab4e-39dd-444b-ad78-03fd0dc64882',
+  timestamp: '2025-05-31 13:29:13'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /projects/d022ab4e-39dd-444b-ad78-03fd0dc64882/members',
+  timestamp: '2025-05-31 13:29:16'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-31 13:29:55'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /projects/create',
+  timestamp: '2025-05-31 13:29:57'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-31 13:31:31'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d/edit',
+  timestamp: '2025-05-31 13:31:33'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d',
+  timestamp: '2025-05-31 13:31:36'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-31 13:32:38'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d',
+  timestamp: '2025-05-31 13:32:41'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d/members',
+  timestamp: '2025-05-31 13:34:33'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d',
+  timestamp: '2025-05-31 13:34:37'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d/members',
+  timestamp: '2025-05-31 13:34:43'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'POST /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d/members',
+  timestamp: '2025-05-31 13:34:53'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d/members',
+  timestamp: '2025-05-31 13:34:53'
+}
+{
+  message: '收到 SIGINT 信号，开始优雅关闭...',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:36:10'
+}
+{
+  message: 'HTTP服务器已关闭',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:36:10'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:36:13'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:36:13'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:36:13'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:36:13'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d/members',
+  timestamp: '2025-05-31 13:36:16'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-31 13:36:35'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d',
+  timestamp: '2025-05-31 13:36:37'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d/edit',
+  timestamp: '2025-05-31 13:36:41'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d',
+  timestamp: '2025-05-31 13:36:45'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d/members',
+  timestamp: '2025-05-31 13:36:50'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 13:36:56'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-31 13:38:20'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/create',
+  timestamp: '2025-05-31 13:38:26'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-31 13:38:29'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d',
+  timestamp: '2025-05-31 13:38:32'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:38:36'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:38:36'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:38:36'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:38:36'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:39:49'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:39:49'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:39:49'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:39:49'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:00'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:00'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:00'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:00'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:11'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:11'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:11'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:11'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:23'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:23'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:23'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:23'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:35'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:35'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:35'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:35'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:46'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:46'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:46'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:40:46'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:00'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:00'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:00'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:00'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:13'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:13'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:13'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:13'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:25'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:25'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:25'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:25'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:38'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:38'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:38'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 13:41:38'
+}
+{
+  message: '收到 SIGINT 信号，开始优雅关闭...',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 14:29:11'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 14:29:16'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 14:29:16'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 14:29:16'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 14:29:16'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d',
+  timestamp: '2025-05-31 14:30:09'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-31 14:30:12'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d',
+  timestamp: '2025-05-31 14:30:15'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d/members',
+  timestamp: '2025-05-31 14:30:21'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 14:30:34'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: User.default_role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;'
+  },
+  original: [Error: SQLITE_ERROR: no such column: User.default_role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;'
+  },
+  sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;',
+  parameters: {},
+  level: 'error',
+  message: '获取用户列表失败: SQLITE_ERROR: no such column: User.default_role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+    '    at async SQLiteQueryInterface.select (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:407:12)\n' +
+    '    at async User.findAll (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:1140:21)\n' +
+    '    at async Promise.all (index 1)\n' +
+    '    at async User.findAndCountAll (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:1322:27)',
+  timestamp: '2025-05-31 14:30:34'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /users/create',
+  timestamp: '2025-05-31 14:30:35'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-31 14:30:57'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d',
+  timestamp: '2025-05-31 14:31:03'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d/members',
+  timestamp: '2025-05-31 14:31:23'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-31 14:31:25'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations/7837ca5d-9be7-4255-9b83-56c74e7d6b3d',
+  timestamp: '2025-05-31 14:31:28'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-31 14:31:39'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 14:31:43'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: User.default_role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;'
+  },
+  original: [Error: SQLITE_ERROR: no such column: User.default_role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;'
+  },
+  sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;',
+  parameters: {},
+  level: 'error',
+  message: '获取用户列表失败: SQLITE_ERROR: no such column: User.default_role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+    '    at async SQLiteQueryInterface.select (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:407:12)\n' +
+    '    at async User.findAll (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:1140:21)\n' +
+    '    at async Promise.all (index 1)\n' +
+    '    at async User.findAndCountAll (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:1322:27)',
+  timestamp: '2025-05-31 14:31:43'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-31 14:31:45'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 14:31:48'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: User.default_role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;'
+  },
+  original: [Error: SQLITE_ERROR: no such column: User.default_role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;'
+  },
+  sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;',
+  parameters: {},
+  level: 'error',
+  message: '获取用户列表失败: SQLITE_ERROR: no such column: User.default_role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+    '    at async SQLiteQueryInterface.select (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:407:12)\n' +
+    '    at async User.findAll (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:1140:21)\n' +
+    '    at async Promise.all (index 1)\n' +
+    '    at async User.findAndCountAll (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:1322:27)',
+  timestamp: '2025-05-31 14:31:48'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 14:31:58'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: User.default_role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;'
+  },
+  original: [Error: SQLITE_ERROR: no such column: User.default_role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;'
+  },
+  sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;',
+  parameters: {},
+  level: 'error',
+  message: '获取用户列表失败: SQLITE_ERROR: no such column: User.default_role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+    '    at async SQLiteQueryInterface.select (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:407:12)\n' +
+    '    at async User.findAll (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:1140:21)\n' +
+    '    at async Promise.all (index 1)\n' +
+    '    at async User.findAndCountAll (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:1322:27)',
+  timestamp: '2025-05-31 14:31:58'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-31 14:32:08'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-31 14:32:22'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-31 14:32:27'
+}
+{
+  message: '收到 SIGINT 信号，开始优雅关闭...',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:13:44'
+}
+{
+  message: 'HTTP服务器已关闭',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:13:44'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:13:47'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:13:47'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:13:47'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:13:47'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-31 15:13:54'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 15:13:56'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: User.default_role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;'
+  },
+  original: [Error: SQLITE_ERROR: no such column: User.default_role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;'
+  },
+  sql: 'SELECT `User`.`id`, `User`.`username`, `User`.`email`, `User`.`password`, `User`.`first_name` AS `firstName`, `User`.`last_name` AS `lastName`, `User`.`avatar`, `User`.`phone`, `User`.`status`, `User`.`default_role` AS `defaultRole`, `User`.`skill_level` AS `skillLevel`, `User`.`timezone`, `User`.`language`, `User`.`last_login_at` AS `lastLoginAt`, `User`.`email_verified_at` AS `emailVerifiedAt`, `User`.`created_at` AS `createdAt`, `User`.`updated_at` AS `updatedAt`, `wallet`.`id` AS `wallet.id`, `wallet`.`diamond_balance` AS `wallet.diamondBalance`, `wallet`.`gold_balance` AS `wallet.goldBalance`, `wallet`.`silver_balance` AS `wallet.silverBalance`, `wallet`.`copper_balance` AS `wallet.copperBalance` FROM `users` AS `User` LEFT OUTER JOIN `user_wallets` AS `wallet` ON `User`.`id` = `wallet`.`user_id` ORDER BY `createdAt` DESC LIMIT 0, 20;',
+  parameters: {},
+  level: 'error',
+  message: '获取用户列表失败: SQLITE_ERROR: no such column: User.default_role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+    '    at async SQLiteQueryInterface.select (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:407:12)\n' +
+    '    at async User.findAll (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:1140:21)\n' +
+    '    at async Promise.all (index 1)\n' +
+    '    at async User.findAndCountAll (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:1322:27)',
+  timestamp: '2025-05-31 15:13:56'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: 'a32af510-6525-4522-9401-12d959c8024d',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-31 15:14:05'
+}
+{
+  message: '收到 SIGINT 信号，开始优雅关闭...',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:14:18'
+}
+{
+  service: 'kanban-api',
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  original: [Error: SQLITE_ERROR: no such column: role] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'CREATE INDEX `users_role` ON `users` (`role`)'
+  },
+  sql: 'CREATE INDEX `users_role` ON `users` (`role`)',
+  parameters: {},
+  level: 'error',
+  message: '数据库初始化失败: SQLITE_ERROR: no such column: role',
+  stack: 'Error\n' +
+    '    at Database.<anonymous> (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:185:27)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:50\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at Query.run (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\sqlite\\query.js:183:12)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:315:28\n' +
+    '    at async SQLiteQueryInterface.addIndex (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\dialects\\abstract\\query-interface.js:250:12)\n' +
+    '    at async User.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\model.js:999:7)\n' +
+    '    at async Sequelize.sync (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\sequelize\\lib\\sequelize.js:377:9)\n' +
+    '    at async syncDatabase (E:\\Project\\Node\\dungeon-kanban-quest\\src\\models\\index.js:218:5)\n' +
+    '    at async initDatabase (E:\\Project\\Node\\dungeon-kanban-quest\\scripts\\init-db.js:16:5)',
+  timestamp: '2025-05-31 15:14:37'
+}

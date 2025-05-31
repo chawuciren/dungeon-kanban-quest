@@ -46,61 +46,102 @@
                 </div>
             <% } %>
 
-            <!-- 地下城列表 -->
+            <!-- 公会成员管理 -->
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="fas fa-map me-2"></i>
-                        公会探险
-                        <span class="badge bg-primary ms-2"><%= organization.projects ? organization.projects.length : 0 %></span>
+                        <i class="fas fa-users me-2"></i>
+                        公会勇者
+                        <span class="badge bg-primary ms-2"><%= organization.members ? organization.members.length : 0 %></span>
                     </h5>
-                    <a href="/projects/create?organizationId=<%= organization.id %>" class="btn btn-sm btn-primary">
-                        <i class="fas fa-plus me-1"></i>
-                        创建探险
-                    </a>
+                    <% if (user && (user.role === 'admin' || user.id === organization.ownerId)) { %>
+                        <a href="/organizations/<%= organization.id %>/members" class="btn btn-primary">
+                            <i class="fas fa-user-plus me-1"></i>
+                            管理成员
+                        </a>
+                    <% } %>
                 </div>
                 <div class="card-body">
-                    <% if (organization.projects && organization.projects.length > 0) { %>
+                    <% if (organization.members && organization.members.length > 0) { %>
                         <div class="row">
-                            <% organization.projects.forEach(project => { %>
-                                <div class="col-md-6 mb-3">
-                                    <div class="card border">
+                            <% organization.members.forEach(member => { %>
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card border h-100">
                                         <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                                <h6 class="card-title mb-0">
-                                                    <a href="/projects/<%= project.id %>" class="text-decoration-none">
-                                                        <%= project.name %>
-                                                    </a>
-                                                </h6>
-                                                <span class="badge bg-<%= project.status === 'active' ? 'success' : project.status === 'planning' ? 'info' : project.status === 'completed' ? 'secondary' : 'warning' %>">
-                                                    <%= project.status === 'active' ? '进行中' : project.status === 'planning' ? '规划中' : project.status === 'completed' ? '已完成' : '暂停' %>
-                                                </span>
+                                            <div class="d-flex align-items-center mb-3">
+                                                <% if (member.avatar) { %>
+                                                    <img src="<%= member.avatar %>" alt="<%= member.firstName %> <%= member.lastName %>"
+                                                         class="rounded-circle me-3" style="width: 48px; height: 48px; object-fit: cover;">
+                                                <% } else { %>
+                                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3"
+                                                         style="width: 48px; height: 48px;">
+                                                        <i class="fas fa-user text-white"></i>
+                                                    </div>
+                                                <% } %>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1"><%= member.firstName %> <%= member.lastName %></h6>
+                                                    <small class="text-muted">@<%= member.username %></small>
+                                                    <% if (member.id === organization.ownerId) { %>
+                                                        <div class="mt-1">
+                                                            <span class="badge bg-warning text-dark">
+                                                                <i class="fas fa-crown me-1"></i>公会会长
+                                                            </span>
+                                                        </div>
+                                                    <% } %>
+                                                </div>
                                             </div>
-                                            <p class="card-text small text-muted">
-                                                <%= project.description || '暂无描述' %>
-                                            </p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <small class="text-muted">
-                                                    <i class="fas fa-star text-warning"></i>
-                                                    <% for (let i = 0; i < (project.starLevel || 3); i++) { %>⭐<% } %>
-                                                </small>
-                                                <small class="text-muted">
-                                                    队长: <%= project.leader ? project.leader.firstName + ' ' + project.leader.lastName : '未指定' %>
-                                                </small>
+
+                                            <!-- 角色标签 -->
+                                            <% if (member.membership && member.membership.roles) { %>
+                                                <div class="mb-3">
+                                                    <% member.membership.roles.forEach(role => { %>
+                                                        <%
+                                                            const roleConfig = {
+                                                                'admin': { name: '神域守护者', color: 'danger' },
+                                                                'product_manager': { name: '预言师', color: 'warning' },
+                                                                'developer': { name: '剑士', color: 'primary' },
+                                                                'tester': { name: '弓箭手', color: 'info' },
+                                                                'ui_designer': { name: '魔法师', color: 'success' },
+                                                                'devops': { name: '牧师', color: 'dark' },
+                                                                'client': { name: '委托贵族', color: 'secondary' }
+                                                            };
+                                                            const config = roleConfig[role] || { name: role, color: 'secondary' };
+                                                        %>
+                                                        <span class="badge bg-<%= config.color %> me-1 mb-1" style="font-size: 0.75rem;">
+                                                            <%= config.name %>
+                                                        </span>
+                                                    <% }); %>
+                                                </div>
+                                            <% } %>
+
+                                            <!-- 成员信息 -->
+                                            <div class="small text-muted">
+                                                <div class="mb-1">
+                                                    <i class="fas fa-envelope me-1"></i>
+                                                    <%= member.email %>
+                                                </div>
+                                                <% if (member.membership && member.membership.joinedAt) { %>
+                                                    <div>
+                                                        <i class="fas fa-calendar me-1"></i>
+                                                        加入：<%= new Date(member.membership.joinedAt).toLocaleDateString('zh-CN') %>
+                                                    </div>
+                                                <% } %>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            <% }) %>
+                            <% }); %>
                         </div>
                     <% } else { %>
-                        <div class="text-center py-4">
-                            <i class="fas fa-map fa-2x text-muted mb-3"></i>
-                            <h6 class="text-muted">暂无地下城</h6>
-                            <p class="text-muted mb-3">该公会还没有创建任何地下城</p>
-                            <a href="/projects/create?organizationId=<%= organization.id %>" class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>创建第一个地下城
-                            </a>
+                        <div class="text-center py-5">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">暂无公会成员</h5>
+                            <p class="text-muted mb-3">该公会还没有任何成员</p>
+                            <% if (user && (user.role === 'admin' || user.id === organization.ownerId)) { %>
+                                <a href="/organizations/<%= organization.id %>/members" class="btn btn-primary">
+                                    <i class="fas fa-user-plus me-2"></i>添加第一个成员
+                                </a>
+                            <% } %>
                         </div>
                     <% } %>
                 </div>
@@ -208,66 +249,39 @@
                 </div>
             <% } %>
 
-            <!-- 公会成员 -->
-            <% if (organization.members && organization.members.length > 0) { %>
+            <!-- 关联大陆 -->
+            <% if (organization.projects && organization.projects.length > 0) { %>
                 <div class="card mb-4">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="fas fa-users me-2"></i>
-                            公会成员
-                            <span class="badge bg-primary ms-2"><%= organization.members.length %></span>
+                            <i class="fas fa-map me-2"></i>
+                            关联大陆
+                            <span class="badge bg-primary ms-2"><%= organization.projects.length %></span>
                         </h5>
-                        <% if (user && (user.role === 'admin' || user.id === organization.ownerId)) { %>
-                            <a href="/organizations/<%= organization.id %>/members" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-cog me-1"></i>管理
-                            </a>
-                        <% } %>
                     </div>
                     <div class="card-body">
-                        <% organization.members.slice(0, 6).forEach(member => { %>
-                            <div class="d-flex align-items-center mb-2">
-                                <% if (member.avatar) { %>
-                                    <img src="<%= member.avatar %>" alt="<%= member.firstName %> <%= member.lastName %>"
-                                         class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
-                                <% } else { %>
-                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2"
-                                         style="width: 32px; height: 32px;">
-                                        <i class="fas fa-user text-white small"></i>
+                        <% organization.projects.slice(0, 5).forEach(project => { %>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <a href="/projects/<%= project.id %>" class="text-decoration-none fw-bold">
+                                        <%= project.name %>
+                                    </a>
+                                    <div class="small text-muted">
+                                        <% if (project.ProjectOrganization && project.ProjectOrganization.relationshipType === 'primary') { %>
+                                            <span class="badge bg-primary">主要公会</span>
+                                        <% } else { %>
+                                            <span class="badge bg-secondary">协作公会</span>
+                                        <% } %>
                                     </div>
-                                <% } %>
-                                <div class="flex-grow-1">
-                                    <div class="fw-bold small"><%= member.firstName %> <%= member.lastName %></div>
-                                    <% if (member.membership && member.membership.roles) { %>
-                                        <div class="small text-muted">
-                                            <% member.membership.roles.slice(0, 2).forEach(role => { %>
-                                                <%
-                                                    const roleNames = {
-                                                        'admin': '神域守护者',
-                                                        'product_manager': '预言师',
-                                                        'developer': '剑士',
-                                                        'tester': '弓箭手',
-                                                        'ui_designer': '魔法师',
-                                                        'devops': '牧师',
-                                                        'client': '委托贵族'
-                                                    };
-                                                %>
-                                                <span class="badge bg-light text-dark me-1" style="font-size: 0.7rem;">
-                                                    <%= roleNames[role] || role %>
-                                                </span>
-                                            <% }); %>
-                                        </div>
-                                    <% } %>
                                 </div>
-                                <% if (member.id === organization.ownerId) { %>
-                                    <span class="badge bg-warning text-dark">
-                                        <i class="fas fa-crown"></i>
-                                    </span>
-                                <% } %>
+                                <span class="badge bg-<%= project.status === 'active' ? 'success' : project.status === 'planning' ? 'info' : project.status === 'completed' ? 'secondary' : 'warning' %>">
+                                    <%= project.status === 'active' ? '进行中' : project.status === 'planning' ? '规划中' : project.status === 'completed' ? '已完成' : '暂停' %>
+                                </span>
                             </div>
                         <% }); %>
-                        <% if (organization.members.length > 6) { %>
+                        <% if (organization.projects.length > 5) { %>
                             <div class="text-center mt-2">
-                                <small class="text-muted">还有 <%= organization.members.length - 6 %> 位成员...</small>
+                                <small class="text-muted">还有 <%= organization.projects.length - 5 %> 个大陆...</small>
                             </div>
                         <% } %>
                     </div>

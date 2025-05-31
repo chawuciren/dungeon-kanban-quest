@@ -262,11 +262,11 @@ const createDefaultData = async () => {
       status: 'active'
     });
 
-    // 添加管理员为组织成员
+    // 添加管理员为组织成员（使用管理员的默认角色）
     await OrganizationMember.create({
       organizationId: defaultOrg.id,
       userId: adminUser.id,
-      roles: ['admin'],
+      roles: [adminUser.defaultRole, 'admin'], // 包含默认角色和管理员角色
       status: 'active',
       permissions: {
         canManageOrganization: true,
@@ -306,11 +306,11 @@ const createDefaultData = async () => {
       status: 'active'
     });
 
-    // 添加管理员为项目成员
+    // 添加管理员为项目成员（使用管理员的默认角色）
     await ProjectMember.create({
       projectId: sampleProject.id,
       userId: adminUser.id,
-      roles: ['admin', 'product_manager'],
+      roles: [adminUser.defaultRole, 'admin'], // 包含默认角色和管理员角色
       status: 'active',
       permissions: {
         canManageProject: true,

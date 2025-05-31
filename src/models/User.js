@@ -55,9 +55,11 @@ const User = sequelize.define('User', {
     type: DataTypes.ENUM('active', 'inactive', 'suspended'),
     defaultValue: 'active'
   },
-  role: {
+  // 默认职业（仅作为参考，真正的角色在项目/组织级别管理）
+  defaultRole: {
     type: DataTypes.ENUM('admin', 'product_manager', 'developer', 'tester', 'ui_designer', 'devops', 'client'),
-    defaultValue: 'developer'
+    defaultValue: 'developer',
+    field: 'default_role'
   },
   skillLevel: {
     type: DataTypes.ENUM('novice', 'bronze', 'silver', 'gold', 'diamond'),

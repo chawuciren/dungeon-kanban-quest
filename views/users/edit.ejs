@@ -166,33 +166,41 @@
                                 <h6 class="text-muted mb-3">角色和权限</h6>
 
                                 <div class="mb-3">
-                                    <label for="role" class="form-label">职业角色 <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="role" name="role" required>
+                                    <label for="defaultRole" class="form-label">
+                                        默认职业 <span class="text-danger">*</span>
+                                        <small class="text-muted">(仅作参考，实际角色在项目中分配)</small>
+                                    </label>
+                                    <select class="form-select" id="defaultRole" name="defaultRole" required>
                                         <% if (isCreateMode) { %>
-                                            <option value="">请选择职业</option>
+                                            <option value="">请选择默认职业</option>
                                         <% } %>
-                                        <option value="admin" <% if (!isCreateMode && editUser && editUser.role === 'admin') { %>selected<% } %>>⚡ 神域守护者 (管理员)</option>
-                                        <option value="product_manager" <% if (!isCreateMode && editUser && editUser.role === 'product_manager') { %>selected<% } %>>🔮 预言师 (产品经理)</option>
-                                        <option value="developer" <% if (isCreateMode || (!isCreateMode && editUser && editUser.role === 'developer')) { %>selected<% } %>>⚔️ 剑士 (开发者)</option>
-                                        <option value="tester" <% if (!isCreateMode && editUser && editUser.role === 'tester') { %>selected<% } %>>🏹 弓箭手 (测试员)</option>
-                                        <option value="client" <% if (!isCreateMode && editUser && editUser.role === 'client') { %>selected<% } %>>💎 委托贵族 (客户)</option>
-                                        <option value="ui_designer" <% if (!isCreateMode && editUser && editUser.role === 'ui_designer') { %>selected<% } %>>🔮 魔法师 (UI设计师)</option>
-                                        <option value="devops" <% if (!isCreateMode && editUser && editUser.role === 'devops') { %>selected<% } %>>✨ 牧师 (运维工程师)</option>
+                                        <option value="admin" <% if (!isCreateMode && editUser && editUser.defaultRole === 'admin') { %>selected<% } %>>⚡ 神域守护者 (管理员)</option>
+                                        <option value="product_manager" <% if (!isCreateMode && editUser && editUser.defaultRole === 'product_manager') { %>selected<% } %>>🔮 预言师 (产品经理)</option>
+                                        <option value="developer" <% if (isCreateMode || (!isCreateMode && editUser && editUser.defaultRole === 'developer')) { %>selected<% } %>>⚔️ 剑士 (开发者)</option>
+                                        <option value="tester" <% if (!isCreateMode && editUser && editUser.defaultRole === 'tester') { %>selected<% } %>>🏹 弓箭手 (测试员)</option>
+                                        <option value="client" <% if (!isCreateMode && editUser && editUser.defaultRole === 'client') { %>selected<% } %>>💎 委托贵族 (客户)</option>
+                                        <option value="ui_designer" <% if (!isCreateMode && editUser && editUser.defaultRole === 'ui_designer') { %>selected<% } %>>🔮 魔法师 (UI设计师)</option>
+                                        <option value="devops" <% if (!isCreateMode && editUser && editUser.defaultRole === 'devops') { %>selected<% } %>>✨ 牧师 (运维工程师)</option>
                                     </select>
-                                    <% if (isCreateMode) { %>
-                                        <div class="form-text">
+                                    <div class="form-text">
+                                        <div class="alert alert-info py-2 px-3 mb-2">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            <strong>重要说明：</strong>这里设置的是勇者的默认职业偏好，仅作为参考。<br>
+                                            实际的角色权限将在加入公会或项目时单独分配，一个勇者可以在不同项目中担任不同角色。
+                                        </div>
+                                        <% if (isCreateMode) { %>
                                             <small>
                                                 <strong>职业说明：</strong><br>
-                                                • ⚡ 神域守护 (管理员)：拥有至高权限的神级存在，守护整个异世界<br>
-                                                • 🔮 预言师 (产品经理)：预测和规划未来的神秘学者<br>
-                                                • ⚔️ 剑士 (开发者)：挥剑斩敌的前线战斗专家，负责任务开发和实现<br>
-                                                • 🏹 弓箭手 (测试员)：潜行探查、发现追踪隐患的专业侦察者，负责质量保证和测试<br>
-                                                • 💎 委托贵族 (客户)：发布探险委托的尊贵赞助方<br>
-                                                • ✨ 法师 (UI设计师)： 施展视觉魔法的艺术大师<br>
-                                                • 🌙 牧师 (运维工程师)：维护神秘机械和设施的技术专家，负责系统运维<br>
+                                                • ⚡ 神域守护者：系统管理员，拥有最高权限<br>
+                                                • 🔮 预言师：产品规划和项目管理专家<br>
+                                                • ⚔️ 剑士：开发实现的核心战力<br>
+                                                • 🏹 弓箭手：质量保证和测试专家<br>
+                                                • 💎 委托贵族：需求提出方和客户代表<br>
+                                                • 🔮 魔法师：界面设计和用户体验专家<br>
+                                                • ✨ 牧师：系统运维和部署专家
                                             </small>
-                                        </div>
-                                    <% } %>
+                                        <% } %>
+                                    </div>
                                 </div>
 
                                 <div class="mb-3">

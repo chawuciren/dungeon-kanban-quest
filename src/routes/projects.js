@@ -622,11 +622,17 @@ router.post('/:id/members', requireAuth, async (req, res) => {
       return res.redirect(`/projects/${projectId}/members`);
     }
 
+    // 获取用户的默认角色
+    const targetUser = await User.findByPk(userId);
+    const defaultRoles = roles && roles.length > 0
+      ? (Array.isArray(roles) ? roles : [roles])
+      : [targetUser.defaultRole || 'developer'];
+
     // 添加成员
     await ProjectMember.create({
       projectId,
       userId,
-      roles: Array.isArray(roles) ? roles : [roles],
+      roles: defaultRoles,
       status: 'active',
       invitedBy: req.session.userId,
       permissions: {

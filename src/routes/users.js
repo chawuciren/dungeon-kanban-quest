@@ -127,7 +127,7 @@ router.post('/create', requireAuth, requireAdmin, async (req, res) => {
       firstName,
       lastName,
       phone,
-      role,
+      defaultRole,
       skillLevel,
       status
     } = req.body;
@@ -161,7 +161,7 @@ router.post('/create', requireAuth, requireAdmin, async (req, res) => {
       firstName,
       lastName,
       phone: phone || null,
-      role: role || 'developer', // 默认为开发者
+      defaultRole: defaultRole || 'developer', // 默认为开发者
       skillLevel: skillLevel || 'novice',
       status: status || 'active'
     });
@@ -233,7 +233,7 @@ router.post('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
       firstName,
       lastName,
       phone,
-      role,
+      defaultRole,
       skillLevel,
       status,
       password
@@ -273,7 +273,7 @@ router.post('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
       firstName,
       lastName,
       phone: phone || null,
-      role: role || 'developer',
+      defaultRole: defaultRole || 'developer',
       skillLevel: skillLevel || 'novice',
       status: status || 'active'
     };

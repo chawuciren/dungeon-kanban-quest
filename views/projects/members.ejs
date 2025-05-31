@@ -64,7 +64,7 @@
                                     <div class="card-body">
                                         <div class="d-flex align-items-center mb-3">
                                             <% if (member.avatar) { %>
-                                                <img src="<%= member.avatar %>" alt="<%= member.firstName %> <%= member.lastName %>" 
+                                                <img src="<%= member.avatar %>" alt="<%= member.firstName %> <%= member.lastName %>"
                                                      class="rounded-circle avatar-sm me-3">
                                             <% } else { %>
                                                 <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3 avatar-sm">
@@ -76,7 +76,7 @@
                                                 <small class="text-muted">@<%= member.username %></small>
                                             </div>
                                             <% if (member.id !== project.ownerId) { %>
-                                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                <button type="button" class="btn btn-sm btn-outline-danger"
                                                         onclick="removeMember('<%= member.id %>', '<%= member.firstName %> <%= member.lastName %>')">
                                                     <i class="fas fa-times"></i>
                                                 </button>
@@ -87,7 +87,7 @@
                                         <div class="mb-3">
                                             <% if (member.membership && member.membership.roles) { %>
                                                 <% member.membership.roles.forEach(role => { %>
-                                                    <% 
+                                                    <%
                                                         const roleConfig = {
                                                             'admin': { name: '神域守护者', color: 'danger' },
                                                             'product_manager': { name: '预言师', color: 'warning' },
@@ -158,14 +158,24 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="userId" class="form-label">选择用户</label>
-                            <select class="form-select" id="userId" name="userId" required>
+                            <select class="form-select" id="userId" name="userId" required onchange="updateDefaultRoles()">
                                 <option value="">请选择用户</option>
                                 <% allUsers.forEach(user => { %>
-                                    <option value="<%= user.id %>">
+                                    <option value="<%= user.id %>" data-default-role="<%= user.defaultRole || 'developer' %>">
                                         <%= user.firstName %> <%= user.lastName %> (@<%= user.username %>)
+                                        - 默认职业：<%=
+                                            user.defaultRole === 'admin' ? '⚡ 神域守护者' :
+                                            user.defaultRole === 'product_manager' ? '🔮 预言师' :
+                                            user.defaultRole === 'developer' ? '⚔️ 剑士' :
+                                            user.defaultRole === 'tester' ? '🏹 弓箭手' :
+                                            user.defaultRole === 'ui_designer' ? '🔮 魔法师' :
+                                            user.defaultRole === 'devops' ? '✨ 牧师' :
+                                            user.defaultRole === 'client' ? '💎 委托贵族' : '⚔️ 剑士'
+                                        %>
                                     </option>
                                 <% }); %>
                             </select>
+                            <div class="form-text">选择用户后，将自动选中其默认职业角色</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">角色</label>
@@ -232,6 +242,28 @@
                     console.error('Error:', error);
                     alert('移除成员失败');
                 });
+            }
+        }
+
+        function updateDefaultRoles() {
+            const userSelect = document.getElementById('userId');
+            const selectedOption = userSelect.options[userSelect.selectedIndex];
+
+            if (selectedOption && selectedOption.value) {
+                const defaultRole = selectedOption.getAttribute('data-default-role');
+
+                // 先取消所有选择
+                document.querySelectorAll('input[name="roles"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+
+                // 选中默认角色
+                if (defaultRole) {
+                    const defaultRoleCheckbox = document.querySelector(`input[name="roles"][value="${defaultRole}"]`);
+                    if (defaultRoleCheckbox) {
+                        defaultRoleCheckbox.checked = true;
+                    }
+                }
             }
         }
     </script>
