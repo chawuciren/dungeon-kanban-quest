@@ -262,6 +262,22 @@ const createDefaultData = async () => {
       status: 'active'
     });
 
+    // 添加管理员为组织成员
+    await OrganizationMember.create({
+      organizationId: defaultOrg.id,
+      userId: adminUser.id,
+      roles: ['admin'],
+      status: 'active',
+      permissions: {
+        canManageOrganization: true,
+        canManageMembers: true,
+        canCreateProjects: true,
+        canManageProjects: true,
+        canViewReports: true,
+        canManageBudget: true
+      }
+    });
+
     // 创建示例项目
     const sampleProject = await Project.create({
       name: '示例项目',
@@ -348,6 +364,7 @@ module.exports = {
   User,
   UserWallet,
   Organization,
+  OrganizationMember,
   Project,
   ProjectOrganization,
   ProjectMember,

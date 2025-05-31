@@ -18,7 +18,11 @@
                         <i class="fas fa-arrow-left me-1"></i>
                         返回列表
                     </a>
-                    <% if (user && user.role === 'admin') { %>
+                    <% if (user && (user.role === 'admin' || user.id === organization.ownerId)) { %>
+                        <a href="/organizations/<%= organization.id %>/members" class="btn btn-info">
+                            <i class="fas fa-users me-1"></i>
+                            成员管理
+                        </a>
                         <a href="/organizations/<%= organization.id %>/edit" class="btn btn-primary">
                             <i class="fas fa-edit me-1"></i>
                             编辑公会
@@ -204,6 +208,72 @@
                 </div>
             <% } %>
 
+            <!-- 公会成员 -->
+            <% if (organization.members && organization.members.length > 0) { %>
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-users me-2"></i>
+                            公会成员
+                            <span class="badge bg-primary ms-2"><%= organization.members.length %></span>
+                        </h5>
+                        <% if (user && (user.role === 'admin' || user.id === organization.ownerId)) { %>
+                            <a href="/organizations/<%= organization.id %>/members" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-cog me-1"></i>管理
+                            </a>
+                        <% } %>
+                    </div>
+                    <div class="card-body">
+                        <% organization.members.slice(0, 6).forEach(member => { %>
+                            <div class="d-flex align-items-center mb-2">
+                                <% if (member.avatar) { %>
+                                    <img src="<%= member.avatar %>" alt="<%= member.firstName %> <%= member.lastName %>"
+                                         class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                                <% } else { %>
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2"
+                                         style="width: 32px; height: 32px;">
+                                        <i class="fas fa-user text-white small"></i>
+                                    </div>
+                                <% } %>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold small"><%= member.firstName %> <%= member.lastName %></div>
+                                    <% if (member.membership && member.membership.roles) { %>
+                                        <div class="small text-muted">
+                                            <% member.membership.roles.slice(0, 2).forEach(role => { %>
+                                                <%
+                                                    const roleNames = {
+                                                        'admin': '神域守护者',
+                                                        'product_manager': '预言师',
+                                                        'developer': '剑士',
+                                                        'tester': '弓箭手',
+                                                        'ui_designer': '魔法师',
+                                                        'devops': '牧师',
+                                                        'client': '委托贵族'
+                                                    };
+                                                %>
+                                                <span class="badge bg-light text-dark me-1" style="font-size: 0.7rem;">
+                                                    <%= roleNames[role] || role %>
+                                                </span>
+                                            <% }); %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <% if (member.id === organization.ownerId) { %>
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-crown"></i>
+                                    </span>
+                                <% } %>
+                            </div>
+                        <% }); %>
+                        <% if (organization.members.length > 6) { %>
+                            <div class="text-center mt-2">
+                                <small class="text-muted">还有 <%= organization.members.length - 6 %> 位成员...</small>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            <% } %>
+
             <!-- 统计信息 -->
             <div class="card">
                 <div class="card-header">
@@ -214,17 +284,19 @@
                 </div>
                 <div class="card-body">
                     <div class="row text-center">
-                        <div class="col-6">
-                            <div class="border-end">
-                                <h4 class="mb-0 text-primary"><%= organization.projects ? organization.projects.length : 0 %></h4>
-                                <small class="text-muted">地下城总数</small>
-                            </div>
+                        <div class="col-4">
+                            <h4 class="mb-0 text-primary"><%= organization.projects ? organization.projects.length : 0 %></h4>
+                            <small class="text-muted">地下城总数</small>
                         </div>
-                        <div class="col-6">
+                        <div class="col-4">
                             <h4 class="mb-0 text-success">
                                 <%= organization.projects ? organization.projects.filter(p => p.status === 'active').length : 0 %>
                             </h4>
                             <small class="text-muted">进行中</small>
+                        </div>
+                        <div class="col-4">
+                            <h4 class="mb-0 text-info"><%= organization.members ? organization.members.length : 0 %></h4>
+                            <small class="text-muted">成员数量</small>
                         </div>
                     </div>
                 </div>

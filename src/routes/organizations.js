@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Organization, User, Project } = require('../models');
+const { Organization, User, Project, OrganizationMember } = require('../models');
 const { Op } = require('sequelize');
 const logger = require('../config/logger');
 
@@ -162,8 +162,18 @@ router.get('/:id', requireAuth, async (req, res) => {
           attributes: ['id', 'firstName', 'lastName', 'username', 'email']
         },
         {
+          model: User,
+          as: 'members',
+          attributes: ['id', 'firstName', 'lastName', 'username', 'email', 'avatar'],
+          through: {
+            attributes: ['roles', 'status', 'joinedAt'],
+            as: 'membership'
+          }
+        },
+        {
           model: Project,
           as: 'projects',
+          through: { attributes: ['relationshipType'] },
           include: [
             {
               model: User,
@@ -272,6 +282,198 @@ router.post('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
     logger.error('更新公会失败:', error);
     req.flash('error', '更新公会失败，请稍后重试');
     res.redirect(`/organizations/${req.params.id}/edit`);
+  }
+});
+
+// 组织成员管理页面
+router.get('/:id/members', requireAuth, async (req, res) => {
+  try {
+    const organizationId = req.params.id;
+
+    const organization = await Organization.findByPk(organizationId, {
+      include: [
+        {
+          model: User,
+          as: 'members',
+          attributes: ['id', 'firstName', 'lastName', 'username', 'email', 'avatar'],
+          through: {
+            attributes: ['roles', 'status', 'joinedAt', 'permissions'],
+            as: 'membership'
+          }
+        },
+        {
+          model: User,
+          as: 'owner',
+          attributes: ['id', 'firstName', 'lastName']
+        }
+      ]
+    });
+
+    if (!organization) {
+      req.flash('error', '公会不存在');
+      return res.redirect('/organizations');
+    }
+
+    // 检查权限：只有组织所有者或管理员可以管理成员
+    const hasPermission = organization.ownerId === req.session.userId ||
+                         req.session.user.role === 'admin';
+
+    if (!hasPermission) {
+      req.flash('error', '您没有权限管理此公会的成员');
+      return res.redirect(`/organizations/${organizationId}`);
+    }
+
+    // 获取所有用户（用于添加新成员）
+    const allUsers = await User.findAll({
+      attributes: ['id', 'firstName', 'lastName', 'username', 'email'],
+      where: {
+        id: {
+          [Op.notIn]: organization.members.map(member => member.id)
+        }
+      },
+      order: [['firstName', 'ASC'], ['lastName', 'ASC']]
+    });
+
+    res.render('organizations/members', {
+      title: `${organization.name} - 成员管理`,
+      organization,
+      allUsers
+    });
+
+  } catch (error) {
+    logger.error('获取组织成员失败:', error);
+    req.flash('error', '获取组织成员失败');
+    res.redirect('/organizations');
+  }
+});
+
+// 添加组织成员
+router.post('/:id/members', requireAuth, async (req, res) => {
+  try {
+    const organizationId = req.params.id;
+    const { userId, roles } = req.body;
+
+    const organization = await Organization.findByPk(organizationId);
+    if (!organization) {
+      req.flash('error', '公会不存在');
+      return res.redirect('/organizations');
+    }
+
+    // 检查权限
+    const hasPermission = organization.ownerId === req.session.userId ||
+                         req.session.user.role === 'admin';
+
+    if (!hasPermission) {
+      req.flash('error', '您没有权限管理此公会的成员');
+      return res.redirect(`/organizations/${organizationId}`);
+    }
+
+    // 检查用户是否已经是成员
+    const existingMember = await OrganizationMember.findOne({
+      where: { organizationId, userId }
+    });
+
+    if (existingMember) {
+      req.flash('error', '用户已经是公会成员');
+      return res.redirect(`/organizations/${organizationId}/members`);
+    }
+
+    // 添加成员
+    await OrganizationMember.create({
+      organizationId,
+      userId,
+      roles: Array.isArray(roles) ? roles : [roles],
+      status: 'active',
+      invitedBy: req.session.userId,
+      permissions: {
+        canManageOrganization: false,
+        canManageMembers: false,
+        canCreateProjects: true,
+        canManageProjects: false,
+        canViewReports: true,
+        canManageBudget: false
+      }
+    });
+
+    req.flash('success', '成员添加成功');
+    res.redirect(`/organizations/${organizationId}/members`);
+
+  } catch (error) {
+    logger.error('添加组织成员失败:', error);
+    req.flash('error', '添加成员失败');
+    res.redirect(`/organizations/${req.params.id}/members`);
+  }
+});
+
+// 移除组织成员
+router.delete('/:id/members/:userId', requireAuth, async (req, res) => {
+  try {
+    const { id: organizationId, userId } = req.params;
+
+    const organization = await Organization.findByPk(organizationId);
+    if (!organization) {
+      return res.status(404).json({ error: '公会不存在' });
+    }
+
+    // 检查权限
+    const hasPermission = organization.ownerId === req.session.userId ||
+                         req.session.user.role === 'admin';
+
+    if (!hasPermission) {
+      return res.status(403).json({ error: '权限不足' });
+    }
+
+    // 不能移除组织所有者
+    if (userId === organization.ownerId) {
+      return res.status(400).json({ error: '不能移除公会所有者' });
+    }
+
+    await OrganizationMember.destroy({
+      where: { organizationId, userId }
+    });
+
+    res.json({ success: true });
+
+  } catch (error) {
+    logger.error('移除组织成员失败:', error);
+    res.status(500).json({ error: '移除成员失败' });
+  }
+});
+
+// 获取组织成员列表（API接口，用于项目创建时获取成员）
+router.get('/:id/members/api', requireAuth, async (req, res) => {
+  try {
+    const organizationId = req.params.id;
+
+    const organization = await Organization.findByPk(organizationId, {
+      include: [
+        {
+          model: User,
+          as: 'members',
+          attributes: ['id', 'firstName', 'lastName', 'username', 'email'],
+          through: {
+            attributes: ['roles', 'status'],
+            as: 'membership'
+          },
+          where: {
+            '$members.membership.status$': 'active'
+          }
+        }
+      ]
+    });
+
+    if (!organization) {
+      return res.status(404).json({ error: '公会不存在' });
+    }
+
+    res.json({
+      success: true,
+      members: organization.members || []
+    });
+
+  } catch (error) {
+    logger.error('获取组织成员API失败:', error);
+    res.status(500).json({ error: '获取成员列表失败' });
   }
 });
 

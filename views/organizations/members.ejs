@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - 地下城看板探险</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .member-card {
+            transition: transform 0.2s;
+        }
+        .member-card:hover {
+            transform: translateY(-2px);
+        }
+        .role-badge {
+            font-size: 0.75rem;
+            margin: 0.1rem;
+        }
+        .avatar-sm {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <%- include('../partials/header') %>
+
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                <!-- 页面标题 -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="mb-1">
+                            <i class="fas fa-users text-primary me-2"></i>
+                            <%= organization.name %> - 公会成员管理
+                        </h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/organizations">公会管理</a></li>
+                                <li class="breadcrumb-item"><a href="/organizations/<%= organization.id %>"><%= organization.name %></a></li>
+                                <li class="breadcrumb-item active">成员管理</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+                            <i class="fas fa-user-plus me-2"></i>添加成员
+                        </button>
+                        <a href="/organizations/<%= organization.id %>" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>返回公会
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 成员列表 -->
+                <div class="row">
+                    <% if (organization.members && organization.members.length > 0) { %>
+                        <% organization.members.forEach(member => { %>
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card member-card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <% if (member.avatar) { %>
+                                                <img src="<%= member.avatar %>" alt="<%= member.firstName %> <%= member.lastName %>" 
+                                                     class="rounded-circle avatar-sm me-3">
+                                            <% } else { %>
+                                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3 avatar-sm">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                            <% } %>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-1"><%= member.firstName %> <%= member.lastName %></h6>
+                                                <small class="text-muted">@<%= member.username %></small>
+                                            </div>
+                                            <% if (member.id !== organization.ownerId) { %>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                        onclick="removeMember('<%= member.id %>', '<%= member.firstName %> <%= member.lastName %>')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            <% } %>
+                                        </div>
+
+                                        <!-- 角色标签 -->
+                                        <div class="mb-3">
+                                            <% if (member.membership && member.membership.roles) { %>
+                                                <% member.membership.roles.forEach(role => { %>
+                                                    <% 
+                                                        const roleConfig = {
+                                                            'admin': { name: '神域守护者', color: 'danger' },
+                                                            'product_manager': { name: '预言师', color: 'warning' },
+                                                            'developer': { name: '剑士', color: 'primary' },
+                                                            'tester': { name: '弓箭手', color: 'info' },
+                                                            'ui_designer': { name: '魔法师', color: 'success' },
+                                                            'devops': { name: '牧师', color: 'dark' },
+                                                            'client': { name: '委托贵族', color: 'secondary' }
+                                                        };
+                                                        const config = roleConfig[role] || { name: role, color: 'secondary' };
+                                                    %>
+                                                    <span class="badge bg-<%= config.color %> role-badge">
+                                                        <%= config.name %>
+                                                    </span>
+                                                <% }); %>
+                                            <% } %>
+                                        </div>
+
+                                        <!-- 成员信息 -->
+                                        <div class="small text-muted">
+                                            <div class="mb-1">
+                                                <i class="fas fa-envelope me-1"></i>
+                                                <%= member.email %>
+                                            </div>
+                                            <% if (member.membership && member.membership.joinedAt) { %>
+                                                <div>
+                                                    <i class="fas fa-calendar me-1"></i>
+                                                    加入时间：<%= new Date(member.membership.joinedAt).toLocaleDateString('zh-CN') %>
+                                                </div>
+                                            <% } %>
+                                        </div>
+
+                                        <!-- 特殊标识 -->
+                                        <% if (member.id === organization.ownerId) { %>
+                                            <div class="mt-2">
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="fas fa-crown me-1"></i>公会会长
+                                                </span>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="col-12">
+                            <div class="text-center py-5">
+                                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">暂无公会成员</h5>
+                                <p class="text-muted">点击"添加成员"按钮邀请成员加入公会</p>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加成员模态框 -->
+    <div class="modal fade" id="addMemberModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="/organizations/<%= organization.id %>/members" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title">添加公会成员</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="userId" class="form-label">选择用户</label>
+                            <select class="form-select" id="userId" name="userId" required>
+                                <option value="">请选择用户</option>
+                                <% allUsers.forEach(user => { %>
+                                    <option value="<%= user.id %>">
+                                        <%= user.firstName %> <%= user.lastName %> (@<%= user.username %>)
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">角色</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="roles" value="developer" id="role-developer" checked>
+                                        <label class="form-check-label" for="role-developer">剑士 (开发者)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="roles" value="tester" id="role-tester">
+                                        <label class="form-check-label" for="role-tester">弓箭手 (测试员)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="roles" value="ui_designer" id="role-ui">
+                                        <label class="form-check-label" for="role-ui">魔法师 (UI设计师)</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="roles" value="product_manager" id="role-pm">
+                                        <label class="form-check-label" for="role-pm">预言师 (产品经理)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="roles" value="devops" id="role-devops">
+                                        <label class="form-check-label" for="role-devops">牧师 (运维)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="roles" value="client" id="role-client">
+                                        <label class="form-check-label" for="role-client">委托贵族 (客户)</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">添加成员</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function removeMember(userId, userName) {
+            if (confirm(`确定要移除成员 ${userName} 吗？`)) {
+                fetch(`/organizations/<%= organization.id %>/members/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.error || '移除成员失败');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('移除成员失败');
+                });
+            }
+        }
+    </script>
+</body>
+</html>
