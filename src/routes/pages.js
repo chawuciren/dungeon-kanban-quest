@@ -152,14 +152,22 @@ router.get('/dashboard', async (req, res) => {
       });
     }
 
+    // 构建任务查询条件
+    const taskWhere = {
+      [Op.or]: [
+        { publisherId: req.session.userId },
+        { assigneeId: req.session.userId }
+      ]
+    };
+
+    // 如果选择了项目，只显示该项目的任务
+    if (req.session.selectedProjectId) {
+      taskWhere.projectId = req.session.selectedProjectId;
+    }
+
     // 获取用户的任务统计
     const taskStats = await BountyTask.findAll({
-      where: {
-        [Op.or]: [
-          { publisherId: req.session.userId },
-          { assigneeId: req.session.userId }
-        ]
-      },
+      where: taskWhere,
       attributes: ['status'],
       raw: true
     });
@@ -175,12 +183,7 @@ router.get('/dashboard', async (req, res) => {
 
     // 获取用户最近的任务（最多5个）
     const recentTasks = await BountyTask.findAll({
-      where: {
-        [Op.or]: [
-          { publisherId: req.session.userId },
-          { assigneeId: req.session.userId }
-        ]
-      },
+      where: taskWhere,
       include: [
         {
           model: Project,
@@ -262,6 +265,92 @@ router.get('/profile', (req, res) => {
 
   res.render('profile/index', {
     title: '个人资料'
+  });
+});
+
+// 选择项目
+router.get('/select-project/:id', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/login');
+    }
+
+    const projectId = req.params.id;
+    const { Project, User } = require('../models');
+
+    // 验证项目是否存在且用户有权限访问
+    let hasAccess = false;
+
+    if (req.session.user?.role === 'admin') {
+      // 管理员可以访问所有项目
+      const project = await Project.findByPk(projectId);
+      hasAccess = !!project;
+    } else {
+      // 普通用户只能访问自己参与的项目
+      const project = await Project.findOne({
+        where: { id: projectId },
+        include: [{
+          model: User,
+          as: 'members',
+          where: { id: req.session.userId },
+          attributes: [],
+          through: {
+            where: { status: 'active' },
+            attributes: []
+          }
+        }]
+      });
+      hasAccess = !!project;
+    }
+
+    if (hasAccess) {
+      req.session.selectedProjectId = projectId;
+      req.flash('success', '大陆选择成功');
+    } else {
+      req.flash('error', '您没有权限访问此大陆');
+    }
+
+    // 重定向到来源页面或仪表盘
+    const referer = req.get('Referer');
+    if (referer && referer.includes(req.get('Host'))) {
+      res.redirect(referer);
+    } else {
+      res.redirect('/dashboard');
+    }
+
+  } catch (error) {
+    console.error('选择项目失败:', error);
+    req.flash('error', '选择大陆失败');
+    res.redirect('/dashboard');
+  }
+});
+
+// 清除项目选择
+router.get('/clear-project', (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect('/login');
+  }
+
+  req.session.selectedProjectId = null;
+  req.flash('info', '已清除大陆选择');
+
+  // 重定向到来源页面或仪表盘
+  const referer = req.get('Referer');
+  if (referer && referer.includes(req.get('Host'))) {
+    res.redirect(referer);
+  } else {
+    res.redirect('/dashboard');
+  }
+});
+
+// 项目选择页面
+router.get('/select-project', (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect('/login');
+  }
+
+  res.render('project-selection', {
+    title: '选择探险大陆'
   });
 });
 

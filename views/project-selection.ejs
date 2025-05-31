@@ -1,0 +1,118 @@
+<%- include('partials/header') %>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-globe me-2"></i>
+                        选择探险大陆
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <% if (user.role !== 'admin') { %>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            请选择一个大陆开始您的探险之旅！
+                        </div>
+                    <% } %>
+
+                    <% if (userProjects && userProjects.length > 0) { %>
+                        <div class="row">
+                            <% userProjects.forEach(project => { %>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100 project-card" style="cursor: pointer;" 
+                                         onclick="selectProject('<%= project.id %>')">
+                                        <div class="card-body text-center">
+                                            <div class="mb-3">
+                                                <i class="fas fa-map fa-3x text-primary"></i>
+                                            </div>
+                                            <h5 class="card-title"><%= project.name %></h5>
+                                            <p class="card-text text-muted">
+                                                <small>项目代码: <%= project.key %></small>
+                                            </p>
+                                            <div class="mt-3">
+                                                <button class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-arrow-right me-1"></i>
+                                                    进入探险
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-5">
+                            <i class="fas fa-map-marked-alt fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">暂无可用大陆</h5>
+                            <% if (user.role !== 'admin') { %>
+                                <p class="text-muted">
+                                    您还没有加入任何探险项目。<br>
+                                    请联系管理员将您加入到项目中。
+                                </p>
+                                <div class="mt-4">
+                                    <a href="/dashboard" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i>
+                                        返回大厅
+                                    </a>
+                                </div>
+                            <% } else { %>
+                                <p class="text-muted">
+                                    系统中还没有任何项目。<br>
+                                    您可以创建第一个探险项目。
+                                </p>
+                                <div class="mt-4">
+                                    <a href="/projects/create" class="btn btn-primary">
+                                        <i class="fas fa-plus me-1"></i>
+                                        创建大陆
+                                    </a>
+                                </div>
+                            <% } %>
+                        </div>
+                    <% } %>
+
+                    <% if (user.role === 'admin') { %>
+                        <hr>
+                        <div class="text-center">
+                            <p class="text-muted small">
+                                <i class="fas fa-crown me-1"></i>
+                                作为管理员，您可以跳过项目选择直接访问系统功能
+                            </p>
+                            <a href="/dashboard" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-skip-forward me-1"></i>
+                                跳过选择
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.project-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid transparent;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-color: var(--bs-primary);
+}
+
+.project-card:hover .card-body {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+</style>
+
+<script>
+function selectProject(projectId) {
+    window.location.href = '/select-project/' + projectId;
+}
+</script>
+
+<%- include('partials/footer') %>

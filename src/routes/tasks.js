@@ -3,6 +3,7 @@ const router = express.Router();
 const { BountyTask, Project, User } = require('../models');
 const { Op } = require('sequelize');
 const logger = require('../config/logger');
+const { requireProjectSelection, validateProjectAccess } = require('../middleware/projectSelection');
 
 // 认证中间件
 const requireAuth = (req, res, next) => {
@@ -52,7 +53,7 @@ async function getSubtasks(parentId, maxLevel = 3) {
 }
 
 // 任务市场（列表视图）
-router.get('/', async (req, res) => {
+router.get('/', requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 20;
@@ -61,12 +62,17 @@ router.get('/', async (req, res) => {
     // 构建查询条件
     const where = {};
 
-    // 如果没有指定项目，默认只显示已发布的任务
-    if (!req.query.projectId) {
+    // 如果用户选择了项目，优先使用选中的项目
+    const projectId = req.query.projectId || req.session.selectedProjectId;
+
+    if (projectId) {
+      where.projectId = projectId;
+    } else {
+      // 如果没有选择项目且不是管理员，只显示已发布的任务
       where.status = 'published';
     }
 
-    // 筛选条件
+    // 其他筛选条件
     if (req.query.projectId) {
       where.projectId = req.query.projectId;
     }
@@ -139,9 +145,9 @@ router.get('/', async (req, res) => {
 });
 
 // 树形视图
-router.get('/tree', async (req, res) => {
+router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
-    const projectId = req.query.projectId;
+    const projectId = req.query.projectId || req.session.selectedProjectId;
     const page = parseInt(req.query.page) || 1;
     const limit = 50; // 树形视图每页显示更多
 
@@ -206,9 +212,9 @@ router.get('/tree', async (req, res) => {
 });
 
 // 看板视图
-router.get('/kanban', async (req, res) => {
+router.get('/kanban', requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
-    const projectId = req.query.projectId;
+    const projectId = req.query.projectId || req.session.selectedProjectId;
 
     let where = {};
     if (projectId) {
@@ -266,7 +272,7 @@ router.get('/kanban', async (req, res) => {
 });
 
 // 创建任务页面
-router.get('/create', requireAuth, async (req, res) => {
+router.get('/create', requireAuth, requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
     const parentId = req.query.parent;
     let parentTask = null;
@@ -277,21 +283,33 @@ router.get('/create', requireAuth, async (req, res) => {
       });
     }
 
-    // 获取用户的项目列表
-    const projects = await Project.findAll({
-      where: {
-        [Op.or]: [
-          { ownerId: req.session.userId },
-          { leaderId: req.session.userId }
-        ]
-      },
-      attributes: ['id', 'name', 'key']
-    });
+    // 获取用户的项目列表（如果有选中的项目，优先使用）
+    let projects = [];
+    if (req.session.selectedProjectId) {
+      const selectedProject = await Project.findByPk(req.session.selectedProjectId, {
+        attributes: ['id', 'name', 'key']
+      });
+      if (selectedProject) {
+        projects = [selectedProject];
+      }
+    } else {
+      // 管理员可以看到所有项目
+      projects = await Project.findAll({
+        where: {
+          [Op.or]: [
+            { ownerId: req.session.userId },
+            { leaderId: req.session.userId }
+          ]
+        },
+        attributes: ['id', 'name', 'key']
+      });
+    }
 
     res.render('tasks/create', {
       title: '创建任务',
       parentTask,
-      projects
+      projects,
+      defaultProjectId: req.session.selectedProjectId
     });
 
   } catch (error) {

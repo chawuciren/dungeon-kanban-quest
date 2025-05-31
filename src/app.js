@@ -96,12 +96,71 @@ app.use((req, res, next) => {
 });
 
 // 全局变量中间件
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   res.locals.config = config;
   res.locals.user = req.session?.user || null;
   res.locals.currentUrl = req.url;
   res.locals.moment = require('moment');
   res.locals.messages = req.flash();
+
+  // 处理项目选择逻辑
+  if (req.session?.userId) {
+    try {
+      const { Project, ProjectMember, User } = require('./models');
+      const { Op } = require('sequelize');
+
+      // 获取用户可访问的项目列表
+      let userProjects = [];
+
+      if (req.session.user?.role === 'admin') {
+        // 管理员可以看到所有项目
+        userProjects = await Project.findAll({
+          attributes: ['id', 'name', 'key'],
+          order: [['name', 'ASC']]
+        });
+      } else {
+        // 普通用户只能看到自己参与的项目
+        userProjects = await Project.findAll({
+          attributes: ['id', 'name', 'key'],
+          include: [{
+            model: User,
+            as: 'members',
+            where: { id: req.session.userId },
+            attributes: [],
+            through: {
+              where: { status: 'active' },
+              attributes: []
+            }
+          }],
+          order: [['name', 'ASC']]
+        });
+      }
+
+      res.locals.userProjects = userProjects;
+
+      // 处理当前选中的项目
+      let selectedProject = null;
+      if (req.session.selectedProjectId) {
+        selectedProject = userProjects.find(p => p.id === req.session.selectedProjectId);
+
+        // 如果选中的项目不在用户可访问列表中，清除选择
+        if (!selectedProject) {
+          req.session.selectedProjectId = null;
+        }
+      }
+
+      res.locals.selectedProject = selectedProject;
+
+    } catch (error) {
+      logger.error('获取用户项目列表失败:', error);
+      res.locals.userProjects = [];
+      res.locals.selectedProject = null;
+    }
+  } else {
+    res.locals.userProjects = [];
+    res.locals.selectedProject = null;
+  }
+
   next();
 });
 

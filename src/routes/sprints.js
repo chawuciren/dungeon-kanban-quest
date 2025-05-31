@@ -3,6 +3,7 @@ const router = express.Router();
 const { Sprint, Project, User, BountyTask } = require('../models');
 const { Op } = require('sequelize');
 const logger = require('../config/logger');
+const { requireProjectSelection, validateProjectAccess } = require('../middleware/projectSelection');
 
 // 中间件：检查用户是否已登录
 const requireAuth = (req, res, next) => {
@@ -13,12 +14,12 @@ const requireAuth = (req, res, next) => {
 };
 
 // 探险季列表页面
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', requireAuth, requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const offset = (page - 1) * limit;
-    const projectId = req.query.projectId;
+    const projectId = req.query.projectId || req.session.selectedProjectId;
     const status = req.query.status;
 
     let where = {};
@@ -26,8 +27,15 @@ router.get('/', requireAuth, async (req, res) => {
     // 项目筛选
     if (projectId) {
       where.projectId = projectId;
+    } else if (req.session.user?.role === 'admin') {
+      // 管理员可以看到所有项目的探险季
+      const userProjects = await Project.findAll({
+        attributes: ['id']
+      });
+      const projectIds = userProjects.map(p => p.id);
+      where.projectId = { [Op.in]: projectIds };
     } else {
-      // 获取用户有权限的项目
+      // 普通用户只能看到自己有权限的项目
       const userProjects = await Project.findAll({
         where: {
           [Op.or]: [

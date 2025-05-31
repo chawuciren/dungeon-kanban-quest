@@ -7544,3 +7544,513 @@
   message: 'GET /organizations',
   timestamp: '2025-05-31 23:03:55'
 }
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-31 23:09:32'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-31 23:09:34'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-31 23:09:39'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-31 23:10:00'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-31 23:10:01'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-31 23:11:11'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /organizations',
+  timestamp: '2025-05-31 23:11:14'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 23:11:15'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-31 23:11:27'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-31 23:20:03'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:20:51'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:20:51'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:20:51'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:20:51'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:21:25'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:21:25'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:21:25'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:21:25'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:21:46'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:21:46'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:21:46'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:21:46'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:10'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:10'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:10'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:10'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:24'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:24'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:24'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:24'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:39'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:39'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:39'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:39'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:50'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:50'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:50'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:22:50'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:23:05'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:23:05'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:23:05'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:23:05'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:23:26'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:23:26'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:23:26'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:23:26'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:23:58'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:23:58'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:23:58'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:23:58'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:24:12'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:24:12'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:24:12'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:24:12'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:24:29'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:24:29'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:24:29'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:24:29'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:24:44'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:24:44'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:24:44'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 23:24:44'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-31 23:52:13'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-31 23:54:55'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /select-project/bb566ac5-b07a-4251-be02-a981ce8a19c4',
+  timestamp: '2025-05-31 23:55:00'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-31 23:55:00'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-31 23:55:04'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-31 23:55:14'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 23:55:17'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /clear-project',
+  timestamp: '2025-05-31 23:55:22'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-31 23:55:22'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /tasks',
+  timestamp: '2025-05-31 23:55:26'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /sprints',
+  timestamp: '2025-05-31 23:55:27'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1749138f-7442-4df9-93b7-256efd1600d6',
+  level: 'info',
+  message: 'GET /users',
+  timestamp: '2025-05-31 23:55:36'
+}
