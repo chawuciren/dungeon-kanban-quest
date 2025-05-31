@@ -91,6 +91,18 @@
                                                 <i class="fas fa-envelope me-1"></i>
                                                 <%= member.email %>
                                             </div>
+                                            <div class="mb-1">
+                                                <i class="fas fa-user-tag me-1"></i>
+                                                职业：<%=
+                                                    member.role === 'admin' ? '⚡ 神域守护者' :
+                                                    member.role === 'product_manager' ? '🔮 预言师' :
+                                                    member.role === 'developer' ? '⚔️ 剑士' :
+                                                    member.role === 'tester' ? '🏹 弓箭手' :
+                                                    member.role === 'ui_designer' ? '🔮 魔法师' :
+                                                    member.role === 'devops' ? '✨ 牧师' :
+                                                    member.role === 'client' ? '💎 委托贵族' : '⚔️ 剑士'
+                                                %>
+                                            </div>
                                             <% if (member.membership && member.membership.joinedAt) { %>
                                                 <div>
                                                     <i class="fas fa-calendar me-1"></i>

@@ -6,18 +6,30 @@
             <!-- 页面标题 -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="h3 mb-0">
-                    <i class="fas fa-edit me-2"></i>
-                    编辑公会
+                    <% if (isCreateMode) { %>
+                        <i class="fas fa-plus me-2"></i>
+                        创建公会
+                    <% } else { %>
+                        <i class="fas fa-edit me-2"></i>
+                        编辑公会
+                    <% } %>
                 </h1>
                 <div class="btn-group">
-                    <a href="/organizations/<%= organization.id %>" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-1"></i>
-                        返回详情
-                    </a>
-                    <a href="/organizations" class="btn btn-outline-secondary">
-                        <i class="fas fa-list me-1"></i>
-                        公会列表
-                    </a>
+                    <% if (isCreateMode) { %>
+                        <a href="/organizations" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            返回列表
+                        </a>
+                    <% } else { %>
+                        <a href="/organizations/<%= organization.id %>" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            返回详情
+                        </a>
+                        <a href="/organizations" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-1"></i>
+                            公会列表
+                        </a>
+                    <% } %>
                 </div>
             </div>
 
@@ -30,14 +42,14 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="/organizations/<%= organization.id %>/edit">
+                    <form method="POST" action="<% if (isCreateMode) { %>/organizations/create<% } else { %>/organizations/<%= organization.id %>/edit<% } %>">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="name" class="form-label">
                                     公会名称 <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" class="form-control" id="name" name="name" required
-                                       value="<%= organization.name %>" placeholder="请输入公会名称">
+                                       value="<%= isCreateMode ? '' : organization.name %>" placeholder="请输入公会名称">
                                 <div class="form-text">公会的正式名称，将在各处显示</div>
                             </div>
                             <div class="col-md-6 mb-3">
@@ -45,7 +57,7 @@
                                     公会标识符 <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" class="form-control" id="slug" name="slug" required
-                                       value="<%= organization.slug %>" placeholder="guild-name" pattern="[a-z0-9-]+">
+                                       value="<%= isCreateMode ? '' : organization.slug %>" placeholder="guild-name" pattern="[a-z0-9-]+">
                                 <div class="form-text">用于URL的唯一标识符，只能包含小写字母、数字和连字符</div>
                             </div>
                         </div>
@@ -53,7 +65,7 @@
                         <div class="mb-3">
                             <label for="description" class="form-label">公会描述</label>
                             <textarea class="form-control" id="description" name="description" rows="3"
-                                      placeholder="请描述公会的宗旨、目标或特色"><%= organization.description || '' %></textarea>
+                                      placeholder="请描述公会的宗旨、目标或特色"><%= isCreateMode ? '' : (organization.description || '') %></textarea>
                             <div class="form-text">简要介绍公会的背景和目标</div>
                         </div>
 
@@ -61,12 +73,12 @@
                             <div class="col-md-6 mb-3">
                                 <label for="website" class="form-label">官方网站</label>
                                 <input type="url" class="form-control" id="website" name="website"
-                                       value="<%= organization.website || '' %>" placeholder="https://example.com">
+                                       value="<%= isCreateMode ? '' : (organization.website || '') %>" placeholder="https://example.com">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">联系邮箱</label>
                                 <input type="email" class="form-control" id="email" name="email"
-                                       value="<%= organization.email || '' %>" placeholder="contact@guild.com">
+                                       value="<%= isCreateMode ? '' : (organization.email || '') %>" placeholder="contact@guild.com">
                             </div>
                         </div>
 
@@ -74,15 +86,16 @@
                             <div class="col-md-6 mb-3">
                                 <label for="phone" class="form-label">联系电话</label>
                                 <input type="tel" class="form-control" id="phone" name="phone"
-                                       value="<%= organization.phone || '' %>" placeholder="+86 138-0000-0000">
+                                       value="<%= isCreateMode ? '' : (organization.phone || '') %>" placeholder="+86 138-0000-0000">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="address" class="form-label">公会地址</label>
                                 <input type="text" class="form-control" id="address" name="address"
-                                       value="<%= organization.address || '' %>" placeholder="公会总部地址">
+                                       value="<%= isCreateMode ? '' : (organization.address || '') %>" placeholder="公会总部地址">
                             </div>
                         </div>
 
+                        <% if (!isCreateMode) { %>
                         <div class="mb-3">
                             <label for="status" class="form-label">公会状态</label>
                             <select class="form-select" id="status" name="status">
@@ -96,21 +109,34 @@
                                 <strong>暂停：</strong>暂停所有活动
                             </div>
                         </div>
+                        <% } %>
 
                         <div class="d-flex justify-content-end gap-2">
-                            <a href="/organizations/<%= organization.id %>" class="btn btn-secondary">
-                                <i class="fas fa-times me-1"></i>
-                                取消
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-1"></i>
-                                保存更改
-                            </button>
+                            <% if (isCreateMode) { %>
+                                <a href="/organizations" class="btn btn-secondary">
+                                    <i class="fas fa-times me-1"></i>
+                                    取消
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i>
+                                    创建公会
+                                </button>
+                            <% } else { %>
+                                <a href="/organizations/<%= organization.id %>" class="btn btn-secondary">
+                                    <i class="fas fa-times me-1"></i>
+                                    取消
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>
+                                    保存更改
+                                </button>
+                            <% } %>
                         </div>
                     </form>
                 </div>
             </div>
 
+            <% if (!isCreateMode) { %>
             <!-- 危险操作区域 -->
             <div class="card mt-4 border-danger">
                 <div class="card-header bg-danger text-white">
@@ -123,7 +149,7 @@
                     <div class="alert alert-warning">
                         <strong>注意：</strong>以下操作具有风险性，请谨慎操作。
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <h6>暂停公会</h6>
@@ -162,21 +188,51 @@
                     </ul>
                 </div>
             </div>
+            <% } %>
         </div>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 标识符输入验证
-    const slugInput = document.getElementById('slug');
-    
-    slugInput.addEventListener('input', function() {
-        // 确保只包含允许的字符
-        this.value = this.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
-    });
+    const isCreateMode = <%= isCreateMode ? 'true' : 'false' %>;
+
+    // 创建模式下，自动生成标识符
+    if (isCreateMode) {
+        const nameInput = document.getElementById('name');
+        const slugInput = document.getElementById('slug');
+
+        nameInput.addEventListener('input', function() {
+            if (!slugInput.dataset.userModified) {
+                const slug = this.value
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\u4e00-\u9fa5]/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '');
+                slugInput.value = slug;
+            }
+        });
+
+        slugInput.addEventListener('input', function() {
+            this.dataset.userModified = 'true';
+            // 确保只包含允许的字符
+            this.value = this.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+        });
+
+        // 自动聚焦到第一个输入框
+        nameInput.focus();
+    } else {
+        // 编辑模式下，标识符输入验证
+        const slugInput = document.getElementById('slug');
+
+        slugInput.addEventListener('input', function() {
+            // 确保只包含允许的字符
+            this.value = this.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+        });
+    }
 });
 
+<% if (!isCreateMode) { %>
 function suspendOrganization() {
     if (confirm('确定要暂停这个公会吗？这将停止所有相关活动。')) {
         document.getElementById('status').value = 'suspended';
@@ -187,7 +243,7 @@ function suspendOrganization() {
 function deleteOrganization() {
     const orgName = '<%= organization.name %>';
     const confirmText = prompt(`删除公会是不可恢复的操作！\n\n请输入公会名称 "${orgName}" 来确认删除：`);
-    
+
     if (confirmText === orgName) {
         if (confirm('最后确认：确定要永久删除这个公会及其所有数据吗？')) {
             // 这里可以添加删除API调用
@@ -197,6 +253,7 @@ function deleteOrganization() {
         alert('公会名称不匹配，删除操作已取消。');
     }
 }
+<% } %>
 </script>
 
 <%- include('../partials/footer') %>

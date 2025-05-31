@@ -98,8 +98,11 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
 
 // 创建公会页面
 router.get('/create', requireAuth, requireAdmin, (req, res) => {
-  res.render('organizations/create', {
-    title: '创建公会'
+  // 使用edit模板，但传入创建模式的参数
+  res.render('organizations/edit', {
+    title: '创建公会',
+    organization: null, // 创建模式时organization为null
+    isCreateMode: true // 标识这是创建模式
   });
 });
 
@@ -164,7 +167,7 @@ router.get('/:id', requireAuth, async (req, res) => {
         {
           model: User,
           as: 'members',
-          attributes: ['id', 'firstName', 'lastName', 'username', 'email', 'avatar'],
+          attributes: ['id', 'firstName', 'lastName', 'username', 'email', 'avatar', 'role'],
           through: {
             attributes: ['status', 'joinedAt'],
             as: 'membership'
@@ -295,7 +298,7 @@ router.get('/:id/members', requireAuth, async (req, res) => {
         {
           model: User,
           as: 'members',
-          attributes: ['id', 'firstName', 'lastName', 'username', 'email', 'avatar'],
+          attributes: ['id', 'firstName', 'lastName', 'username', 'email', 'avatar', 'role'],
           through: {
             attributes: ['status', 'joinedAt', 'permissions'],
             as: 'membership'
@@ -325,7 +328,7 @@ router.get('/:id/members', requireAuth, async (req, res) => {
 
     // 获取所有用户（用于添加新成员）
     const allUsers = await User.findAll({
-      attributes: ['id', 'firstName', 'lastName', 'username', 'email'],
+      attributes: ['id', 'firstName', 'lastName', 'username', 'email', 'role'],
       where: {
         id: {
           [Op.notIn]: organization.members.map(member => member.id)

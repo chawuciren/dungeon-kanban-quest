@@ -286,7 +286,7 @@ router.get('/:id', requireAuth, async (req, res) => {
         {
           model: User,
           as: 'members',
-          attributes: ['id', 'firstName', 'lastName', 'avatar', 'email'],
+          attributes: ['id', 'firstName', 'lastName', 'avatar', 'email', 'role'],
           through: {
             attributes: ['roles', 'status', 'joinedAt'],
             as: 'membership'
@@ -537,7 +537,7 @@ router.get('/:id/members', requireAuth, async (req, res) => {
         {
           model: User,
           as: 'members',
-          attributes: ['id', 'firstName', 'lastName', 'avatar', 'email', 'username'],
+          attributes: ['id', 'firstName', 'lastName', 'avatar', 'email', 'username', 'role'],
           through: {
             attributes: ['roles', 'status', 'joinedAt', 'permissions'],
             as: 'membership'
@@ -568,7 +568,7 @@ router.get('/:id/members', requireAuth, async (req, res) => {
 
     // 获取所有用户（用于添加新成员）
     const allUsers = await User.findAll({
-      attributes: ['id', 'firstName', 'lastName', 'username', 'email'],
+      attributes: ['id', 'firstName', 'lastName', 'username', 'email', 'role'],
       where: {
         id: {
           [Op.notIn]: project.members.map(member => member.id)
