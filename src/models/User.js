@@ -97,7 +97,7 @@ const User = sequelize.define('User', {
       fields: ['status']
     },
     {
-      fields: ['role']
+      fields: ['default_role']
     },
     {
       fields: ['skill_level']

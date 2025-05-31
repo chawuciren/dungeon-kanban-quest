@@ -47,7 +47,7 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
     }
 
     if (role) {
-      whereClause.role = role;
+      whereClause.defaultRole = role;
     }
 
     if (status) {

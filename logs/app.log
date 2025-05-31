@@ -5065,3 +5065,127 @@
     '    at async initDatabase (E:\\Project\\Node\\dungeon-kanban-quest\\scripts\\init-db.js:16:5)',
   timestamp: '2025-05-31 15:14:37'
 }
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:23:04'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:23:04'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:23:04'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:23:04'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /projects',
+  timestamp: '2025-05-31 15:23:13'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'GET /login',
+  timestamp: '2025-05-31 15:23:14'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: undefined,
+  level: 'info',
+  message: 'POST /login',
+  timestamp: '2025-05-31 15:26:22'
+}
+{
+  service: 'kanban-api',
+  userId: '1a7b3ae6-0324-4fe9-b3fb-c81ddd04c19d',
+  level: 'info',
+  message: '用户登录成功: admin',
+  timestamp: '2025-05-31 15:26:23'
+}
+{
+  service: 'kanban-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  userId: '1a7b3ae6-0324-4fe9-b3fb-c81ddd04c19d',
+  level: 'info',
+  message: 'GET /dashboard',
+  timestamp: '2025-05-31 15:26:23'
+}
+{
+  service: 'kanban-api',
+  path: 'E:\\Project\\Node\\dungeon-kanban-quest\\views\\dashboard\\index.ejs',
+  level: 'error',
+  message: '应用错误: E:\\Project\\Node\\dungeon-kanban-quest\\views\\dashboard\\index.ejs:60\n' +
+    '    58|                     <i class="fas fa-coins fa-2x text-warning"></i>\n' +
+    '    59|                 </div>\n' +
+    ' >> 60|                 <h4 class="mb-1"><%= (wallet.totalEarned || 0).toLocaleString() %></h4>\n' +
+    '    61|                 <p class="text-muted mb-0">累计收入</p>\n' +
+    '    62|             </div>\n' +
+    '    63|         </div>\n' +
+    '\n' +
+    "Cannot read properties of null (reading 'totalEarned')",
+  stack: 'TypeError: E:\\Project\\Node\\dungeon-kanban-quest\\views\\dashboard\\index.ejs:60\n' +
+    '    58|                     <i class="fas fa-coins fa-2x text-warning"></i>\n' +
+    '    59|                 </div>\n' +
+    ' >> 60|                 <h4 class="mb-1"><%= (wallet.totalEarned || 0).toLocaleString() %></h4>\n' +
+    '    61|                 <p class="text-muted mb-0">累计收入</p>\n' +
+    '    62|             </div>\n' +
+    '    63|         </div>\n' +
+    '\n' +
+    "Cannot read properties of null (reading 'totalEarned')\n" +
+    '    at eval ("E:\\\\Project\\\\Node\\\\dungeon-kanban-quest\\\\views\\\\dashboard\\\\index.ejs":22:34)\n' +
+    '    at index (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\ejs\\lib\\ejs.js:703:17)\n' +
+    '    at tryHandleCache (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\ejs\\lib\\ejs.js:274:36)\n' +
+    '    at exports.renderFile [as engine] (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\ejs\\lib\\ejs.js:491:10)\n' +
+    '    at View.render (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\express\\lib\\view.js:135:8)\n' +
+    '    at tryRender (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\express\\lib\\application.js:657:10)\n' +
+    '    at Function.render (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\express\\lib\\application.js:609:3)\n' +
+    '    at ServerResponse.render (E:\\Project\\Node\\dungeon-kanban-quest\\node_modules\\express\\lib\\response.js:1049:7)\n' +
+    '    at E:\\Project\\Node\\dungeon-kanban-quest\\src\\routes\\pages.js:220:9',
+  timestamp: '2025-05-31 15:26:23'
+}
+{
+  message: '🚀 服务器启动成功',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:27:35'
+}
+{
+  message: '📍 地址: http://localhost:3000',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:27:35'
+}
+{
+  message: '🌍 环境: development',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:27:35'
+}
+{
+  message: '📊 数据库: ./database/kanban.db',
+  level: 'info',
+  service: 'kanban-api',
+  timestamp: '2025-05-31 15:27:35'
+}

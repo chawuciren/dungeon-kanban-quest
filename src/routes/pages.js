@@ -128,7 +128,7 @@ router.get('/dashboard', async (req, res) => {
   try {
     // 获取用户信息
     const user = await User.findByPk(req.session.userId, {
-      attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'role', 'skillLevel', 'createdAt']
+      attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'defaultRole', 'skillLevel', 'createdAt']
     });
 
     if (!user) {
