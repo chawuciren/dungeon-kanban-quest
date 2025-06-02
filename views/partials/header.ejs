@@ -88,7 +88,7 @@
                     <% } %>
 
                     <!-- 项目相关功能 - 只有选择了大陆才显示 -->
-                    <% if (user && (selectedProject || user.role === 'admin')) { %>
+                    <% if (user && selectedProject) { %>
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/dashboard') ? 'active' : '' %>" href="/dashboard"
                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="冒险者大厅 - 查看整体状况">

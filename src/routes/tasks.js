@@ -60,22 +60,11 @@ router.get('/', requireProjectSelection, validateProjectAccess, async (req, res)
     const offset = (page - 1) * limit;
 
     // 构建查询条件
-    const where = {};
-
-    // 如果用户选择了项目，优先使用选中的项目
-    const projectId = req.query.projectId || req.session.selectedProjectId;
-
-    if (projectId) {
-      where.projectId = projectId;
-    } else {
-      // 如果没有选择项目且不是管理员，只显示已发布的任务
-      where.status = 'published';
-    }
+    const where = {
+      projectId: req.session.selectedProjectId // 只显示当前选中项目的任务
+    };
 
     // 其他筛选条件
-    if (req.query.projectId) {
-      where.projectId = req.query.projectId;
-    }
     if (req.query.starLevel) {
       where.starLevel = req.query.starLevel;
     }
@@ -147,14 +136,13 @@ router.get('/', requireProjectSelection, validateProjectAccess, async (req, res)
 // 树形视图
 router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
-    const projectId = req.query.projectId || req.session.selectedProjectId;
+    const projectId = req.session.selectedProjectId;
     const page = parseInt(req.query.page) || 1;
     const limit = 50; // 树形视图每页显示更多
 
-    let where = {};
-    if (projectId) {
-      where.projectId = projectId;
-    }
+    let where = {
+      projectId: projectId // 只显示当前选中项目的任务
+    };
 
     // 只获取根任务（level 0）进行分页
     const { count, rows: rootTasks } = await BountyTask.findAndCountAll({
@@ -214,12 +202,11 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
 // 看板视图
 router.get('/kanban', requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
-    const projectId = req.query.projectId || req.session.selectedProjectId;
+    const projectId = req.session.selectedProjectId;
 
-    let where = {};
-    if (projectId) {
-      where.projectId = projectId;
-    }
+    let where = {
+      projectId: projectId // 只显示当前选中项目的任务
+    };
 
     // 获取所有任务并按状态分组
     const tasks = await BountyTask.findAll({
@@ -423,7 +410,7 @@ router.get('/:id/subtasks', async (req, res) => {
 });
 
 // 创建任务处理
-router.post('/create', requireAuth, async (req, res) => {
+router.post('/create', requireAuth, requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
     const {
       title,
@@ -432,7 +419,6 @@ router.post('/create', requireAuth, async (req, res) => {
       starLevel,
       urgencyLevel,
       skillRequired,
-      projectId,
       parentTaskId,
       baseReward,
       bonusReward,
@@ -440,6 +426,9 @@ router.post('/create', requireAuth, async (req, res) => {
       estimatedHours,
       dueDate
     } = req.body;
+
+    // 使用当前选中的项目ID
+    const projectId = req.session.selectedProjectId;
 
     // 验证必填字段
     if (!title || !description || !projectId) {

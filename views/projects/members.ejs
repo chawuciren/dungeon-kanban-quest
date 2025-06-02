@@ -36,19 +36,19 @@
                     <div>
                         <h2 class="mb-1">
                             <i class="fas fa-users text-primary me-2"></i>
-                            <%= project.name %> - 冒险者管理
+                            <%= project.name %> - 勇者管理
                         </h2>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="/projects">大陆管理</a></li>
                                 <li class="breadcrumb-item"><a href="/projects/<%= project.id %>"><%= project.name %></a></li>
-                                <li class="breadcrumb-item active">冒险者管理</li>
+                                <li class="breadcrumb-item active">勇者管理</li>
                             </ol>
                         </nav>
                     </div>
                     <div>
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMemberModal">
-                            <i class="fas fa-user-plus me-2"></i>添加冒险者
+                            <i class="fas fa-user-plus me-2"></i>添加勇者
                         </button>
                         <a href="/projects/<%= project.id %>" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-2"></i>返回项目

@@ -42,18 +42,20 @@
                             </div>
                         </div>
 
-                        <!-- 项目选择 -->
+                        <!-- 项目信息 -->
                         <% if (!parentTask) { %>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="projectId" class="form-label">所属地下城 <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="projectId" name="projectId" required>
-                                        <option value="">选择地下城</option>
-                                        <% projects.forEach(project => { %>
-                                            <option value="<%= project.id %>"><%= project.name %> (<%= project.key %>)</option>
-                                        <% }) %>
-                                    </select>
-                                    <div class="invalid-feedback">请选择地下城</div>
+                                    <label class="form-label">所属大陆</label>
+                                    <div class="form-control-plaintext bg-light border rounded px-3 py-2">
+                                        <i class="fas fa-globe me-2 text-primary"></i>
+                                        <% if (projects && projects.length > 0) { %>
+                                            [<%= projects[0].key %>] <%= projects[0].name %>
+                                        <% } else { %>
+                                            未选择大陆
+                                        <% } %>
+                                    </div>
+                                    <div class="form-text">当前选中的探险大陆</div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="taskType" class="form-label">任务类型</label>

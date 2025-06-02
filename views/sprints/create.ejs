@@ -40,23 +40,20 @@
                                 <i class="fas fa-tag me-1"></i>
                                 探险季名称 <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control" id="name" name="name" 
+                            <input type="text" class="form-control" id="name" name="name"
                                    placeholder="例如：春季探险季 - 用户系统建设" required>
                             <div class="form-text">建议包含季节和主要目标</div>
                         </div>
                         <div class="col-md-6">
-                            <label for="projectId" class="form-label">
+                            <label class="form-label">
                                 <i class="fas fa-map me-1"></i>
-                                所属项目 <span class="text-danger">*</span>
+                                所属大陆
                             </label>
-                            <select class="form-select" id="projectId" name="projectId" required>
-                                <option value="">请选择项目</option>
-                                <% projects.forEach(project => { %>
-                                    <option value="<%= project.id %>" <%= selectedProjectId === project.id ? 'selected' : '' %>>
-                                        [<%= project.key %>] <%= project.name %>
-                                    </option>
-                                <% }) %>
-                            </select>
+                            <div class="form-control-plaintext bg-light border rounded px-3 py-2">
+                                <i class="fas fa-globe me-2 text-primary"></i>
+                                [<%= selectedProject.key %>] <%= selectedProject.name %>
+                            </div>
+                            <div class="form-text">当前选中的探险大陆</div>
                         </div>
                     </div>
 
@@ -66,7 +63,7 @@
                             <i class="fas fa-bullseye me-1"></i>
                             探险季目标 <span class="text-danger">*</span>
                         </label>
-                        <textarea class="form-control" id="goal" name="goal" rows="3" 
+                        <textarea class="form-control" id="goal" name="goal" rows="3"
                                   placeholder="描述这个探险季要达成的主要目标..." required></textarea>
                         <div class="form-text">明确的目标有助于团队聚焦重点</div>
                     </div>
@@ -77,7 +74,7 @@
                             <i class="fas fa-align-left me-1"></i>
                             详细描述
                         </label>
-                        <textarea class="form-control" id="description" name="description" rows="4" 
+                        <textarea class="form-control" id="description" name="description" rows="4"
                                   placeholder="详细描述探险季的背景、范围和期望..."></textarea>
                     </div>
 
@@ -106,7 +103,7 @@
                             团队容量（工时）
                         </label>
                         <div class="input-group">
-                            <input type="number" class="form-control" id="capacity" name="capacity" 
+                            <input type="number" class="form-control" id="capacity" name="capacity"
                                    min="0" step="0.5" placeholder="例如：80">
                             <span class="input-group-text">小时</span>
                         </div>
@@ -159,14 +156,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateDuration() {
         const startDate = new Date(startDateInput.value);
         const endDate = new Date(endDateInput.value);
-        
+
         if (startDate && endDate && startDate < endDate) {
             const diffTime = Math.abs(endDate - startDate);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
+
             durationText.textContent = `探险季持续时间：${diffDays} 天`;
             durationInfo.style.display = 'block';
-            
+
             // 如果时间过长或过短，给出提示
             if (diffDays > 28) {
                 durationInfo.className = 'alert alert-warning';
@@ -193,16 +190,16 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('createSprintForm').addEventListener('submit', function(e) {
         const startDate = new Date(startDateInput.value);
         const endDate = new Date(endDateInput.value);
-        
+
         if (startDate >= endDate) {
             e.preventDefault();
             alert('结束时间必须晚于开始时间');
             return false;
         }
-        
+
         const diffTime = Math.abs(endDate - startDate);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
+
         if (diffDays > 42) {
             if (!confirm('探险季持续时间超过6周，这可能会影响团队的专注度。确定要继续吗？')) {
                 e.preventDefault();

@@ -21,44 +21,57 @@
     </div>
 </div>
 
-<!-- 筛选器 -->
+<!-- 当前大陆信息和筛选器 -->
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <form method="GET" action="/sprints" class="row g-3">
-                    <div class="col-md-4">
-                        <label for="projectId" class="form-label">项目筛选</label>
-                        <select class="form-select" id="projectId" name="projectId">
-                            <option value="">所有项目</option>
-                            <% projects.forEach(project => { %>
-                                <option value="<%= project.id %>" <%= filters.projectId === project.id ? 'selected' : '' %>>
-                                    [<%= project.key %>] <%= project.name %>
-                                </option>
-                            <% }) %>
-                        </select>
+                <div class="row g-3 align-items-center">
+                    <!-- 当前大陆信息 -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-globe me-2 text-primary"></i>
+                            <div>
+                                <h6 class="mb-0">当前探险大陆</h6>
+                                <small class="text-muted">
+                                    <% if (selectedProject) { %>
+                                        [<%= selectedProject.key %>] <%= selectedProject.name %>
+                                    <% } else { %>
+                                        未选择大陆
+                                    <% } %>
+                                </small>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <label for="status" class="form-label">状态筛选</label>
-                        <select class="form-select" id="status" name="status">
-                            <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>所有状态</option>
-                            <option value="planning" <%= filters.status === 'planning' ? 'selected' : '' %>>规划中</option>
-                            <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>进行中</option>
-                            <option value="completed" <%= filters.status === 'completed' ? 'selected' : '' %>>已完成</option>
-                            <option value="cancelled" <%= filters.status === 'cancelled' ? 'selected' : '' %>>已取消</option>
-                        </select>
+
+                    <!-- 状态筛选 -->
+                    <div class="col-md-6">
+                        <form method="GET" action="/sprints" class="row g-2 align-items-end">
+                            <div class="col-md-8">
+                                <label for="status" class="form-label">状态筛选</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>所有状态</option>
+                                    <option value="planning" <%= filters.status === 'planning' ? 'selected' : '' %>>规划中</option>
+                                    <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>进行中</option>
+                                    <option value="completed" <%= filters.status === 'completed' ? 'selected' : '' %>>已完成</option>
+                                    <option value="cancelled" <%= filters.status === 'cancelled' ? 'selected' : '' %>>已取消</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-outline-primary me-2">
+                                    <i class="fas fa-search me-1"></i>
+                                    筛选
+                                </button>
+                                <% if (filters.status !== 'all') { %>
+                                    <a href="/sprints" class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-times me-1"></i>
+                                        清除
+                                    </a>
+                                <% } %>
+                            </div>
+                        </form>
                     </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        <button type="submit" class="btn btn-outline-primary me-2">
-                            <i class="fas fa-search me-1"></i>
-                            筛选
-                        </button>
-                        <a href="/sprints" class="btn btn-outline-secondary">
-                            <i class="fas fa-times me-1"></i>
-                            清除
-                        </a>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -99,34 +112,34 @@
                                         <% } %>
                                     </div>
                                 </div>
-                                
+
                                 <p class="text-muted mb-2">
                                     <i class="fas fa-map me-1"></i>
                                     项目：[<%= sprint.project.key %>] <%= sprint.project.name %>
                                 </p>
-                                
+
                                 <p class="card-text mb-2">
                                     <strong>目标：</strong><%= sprint.goal %>
                                 </p>
-                                
+
                                 <% if (sprint.description) { %>
                                     <p class="card-text text-muted">
                                         <%= sprint.description.length > 100 ? sprint.description.substring(0, 100) + '...' : sprint.description %>
                                     </p>
                                 <% } %>
                             </div>
-                            
+
                             <div class="col-md-4">
                                 <div class="sprint-info">
                                     <!-- 时间信息 -->
                                     <div class="mb-2">
                                         <small class="text-muted">
                                             <i class="fas fa-calendar me-1"></i>
-                                            <%= moment(sprint.startDate).format('YYYY-MM-DD') %> 至 
+                                            <%= moment(sprint.startDate).format('YYYY-MM-DD') %> 至
                                             <%= moment(sprint.endDate).format('YYYY-MM-DD') %>
                                         </small>
                                     </div>
-                                    
+
                                     <!-- 持续时间 -->
                                     <div class="mb-2">
                                         <small class="text-muted">
@@ -137,7 +150,7 @@
                                             <% } %>
                                         </small>
                                     </div>
-                                    
+
                                     <!-- 进度条 -->
                                     <div class="mb-2">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -145,11 +158,11 @@
                                             <small class="text-muted"><%= sprint.getProgress() %>%</small>
                                         </div>
                                         <div class="progress" style="height: 6px;">
-                                            <div class="progress-bar bg-success" 
+                                            <div class="progress-bar bg-success"
                                                  style="width: <%= sprint.getProgress() %>%"></div>
                                         </div>
                                     </div>
-                                    
+
                                     <!-- 任务统计 -->
                                     <div class="mb-2">
                                         <small class="text-muted">
@@ -157,7 +170,7 @@
                                             任务：<%= sprint.stats.completedTasks %>/<%= sprint.stats.totalTasks %>
                                         </small>
                                     </div>
-                                    
+
                                     <!-- 创建者 -->
                                     <div class="mb-2">
                                         <small class="text-muted">
@@ -171,30 +184,30 @@
                     </div>
                 </div>
             <% }) %>
-            
+
             <!-- 分页 -->
             <% if (pagination.totalPages > 1) { %>
                 <nav aria-label="探险季分页">
                     <ul class="pagination justify-content-center">
                         <% if (pagination.hasPrev) { %>
                             <li class="page-item">
-                                <a class="page-link" href="?page=<%= pagination.page - 1 %>&projectId=<%= filters.projectId %>&status=<%= filters.status %>">
+                                <a class="page-link" href="?page=<%= pagination.page - 1 %>&status=<%= filters.status %>">
                                     上一页
                                 </a>
                             </li>
                         <% } %>
-                        
+
                         <% for (let i = 1; i <= pagination.totalPages; i++) { %>
                             <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
-                                <a class="page-link" href="?page=<%= i %>&projectId=<%= filters.projectId %>&status=<%= filters.status %>">
+                                <a class="page-link" href="?page=<%= i %>&status=<%= filters.status %>">
                                     <%= i %>
                                 </a>
                             </li>
                         <% } %>
-                        
+
                         <% if (pagination.hasNext) { %>
                             <li class="page-item">
-                                <a class="page-link" href="?page=<%= pagination.page + 1 %>&projectId=<%= filters.projectId %>&status=<%= filters.status %>">
+                                <a class="page-link" href="?page=<%= pagination.page + 1 %>&status=<%= filters.status %>">
                                     下一页
                                 </a>
                             </li>
@@ -202,7 +215,7 @@
                     </ul>
                 </nav>
             <% } %>
-            
+
         <% } else { %>
             <!-- 空状态 -->
             <div class="text-center py-5">

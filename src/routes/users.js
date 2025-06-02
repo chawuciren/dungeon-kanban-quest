@@ -170,7 +170,7 @@ router.post('/create', requireAuth, requireAdmin, async (req, res) => {
     await UserWallet.create({
       userId: user.id,
       diamondBalance: 0,
-      goldBalance: 100, // 新用户赠送100金币
+      copperBalance: 100, // 新用户赠送100铜币
       silverBalance: 0,
       copperBalance: 0
     });

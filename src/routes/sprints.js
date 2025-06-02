@@ -19,35 +19,12 @@ router.get('/', requireAuth, requireProjectSelection, validateProjectAccess, asy
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const offset = (page - 1) * limit;
-    const projectId = req.query.projectId || req.session.selectedProjectId;
+    const projectId = req.session.selectedProjectId;
     const status = req.query.status;
 
-    let where = {};
-
-    // 项目筛选
-    if (projectId) {
-      where.projectId = projectId;
-    } else if (req.session.user?.role === 'admin') {
-      // 管理员可以看到所有项目的探险季
-      const userProjects = await Project.findAll({
-        attributes: ['id']
-      });
-      const projectIds = userProjects.map(p => p.id);
-      where.projectId = { [Op.in]: projectIds };
-    } else {
-      // 普通用户只能看到自己有权限的项目
-      const userProjects = await Project.findAll({
-        where: {
-          [Op.or]: [
-            { ownerId: req.session.userId },
-            { leaderId: req.session.userId }
-          ]
-        },
-        attributes: ['id']
-      });
-      const projectIds = userProjects.map(p => p.id);
-      where.projectId = { [Op.in]: projectIds };
-    }
+    let where = {
+      projectId: projectId // 只显示当前选中项目的探险季
+    };
 
     // 状态筛选
     if (status && status !== 'all') {
@@ -73,24 +50,11 @@ router.get('/', requireAuth, requireProjectSelection, validateProjectAccess, asy
       offset
     });
 
-    // 获取用户的项目列表用于筛选
-    const projects = await Project.findAll({
-      where: {
-        [Op.or]: [
-          { ownerId: req.session.userId },
-          { leaderId: req.session.userId }
-        ]
-      },
-      attributes: ['id', 'name', 'key'],
-      order: [['name', 'ASC']]
-    });
-
     const totalPages = Math.ceil(count / limit);
 
     res.render('sprints/index', {
       title: '探险季管理',
       sprints,
-      projects,
       pagination: {
         page,
         totalPages,
@@ -99,7 +63,6 @@ router.get('/', requireAuth, requireProjectSelection, validateProjectAccess, asy
         hasPrev: page > 1
       },
       filters: {
-        projectId: projectId || '',
         status: status || 'all'
       }
     });
@@ -184,31 +147,21 @@ router.get('/:id', requireAuth, async (req, res) => {
 });
 
 // 创建探险季页面
-router.get('/create', requireAuth, async (req, res) => {
+router.get('/create', requireAuth, requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
-    const projectId = req.query.projectId;
-
-    // 获取用户的项目列表
-    const projects = await Project.findAll({
-      where: {
-        [Op.or]: [
-          { ownerId: req.session.userId },
-          { leaderId: req.session.userId }
-        ]
-      },
-      attributes: ['id', 'name', 'key'],
-      order: [['name', 'ASC']]
+    // 获取当前选中的项目信息
+    const selectedProject = await Project.findByPk(req.session.selectedProjectId, {
+      attributes: ['id', 'name', 'key']
     });
 
-    if (projects.length === 0) {
-      req.flash('error', '您需要先创建或加入项目才能创建探险季');
-      return res.redirect('/projects');
+    if (!selectedProject) {
+      req.flash('error', '请先选择要创建探险季的大陆');
+      return res.redirect('/sprints');
     }
 
     res.render('sprints/create', {
       title: '创建探险季',
-      projects,
-      selectedProjectId: projectId || ''
+      selectedProject
     });
 
   } catch (error) {
@@ -219,17 +172,19 @@ router.get('/create', requireAuth, async (req, res) => {
 });
 
 // 创建探险季处理
-router.post('/create', requireAuth, async (req, res) => {
+router.post('/create', requireAuth, requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
     const {
       name,
       description,
       goal,
-      projectId,
       startDate,
       endDate,
       capacity
     } = req.body;
+
+    // 使用当前选中的项目ID
+    const projectId = req.session.selectedProjectId;
 
     // 验证必填字段
     if (!name || !goal || !projectId || !startDate || !endDate) {
