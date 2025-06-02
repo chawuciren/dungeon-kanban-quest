@@ -1,6 +1,11 @@
 node_modules
 .env
 package-lock.json
-database/kanban.db
-logs/app.log
-logs/*.log
+
+# 忽略database目录下的所有文件
+database/
+database/*
+
+# 忽略logs目录下的所有文件
+logs/
+logs/*
