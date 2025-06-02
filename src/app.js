@@ -17,26 +17,53 @@ const { testConnection } = require('./config/database');
 // 创建Express应用
 const app = express();
 
-// 信任代理（如果在反向代理后面）
-app.set('trust proxy', 1);
+// 开发环境不信任代理，避免协议检测问题
+if (config.app.env === 'production') {
+  app.set('trust proxy', 1);
+} else {
+  app.set('trust proxy', false);
+}
 
 // 视图引擎设置
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../views'));
 
-// 安全中间件
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://code.jquery.com"],
-      scriptSrcAttr: ["'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      fontSrc: ["'self'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"]
+// 安全中间件 - 开发环境禁用大部分安全策略
+if (config.app.env === 'production') {
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        scriptSrcAttr: ["'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        fontSrc: ["'self'"]
+      }
     }
-  }
-}));
+  }));
+} else {
+  // 开发环境：完全禁用helmet以避免HTTPS重定向
+  // 不使用任何helmet中间件，让HTML meta标签控制安全策略
+
+  // 添加自定义响应头，明确禁用HTTPS升级
+  app.use((req, res, next) => {
+    // 移除可能导致HTTPS重定向的响应头
+    res.removeHeader('Strict-Transport-Security');
+    res.removeHeader('upgrade-insecure-requests');
+
+    // 设置明确的安全策略，允许HTTP资源
+    res.setHeader('Content-Security-Policy',
+      "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: http: https:; " +
+      "img-src 'self' data: http: https:; " +
+      "font-src 'self' data: http: https:; " +
+      "style-src 'self' 'unsafe-inline' http: https:; " +
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' http: https:;"
+    );
+
+    next();
+  });
+}
 
 // CORS配置
 app.use(cors({
