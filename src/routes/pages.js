@@ -410,6 +410,7 @@ router.get('/wallet', async (req, res) => {
       user: null,
       wallet: null,
       canCheckin: false,
+      rewardPreview: null,
       currentPage: page,
       pageSize,
       transactions: [],

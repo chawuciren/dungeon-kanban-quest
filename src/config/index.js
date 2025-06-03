@@ -51,28 +51,28 @@ const config = {
     dailyCheckin: {
       // 基础奖励（所有用户都获得）
       baseRewards: {
-        gold: parseInt(process.env.DAILY_BASE_GOLD) || 20,
-        silver: parseInt(process.env.DAILY_BASE_SILVER) || 50,
-        copper: parseInt(process.env.DAILY_BASE_COPPER) || 0,
-        diamond: parseInt(process.env.DAILY_BASE_DIAMOND) || 0
+        gold: process.env.DAILY_BASE_GOLD !== undefined ? parseInt(process.env.DAILY_BASE_GOLD) : 20,
+        silver: process.env.DAILY_BASE_SILVER !== undefined ? parseInt(process.env.DAILY_BASE_SILVER) : 50,
+        copper: process.env.DAILY_BASE_COPPER !== undefined ? parseInt(process.env.DAILY_BASE_COPPER) : 0,
+        diamond: process.env.DAILY_BASE_DIAMOND !== undefined ? parseInt(process.env.DAILY_BASE_DIAMOND) : 0
       },
 
       // 角色额外奖励（在基础奖励之上增加）
       roleBonus: {
         // 委托贵族（客户）额外奖励
         client: {
-          gold: parseInt(process.env.DAILY_CLIENT_BONUS_GOLD) || 80,      // 额外80金币，总计100金币
-          silver: parseInt(process.env.DAILY_CLIENT_BONUS_SILVER) || 200, // 额外200银币，总计250银币
-          copper: parseInt(process.env.DAILY_CLIENT_BONUS_COPPER) || 0,
-          diamond: parseInt(process.env.DAILY_CLIENT_BONUS_DIAMOND) || 1  // 额外1钻石
+          gold: process.env.DAILY_CLIENT_BONUS_GOLD !== undefined ? parseInt(process.env.DAILY_CLIENT_BONUS_GOLD) : 80,      // 额外80金币，总计100金币
+          silver: process.env.DAILY_CLIENT_BONUS_SILVER !== undefined ? parseInt(process.env.DAILY_CLIENT_BONUS_SILVER) : 200, // 额外200银币，总计250银币
+          copper: process.env.DAILY_CLIENT_BONUS_COPPER !== undefined ? parseInt(process.env.DAILY_CLIENT_BONUS_COPPER) : 0,
+          diamond: process.env.DAILY_CLIENT_BONUS_DIAMOND !== undefined ? parseInt(process.env.DAILY_CLIENT_BONUS_DIAMOND) : 1  // 额外1钻石
         },
 
         // 管理员额外奖励
         admin: {
-          gold: parseInt(process.env.DAILY_ADMIN_BONUS_GOLD) || 50,       // 额外50金币，总计70金币
-          silver: parseInt(process.env.DAILY_ADMIN_BONUS_SILVER) || -50,  // 减少50银币，总计0银币
-          copper: parseInt(process.env.DAILY_ADMIN_BONUS_COPPER) || 0,
-          diamond: parseInt(process.env.DAILY_ADMIN_BONUS_DIAMOND) || 2   // 额外2钻石
+          gold: process.env.DAILY_ADMIN_BONUS_GOLD !== undefined ? parseInt(process.env.DAILY_ADMIN_BONUS_GOLD) : 50,       // 额外50金币，总计70金币
+          silver: process.env.DAILY_ADMIN_BONUS_SILVER !== undefined ? parseInt(process.env.DAILY_ADMIN_BONUS_SILVER) : -50,  // 减少50银币，总计0银币
+          copper: process.env.DAILY_ADMIN_BONUS_COPPER !== undefined ? parseInt(process.env.DAILY_ADMIN_BONUS_COPPER) : 0,
+          diamond: process.env.DAILY_ADMIN_BONUS_DIAMOND !== undefined ? parseInt(process.env.DAILY_ADMIN_BONUS_DIAMOND) : 2   // 额外2钻石
         },
 
         // 普通用户（开发者、测试等）无额外奖励
