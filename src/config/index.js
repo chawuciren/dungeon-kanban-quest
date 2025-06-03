@@ -107,6 +107,19 @@ const config = {
       silver: parseInt(process.env.CURRENCY_RATE_SILVER) || 100     // 1银币 = 100铜币
     },
 
+    // 货币兑换比例配置
+    exchangeRates: {
+      // 高级货币换低级货币
+      diamond_to_gold: parseInt(process.env.EXCHANGE_RATE_DIAMOND_TO_GOLD) || 1000,
+      gold_to_silver: parseInt(process.env.EXCHANGE_RATE_GOLD_TO_SILVER) || 1000,
+      silver_to_copper: parseInt(process.env.EXCHANGE_RATE_SILVER_TO_COPPER) || 1000,
+
+      // 低级货币换高级货币
+      gold_to_diamond: parseInt(process.env.EXCHANGE_RATE_GOLD_TO_DIAMOND) || 1000,
+      silver_to_gold: parseInt(process.env.EXCHANGE_RATE_SILVER_TO_GOLD) || 1000,
+      copper_to_silver: parseInt(process.env.EXCHANGE_RATE_COPPER_TO_SILVER) || 1000
+    },
+
     // 星级奖励倍数
     starMultipliers: {
       1: parseFloat(process.env.STAR_MULTIPLIER_1) || 1.0,

@@ -4,6 +4,7 @@ const { User, UserWallet, BountyTask, Project, CurrencyTransaction } = require('
 const { Op } = require('sequelize');
 const TransactionService = require('../services/TransactionService');
 const CheckinService = require('../services/CheckinService');
+const ExchangeService = require('../services/ExchangeService');
 
 // 首页
 router.get('/', (req, res) => {
@@ -415,6 +416,66 @@ router.get('/wallet', async (req, res) => {
       pageSize,
       transactions: [],
       pagination: { page, limit: pageSize, total: 0, totalPages: 0 }
+    });
+  }
+});
+
+// 货币兑换页面
+router.get('/wallet/exchange', async (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect('/login');
+  }
+
+  try {
+    // 获取用户信息
+    const user = await User.findByPk(req.session.userId, {
+      attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'role']
+    });
+
+    if (!user) {
+      req.session.destroy();
+      return res.redirect('/login');
+    }
+
+    // 获取用户钱包信息
+    let wallet = await UserWallet.findOne({
+      where: { userId: req.session.userId }
+    });
+
+    // 如果钱包不存在，创建一个
+    if (!wallet) {
+      wallet = await UserWallet.create({
+        userId: req.session.userId,
+        diamondBalance: 0,
+        goldBalance: 0,
+        silverBalance: 0,
+        copperBalance: 0,
+        frozenDiamond: 0,
+        frozenGold: 0,
+        frozenSilver: 0,
+        frozenCopper: 0,
+        totalEarned: 0,
+        totalSpent: 0
+      });
+    }
+
+    // 获取支持的货币类型
+    const currencies = ExchangeService.getSupportedCurrencies();
+
+    res.render('wallet/exchange', {
+      title: '货币兑换',
+      user,
+      wallet,
+      currencies
+    });
+
+  } catch (error) {
+    console.error('获取兑换页面数据失败:', error);
+    res.render('wallet/exchange', {
+      title: '货币兑换',
+      user: null,
+      wallet: null,
+      currencies: []
     });
   }
 });

@@ -1,0 +1,373 @@
+<%- include('../partials/header', { title: title }) %>
+
+<!-- 页面标题 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex align-items-center">
+            <a href="/wallet" class="btn btn-outline-secondary me-3">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <h2 class="mb-0">
+                    <i class="fas fa-exchange-alt me-2 text-warning"></i>
+                    货币兑换
+                </h2>
+                <p class="text-muted mb-0">在不同货币之间进行兑换</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- 兑换表单 -->
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-exchange-alt me-2"></i>
+                    选择兑换方向
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="exchangeForm" method="POST" action="/api/wallet/exchange">
+                    <!-- 货币选择区域 -->
+                    <div class="row mb-4">
+                        <!-- 原始币种选择 -->
+                        <div class="col-md-6">
+                            <label class="form-label">支付币种</label>
+                            <select class="form-select" id="fromCurrency" name="fromCurrency" required>
+                                <option value="">请选择支付币种</option>
+                                <% currencies.forEach(currency => { %>
+                                    <option value="<%= currency.key %>"
+                                            data-name="<%= currency.name %>"
+                                            data-icon="<%= currency.icon %>"
+                                            data-color="<%= currency.color %>">
+                                        <%= currency.name %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- 目标币种选择 -->
+                        <div class="col-md-6">
+                            <label class="form-label">兑换币种</label>
+                            <select class="form-select" id="toCurrency" name="toCurrency" required>
+                                <option value="">请选择兑换币种</option>
+                                <% currencies.forEach(currency => { %>
+                                    <option value="<%= currency.key %>"
+                                            data-name="<%= currency.name %>"
+                                            data-icon="<%= currency.icon %>"
+                                            data-color="<%= currency.color %>">
+                                        <%= currency.name %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 兑换预览区域 -->
+                    <div id="exchangePreview" class="mb-4" style="display: none;">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-4 text-center">
+                                        <div id="fromCurrencyDisplay">
+                                            <i id="fromIcon" class="fa-2x mb-2"></i>
+                                            <div id="fromName" class="fw-bold"></div>
+                                            <div id="fromBalance" class="text-muted small"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <i class="fas fa-arrow-right fa-2x text-primary"></i>
+                                        <div class="mt-2">
+                                            <span id="exchangeRate" class="badge bg-primary"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <div id="toCurrencyDisplay">
+                                            <i id="toIcon" class="fa-2x mb-2"></i>
+                                            <div id="toName" class="fw-bold"></div>
+                                            <div id="toBalance" class="text-muted small"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 兑换数量输入 -->
+                    <div class="row mb-4">
+                        <!-- 支付数量 -->
+                        <div class="col-md-6">
+                            <label for="fromAmount" class="form-label">支付数量</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="fromAmount" name="fromAmount" min="0" step="1">
+                                <span class="input-group-text" id="fromCurrencySymbol">-</span>
+                            </div>
+                            <div class="form-text" id="fromAmountHelp">输入要支付的数量</div>
+                        </div>
+
+                        <!-- 兑换数量 -->
+                        <div class="col-md-6">
+                            <label for="toAmount" class="form-label">兑换数量</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="toAmount" name="toAmount" min="0" step="1">
+                                <span class="input-group-text" id="toCurrencySymbol">-</span>
+                            </div>
+                            <div class="form-text" id="toAmountHelp">输入要兑换的数量</div>
+                        </div>
+                    </div>
+
+                    <!-- 兑换结果提示 -->
+                    <div id="exchangeResult" class="mb-4" style="display: none;">
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-calculator me-2"></i>
+                            <span id="resultText"></span>
+                        </div>
+                    </div>
+
+                    <!-- 提交按钮 -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-warning btn-lg" id="submitBtn" disabled>
+                            <i class="fas fa-exchange-alt me-2"></i>
+                            确认兑换
+                        </button>
+                        <a href="/wallet" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>
+                            取消
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
+
+<script>
+// 钱包余额数据
+const walletBalances = {
+    diamond: <%- wallet ? wallet.diamondBalance : 0 %>,
+    gold: <%- wallet ? wallet.goldBalance : 0 %>,
+    silver: <%- wallet ? wallet.silverBalance : 0 %>,
+    copper: <%- wallet ? wallet.copperBalance : 0 %>
+};
+</script>
+
+<script>
+$(document).ready(function() {
+
+    const currencyInfo = {
+        diamond: { name: '钻石', icon: 'fas fa-gem', color: '#00bcd4' },
+        gold: { name: '金币', icon: 'fas fa-coins', color: '#ffd700' },
+        silver: { name: '银币', icon: 'fas fa-coins', color: '#c0c0c0' },
+        copper: { name: '铜币', icon: 'fas fa-coins', color: '#2d5016' }
+    };
+
+    let isUpdating = false; // 防止循环更新
+
+    // 货币选择改变时更新预览
+    $('#fromCurrency, #toCurrency').change(function() {
+        updateExchangePreview();
+        clearAmounts();
+    });
+
+    // 支付数量改变时计算兑换数量
+    $('#fromAmount').on('input', function() {
+        if (!isUpdating) {
+            calculateToAmount();
+        }
+    });
+
+    // 兑换数量改变时计算支付数量
+    $('#toAmount').on('input', function() {
+        if (!isUpdating) {
+            calculateFromAmount();
+        }
+    });
+
+    function updateExchangePreview() {
+        const fromCurrency = $('#fromCurrency').val();
+        const toCurrency = $('#toCurrency').val();
+
+        if (!fromCurrency || !toCurrency) {
+            $('#exchangePreview').hide();
+            $('#exchangeResult').hide();
+            $('#submitBtn').prop('disabled', true);
+            return;
+        }
+
+        if (fromCurrency === toCurrency) {
+            $('#exchangePreview').hide();
+            $('#exchangeResult').show();
+            $('#resultText').text('不能兑换相同的货币');
+            $('#submitBtn').prop('disabled', true);
+            return;
+        }
+
+        // 更新预览区域
+        const fromInfo = currencyInfo[fromCurrency];
+        const toInfo = currencyInfo[toCurrency];
+
+        $('#fromIcon').attr('class', fromInfo.icon + ' fa-2x mb-2').css('color', fromInfo.color);
+        $('#fromName').text(fromInfo.name);
+        $('#fromBalance').text(`余额: ${walletBalances[fromCurrency].toLocaleString()}`);
+
+        $('#toIcon').attr('class', toInfo.icon + ' fa-2x mb-2').css('color', toInfo.color);
+        $('#toName').text(toInfo.name);
+        $('#toBalance').text(`余额: ${walletBalances[toCurrency].toLocaleString()}`);
+
+        // 更新货币符号
+        $('#fromCurrencySymbol').text(fromInfo.name);
+        $('#toCurrencySymbol').text(toInfo.name);
+
+        // 获取兑换比例并显示
+        getExchangeRate(fromCurrency, toCurrency);
+
+        $('#exchangePreview').show();
+    }
+
+    let currentRate = 1;
+
+    function clearAmounts() {
+        isUpdating = true;
+        $('#fromAmount').val('');
+        $('#toAmount').val('');
+        $('#exchangeResult').hide();
+        $('#submitBtn').prop('disabled', true);
+        isUpdating = false;
+    }
+
+    function getExchangeRate(fromCurrency, toCurrency) {
+        // 通过AJAX获取实时汇率
+        $.get(`/api/wallet/exchange-rate/${fromCurrency}/${toCurrency}`)
+            .done(function(response) {
+                if (response.success) {
+                    currentRate = response.data.rate;
+                    $('#exchangeRate').text(`1:${currentRate.toLocaleString()}`);
+                } else {
+                    currentRate = 1000; // 默认比例
+                    $('#exchangeRate').text(`1:${currentRate.toLocaleString()}`);
+                }
+            })
+            .fail(function() {
+                currentRate = 1000; // 默认比例
+                $('#exchangeRate').text(`1:${currentRate.toLocaleString()}`);
+            });
+    }
+
+    function calculateToAmount() {
+        const fromCurrency = $('#fromCurrency').val();
+        const toCurrency = $('#toCurrency').val();
+        const fromAmount = parseFloat($('#fromAmount').val()) || 0;
+
+        if (!fromCurrency || !toCurrency || fromAmount <= 0) {
+            isUpdating = true;
+            $('#toAmount').val('');
+            $('#exchangeResult').hide();
+            $('#submitBtn').prop('disabled', true);
+            isUpdating = false;
+            return;
+        }
+
+        // 检查余额
+        if (walletBalances[fromCurrency] < fromAmount) {
+            $('#exchangeResult').show();
+            $('#resultText').text(`${currencyInfo[fromCurrency].name}余额不足`);
+            $('#submitBtn').prop('disabled', true);
+            return;
+        }
+
+        // 计算兑换结果
+        const toAmount = Math.floor(fromAmount * currentRate);
+
+        isUpdating = true;
+        $('#toAmount').val(toAmount);
+        isUpdating = false;
+
+        // 显示兑换结果
+        $('#exchangeResult').show();
+        $('#resultText').text(`将消耗 ${fromAmount.toLocaleString()} ${currencyInfo[fromCurrency].name}，获得 ${toAmount.toLocaleString()} ${currencyInfo[toCurrency].name}`);
+        $('#submitBtn').prop('disabled', toAmount <= 0);
+    }
+
+    function calculateFromAmount() {
+        const fromCurrency = $('#fromCurrency').val();
+        const toCurrency = $('#toCurrency').val();
+        const toAmount = parseFloat($('#toAmount').val()) || 0;
+
+        if (!fromCurrency || !toCurrency || toAmount <= 0) {
+            isUpdating = true;
+            $('#fromAmount').val('');
+            $('#exchangeResult').hide();
+            $('#submitBtn').prop('disabled', true);
+            isUpdating = false;
+            return;
+        }
+
+        // 计算需要的支付数量
+        const fromAmount = Math.ceil(toAmount / currentRate);
+
+        // 检查余额
+        if (walletBalances[fromCurrency] < fromAmount) {
+            $('#exchangeResult').show();
+            $('#resultText').text(`${currencyInfo[fromCurrency].name}余额不足`);
+            $('#submitBtn').prop('disabled', true);
+            return;
+        }
+
+        isUpdating = true;
+        $('#fromAmount').val(fromAmount);
+        isUpdating = false;
+
+        // 显示兑换结果
+        $('#exchangeResult').show();
+        $('#resultText').text(`将消耗 ${fromAmount.toLocaleString()} ${currencyInfo[fromCurrency].name}，获得 ${toAmount.toLocaleString()} ${currencyInfo[toCurrency].name}`);
+        $('#submitBtn').prop('disabled', fromAmount <= 0);
+    }
+
+    // 表单提交
+    $('#exchangeForm').submit(function(e) {
+        e.preventDefault();
+
+        const fromCurrency = $('#fromCurrency').val();
+        const toCurrency = $('#toCurrency').val();
+        const fromAmount = parseFloat($('#fromAmount').val());
+
+        if (!fromCurrency || !toCurrency || !fromAmount || fromAmount <= 0) {
+            KanbanApp.showAlert('请完整填写兑换信息', 'warning');
+            return;
+        }
+
+        const btn = $('#submitBtn');
+        KanbanApp.setLoading(btn, true);
+
+        const data = {
+            fromCurrency: fromCurrency,
+            toCurrency: toCurrency,
+            fromAmount: fromAmount
+        };
+
+        $.post($(this).attr('action'), data)
+            .done(function(response) {
+                if (response.success) {
+                    KanbanApp.showAlert(response.message, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/wallet';
+                    }, 1500);
+                } else {
+                    KanbanApp.showAlert(response.message, 'warning');
+                    KanbanApp.setLoading(btn, false);
+                }
+            })
+            .fail(function(xhr) {
+                const response = xhr.responseJSON;
+                KanbanApp.showAlert(response?.message || '兑换失败', 'danger');
+                KanbanApp.setLoading(btn, false);
+            });
+    });
+});
+</script>

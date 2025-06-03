@@ -114,10 +114,10 @@
                     </div>
                     <div class="col-md-4">
                         <div class="d-grid">
-                            <button class="btn btn-warning" id="exchangeBtn">
+                            <a href="/wallet/exchange" class="btn btn-warning">
                                 <i class="fas fa-exchange-alt me-2"></i>
                                 货币兑换
-                            </button>
+                            </a>
                         </div>
                         <small class="text-muted d-block mt-1 text-center">
                             不同货币间兑换
@@ -270,41 +270,7 @@
     </div>
 </div>
 
-<!-- 货币兑换模态框 -->
-<div class="modal fade" id="exchangeModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-exchange-alt me-2"></i>
-                    货币兑换
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="exchangeForm">
-                    <div class="mb-3">
-                        <label class="form-label">兑换方向</label>
-                        <select class="form-select" id="exchangeDirection">
-                            <option value="gold_to_silver">金币 → 银币 (1:100)</option>
-                            <option value="silver_to_copper">银币 → 铜币 (1:100)</option>
-                            <option value="diamond_to_gold">钻石 → 金币 (1:1000)</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="exchangeAmount" class="form-label">兑换数量</label>
-                        <input type="number" class="form-control" id="exchangeAmount" min="1" required>
-                        <div class="form-text" id="exchangePreview"></div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" id="confirmExchange">确认兑换</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <%- include('../partials/footer') %>
 
@@ -353,55 +319,13 @@ $(document).ready(function() {
             });
     });
 
-    // 货币兑换
-    $('#exchangeBtn').click(function() {
-        $('#exchangeModal').modal('show');
-    });
-
     // 转账功能
     $('#transferBtn').click(function() {
         KanbanApp.showAlert('转账功能正在开发中...', 'info');
-    });
-
-    // 兑换预览
-    $('#exchangeAmount, #exchangeDirection').on('input change', function() {
-        updateExchangePreview();
-    });
-
-    // 确认兑换
-    $('#confirmExchange').click(function() {
-        KanbanApp.showAlert('货币兑换功能正在开发中...', 'info');
-        $('#exchangeModal').modal('hide');
     });
 
     // 交易记录筛选功能已移除，现在使用分页展示所有记录
 });
 
 // 钱包数据和交易记录现在都通过服务端渲染，不再需要AJAX加载
-
-// 更新兑换预览
-function updateExchangePreview() {
-    const direction = $('#exchangeDirection').val();
-    const amount = parseInt($('#exchangeAmount').val()) || 0;
-
-    if (amount <= 0) {
-        $('#exchangePreview').text('');
-        return;
-    }
-
-    let preview = '';
-    switch (direction) {
-        case 'gold_to_silver':
-            preview = `将获得 ${(amount * 100).toLocaleString()} 银币`;
-            break;
-        case 'silver_to_copper':
-            preview = `将获得 ${(amount * 100).toLocaleString()} 铜币`;
-            break;
-        case 'diamond_to_gold':
-            preview = `将获得 ${(amount * 1000).toLocaleString()} 金币`;
-            break;
-    }
-
-    $('#exchangePreview').text(preview);
-}
 </script>

@@ -4,6 +4,7 @@ const config = require('../config');
 const logger = require('../config/logger');
 const TransactionService = require('../services/TransactionService');
 const CheckinService = require('../services/CheckinService');
+const ExchangeService = require('../services/ExchangeService');
 
 const router = express.Router();
 
@@ -239,6 +240,83 @@ router.get('/stats', requireAuth, async (req, res) => {
     res.status(500).json({
       success: false,
       message: '获取钱包统计失败'
+    });
+  }
+});
+
+
+
+// 执行货币兑换
+router.post('/exchange', requireAuth, async (req, res) => {
+  try {
+    const { fromCurrency, toCurrency, fromAmount } = req.body;
+
+    if (!fromCurrency || !toCurrency || !fromAmount) {
+      return res.status(400).json({
+        success: false,
+        message: '请选择兑换币种和数量'
+      });
+    }
+
+    const amount = parseFloat(fromAmount);
+    if (isNaN(amount) || amount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: '兑换数量必须是正数'
+      });
+    }
+
+    // 执行兑换
+    const result = await ExchangeService.performExchange(
+      req.session.userId,
+      fromCurrency,
+      toCurrency,
+      amount
+    );
+
+    res.json(result);
+
+  } catch (error) {
+    logger.error('货币兑换失败:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || '兑换失败，请稍后重试'
+    });
+  }
+});
+
+// 获取兑换比例
+router.get('/exchange-rate/:from/:to', requireAuth, async (req, res) => {
+  try {
+    const { from, to } = req.params;
+
+    if (!from || !to) {
+      return res.status(400).json({
+        success: false,
+        message: '请指定兑换币种'
+      });
+    }
+
+    const rate = ExchangeService.getExchangeRate(from, to);
+    const fromInfo = ExchangeService.getCurrencyInfo(from);
+    const toInfo = ExchangeService.getCurrencyInfo(to);
+
+    res.json({
+      success: true,
+      data: {
+        rate,
+        fromCurrency: from,
+        toCurrency: to,
+        fromName: fromInfo?.name || from,
+        toName: toInfo?.name || to
+      }
+    });
+
+  } catch (error) {
+    logger.error('获取兑换比例失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '获取兑换比例失败'
     });
   }
 });
