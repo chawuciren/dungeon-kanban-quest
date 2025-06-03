@@ -15,7 +15,7 @@ const requireAuth = (req, res, next) => {
 // 中间件：检查管理员权限
 const requireAdmin = (req, res, next) => {
   if (!req.session.user || req.session.user.role !== 'admin') {
-    req.flash('error', '权限不足');
+    req.flash('error', '权限不足，只有管理员可以访问此功能');
     return res.redirect('/dashboard');
   }
   next();
@@ -55,7 +55,11 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
         {
           model: Project,
           as: 'projects',
-          attributes: ['id'],
+          attributes: ['id', 'name'],
+          through: {
+            attributes: ['relationshipType', 'status'],
+            where: { status: 'active' }
+          },
           required: false
         }
       ],
@@ -64,9 +68,11 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
       offset
     });
 
-    // 计算每个公会的项目数量
+    // 计算每个公会的项目数量 - 同时设置到dataValues和直接属性
     organizations.forEach(org => {
-      org.dataValues.projectCount = org.projects ? org.projects.length : 0;
+      const projectCount = org.projects ? org.projects.length : 0;
+      org.dataValues.projectCount = projectCount;
+      org.projectCount = projectCount;
     });
 
     const totalPages = Math.ceil(count / limit);
@@ -124,15 +130,15 @@ router.post('/create', requireAuth, requireAdmin, async (req, res) => {
       return res.redirect('/organizations/create');
     }
 
-    // 创建公会
+    // 创建公会（将空字符串转换为null以避免验证错误）
     const organization = await Organization.create({
       name,
       slug: slug.toLowerCase(),
-      description,
-      website,
-      email,
-      phone,
-      address,
+      description: description || null,
+      website: website || null,
+      email: email || null,
+      phone: phone || null,
+      address: address || null,
       ownerId: req.session.userId,
       status: 'active'
     });
@@ -224,7 +230,8 @@ router.get('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
 
     res.render('organizations/edit', {
       title: '编辑公会',
-      organization
+      organization,
+      isCreateMode: false // 标识这是编辑模式
     });
 
   } catch (error) {
@@ -261,15 +268,15 @@ router.post('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
       }
     }
 
-    // 更新公会信息
+    // 更新公会信息（将空字符串转换为null以避免验证错误）
     await organization.update({
       name,
       slug: slug.toLowerCase(),
-      description,
-      website,
-      email,
-      phone,
-      address,
+      description: description || null,
+      website: website || null,
+      email: email || null,
+      phone: phone || null,
+      address: address || null,
       status
     });
 

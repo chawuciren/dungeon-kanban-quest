@@ -21,7 +21,7 @@
                     <form method="GET" action="/organizations" class="row g-3">
                         <div class="col-md-4">
                             <label for="search" class="form-label">搜索公会</label>
-                            <input type="text" class="form-control" id="search" name="search" 
+                            <input type="text" class="form-control" id="search" name="search"
                                    value="<%= filters.search %>" placeholder="公会名称或描述">
                         </div>
                         <div class="col-md-3">
@@ -73,7 +73,7 @@
                                         <div class="col-6">
                                             <div class="border-end">
                                                 <h6 class="mb-0"><%= org.projectCount || 0 %></h6>
-                                                <small class="text-muted">地下城</small>
+                                                <small class="text-muted">大陆</small>
                                             </div>
                                         </div>
                                         <div class="col-6">
@@ -124,7 +124,7 @@
                                 上一页
                             </a>
                         </li>
-                        
+
                         <% for (let i = Math.max(1, pagination.page - 2); i <= Math.min(pagination.totalPages, pagination.page + 2); i++) { %>
                             <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
                                 <a class="page-link" href="?page=<%= i %>&search=<%= filters.search %>&status=<%= filters.status %>">
@@ -132,7 +132,7 @@
                                 </a>
                             </li>
                         <% } %>
-                        
+
                         <li class="page-item <%= !pagination.hasNext ? 'disabled' : '' %>">
                             <a class="page-link" href="?page=<%= pagination.page + 1 %>&search=<%= filters.search %>&status=<%= filters.status %>">
                                 下一页

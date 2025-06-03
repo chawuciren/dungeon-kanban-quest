@@ -52,34 +52,45 @@ const validateProjectAccess = async (req, res, next) => {
     }
 
     // 检查普通用户是否有权限访问选中的项目
-    const project = await Project.findOne({
-      where: { id: req.session.selectedProjectId },
-      include: [{
-        model: User,
-        as: 'members',
-        where: { id: req.session.userId },
-        attributes: [],
-        through: {
-          where: { status: 'active' },
-          attributes: []
-        }
-      }]
-    });
+    const project = await Project.findByPk(req.session.selectedProjectId);
 
     if (!project) {
-      // 用户无权限访问当前选中的项目，清除选择
+      // 项目不存在，清除选择
       req.session.selectedProjectId = null;
-      req.flash('error', '您已失去对当前大陆的访问权限，请重新选择');
-
-      if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
-        return res.status(403).json({
-          success: false,
-          message: '您已失去对当前大陆的访问权限',
-          requireProjectSelection: true
-        });
-      }
-
+      req.flash('error', '选中的大陆不存在，请重新选择');
       return res.redirect('/dashboard');
+    }
+
+    // 检查用户权限：owner、leader 或 active member
+    const hasAccess = project.ownerId === req.session.userId ||
+                     project.leaderId === req.session.userId;
+
+    if (!hasAccess) {
+      // 检查是否是项目成员
+      const { ProjectMember } = require('../models');
+      const membership = await ProjectMember.findOne({
+        where: {
+          projectId: req.session.selectedProjectId,
+          userId: req.session.userId,
+          status: 'active'
+        }
+      });
+
+      if (!membership) {
+        // 用户无权限访问当前选中的项目，清除选择
+        req.session.selectedProjectId = null;
+        req.flash('error', '您已失去对当前大陆的访问权限，请重新选择');
+
+        if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+          return res.status(403).json({
+            success: false,
+            message: '您已失去对当前大陆的访问权限',
+            requireProjectSelection: true
+          });
+        }
+
+        return res.redirect('/dashboard');
+      }
     }
 
     next();

@@ -53,7 +53,7 @@
                                         大陆名称 <span class="text-danger">*</span>
                                     </label>
                                     <input type="text" class="form-control" id="name" name="name" required
-                                           value="<%= isCreateMode ? '' : project.name %>" placeholder="请输入大陆名称">
+                                           value="<%= (formData && formData.name) || (isCreateMode ? '' : project.name) %>" placeholder="请输入大陆名称">
                                     <div class="form-text">大陆的正式名称，将在各处显示</div>
                                 </div>
 
@@ -62,29 +62,32 @@
                                         大陆标识 <span class="text-danger">*</span>
                                     </label>
                                     <input type="text" class="form-control" id="key" name="key" required
-                                           value="<%= isCreateMode ? '' : project.key %>" placeholder="如：PROJ" maxlength="10">
+                                           value="<%= (formData && formData.key) || (isCreateMode ? '' : project.key) %>" placeholder="如：PROJ" maxlength="10">
                                     <div class="form-text">用于任务编号等，建议使用英文缩写，自动转为大写</div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="description" class="form-label">大陆描述</label>
                                     <textarea class="form-control" id="description" name="description" rows="4"
-                                              placeholder="描述这个大陆的目标和内容..."><%= isCreateMode ? '' : (project.description || '') %></textarea>
+                                              placeholder="描述这个大陆的目标和内容..."><%= (formData && formData.description) || (isCreateMode ? '' : (project.description || '')) %></textarea>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="projectType" class="form-label">大陆类型</label>
                                     <select class="form-select" id="projectType" name="projectType">
-                                        <option value="construction" <%= (isCreateMode ? true : project.projectType === 'construction') ? 'selected' : '' %>>
+                                        <%
+                                            const selectedProjectType = (formData && formData.projectType) || (isCreateMode ? 'construction' : project.projectType);
+                                        %>
+                                        <option value="construction" <%= selectedProjectType === 'construction' ? 'selected' : '' %>>
                                             🏗️ 开拓远征大陆（建设项目）
                                         </option>
-                                        <option value="maintenance" <%= (!isCreateMode && project.projectType === 'maintenance') ? 'selected' : '' %>>
+                                        <option value="maintenance" <%= selectedProjectType === 'maintenance' ? 'selected' : '' %>>
                                             🔧 守备巡逻大陆（维护项目）
                                         </option>
-                                        <option value="research" <%= (!isCreateMode && project.projectType === 'research') ? 'selected' : '' %>>
+                                        <option value="research" <%= selectedProjectType === 'research' ? 'selected' : '' %>>
                                             🔬 秘境调查大陆（研发项目）
                                         </option>
-                                        <option value="operation" <%= (!isCreateMode && project.projectType === 'operation') ? 'selected' : '' %>>
+                                        <option value="operation" <%= selectedProjectType === 'operation' ? 'selected' : '' %>>
                                             ⚙️ 商队贸易大陆（运营项目）
                                         </option>
                                     </select>
@@ -93,11 +96,14 @@
                                 <div class="mb-3">
                                     <label for="starLevel" class="form-label">难度等级</label>
                                     <select class="form-select" id="starLevel" name="starLevel">
-                                        <option value="1" <%= (!isCreateMode && project.starLevel === 1) ? 'selected' : '' %>>⭐ 新手级</option>
-                                        <option value="2" <%= (!isCreateMode && project.starLevel === 2) ? 'selected' : '' %>>⭐⭐ 普通级</option>
-                                        <option value="3" <%= (isCreateMode ? true : project.starLevel === 3) ? 'selected' : '' %>>⭐⭐⭐ 困难级</option>
-                                        <option value="4" <%= (!isCreateMode && project.starLevel === 4) ? 'selected' : '' %>>⭐⭐⭐⭐ 专家级</option>
-                                        <option value="5" <%= (!isCreateMode && project.starLevel === 5) ? 'selected' : '' %>>⭐⭐⭐⭐⭐ 传说级</option>
+                                        <%
+                                            const selectedStarLevel = parseInt((formData && formData.starLevel)) || (isCreateMode ? 3 : project.starLevel);
+                                        %>
+                                        <option value="1" <%= selectedStarLevel === 1 ? 'selected' : '' %>>⭐ 新手级</option>
+                                        <option value="2" <%= selectedStarLevel === 2 ? 'selected' : '' %>>⭐⭐ 普通级</option>
+                                        <option value="3" <%= selectedStarLevel === 3 ? 'selected' : '' %>>⭐⭐⭐ 困难级</option>
+                                        <option value="4" <%= selectedStarLevel === 4 ? 'selected' : '' %>>⭐⭐⭐⭐ 专家级</option>
+                                        <option value="5" <%= selectedStarLevel === 5 ? 'selected' : '' %>>⭐⭐⭐⭐⭐ 传说级</option>
                                     </select>
                                 </div>
                             </div>
@@ -115,7 +121,9 @@
                                         <% organizations.forEach(org => { %>
                                             <%
                                                 let isSelected = false;
-                                                if (!isCreateMode && project.organizations) {
+                                                if (formData && formData.organizationId) {
+                                                    isSelected = formData.organizationId === org.id;
+                                                } else if (!isCreateMode && project.organizations) {
                                                     isSelected = project.organizations.some(projOrg =>
                                                         projOrg.id === org.id &&
                                                         projOrg.ProjectOrganization &&
@@ -136,7 +144,10 @@
                                     <select class="form-select" id="leaderId" name="leaderId">
                                         <option value="">请选择负责人</option>
                                         <% potentialLeaders.forEach(user => { %>
-                                            <option value="<%= user.id %>" <%= (!isCreateMode && project.leaderId === user.id) ? 'selected' : '' %>>
+                                            <%
+                                                const isLeaderSelected = (formData && formData.leaderId === user.id) || (!isCreateMode && project.leaderId === user.id);
+                                            %>
+                                            <option value="<%= user.id %>" <%= isLeaderSelected ? 'selected' : '' %>>
                                                 <%= user.firstName %> <%= user.lastName %> (@<%= user.username %>)
                                             </option>
                                         <% }) %>
@@ -160,8 +171,11 @@
                                 <div class="mb-3">
                                     <label for="visibility" class="form-label">可见性</label>
                                     <select class="form-select" id="visibility" name="visibility">
-                                        <option value="private" <%= (isCreateMode ? true : project.visibility === 'private') ? 'selected' : '' %>>🔒 私有</option>
-                                        <option value="public" <%= (!isCreateMode && project.visibility === 'public') ? 'selected' : '' %>>🌍 公开</option>
+                                        <%
+                                            const selectedVisibility = (formData && formData.visibility) || (isCreateMode ? 'private' : project.visibility);
+                                        %>
+                                        <option value="private" <%= selectedVisibility === 'private' ? 'selected' : '' %>>🔒 私有</option>
+                                        <option value="public" <%= selectedVisibility === 'public' ? 'selected' : '' %>>🌍 公开</option>
                                     </select>
                                     <div class="form-text">公开项目对所有用户可见</div>
                                 </div>
@@ -169,27 +183,42 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="startDate" class="form-label">开始时间</label>
+                                        <%
+                                            let startDateValue = '';
+                                            if (formData && formData.startDate) {
+                                                startDateValue = formData.startDate;
+                                            } else if (!isCreateMode && project.startDate) {
+                                                startDateValue = new Date(project.startDate).toISOString().split('T')[0];
+                                            }
+                                        %>
                                         <input type="date" class="form-control" id="startDate" name="startDate"
-                                               value="<%= isCreateMode ? '' : (project.startDate ? new Date(project.startDate).toISOString().split('T')[0] : '') %>">
+                                               value="<%= startDateValue %>">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="endDate" class="form-label">结束时间</label>
+                                        <%
+                                            let endDateValue = '';
+                                            if (formData && formData.endDate) {
+                                                endDateValue = formData.endDate;
+                                            } else if (!isCreateMode && project.endDate) {
+                                                endDateValue = new Date(project.endDate).toISOString().split('T')[0];
+                                            }
+                                        %>
                                         <input type="date" class="form-control" id="endDate" name="endDate"
-                                               value="<%= isCreateMode ? '' : (project.endDate ? new Date(project.endDate).toISOString().split('T')[0] : '') %>">
+                                               value="<%= endDateValue %>">
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- 项目成员设置 -->
-                        <% if (isCreateMode) { %>
                         <div class="row mt-4">
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-header">
                                         <h6 class="mb-0">
                                             <i class="fas fa-users me-2"></i>
-                                            冒险者团队设置
+                                            勇者团队设置
                                         </h6>
                                     </div>
                                     <div class="card-body">
@@ -197,11 +226,27 @@
                                             <label class="form-label">协作公会</label>
                                             <div class="row">
                                                 <% organizations.forEach(org => { %>
+                                                    <%
+                                                        let isSecondarySelected = false;
+                                                        if (formData && formData.secondaryOrganizations) {
+                                                            const secondaryOrgs = Array.isArray(formData.secondaryOrganizations)
+                                                                ? formData.secondaryOrganizations
+                                                                : [formData.secondaryOrganizations];
+                                                            isSecondarySelected = secondaryOrgs.includes(org.id);
+                                                        } else if (!isCreateMode && project.organizations) {
+                                                            isSecondarySelected = project.organizations.some(projOrg =>
+                                                                projOrg.id === org.id &&
+                                                                projOrg.ProjectOrganization &&
+                                                                projOrg.ProjectOrganization.relationshipType === 'secondary'
+                                                            );
+                                                        }
+                                                    %>
                                                     <div class="col-md-6 mb-2">
                                                         <div class="form-check">
                                                             <input class="form-check-input secondary-org-checkbox" type="checkbox"
                                                                    name="secondaryOrganizations" value="<%= org.id %>"
-                                                                   id="secondary-org-<%= org.id %>">
+                                                                   id="secondary-org-<%= org.id %>"
+                                                                   <%= isSecondarySelected ? 'checked' : '' %>>
                                                             <label class="form-check-label" for="secondary-org-<%= org.id %>">
                                                                 <%= org.name %>
                                                             </label>
@@ -221,11 +266,20 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <% if (!isCreateMode) { %>
+                                        <div class="mt-3">
+                                            <div class="alert alert-info">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                <strong>编辑模式说明：</strong>修改公会选择将会自动添加新公会的成员到项目中，但不会移除现有成员。如需精确管理成员，请前往
+                                                <a href="/projects/<%= project.id %>/members" class="alert-link">成员管理页面</a>。
+                                            </div>
+                                        </div>
+                                        <% } %>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <% } %>
 
                         <!-- 提交按钮 -->
                         <div class="row mt-4">
@@ -253,6 +307,61 @@
                     </form>
                 </div>
             </div>
+
+            <% if (!isCreateMode) { %>
+            <!-- 危险操作区域 -->
+            <div class="card mt-4 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        危险操作
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>注意：</strong>以下操作具有风险性，请谨慎操作。
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>暂停大陆</h6>
+                            <p class="text-muted small">暂停大陆将停止所有相关活动，但保留数据。</p>
+                            <button type="button" class="btn btn-warning btn-sm" onclick="suspendProject()">
+                                <i class="fas fa-pause me-1"></i>
+                                暂停大陆
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>删除大陆</h6>
+                            <p class="text-muted small">删除大陆将永久删除所有相关数据，此操作不可恢复。</p>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteProject()">
+                                <i class="fas fa-trash me-1"></i>
+                                删除大陆
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 编辑说明 -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        编辑说明
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>修改大陆标识符可能会影响现有的URL链接</li>
+                        <li>暂停大陆会影响所有相关的任务和探险季</li>
+                        <li>大陆状态变更会通知所有相关勇者</li>
+                        <li>删除大陆将同时删除所有相关的任务、探险季和成员数据</li>
+                        <li>修改公会选择将自动添加新公会成员，但不会移除现有成员</li>
+                    </ul>
+                </div>
+            </div>
+            <% } %>
         </div>
     </div>
 </div>
@@ -314,6 +423,48 @@ $(document).ready(function() {
         }
     });
 });
+
+<% if (!isCreateMode) { %>
+function suspendProject() {
+    if (confirm('确定要暂停这个大陆吗？这将停止所有相关活动。')) {
+        document.getElementById('status').value = 'on_hold';
+        document.querySelector('form').submit();
+    }
+}
+
+function deleteProject() {
+    const projectName = '<%= project.name %>';
+    const confirmText = prompt(`删除大陆是不可恢复的操作！\n\n请输入大陆名称 "${projectName}" 来确认删除：`);
+
+    if (confirmText === projectName) {
+        if (confirm('最后确认：确定要永久删除这个大陆及其所有数据吗？\n\n这将删除：\n- 所有任务和子任务\n- 所有探险季\n- 所有成员关联\n- 所有统计数据')) {
+            // 发送删除请求
+            fetch('/projects/<%= project.id %>', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('大陆删除成功！');
+                    window.location.href = '/projects';
+                } else {
+                    alert('删除失败：' + (data.error || '未知错误'));
+                }
+            })
+            .catch(error => {
+                console.error('删除请求失败:', error);
+                alert('删除请求失败，请稍后重试。');
+            });
+        }
+    } else if (confirmText !== null) {
+        alert('大陆名称不匹配，删除操作已取消。');
+    }
+}
+<% } %>
 </script>
 
 <%- include('../partials/footer') %>

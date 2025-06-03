@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { User, UserWallet, BountyTask, Project } = require('../models');
+const { User, UserWallet, BountyTask, Project, CurrencyTransaction } = require('../models');
 const { Op } = require('sequelize');
+const TransactionService = require('../services/TransactionService');
 
 // 首页
 router.get('/', (req, res) => {
@@ -152,18 +153,13 @@ router.get('/dashboard', async (req, res) => {
       });
     }
 
-    // 构建任务查询条件
+    // 构建任务查询条件 - 显示用户的所有任务，不限制项目
     const taskWhere = {
       [Op.or]: [
         { publisherId: req.session.userId },
         { assigneeId: req.session.userId }
       ]
     };
-
-    // 如果选择了项目，只显示该项目的任务
-    if (req.session.selectedProjectId) {
-      taskWhere.projectId = req.session.selectedProjectId;
-    }
 
     // 获取用户的任务统计
     const taskStats = await BountyTask.findAll({
@@ -195,6 +191,81 @@ router.get('/dashboard', async (req, res) => {
       limit: 5
     });
 
+    // 获取用户参与的所有项目
+    let userProjects = [];
+    if (req.session.user?.role === 'admin') {
+      // 管理员可以看到所有项目
+      userProjects = await Project.findAll({
+        attributes: ['id', 'name', 'key', 'description', 'projectType', 'starLevel', 'status', 'color'],
+        include: [
+          {
+            model: User,
+            as: 'owner',
+            attributes: ['id', 'firstName', 'lastName']
+          }
+        ],
+        where: { status: 'active' },
+        order: [['name', 'ASC']]
+      });
+    } else {
+      // 普通用户只能看到自己参与的项目
+      const { Op } = require('sequelize');
+
+      // 查询用户作为owner或leader的项目
+      const ownedProjects = await Project.findAll({
+        attributes: ['id', 'name', 'key', 'description', 'projectType', 'starLevel', 'status', 'color'],
+        include: [
+          {
+            model: User,
+            as: 'owner',
+            attributes: ['id', 'firstName', 'lastName']
+          }
+        ],
+        where: {
+          [Op.and]: [
+            { status: 'active' },
+            {
+              [Op.or]: [
+                { ownerId: req.session.userId },
+                { leaderId: req.session.userId }
+              ]
+            }
+          ]
+        }
+      });
+
+      // 查询用户作为成员的项目
+      const memberProjects = await Project.findAll({
+        attributes: ['id', 'name', 'key', 'description', 'projectType', 'starLevel', 'status', 'color'],
+        include: [
+          {
+            model: User,
+            as: 'owner',
+            attributes: ['id', 'firstName', 'lastName']
+          },
+          {
+            model: User,
+            as: 'members',
+            where: { id: req.session.userId },
+            attributes: [],
+            through: {
+              where: { status: 'active' },
+              attributes: []
+            }
+          }
+        ],
+        where: { status: 'active' }
+      });
+
+      // 合并并去重
+      const allProjects = [...ownedProjects, ...memberProjects];
+      const uniqueProjects = allProjects.filter((project, index, self) =>
+        index === self.findIndex(p => p.id === project.id)
+      );
+
+      userProjects = uniqueProjects.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
     // 技能等级配置
     const skillConfig = {
       novice: { icon: '🔰', name: '新手', progress: 20 },
@@ -215,7 +286,9 @@ router.get('/dashboard', async (req, res) => {
         completed: completedTasks
       },
       recentTasks,
-      userSkill
+      userSkill,
+      userProjects,
+      selectedProject: req.session.selectedProjectId ? userProjects.find(p => p.id === req.session.selectedProjectId) : null
     });
 
   } catch (error) {
@@ -226,7 +299,9 @@ router.get('/dashboard', async (req, res) => {
       wallet: null,
       taskStats: { total: 0, completed: 0 },
       recentTasks: [],
-      userSkill: { icon: '🔰', name: '新手', progress: 20 }
+      userSkill: { icon: '🔰', name: '新手', progress: 20 },
+      userProjects: [],
+      selectedProject: null
     });
   }
 });
@@ -247,14 +322,91 @@ router.get('/leaderboard', (req, res) => {
 });
 
 // 钱包
-router.get('/wallet', (req, res) => {
+router.get('/wallet', async (req, res) => {
   if (!req.session.userId) {
     return res.redirect('/login');
   }
 
-  res.render('wallet/index', {
-    title: '我的钱包'
-  });
+  try {
+    // 获取用户信息
+    const user = await User.findByPk(req.session.userId, {
+      attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'role']
+    });
+
+    if (!user) {
+      req.session.destroy();
+      return res.redirect('/login');
+    }
+
+    // 获取用户钱包信息
+    let wallet = await UserWallet.findOne({
+      where: { userId: req.session.userId }
+    });
+
+    // 如果钱包不存在，创建一个
+    if (!wallet) {
+      wallet = await UserWallet.create({
+        userId: req.session.userId,
+        diamondBalance: 0,
+        goldBalance: 0,
+        silverBalance: 0,
+        copperBalance: 0,
+        frozenDiamond: 0,
+        frozenGold: 0,
+        frozenSilver: 0,
+        frozenCopper: 0,
+        totalEarned: 0,
+        totalSpent: 0
+      });
+    }
+
+    // 计算总资产（以铜币为单位）
+    const config = require('../config');
+    const rates = config.gamification.currencyRates;
+    const totalAssets =
+      wallet.diamondBalance * rates.diamond * rates.gold * rates.silver +
+      wallet.goldBalance * rates.gold * rates.silver +
+      wallet.silverBalance * rates.silver +
+      wallet.copperBalance;
+
+    // 检查是否可以签到
+    const today = new Date();
+    const lastCheckin = wallet.lastDailyRechargeAt;
+    let canCheckin = true;
+    if (lastCheckin) {
+      const lastCheckinDate = new Date(lastCheckin);
+      canCheckin = lastCheckinDate.toDateString() !== today.toDateString();
+    }
+
+
+
+    // 获取分页参数
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = 8;
+
+    res.render('wallet/index', {
+      title: '我的钱包',
+      user,
+      wallet,
+      canCheckin,
+      currentPage: page,
+      pageSize
+    });
+
+  } catch (error) {
+    console.error('获取钱包数据失败:', error);
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = 8;
+
+    res.render('wallet/index', {
+      title: '我的钱包',
+      user: null,
+      wallet: null,
+      canCheckin: false,
+      currentPage: page,
+      pageSize
+    });
+  }
 });
 
 // 个人资料
@@ -286,21 +438,39 @@ router.get('/select-project/:id', async (req, res) => {
       const project = await Project.findByPk(projectId);
       hasAccess = !!project;
     } else {
-      // 普通用户只能访问自己参与的项目
-      const project = await Project.findOne({
-        where: { id: projectId },
-        include: [{
-          model: User,
-          as: 'members',
-          where: { id: req.session.userId },
-          attributes: [],
-          through: {
-            where: { status: 'active' },
-            attributes: []
-          }
-        }]
+      // 普通用户只能访问自己参与的项目（owner、leader或member）
+      const { Op } = require('sequelize');
+
+      // 检查是否为owner或leader
+      const ownedProject = await Project.findOne({
+        where: {
+          id: projectId,
+          [Op.or]: [
+            { ownerId: req.session.userId },
+            { leaderId: req.session.userId }
+          ]
+        }
       });
-      hasAccess = !!project;
+
+      if (ownedProject) {
+        hasAccess = true;
+      } else {
+        // 检查是否为成员
+        const memberProject = await Project.findOne({
+          where: { id: projectId },
+          include: [{
+            model: User,
+            as: 'members',
+            where: { id: req.session.userId },
+            attributes: [],
+            through: {
+              where: { status: 'active' },
+              attributes: []
+            }
+          }]
+        });
+        hasAccess = !!memberProject;
+      }
     }
 
     if (hasAccess) {

@@ -3,6 +3,7 @@ const { sequelize } = require('../config/database');
 // 导入所有模型
 const User = require('./User');
 const UserWallet = require('./UserWallet');
+const CurrencyTransaction = require('./CurrencyTransaction');
 const Organization = require('./Organization');
 const OrganizationMember = require('./OrganizationMember');
 const Project = require('./Project');
@@ -22,6 +23,27 @@ User.hasOne(UserWallet, {
 UserWallet.belongsTo(User, {
   foreignKey: 'userId',
   as: 'user'
+});
+
+// User 和 CurrencyTransaction 的关联 (1:N)
+User.hasMany(CurrencyTransaction, {
+  foreignKey: 'userId',
+  as: 'transactions',
+  onDelete: 'CASCADE'
+});
+CurrencyTransaction.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user'
+});
+
+// 转账相关的关联
+CurrencyTransaction.belongsTo(User, {
+  foreignKey: 'fromUserId',
+  as: 'fromUser'
+});
+CurrencyTransaction.belongsTo(User, {
+  foreignKey: 'toUserId',
+  as: 'toUser'
 });
 
 // User 和 Organization 的关联
@@ -467,6 +489,7 @@ module.exports = {
   sequelize,
   User,
   UserWallet,
+  CurrencyTransaction,
   Organization,
   OrganizationMember,
   Project,

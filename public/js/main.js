@@ -9,21 +9,21 @@ $(document).ready(function() {
 function initializeApp() {
     // 初始化工具提示
     initializeTooltips();
-    
+
     // 初始化消息提示
     initializeAlerts();
-    
+
     // 初始化表单验证
     initializeFormValidation();
-    
+
     // 初始化AJAX设置
     initializeAjax();
-    
+
     // 加载用户钱包信息
     if (window.user) {
         loadWalletInfo();
     }
-    
+
     console.log('🎮 游戏化项目管理系统已初始化');
 }
 
@@ -91,9 +91,9 @@ function showAlert(message, type = 'info', duration = 5000) {
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     `;
-    
+
     $('#alerts-container').append(alertHtml);
-    
+
     // 自动隐藏
     if (duration > 0) {
         setTimeout(() => {
@@ -120,8 +120,10 @@ function getAlertIcon(type) {
 // 加载用户钱包信息
 function loadWalletInfo() {
     $.get('/api/wallet/balance')
-        .done(function(data) {
-            updateWalletDisplay(data);
+        .done(function(response) {
+            if (response.success && response.data) {
+                updateWalletDisplay(response.data);
+            }
         })
         .fail(function() {
             console.warn('无法加载钱包信息');
@@ -139,7 +141,7 @@ function updateWalletDisplay(walletData) {
 // 星级评价组件
 function renderStarRating(level, maxLevel = 5, size = 'md') {
     let html = '<div class="star-rating star-rating-' + size + '">';
-    
+
     for (let i = 1; i <= maxLevel; i++) {
         if (i <= level) {
             html += '<i class="fas fa-star star"></i>';
@@ -147,7 +149,7 @@ function renderStarRating(level, maxLevel = 5, size = 'md') {
             html += '<i class="far fa-star star empty"></i>';
         }
     }
-    
+
     html += '</div>';
     return html;
 }
@@ -160,9 +162,9 @@ function renderCurrencyDisplay(amount, currency, showIcon = true) {
         silver: { icon: '🥈', class: 'silver', name: '银币' },
         copper: { icon: '🥉', class: 'copper', name: '铜币' }
     };
-    
+
     const config = currencyConfig[currency] || currencyConfig.gold;
-    
+
     let html = '<div class="currency-display">';
     if (showIcon) {
         html += `<span class="currency-icon ${config.class}">${config.icon}</span>`;
@@ -170,7 +172,7 @@ function renderCurrencyDisplay(amount, currency, showIcon = true) {
     html += `<span class="currency-amount">${amount.toLocaleString()}</span>`;
     html += `<span class="currency-name">${config.name}</span>`;
     html += '</div>';
-    
+
     return html;
 }
 
@@ -183,9 +185,9 @@ function renderSkillBadge(skillLevel) {
         gold: { icon: '🥇', name: '金牌', class: 'gold' },
         diamond: { icon: '💎', name: '钻石', class: 'diamond' }
     };
-    
+
     const config = skillConfig[skillLevel] || skillConfig.novice;
-    
+
     return `<span class="skill-badge ${config.class}">
         <span>${config.icon}</span>
         <span>${config.name}</span>
@@ -201,9 +203,9 @@ function renderUrgencyBadge(urgencyLevel) {
         delayed: { icon: '🕐', name: '延后', class: 'delayed' },
         frozen: { icon: '❄️', name: '冻结', class: 'frozen' }
     };
-    
+
     const config = urgencyConfig[urgencyLevel] || urgencyConfig.normal;
-    
+
     return `<span class="urgency-badge ${config.class}">
         <span>${config.icon}</span>
         <span>${config.name}</span>
@@ -213,15 +215,15 @@ function renderUrgencyBadge(urgencyLevel) {
 // 格式化时间
 function formatTime(date, format = 'relative') {
     if (!date) return '-';
-    
+
     const now = new Date();
     const target = new Date(date);
-    
+
     if (format === 'relative') {
         const diff = target - now;
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        
+
         if (days > 0) {
             return `${days}天后`;
         } else if (days === 0 && hours > 0) {
@@ -239,11 +241,11 @@ function formatTime(date, format = 'relative') {
 // 加载状态管理
 function setLoading(element, loading = true) {
     const $element = $(element);
-    
+
     if (loading) {
         $element.addClass('loading');
         $element.prop('disabled', true);
-        
+
         // 如果是按钮，添加加载图标
         if ($element.is('button') || $element.hasClass('btn')) {
             const originalText = $element.data('original-text') || $element.html();
@@ -253,7 +255,7 @@ function setLoading(element, loading = true) {
     } else {
         $element.removeClass('loading');
         $element.prop('disabled', false);
-        
+
         // 恢复按钮原始文本
         if ($element.is('button') || $element.hasClass('btn')) {
             const originalText = $element.data('original-text');

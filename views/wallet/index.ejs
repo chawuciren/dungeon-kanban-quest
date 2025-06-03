@@ -17,13 +17,13 @@
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
                 <div class="mb-3">
-                    <i class="fas fa-gem fa-3x text-info"></i>
+                    <i class="fas fa-gem fa-3x" style="color: #00bcd4;"></i>
                 </div>
-                <h3 class="mb-1" id="diamondBalance">0</h3>
+                <h3 class="mb-1"><%= wallet ? wallet.diamondBalance.toLocaleString() : 0 %></h3>
                 <p class="text-muted mb-2">钻石</p>
                 <small class="text-success">
                     <i class="fas fa-lock me-1"></i>
-                    冻结: <span id="frozenDiamond">0</span>
+                    冻结: <%= wallet ? wallet.frozenDiamond.toLocaleString() : 0 %>
                 </small>
             </div>
         </div>
@@ -32,13 +32,13 @@
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
                 <div class="mb-3">
-                    <i class="fas fa-coins fa-3x text-warning"></i>
+                    <i class="fas fa-coins fa-3x" style="color: #ffd700;"></i>
                 </div>
-                <h3 class="mb-1" id="goldBalance">0</h3>
+                <h3 class="mb-1"><%= wallet ? wallet.goldBalance.toLocaleString() : 0 %></h3>
                 <p class="text-muted mb-2">金币</p>
                 <small class="text-success">
                     <i class="fas fa-lock me-1"></i>
-                    冻结: <span id="frozenGold">0</span>
+                    冻结: <%= wallet ? wallet.frozenGold.toLocaleString() : 0 %>
                 </small>
             </div>
         </div>
@@ -47,13 +47,13 @@
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
                 <div class="mb-3">
-                    <i class="fas fa-circle fa-3x text-secondary"></i>
+                    <i class="fas fa-coins fa-3x" style="color: #c0c0c0;"></i>
                 </div>
-                <h3 class="mb-1" id="silverBalance">0</h3>
+                <h3 class="mb-1"><%= wallet ? wallet.silverBalance.toLocaleString() : 0 %></h3>
                 <p class="text-muted mb-2">银币</p>
                 <small class="text-success">
                     <i class="fas fa-lock me-1"></i>
-                    冻结: <span id="frozenSilver">0</span>
+                    冻结: <%= wallet ? wallet.frozenSilver.toLocaleString() : 0 %>
                 </small>
             </div>
         </div>
@@ -62,46 +62,20 @@
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
                 <div class="mb-3">
-                    <i class="fas fa-circle fa-3x text-dark"></i>
+                    <i class="fas fa-coins fa-3x" style="color: #2d5016;"></i>
                 </div>
-                <h3 class="mb-1" id="copperBalance">0</h3>
+                <h3 class="mb-1"><%= wallet ? wallet.copperBalance.toLocaleString() : 0 %></h3>
                 <p class="text-muted mb-2">铜币</p>
                 <small class="text-success">
                     <i class="fas fa-lock me-1"></i>
-                    冻结: <span id="frozenCopper">0</span>
+                    冻结: <%= wallet ? wallet.frozenCopper.toLocaleString() : 0 %>
                 </small>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 统计信息 -->
-<div class="row mb-4">
-    <div class="col-lg-4 col-md-6 mb-3">
-        <div class="card bg-success text-white">
-            <div class="card-body text-center">
-                <h4 class="mb-1" id="totalEarned">0</h4>
-                <p class="mb-0">累计收入</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6 mb-3">
-        <div class="card bg-danger text-white">
-            <div class="card-body text-center">
-                <h4 class="mb-1" id="totalSpent">0</h4>
-                <p class="mb-0">累计支出</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6 mb-3">
-        <div class="card bg-info text-white">
-            <div class="card-body text-center">
-                <h4 class="mb-1" id="totalAssets">0</h4>
-                <p class="mb-0">总资产（铜币）</p>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- 操作区域 -->
 <div class="row mb-4">
@@ -115,29 +89,18 @@
             </div>
             <div class="card-body">
                 <div class="row g-3">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="d-grid">
-                            <button class="btn btn-success" id="dailyCheckinBtn">
+                            <button class="btn btn-success<%= !canCheckin ? ' disabled' : '' %>" id="dailyCheckinBtn" <%= !canCheckin ? 'disabled' : '' %>>
                                 <i class="fas fa-calendar-check me-2"></i>
-                                每日签到
+                                <%= canCheckin ? '每日签到' : '已签到' %>
                             </button>
                         </div>
                         <small class="text-muted d-block mt-1 text-center">
                             每日可获得100金币
                         </small>
                     </div>
-                    <div class="col-md-3">
-                        <div class="d-grid">
-                            <button class="btn btn-primary" id="monthlyRechargeBtn">
-                                <i class="fas fa-gem me-2"></i>
-                                月度充值
-                            </button>
-                        </div>
-                        <small class="text-muted d-block mt-1 text-center">
-                            每月可获得3000金币+10钻石
-                        </small>
-                    </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="d-grid">
                             <button class="btn btn-warning" id="exchangeBtn">
                                 <i class="fas fa-exchange-alt me-2"></i>
@@ -148,7 +111,7 @@
                             不同货币间兑换
                         </small>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="d-grid">
                             <button class="btn btn-info" id="transferBtn">
                                 <i class="fas fa-paper-plane me-2"></i>
@@ -169,25 +132,236 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header">
                 <h5 class="mb-0">
                     <i class="fas fa-history me-2"></i>
                     交易历史
                 </h5>
-                <div class="btn-group btn-group-sm" role="group">
-                    <button type="button" class="btn btn-outline-primary active" data-filter="all">全部</button>
-                    <button type="button" class="btn btn-outline-primary" data-filter="income">收入</button>
-                    <button type="button" class="btn btn-outline-primary" data-filter="expense">支出</button>
-                </div>
             </div>
             <div class="card-body">
                 <div id="transactionsList">
-                    <div class="text-center py-4">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">加载中...</span>
+                    <%
+                    // 模拟更多交易记录数据用于分页演示
+                    const allTransactions = [
+                        {
+                            type: 'income',
+                            description: '每日签到奖励',
+                            amount: 100,
+                            currency: 'gold',
+                            date: '2024-01-15 09:00:00'
+                        },
+                        {
+                            type: 'income',
+                            description: '完成任务：实现用户登录功能',
+                            amount: 150,
+                            currency: 'gold',
+                            date: '2024-01-14 15:30:00'
+                        },
+                        {
+                            type: 'expense',
+                            description: '发布任务：优化数据库性能',
+                            amount: 200,
+                            currency: 'gold',
+                            date: '2024-01-13 10:15:00'
+                        },
+                        {
+                            type: 'income',
+                            description: '完成任务：修复登录Bug',
+                            amount: 80,
+                            currency: 'gold',
+                            date: '2024-01-12 16:45:00'
+                        },
+                        {
+                            type: 'expense',
+                            description: '发布任务：前端界面优化',
+                            amount: 120,
+                            currency: 'gold',
+                            date: '2024-01-11 11:20:00'
+                        },
+                        {
+                            type: 'income',
+                            description: '每日签到奖励',
+                            amount: 100,
+                            currency: 'gold',
+                            date: '2024-01-10 09:00:00'
+                        },
+                        {
+                            type: 'income',
+                            description: '完成任务：API接口开发',
+                            amount: 180,
+                            currency: 'gold',
+                            date: '2024-01-09 14:30:00'
+                        },
+                        {
+                            type: 'expense',
+                            description: '发布任务：数据库设计',
+                            amount: 250,
+                            currency: 'gold',
+                            date: '2024-01-08 10:15:00'
+                        },
+                        {
+                            type: 'income',
+                            description: '完成任务：系统架构设计',
+                            amount: 300,
+                            currency: 'gold',
+                            date: '2024-01-07 17:00:00'
+                        },
+                        {
+                            type: 'income',
+                            description: '每日签到奖励',
+                            amount: 100,
+                            currency: 'gold',
+                            date: '2024-01-06 09:00:00'
+                        },
+                        {
+                            type: 'expense',
+                            description: '发布任务：测试用例编写',
+                            amount: 150,
+                            currency: 'gold',
+                            date: '2024-01-05 13:30:00'
+                        },
+                        {
+                            type: 'income',
+                            description: '完成任务：代码重构',
+                            amount: 200,
+                            currency: 'gold',
+                            date: '2024-01-04 16:15:00'
+                        },
+                        {
+                            type: 'income',
+                            description: '完成任务：项目文档编写',
+                            amount: 120,
+                            currency: 'gold',
+                            date: '2024-01-02 14:20:00'
+                        },
+                        {
+                            type: 'expense',
+                            description: '发布任务：移动端适配',
+                            amount: 180,
+                            currency: 'gold',
+                            date: '2024-01-01 16:30:00'
+                        }
+                    ];
+
+                    // 分页参数（从路由传递）
+                    const page = typeof currentPage !== 'undefined' ? currentPage : 1;
+                    const size = typeof pageSize !== 'undefined' ? pageSize : 8;
+                    const totalTransactions = allTransactions.length;
+                    const totalPages = Math.ceil(totalTransactions / size);
+
+                    // 计算当前页的数据
+                    const startIndex = (page - 1) * size;
+                    const endIndex = startIndex + size;
+                    const sampleTransactions = allTransactions.slice(startIndex, endIndex);
+                    %>
+
+                    <% if (sampleTransactions.length > 0) { %>
+                        <div class="list-group list-group-flush">
+                            <% sampleTransactions.forEach(transaction => { %>
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1"><%= transaction.description %></h6>
+                                            <small class="text-muted"><%= transaction.date %></small>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="<%= transaction.type === 'income' ? 'text-success' : 'text-danger' %> fw-bold">
+                                                <i class="fas <%= transaction.type === 'income' ? 'fa-plus' : 'fa-minus' %> me-1"></i>
+                                                <%= transaction.type === 'income' ? '+' : '-' %>
+                                                <%
+                                                const currencyIcons = {
+                                                    diamond: '<i class="fas fa-gem" style="color: #00bcd4;"></i>',
+                                                    gold: '<i class="fas fa-coins" style="color: #ffd700;"></i>',
+                                                    silver: '<i class="fas fa-coins" style="color: #c0c0c0;"></i>',
+                                                    copper: '<i class="fas fa-coins" style="color: #2d5016;"></i>'
+                                                };
+                                                %>
+                                                <%- currencyIcons[transaction.currency] %> <%= transaction.amount.toLocaleString() %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
                         </div>
-                        <p class="mt-2 text-muted">正在加载交易记录...</p>
-                    </div>
+
+                        <!-- 分页组件 -->
+                        <% if (totalPages > 1) { %>
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <div class="text-muted">
+                                    显示第 <%= startIndex + 1 %>-<%= Math.min(endIndex, totalTransactions) %> 条，共 <%= totalTransactions %> 条记录
+                                </div>
+                                <nav aria-label="交易记录分页">
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <!-- 上一页 -->
+                                        <li class="page-item <%= page === 1 ? 'disabled' : '' %>">
+                                            <a class="page-link" href="/wallet?page=<%= page - 1 %>" aria-label="上一页">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+
+                                        <!-- 页码 -->
+                                        <%
+                                        // 计算显示的页码范围
+                                        let startPage = Math.max(1, page - 2);
+                                        let endPage = Math.min(totalPages, page + 2);
+
+                                        // 确保显示5个页码（如果总页数足够）
+                                        if (endPage - startPage < 4) {
+                                            if (startPage === 1) {
+                                                endPage = Math.min(totalPages, startPage + 4);
+                                            } else {
+                                                startPage = Math.max(1, endPage - 4);
+                                            }
+                                        }
+                                        %>
+
+                                        <!-- 第一页 -->
+                                        <% if (startPage > 1) { %>
+                                            <li class="page-item">
+                                                <a class="page-link" href="/wallet?page=1">1</a>
+                                            </li>
+                                            <% if (startPage > 2) { %>
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">...</span>
+                                                </li>
+                                            <% } %>
+                                        <% } %>
+
+                                        <!-- 中间页码 -->
+                                        <% for (let i = startPage; i <= endPage; i++) { %>
+                                            <li class="page-item <%= i === page ? 'active' : '' %>">
+                                                <a class="page-link" href="/wallet?page=<%= i %>"><%= i %></a>
+                                            </li>
+                                        <% } %>
+
+                                        <!-- 最后一页 -->
+                                        <% if (endPage < totalPages) { %>
+                                            <% if (endPage < totalPages - 1) { %>
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">...</span>
+                                                </li>
+                                            <% } %>
+                                            <li class="page-item">
+                                                <a class="page-link" href="/wallet?page=<%= totalPages %>"><%= totalPages %></a>
+                                            </li>
+                                        <% } %>
+
+                                        <!-- 下一页 -->
+                                        <li class="page-item <%= page === totalPages ? 'disabled' : '' %>">
+                                            <a class="page-link" href="/wallet?page=<%= page + 1 %>" aria-label="下一页">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        <% } %>
+                    <% } else { %>
+                        <div class="text-center py-4">
+                            <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-0">暂无交易记录</p>
+                        </div>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -232,221 +406,71 @@
 
 <script>
 $(document).ready(function() {
-    // 加载钱包数据
-    loadWalletData();
-    loadTransactions();
-    
+    // 交易记录现在通过服务端渲染，不再需要AJAX加载
+
     // 每日签到
     $('#dailyCheckinBtn').click(function() {
         const btn = $(this);
         KanbanApp.setLoading(btn, true);
-        
+
         $.post('/api/wallet/daily-checkin')
             .done(function(response) {
                 if (response.success) {
                     KanbanApp.showAlert(response.message, 'success');
-                    loadWalletData();
+                    // 刷新页面以显示最新数据
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
                 } else {
                     KanbanApp.showAlert(response.message, 'warning');
+                    KanbanApp.setLoading(btn, false);
                 }
             })
             .fail(function(xhr) {
                 const response = xhr.responseJSON;
                 KanbanApp.showAlert(response?.message || '签到失败', 'danger');
-            })
-            .always(function() {
                 KanbanApp.setLoading(btn, false);
             });
     });
-    
-    // 月度充值
-    $('#monthlyRechargeBtn').click(function() {
-        const btn = $(this);
-        KanbanApp.setLoading(btn, true);
-        
-        $.post('/api/wallet/monthly-recharge')
-            .done(function(response) {
-                if (response.success) {
-                    KanbanApp.showAlert(response.message, 'success');
-                    loadWalletData();
-                } else {
-                    KanbanApp.showAlert(response.message, 'warning');
-                }
-            })
-            .fail(function(xhr) {
-                const response = xhr.responseJSON;
-                KanbanApp.showAlert(response?.message || '充值失败', 'danger');
-            })
-            .always(function() {
-                KanbanApp.setLoading(btn, false);
-            });
-    });
-    
+
+
+
     // 货币兑换
     $('#exchangeBtn').click(function() {
         $('#exchangeModal').modal('show');
     });
-    
+
     // 转账功能
     $('#transferBtn').click(function() {
         KanbanApp.showAlert('转账功能正在开发中...', 'info');
     });
-    
+
     // 兑换预览
     $('#exchangeAmount, #exchangeDirection').on('input change', function() {
         updateExchangePreview();
     });
-    
+
     // 确认兑换
     $('#confirmExchange').click(function() {
         KanbanApp.showAlert('货币兑换功能正在开发中...', 'info');
         $('#exchangeModal').modal('hide');
     });
-    
-    // 交易历史筛选
-    $('[data-filter]').click(function() {
-        $('[data-filter]').removeClass('active');
-        $(this).addClass('active');
-        loadTransactions($(this).data('filter'));
-    });
+
+    // 交易记录筛选功能已移除，现在使用分页展示所有记录
 });
 
-// 加载钱包数据
-function loadWalletData() {
-    $.get('/api/wallet/stats')
-        .done(function(response) {
-            if (response.success) {
-                const data = response.data;
-                
-                // 更新余额显示
-                $('#diamondBalance').text(data.balances.diamond.toLocaleString());
-                $('#goldBalance').text(data.balances.gold.toLocaleString());
-                $('#silverBalance').text(data.balances.silver.toLocaleString());
-                $('#copperBalance').text(data.balances.copper.toLocaleString());
-                
-                // 更新冻结金额
-                $('#frozenDiamond').text(data.frozenBalances.diamond.toLocaleString());
-                $('#frozenGold').text(data.frozenBalances.gold.toLocaleString());
-                $('#frozenSilver').text(data.frozenBalances.silver.toLocaleString());
-                $('#frozenCopper').text(data.frozenBalances.copper.toLocaleString());
-                
-                // 更新统计信息
-                $('#totalEarned').text(data.totalEarned.toLocaleString());
-                $('#totalSpent').text(data.totalSpent.toLocaleString());
-                $('#totalAssets').text(data.totalAssets.toLocaleString());
-                
-                // 更新导航栏钱包显示
-                KanbanApp.updateWalletDisplay(data.balances);
-            }
-        })
-        .fail(function() {
-            KanbanApp.showAlert('无法加载钱包数据', 'danger');
-        });
-}
-
-// 加载交易记录
-function loadTransactions(filter = 'all') {
-    $('#transactionsList').html(`
-        <div class="text-center py-4">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">加载中...</span>
-            </div>
-            <p class="mt-2 text-muted">正在加载交易记录...</p>
-        </div>
-    `);
-    
-    // 模拟加载延迟
-    setTimeout(() => {
-        const transactionsHtml = generateTransactionsHTML(filter);
-        $('#transactionsList').html(transactionsHtml);
-    }, 500);
-}
-
-// 生成交易记录HTML
-function generateTransactionsHTML(filter) {
-    const sampleTransactions = [
-        {
-            type: 'income',
-            description: '每日签到奖励',
-            amount: 100,
-            currency: 'gold',
-            date: '2024-01-10 09:00:00'
-        },
-        {
-            type: 'income',
-            description: '完成任务：实现用户登录功能',
-            amount: 100,
-            currency: 'gold',
-            date: '2024-01-09 15:30:00'
-        },
-        {
-            type: 'expense',
-            description: '发布任务：优化数据库性能',
-            amount: 200,
-            currency: 'gold',
-            date: '2024-01-08 10:15:00'
-        }
-    ];
-    
-    let filteredTransactions = sampleTransactions;
-    if (filter !== 'all') {
-        filteredTransactions = sampleTransactions.filter(t => t.type === filter);
-    }
-    
-    if (filteredTransactions.length === 0) {
-        return `
-            <div class="text-center py-4">
-                <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
-                <p class="text-muted mb-0">暂无交易记录</p>
-            </div>
-        `;
-    }
-    
-    let html = '<div class="list-group list-group-flush">';
-    filteredTransactions.forEach(transaction => {
-        const currencyIcon = {
-            diamond: '💎',
-            gold: '🥇',
-            silver: '🥈',
-            copper: '🥉'
-        }[transaction.currency];
-        
-        const typeClass = transaction.type === 'income' ? 'text-success' : 'text-danger';
-        const typeIcon = transaction.type === 'income' ? 'fa-plus' : 'fa-minus';
-        const sign = transaction.type === 'income' ? '+' : '-';
-        
-        html += `
-            <div class="list-group-item">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="mb-1">${transaction.description}</h6>
-                        <small class="text-muted">${transaction.date}</small>
-                    </div>
-                    <div class="text-end">
-                        <div class="${typeClass} fw-bold">
-                            <i class="fas ${typeIcon} me-1"></i>
-                            ${sign}${currencyIcon} ${transaction.amount.toLocaleString()}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-    html += '</div>';
-    
-    return html;
-}
+// 钱包数据和交易记录现在都通过服务端渲染，不再需要AJAX加载
 
 // 更新兑换预览
 function updateExchangePreview() {
     const direction = $('#exchangeDirection').val();
     const amount = parseInt($('#exchangeAmount').val()) || 0;
-    
+
     if (amount <= 0) {
         $('#exchangePreview').text('');
         return;
     }
-    
+
     let preview = '';
     switch (direction) {
         case 'gold_to_silver':
@@ -459,7 +483,7 @@ function updateExchangePreview() {
             preview = `将获得 ${(amount * 1000).toLocaleString()} 金币`;
             break;
     }
-    
+
     $('#exchangePreview').text(preview);
 }
 </script>

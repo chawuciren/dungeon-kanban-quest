@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建失败 - <%= title || '地下城看板任务系统' %></title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/fontawesome.min.css" rel="stylesheet">
+    <style>
+        .error-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .error-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .error-header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        .countdown {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin: 20px 0;
+        }
+        .error-list {
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .error-item {
+            color: #c53030;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        .error-item:last-child {
+            margin-bottom: 0;
+        }
+        .form-data-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .btn-group-custom {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .progress-bar-custom {
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ee5a24);
+            transition: width 1s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-card">
+            <!-- 错误头部 -->
+            <div class="error-header">
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2 class="mb-0">创建失败</h2>
+                <p class="mb-0 mt-2 opacity-75">
+                    <%= errorContext || '大陆' %>创建过程中遇到了一些问题
+                </p>
+            </div>
+
+            <!-- 错误内容 -->
+            <div class="p-4">
+                <!-- 错误列表 -->
+                <% if (errors && errors.length > 0) { %>
+                <div class="error-list">
+                    <h6 class="text-danger mb-3">
+                        <i class="fas fa-list-ul me-2"></i>
+                        需要修正的问题：
+                    </h6>
+                    <% errors.forEach(error => { %>
+                    <div class="error-item">
+                        <i class="fas fa-times-circle me-2"></i>
+                        <%= error.message || error %>
+                    </div>
+                    <% }) %>
+                </div>
+                <% } %>
+
+                <!-- 倒计时 -->
+                <div class="text-center">
+                    <div class="countdown">
+                        <i class="fas fa-clock me-2"></i>
+                        <span id="countdown"><%= redirectDelay || 5 %></span> 秒后自动返回
+                    </div>
+                    <div class="progress-bar-custom">
+                        <div class="progress-fill" id="progressBar"></div>
+                    </div>
+                </div>
+
+                <!-- 保留的表单数据 -->
+                <% if (formData && Object.keys(formData).length > 0) { %>
+                <div class="form-data-section">
+                    <h6 class="text-muted mb-3">
+                        <i class="fas fa-save me-2"></i>
+                        已保留您填写的信息：
+                    </h6>
+                    <div class="row">
+                        <% Object.entries(formData).forEach(([key, value]) => { %>
+                            <% if (value && value.toString().trim()) { %>
+                            <div class="col-md-6 mb-2">
+                                <small class="text-muted d-block"><%= getFieldLabel(key) %>：</small>
+                                <span class="text-dark"><%= value %></span>
+                            </div>
+                            <% } %>
+                        <% }) %>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- 操作按钮 -->
+                <div class="btn-group-custom mt-4">
+                    <button type="button" class="btn btn-primary" onclick="goBack()">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        立即返回修改
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="goHome()">
+                        <i class="fas fa-home me-2"></i>
+                        返回首页
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 倒计时和自动跳转
+        let countdown = <%= redirectDelay || 5 %>;
+        const countdownElement = document.getElementById('countdown');
+        const progressBar = document.getElementById('progressBar');
+        const redirectUrl = '<%= redirectUrl || 'javascript:history.back()' %>';
+        
+        // 设置初始进度条
+        progressBar.style.width = '100%';
+        
+        const timer = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            
+            // 更新进度条
+            const progress = (countdown / <%= redirectDelay || 5 %>) * 100;
+            progressBar.style.width = progress + '%';
+            
+            if (countdown <= 0) {
+                clearInterval(timer);
+                if (redirectUrl === 'javascript:history.back()') {
+                    history.back();
+                } else {
+                    window.location.href = redirectUrl;
+                }
+            }
+        }, 1000);
+
+        // 立即返回
+        function goBack() {
+            clearInterval(timer);
+            if (redirectUrl === 'javascript:history.back()') {
+                history.back();
+            } else {
+                window.location.href = redirectUrl;
+            }
+        }
+
+        // 返回首页
+        function goHome() {
+            clearInterval(timer);
+            window.location.href = '/dashboard';
+        }
+
+        // 页面可见性变化时暂停/恢复倒计时
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                clearInterval(timer);
+            } else {
+                // 页面重新可见时重新开始倒计时
+                location.reload();
+            }
+        });
+    </script>
+</body>
+</html>
+
+<%
+// 辅助函数：获取字段标签
+function getFieldLabel(key) {
+    const labels = {
+        name: '大陆名称',
+        key: '大陆标识符',
+        description: '大陆描述',
+        projectType: '项目类型',
+        starLevel: '星级',
+        organizationId: '主要公会',
+        leaderId: '项目负责人',
+        startDate: '开始日期',
+        endDate: '结束日期',
+        visibility: '可见性',
+        secondaryOrganizations: '协作公会'
+    };
+    return labels[key] || key;
+}
+%>

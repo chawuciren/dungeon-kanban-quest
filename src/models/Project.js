@@ -20,7 +20,7 @@ const Project = sequelize.define('Project', {
     validate: {
       len: [2, 10],
       isUppercase: true,
-      isAlpha: true
+      isAlphanumeric: true
     }
   },
   description: {
