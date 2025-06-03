@@ -1,5 +1,14 @@
 <%- include('../partials/header', { title: title }) %>
 
+<!-- 错误消息 -->
+<% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <%= errorMessage %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<% } %>
+
 <!-- 页面标题 -->
 <div class="row mb-4">
     <div class="col-12">
@@ -148,17 +157,14 @@
 <%- include('../partials/footer') %>
 
 <script>
-// 钱包余额数据
-const walletBalances = {
-    diamond: <%- wallet ? wallet.diamondBalance : 0 %>,
-    gold: <%- wallet ? wallet.goldBalance : 0 %>,
-    silver: <%- wallet ? wallet.silverBalance : 0 %>,
-    copper: <%- wallet ? wallet.copperBalance : 0 %>
-};
-</script>
-
-<script>
 $(document).ready(function() {
+    // 钱包余额数据
+    const walletBalances = {
+        diamond: <% if (wallet) { %><%= wallet.diamondBalance %><% } else { %>0<% } %>,
+        gold: <% if (wallet) { %><%= wallet.goldBalance %><% } else { %>0<% } %>,
+        silver: <% if (wallet) { %><%= wallet.silverBalance %><% } else { %>0<% } %>,
+        copper: <% if (wallet) { %><%= wallet.copperBalance %><% } else { %>0<% } %>
+    };
 
     const currencyInfo = {
         diamond: { name: '钻石', icon: 'fas fa-gem', color: '#00bcd4' },
@@ -225,9 +231,10 @@ $(document).ready(function() {
         $('#toCurrencySymbol').text(toInfo.name);
 
         // 获取兑换比例并显示
-        getExchangeRate(fromCurrency, toCurrency);
-
-        $('#exchangePreview').show();
+        getExchangeRate(fromCurrency, toCurrency, function() {
+            // 比例获取完成后显示预览
+            $('#exchangePreview').show();
+        });
     }
 
     let currentRate = 1;
@@ -241,21 +248,32 @@ $(document).ready(function() {
         isUpdating = false;
     }
 
-    function getExchangeRate(fromCurrency, toCurrency) {
+    function getExchangeRate(fromCurrency, toCurrency, callback) {
         // 通过AJAX获取实时汇率
         $.get(`/api/wallet/exchange-rate/${fromCurrency}/${toCurrency}`)
             .done(function(response) {
                 if (response.success) {
                     currentRate = response.data.rate;
-                    $('#exchangeRate').text(`1:${currentRate.toLocaleString()}`);
+                    // 显示更清楚的比例
+                    if (currentRate >= 1) {
+                        $('#exchangeRate').text(`1:${currentRate.toLocaleString()}`);
+                    } else {
+                        const reverseRate = Math.round(1 / currentRate);
+                        $('#exchangeRate').text(`${reverseRate.toLocaleString()}:1`);
+                    }
+                    console.log(`兑换比例: ${fromCurrency} -> ${toCurrency} = 1:${currentRate}`);
                 } else {
-                    currentRate = 1000; // 默认比例
-                    $('#exchangeRate').text(`1:${currentRate.toLocaleString()}`);
+                    currentRate = 0.001; // 默认比例
+                    $('#exchangeRate').text(`1000:1`);
+                    console.warn('获取兑换比例失败，使用默认比例');
                 }
+                if (callback) callback();
             })
             .fail(function() {
-                currentRate = 1000; // 默认比例
-                $('#exchangeRate').text(`1:${currentRate.toLocaleString()}`);
+                currentRate = 0.001; // 默认比例
+                $('#exchangeRate').text(`1000:1`);
+                console.error('获取兑换比例请求失败，使用默认比例');
+                if (callback) callback();
             });
     }
 
@@ -329,45 +347,29 @@ $(document).ready(function() {
         $('#submitBtn').prop('disabled', fromAmount <= 0);
     }
 
-    // 表单提交
+    // 表单提交验证
     $('#exchangeForm').submit(function(e) {
-        e.preventDefault();
-
         const fromCurrency = $('#fromCurrency').val();
         const toCurrency = $('#toCurrency').val();
         const fromAmount = parseFloat($('#fromAmount').val());
 
         if (!fromCurrency || !toCurrency || !fromAmount || fromAmount <= 0) {
+            e.preventDefault();
             KanbanApp.showAlert('请完整填写兑换信息', 'warning');
-            return;
+            return false;
         }
 
+        // 检查余额
+        if (walletBalances[fromCurrency] < fromAmount) {
+            e.preventDefault();
+            KanbanApp.showAlert(`${currencyInfo[fromCurrency].name}余额不足`, 'warning');
+            return false;
+        }
+
+        // 表单验证通过，允许提交
         const btn = $('#submitBtn');
         KanbanApp.setLoading(btn, true);
-
-        const data = {
-            fromCurrency: fromCurrency,
-            toCurrency: toCurrency,
-            fromAmount: fromAmount
-        };
-
-        $.post($(this).attr('action'), data)
-            .done(function(response) {
-                if (response.success) {
-                    KanbanApp.showAlert(response.message, 'success');
-                    setTimeout(() => {
-                        window.location.href = '/wallet';
-                    }, 1500);
-                } else {
-                    KanbanApp.showAlert(response.message, 'warning');
-                    KanbanApp.setLoading(btn, false);
-                }
-            })
-            .fail(function(xhr) {
-                const response = xhr.responseJSON;
-                KanbanApp.showAlert(response?.message || '兑换失败', 'danger');
-                KanbanApp.setLoading(btn, false);
-            });
+        return true;
     });
 });
 </script>
