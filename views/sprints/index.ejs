@@ -156,11 +156,42 @@
                                     </div>
 
                                     <!-- 创建者 -->
-                                    <div class="mb-2">
+                                    <div class="mb-3">
                                         <small class="text-muted">
                                             <i class="fas fa-user me-1"></i>
                                             创建者：<%= sprint.creator.firstName %> <%= sprint.creator.lastName %>
                                         </small>
+                                    </div>
+
+                                    <!-- 操作按钮 -->
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <a href="/sprints/<%= sprint.id %>" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i>
+                                            查看详情
+                                        </a>
+                                        <% if (['planning', 'active'].includes(sprint.status)) { %>
+                                            <a href="/sprints/<%= sprint.id %>/edit" class="btn btn-sm btn-outline-warning">
+                                                <i class="fas fa-edit me-1"></i>
+                                                编辑
+                                            </a>
+                                        <% } %>
+                                        <a href="/tasks?sprintId=<%= sprint.id %>" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-tasks me-1"></i>
+                                            任务列表
+                                        </a>
+
+                                        <!-- 状态管理按钮 -->
+                                        <% if (sprint.status === 'planning') { %>
+                                            <button class="btn btn-sm btn-success" onclick="quickStartSprint('<%= sprint.id %>', '<%= sprint.name %>')">
+                                                <i class="fas fa-play me-1"></i>
+                                                开始
+                                            </button>
+                                        <% } else if (sprint.status === 'active') { %>
+                                            <button class="btn btn-sm btn-primary" onclick="quickCompleteSprint('<%= sprint.id %>', '<%= sprint.name %>')">
+                                                <i class="fas fa-check me-1"></i>
+                                                完成
+                                            </button>
+                                        <% } %>
                                     </div>
                                 </div>
                             </div>
@@ -238,5 +269,29 @@
     border-radius: 10px;
 }
 </style>
+
+<script>
+function quickStartSprint(sprintId, sprintName) {
+    if (confirm(`确定要开始探险季"${sprintName}"吗？开始后探险季状态将变为进行中。`)) {
+        // 创建表单并提交
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/sprints/${sprintId}/start`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function quickCompleteSprint(sprintId, sprintName) {
+    if (confirm(`确定要完成探险季"${sprintName}"吗？完成后将无法再添加或修改任务。`)) {
+        // 创建表单并提交
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/sprints/${sprintId}/complete`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
 
 <%- include('../partials/footer') %>

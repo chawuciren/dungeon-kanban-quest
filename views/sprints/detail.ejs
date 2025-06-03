@@ -32,29 +32,45 @@
                             <i class="fas fa-times me-1"></i>已取消
                         </span>
                     <% } %>
-                    
+
                     <!-- 时间信息 -->
                     <span class="text-muted">
                         <i class="fas fa-calendar me-1"></i>
-                        <%= moment(sprint.startDate).format('YYYY-MM-DD') %> 至 
+                        <%= moment(sprint.startDate).format('YYYY-MM-DD') %> 至
                         <%= moment(sprint.endDate).format('YYYY-MM-DD') %>
                     </span>
-                    
-                    <!-- 剩余时间 -->
+
+                    <!-- 剩余时间或完成时间 -->
                     <% if (sprint.status === 'active') { %>
                         <span class="text-warning">
                             <i class="fas fa-hourglass-half me-1"></i>
                             剩余 <%= sprint.getDaysRemaining() %> 天
                         </span>
+                    <% } else if (sprint.status === 'completed' && sprint.actualEndDate) { %>
+                        <span class="text-success">
+                            <i class="fas fa-check-circle me-1"></i>
+                            实际完成：<%= moment(sprint.actualEndDate).format('YYYY-MM-DD') %>
+                        </span>
+                    <% } else if (sprint.status === 'cancelled') { %>
+                        <span class="text-danger">
+                            <i class="fas fa-ban me-1"></i>
+                            已取消
+                        </span>
                     <% } %>
                 </div>
             </div>
-            
+
             <div class="d-flex gap-2">
                 <a href="/sprints" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-2"></i>
                     返回列表
                 </a>
+                <% if (['planning', 'active'].includes(sprint.status)) { %>
+                    <a href="/sprints/<%= sprint.id %>/edit" class="btn btn-outline-warning">
+                        <i class="fas fa-edit me-2"></i>
+                        编辑探险季
+                    </a>
+                <% } %>
                 <% if (sprint.status === 'planning') { %>
                     <button class="btn btn-success" onclick="startSprint()">
                         <i class="fas fa-play me-2"></i>
@@ -64,6 +80,12 @@
                     <button class="btn btn-primary" onclick="completeSprint()">
                         <i class="fas fa-check me-2"></i>
                         完成探险季
+                    </button>
+                <% } %>
+                <% if (['planning', 'active'].includes(sprint.status)) { %>
+                    <button class="btn btn-outline-danger" onclick="cancelSprint()">
+                        <i class="fas fa-times me-2"></i>
+                        取消探险季
                     </button>
                 <% } %>
             </div>
@@ -91,7 +113,7 @@
                     </h6>
                     <p class="mb-0"><%= sprint.goal %></p>
                 </div>
-                
+
                 <!-- 描述 -->
                 <% if (sprint.description) { %>
                     <div class="mb-3">
@@ -102,7 +124,7 @@
                         <p class="mb-0"><%= sprint.description %></p>
                     </div>
                 <% } %>
-                
+
                 <!-- 创建信息 -->
                 <div class="row">
                     <div class="col-md-6">
@@ -123,7 +145,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- 统计信息 -->
     <div class="col-lg-4">
         <div class="card h-100">
@@ -141,11 +163,11 @@
                         <span class="fw-bold"><%= sprint.getProgress() %>%</span>
                     </div>
                     <div class="progress mb-2" style="height: 10px;">
-                        <div class="progress-bar bg-success" 
+                        <div class="progress-bar bg-success"
                              style="width: <%= sprint.getProgress() %>%"></div>
                     </div>
                 </div>
-                
+
                 <!-- 任务统计 -->
                 <div class="row text-center mb-3">
                     <div class="col-6">
@@ -159,7 +181,7 @@
                         <small class="text-muted">已完成</small>
                     </div>
                 </div>
-                
+
                 <!-- 详细统计 -->
                 <div class="small">
                     <div class="d-flex justify-content-between mb-1">
@@ -171,7 +193,7 @@
                         <span class="badge bg-secondary"><%= taskStats.pending %></span>
                     </div>
                 </div>
-                
+
                 <!-- 时间信息 -->
                 <hr>
                 <div class="small">
@@ -297,16 +319,59 @@
 
 <script>
 function startSprint() {
-    if (confirm('确定要开始这个探险季吗？开始后将无法修改基本信息。')) {
-        // TODO: 实现开始探险季的功能
-        alert('开始探险季功能正在开发中...');
+    if (confirm('确定要开始这个探险季吗？开始后探险季状态将变为进行中。')) {
+        // 创建表单并提交
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/sprints/<%= sprint.id %>/start';
+        document.body.appendChild(form);
+        form.submit();
     }
 }
 
 function completeSprint() {
-    if (confirm('确定要完成这个探险季吗？完成后将无法再添加或修改任务。')) {
-        // TODO: 实现完成探险季的功能
-        alert('完成探险季功能正在开发中...');
+    const uncompletedTasks = <%= taskStats.total - taskStats.completed %>;
+    let message = '确定要完成这个探险季吗？完成后将无法再添加或修改任务。';
+
+    if (uncompletedTasks > 0) {
+        message += `\n\n注意：还有 ${uncompletedTasks} 个任务未完成，这些任务将保持当前状态。`;
+    }
+
+    if (confirm(message)) {
+        // 创建表单并提交
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/sprints/<%= sprint.id %>/complete';
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function cancelSprint() {
+    const reason = prompt('请输入取消探险季的原因（可选）：');
+
+    // 用户点击取消按钮时，reason 为 null
+    if (reason === null) {
+        return;
+    }
+
+    if (confirm('确定要取消这个探险季吗？取消后探险季状态将变为已取消。')) {
+        // 创建表单并提交
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/sprints/<%= sprint.id %>/cancel';
+
+        // 添加取消原因
+        if (reason.trim()) {
+            const reasonInput = document.createElement('input');
+            reasonInput.type = 'hidden';
+            reasonInput.name = 'reason';
+            reasonInput.value = reason.trim();
+            form.appendChild(reasonInput);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
     }
 }
 </script>
