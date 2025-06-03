@@ -274,14 +274,14 @@ router.post('/exchange', requireAuth, async (req, res) => {
       amount
     );
 
-    res.json(result);
+    // 表单提交成功后重定向到钱包页面
+    req.session.successMessage = result.message;
+    res.redirect('/wallet');
 
   } catch (error) {
     logger.error('货币兑换失败:', error);
-    res.status(500).json({
-      success: false,
-      message: error.message || '兑换失败，请稍后重试'
-    });
+    req.session.errorMessage = error.message || '兑换失败，请稍后重试';
+    res.redirect('/wallet/exchange');
   }
 });
 
@@ -317,6 +317,37 @@ router.get('/exchange-rate/:from/:to', requireAuth, async (req, res) => {
     res.status(500).json({
       success: false,
       message: '获取兑换比例失败'
+    });
+  }
+});
+
+// 测试兑换比例（开发用）
+router.get('/test-rates', requireAuth, async (req, res) => {
+  try {
+    ExchangeService.testExchangeRates();
+
+    const testResults = {};
+    const currencies = ['diamond', 'gold', 'silver', 'copper'];
+
+    for (const from of currencies) {
+      testResults[from] = {};
+      for (const to of currencies) {
+        if (from !== to) {
+          testResults[from][to] = ExchangeService.getExchangeRate(from, to);
+        }
+      }
+    }
+
+    res.json({
+      success: true,
+      data: testResults
+    });
+
+  } catch (error) {
+    logger.error('测试兑换比例失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '测试失败'
     });
   }
 });

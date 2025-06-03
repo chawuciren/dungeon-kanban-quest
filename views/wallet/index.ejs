@@ -1,5 +1,14 @@
 <%- include('../partials/header', { title: title }) %>
 
+<!-- 成功/错误消息 -->
+<% if (typeof successMessage !== 'undefined' && successMessage) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <%= successMessage %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<% } %>
+
 <!-- 页面标题 -->
 <div class="row mb-4">
     <div class="col-12">

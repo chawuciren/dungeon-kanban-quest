@@ -398,8 +398,14 @@ router.get('/wallet', async (req, res) => {
       currentPage: page,
       pageSize,
       transactions: transactionData.transactions,
-      pagination: transactionData.pagination
+      pagination: transactionData.pagination,
+      successMessage: req.session.successMessage,
+      errorMessage: req.session.errorMessage
     });
+
+    // 清除消息
+    delete req.session.successMessage;
+    delete req.session.errorMessage;
 
   } catch (error) {
     console.error('获取钱包数据失败:', error);
@@ -466,8 +472,12 @@ router.get('/wallet/exchange', async (req, res) => {
       title: '货币兑换',
       user,
       wallet,
-      currencies
+      currencies,
+      errorMessage: req.session.errorMessage
     });
+
+    // 清除错误消息
+    delete req.session.errorMessage;
 
   } catch (error) {
     console.error('获取兑换页面数据失败:', error);

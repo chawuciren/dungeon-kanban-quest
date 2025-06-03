@@ -38,6 +38,7 @@ class ExchangeService {
 
   /**
    * 获取两种货币之间的兑换比例
+   * 返回的比例表示：1个fromCurrency可以换多少个toCurrency
    */
   static getExchangeRate(fromCurrency, toCurrency) {
     if (fromCurrency === toCurrency) {
@@ -45,21 +46,59 @@ class ExchangeService {
     }
 
     const rates = config.gamification.exchangeRates;
-    const exchangeKey = `${fromCurrency}_to_${toCurrency}`;
 
     // 直接查找配置中的兑换比例
+    const exchangeKey = `${fromCurrency}_to_${toCurrency}`;
     if (rates[exchangeKey]) {
-      return rates[exchangeKey];
+      // 配置中的值表示需要多少个fromCurrency换1个toCurrency
+      // 所以1个fromCurrency可以换 1/配置值 个toCurrency
+      return 1 / rates[exchangeKey];
     }
 
     // 如果没有直接配置，尝试反向查找
     const reverseKey = `${toCurrency}_to_${fromCurrency}`;
     if (rates[reverseKey]) {
-      return 1 / rates[reverseKey]; // 反向比例
+      // 反向配置表示需要多少个toCurrency换1个fromCurrency
+      // 所以1个fromCurrency可以换 配置值 个toCurrency
+      return rates[reverseKey];
     }
 
-    // 如果都没有，返回默认比例1000
-    return 1000;
+    // 如果都没有直接配置，通过级联计算
+    const currencyLevels = {
+      copper: 1,
+      silver: 2,
+      gold: 3,
+      diamond: 4
+    };
+
+    const fromLevel = currencyLevels[fromCurrency];
+    const toLevel = currencyLevels[toCurrency];
+
+    if (!fromLevel || !toLevel) {
+      return 0.001; // 默认比例：1000:1
+    }
+
+    if (fromLevel > toLevel) {
+      // 高级货币换低级货币，累乘反向比例
+      let rate = 1;
+      for (let level = fromLevel; level > toLevel; level--) {
+        const currentCurrency = Object.keys(currencyLevels).find(key => currencyLevels[key] === level);
+        const nextCurrency = Object.keys(currencyLevels).find(key => currencyLevels[key] === level - 1);
+        const stepKey = `${nextCurrency}_to_${currentCurrency}`;
+        rate *= (rates[stepKey] || 1000);
+      }
+      return rate;
+    } else {
+      // 低级货币换高级货币，累除正向比例
+      let rate = 1;
+      for (let level = fromLevel; level < toLevel; level++) {
+        const currentCurrency = Object.keys(currencyLevels).find(key => currencyLevels[key] === level);
+        const nextCurrency = Object.keys(currencyLevels).find(key => currencyLevels[key] === level + 1);
+        const stepKey = `${currentCurrency}_to_${nextCurrency}`;
+        rate *= (rates[stepKey] || 1000);
+      }
+      return 1 / rate;
+    }
   }
 
   /**
@@ -136,6 +175,23 @@ class ExchangeService {
   }
 
   /**
+   * 测试兑换比例计算（用于调试）
+   */
+  static testExchangeRates() {
+    const currencies = ['diamond', 'gold', 'silver', 'copper'];
+    console.log('=== 兑换比例测试 ===');
+
+    for (const from of currencies) {
+      for (const to of currencies) {
+        if (from !== to) {
+          const rate = this.getExchangeRate(from, to);
+          console.log(`${from} -> ${to}: 1:${rate}`);
+        }
+      }
+    }
+  }
+
+  /**
    * 执行货币兑换
    */
   static async performExchange(userId, fromCurrency, toCurrency, fromAmount) {
@@ -162,25 +218,14 @@ class ExchangeService {
       throw new Error('兑换数量不足，无法完成兑换');
     }
 
-    // 执行兑换
-    const fromBalanceField = `${fromCurrency}Balance`;
-    const toBalanceField = `${toCurrency}Balance`;
-
-    const updateData = {
-      [fromBalanceField]: wallet[fromBalanceField] - fromAmount,
-      [toBalanceField]: wallet[toBalanceField] + toAmount
-    };
-
-    await wallet.update(updateData);
-
     // 获取货币信息
     const fromCurrencyInfo = this.getCurrencyInfo(fromCurrency);
     const toCurrencyInfo = this.getCurrencyInfo(toCurrency);
 
-    // 记录交易
+    // 记录交易（TransactionService会自动更新钱包余额）
     await TransactionService.createTransaction({
       userId,
-      type: 'exchange_out',
+      type: 'expense',
       currency: fromCurrency,
       amount: fromAmount,
       description: `兑换${fromCurrencyInfo.name}为${toCurrencyInfo.name}`,
@@ -189,11 +234,16 @@ class ExchangeService {
 
     await TransactionService.createTransaction({
       userId,
-      type: 'exchange_in',
+      type: 'income',
       currency: toCurrency,
       amount: toAmount,
       description: `兑换获得${toCurrencyInfo.name}`,
       source: 'currency_exchange'
+    });
+
+    // 重新获取更新后的钱包信息
+    const updatedWallet = await UserWallet.findOne({
+      where: { userId }
     });
 
     logger.info(`用户货币兑换: ${userId}`, {
@@ -213,8 +263,8 @@ class ExchangeService {
         fromAmount,
         toAmount,
         rate: calculation.rate,
-        newFromBalance: wallet[fromBalanceField],
-        newToBalance: wallet[toBalanceField]
+        newFromBalance: updatedWallet[`${fromCurrency}Balance`],
+        newToBalance: updatedWallet[`${toCurrency}Balance`]
       }
     };
   }
