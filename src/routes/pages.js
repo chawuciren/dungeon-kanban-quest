@@ -3,6 +3,7 @@ const router = express.Router();
 const { User, UserWallet, BountyTask, Project, CurrencyTransaction } = require('../models');
 const { Op } = require('sequelize');
 const TransactionService = require('../services/TransactionService');
+const CheckinService = require('../services/CheckinService');
 
 // 首页
 router.get('/', (req, res) => {
@@ -370,13 +371,10 @@ router.get('/wallet', async (req, res) => {
       wallet.copperBalance;
 
     // 检查是否可以签到
-    const today = new Date();
-    const lastCheckin = wallet.lastDailyRechargeAt;
-    let canCheckin = true;
-    if (lastCheckin) {
-      const lastCheckinDate = new Date(lastCheckin);
-      canCheckin = lastCheckinDate.toDateString() !== today.toDateString();
-    }
+    const canCheckin = await CheckinService.canCheckin(req.session.userId);
+
+    // 获取签到奖励预览
+    const rewardPreview = CheckinService.getRewardPreview(user);
 
 
 
@@ -384,13 +382,22 @@ router.get('/wallet', async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const pageSize = 8;
 
+    // 获取用户的交易记录
+    const transactionData = await TransactionService.getUserTransactions(req.session.userId, {
+      page,
+      limit: pageSize
+    });
+
     res.render('wallet/index', {
       title: '我的钱包',
       user,
       wallet,
       canCheckin,
+      rewardPreview,
       currentPage: page,
-      pageSize
+      pageSize,
+      transactions: transactionData.transactions,
+      pagination: transactionData.pagination
     });
 
   } catch (error) {
@@ -404,7 +411,9 @@ router.get('/wallet', async (req, res) => {
       wallet: null,
       canCheckin: false,
       currentPage: page,
-      pageSize
+      pageSize,
+      transactions: [],
+      pagination: { page, limit: pageSize, total: 0, totalPages: 0 }
     });
   }
 });

@@ -47,42 +47,91 @@ const config = {
 
   // 游戏化系统配置
   gamification: {
-    dailyCoinReward: parseInt(process.env.DAILY_COIN_REWARD) || 100,
-    monthlyCoinReward: parseInt(process.env.MONTHLY_COIN_REWARD) || 3000,
-    monthlyDiamondReward: parseInt(process.env.MONTHLY_DIAMOND_REWARD) || 10,
-    
+    // 每日签到奖励配置
+    dailyCheckin: {
+      // 基础奖励（所有用户都获得）
+      baseRewards: {
+        gold: parseInt(process.env.DAILY_BASE_GOLD) || 20,
+        silver: parseInt(process.env.DAILY_BASE_SILVER) || 50,
+        copper: parseInt(process.env.DAILY_BASE_COPPER) || 0,
+        diamond: parseInt(process.env.DAILY_BASE_DIAMOND) || 0
+      },
+
+      // 角色额外奖励（在基础奖励之上增加）
+      roleBonus: {
+        // 委托贵族（客户）额外奖励
+        client: {
+          gold: parseInt(process.env.DAILY_CLIENT_BONUS_GOLD) || 80,      // 额外80金币，总计100金币
+          silver: parseInt(process.env.DAILY_CLIENT_BONUS_SILVER) || 200, // 额外200银币，总计250银币
+          copper: parseInt(process.env.DAILY_CLIENT_BONUS_COPPER) || 0,
+          diamond: parseInt(process.env.DAILY_CLIENT_BONUS_DIAMOND) || 1  // 额外1钻石
+        },
+
+        // 管理员额外奖励
+        admin: {
+          gold: parseInt(process.env.DAILY_ADMIN_BONUS_GOLD) || 50,       // 额外50金币，总计70金币
+          silver: parseInt(process.env.DAILY_ADMIN_BONUS_SILVER) || -50,  // 减少50银币，总计0银币
+          copper: parseInt(process.env.DAILY_ADMIN_BONUS_COPPER) || 0,
+          diamond: parseInt(process.env.DAILY_ADMIN_BONUS_DIAMOND) || 2   // 额外2钻石
+        },
+
+        // 普通用户（开发者、测试等）无额外奖励
+        developer: {
+          gold: 0,
+          silver: 0,
+          copper: 0,
+          diamond: 0
+        },
+
+        // 其他角色也可以在这里配置
+        tester: {
+          gold: 0,
+          silver: 0,
+          copper: 0,
+          diamond: 0
+        },
+
+        ui_designer: {
+          gold: 0,
+          silver: 0,
+          copper: 0,
+          diamond: 0
+        }
+      }
+    },
+
     // 货币汇率
     currencyRates: {
-      diamond: 1000, // 1钻石 = 1000金币
-      gold: 100,     // 1金币 = 100银币
-      silver: 100    // 1银币 = 100铜币
+      diamond: parseInt(process.env.CURRENCY_RATE_DIAMOND) || 1000, // 1钻石 = 1000金币
+      gold: parseInt(process.env.CURRENCY_RATE_GOLD) || 100,        // 1金币 = 100银币
+      silver: parseInt(process.env.CURRENCY_RATE_SILVER) || 100     // 1银币 = 100铜币
     },
 
     // 星级奖励倍数
     starMultipliers: {
-      1: 1.0,
-      2: 1.2,
-      3: 1.5,
-      4: 2.0,
-      5: 3.0
+      1: parseFloat(process.env.STAR_MULTIPLIER_1) || 1.0,
+      2: parseFloat(process.env.STAR_MULTIPLIER_2) || 1.2,
+      3: parseFloat(process.env.STAR_MULTIPLIER_3) || 1.5,
+      4: parseFloat(process.env.STAR_MULTIPLIER_4) || 2.0,
+      5: parseFloat(process.env.STAR_MULTIPLIER_5) || 3.0
     },
 
     // 紧急程度奖励
     urgencyMultipliers: {
-      urgent: 1.5,    // 🔥 紧急
-      important: 1.2, // ⚡ 重要
-      normal: 1.0,    // 📅 普通
-      delayed: 0.9,   // 🕐 延后
-      frozen: 0.0     // ❄️ 冻结
+      urgent: parseFloat(process.env.URGENCY_MULTIPLIER_URGENT) || 1.5,    // 🔥 紧急
+      important: parseFloat(process.env.URGENCY_MULTIPLIER_IMPORTANT) || 1.2, // ⚡ 重要
+      normal: parseFloat(process.env.URGENCY_MULTIPLIER_NORMAL) || 1.0,    // 📅 普通
+      delayed: parseFloat(process.env.URGENCY_MULTIPLIER_DELAYED) || 0.9,   // 🕐 延后
+      frozen: parseFloat(process.env.URGENCY_MULTIPLIER_FROZEN) || 0.0     // ❄️ 冻结
     },
 
     // 技能等级奖励
     skillMultipliers: {
-      novice: 1.1,   // 🔰 新手
-      bronze: 1.1,   // 🥉 铜牌
-      silver: 1.15,  // 🥈 银牌
-      gold: 1.2,     // 🥇 金牌
-      diamond: 1.3   // 💎 钻石
+      novice: parseFloat(process.env.SKILL_MULTIPLIER_NOVICE) || 1.1,   // 🔰 新手
+      bronze: parseFloat(process.env.SKILL_MULTIPLIER_BRONZE) || 1.1,   // 🥉 铜牌
+      silver: parseFloat(process.env.SKILL_MULTIPLIER_SILVER) || 1.15,  // 🥈 银牌
+      gold: parseFloat(process.env.SKILL_MULTIPLIER_GOLD) || 1.2,       // 🥇 金牌
+      diamond: parseFloat(process.env.SKILL_MULTIPLIER_DIAMOND) || 1.3  // 💎 钻石
     }
   },
 

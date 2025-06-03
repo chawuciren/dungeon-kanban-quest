@@ -97,7 +97,20 @@
                             </button>
                         </div>
                         <small class="text-muted d-block mt-1 text-center">
-                            每日可获得100金币
+                            <% if (rewardPreview && rewardPreview.rewards) { %>
+                                每日可获得：
+                                <% if (rewardPreview.rewards.gold) { %>
+                                    <%= rewardPreview.rewards.gold %>金币
+                                <% } %>
+                                <% if (rewardPreview.rewards.silver) { %>
+                                    <% if (rewardPreview.rewards.gold) { %>、<% } %><%= rewardPreview.rewards.silver %>银币
+                                <% } %>
+                                <% if (rewardPreview.rewards.diamond) { %>
+                                    <% if (rewardPreview.rewards.gold || rewardPreview.rewards.silver) { %>、<% } %><%= rewardPreview.rewards.diamond %>钻石
+                                <% } %>
+                            <% } else { %>
+                                每日签到奖励
+                            <% } %>
                         </small>
                     </div>
                     <div class="col-md-4">
@@ -140,134 +153,24 @@
             </div>
             <div class="card-body">
                 <div id="transactionsList">
-                    <%
-                    // 模拟更多交易记录数据用于分页演示
-                    const allTransactions = [
-                        {
-                            type: 'income',
-                            description: '每日签到奖励',
-                            amount: 100,
-                            currency: 'gold',
-                            date: '2024-01-15 09:00:00'
-                        },
-                        {
-                            type: 'income',
-                            description: '完成任务：实现用户登录功能',
-                            amount: 150,
-                            currency: 'gold',
-                            date: '2024-01-14 15:30:00'
-                        },
-                        {
-                            type: 'expense',
-                            description: '发布任务：优化数据库性能',
-                            amount: 200,
-                            currency: 'gold',
-                            date: '2024-01-13 10:15:00'
-                        },
-                        {
-                            type: 'income',
-                            description: '完成任务：修复登录Bug',
-                            amount: 80,
-                            currency: 'gold',
-                            date: '2024-01-12 16:45:00'
-                        },
-                        {
-                            type: 'expense',
-                            description: '发布任务：前端界面优化',
-                            amount: 120,
-                            currency: 'gold',
-                            date: '2024-01-11 11:20:00'
-                        },
-                        {
-                            type: 'income',
-                            description: '每日签到奖励',
-                            amount: 100,
-                            currency: 'gold',
-                            date: '2024-01-10 09:00:00'
-                        },
-                        {
-                            type: 'income',
-                            description: '完成任务：API接口开发',
-                            amount: 180,
-                            currency: 'gold',
-                            date: '2024-01-09 14:30:00'
-                        },
-                        {
-                            type: 'expense',
-                            description: '发布任务：数据库设计',
-                            amount: 250,
-                            currency: 'gold',
-                            date: '2024-01-08 10:15:00'
-                        },
-                        {
-                            type: 'income',
-                            description: '完成任务：系统架构设计',
-                            amount: 300,
-                            currency: 'gold',
-                            date: '2024-01-07 17:00:00'
-                        },
-                        {
-                            type: 'income',
-                            description: '每日签到奖励',
-                            amount: 100,
-                            currency: 'gold',
-                            date: '2024-01-06 09:00:00'
-                        },
-                        {
-                            type: 'expense',
-                            description: '发布任务：测试用例编写',
-                            amount: 150,
-                            currency: 'gold',
-                            date: '2024-01-05 13:30:00'
-                        },
-                        {
-                            type: 'income',
-                            description: '完成任务：代码重构',
-                            amount: 200,
-                            currency: 'gold',
-                            date: '2024-01-04 16:15:00'
-                        },
-                        {
-                            type: 'income',
-                            description: '完成任务：项目文档编写',
-                            amount: 120,
-                            currency: 'gold',
-                            date: '2024-01-02 14:20:00'
-                        },
-                        {
-                            type: 'expense',
-                            description: '发布任务：移动端适配',
-                            amount: 180,
-                            currency: 'gold',
-                            date: '2024-01-01 16:30:00'
-                        }
-                    ];
-
-                    // 分页参数（从路由传递）
-                    const page = typeof currentPage !== 'undefined' ? currentPage : 1;
-                    const size = typeof pageSize !== 'undefined' ? pageSize : 8;
-                    const totalTransactions = allTransactions.length;
-                    const totalPages = Math.ceil(totalTransactions / size);
-
-                    // 计算当前页的数据
-                    const startIndex = (page - 1) * size;
-                    const endIndex = startIndex + size;
-                    const sampleTransactions = allTransactions.slice(startIndex, endIndex);
-                    %>
-
-                    <% if (sampleTransactions.length > 0) { %>
+                    <% if (transactions && transactions.length > 0) { %>
                         <div class="list-group list-group-flush">
-                            <% sampleTransactions.forEach(transaction => { %>
+                            <% transactions.forEach(transaction => { %>
                                 <div class="list-group-item">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
                                             <h6 class="mb-1"><%= transaction.description %></h6>
-                                            <small class="text-muted"><%= transaction.date %></small>
+                                            <small class="text-muted">
+                                                <%= new Date(transaction.transactionAt).toLocaleString('zh-CN') %>
+                                                <% if (transaction.source) { %>
+                                                    • <%= transaction.source %>
+                                                <% } %>
+                                            </small>
                                         </div>
                                         <div class="text-end">
-                                            <div class="<%= transaction.type === 'income' ? 'text-success' : 'text-danger' %> fw-bold">
-                                                <i class="fas <%= transaction.type === 'income' ? 'fa-plus' : 'fa-minus' %> me-1"></i>
-                                                <%= transaction.type === 'income' ? '+' : '-' %>
+                                            <div class="<%= (transaction.type === 'income' || transaction.type === 'transfer_in') ? 'text-success' : 'text-danger' %> fw-bold">
+                                                <i class="fas <%= (transaction.type === 'income' || transaction.type === 'transfer_in') ? 'fa-plus' : 'fa-minus' %> me-1"></i>
+                                                <%= (transaction.type === 'income' || transaction.type === 'transfer_in') ? '+' : '-' %>
                                                 <%
                                                 const currencyIcons = {
                                                     diamond: '<i class="fas fa-gem" style="color: #00bcd4;"></i>',
@@ -285,16 +188,16 @@
                         </div>
 
                         <!-- 分页组件 -->
-                        <% if (totalPages > 1) { %>
+                        <% if (pagination && pagination.totalPages > 1) { %>
                             <div class="d-flex justify-content-between align-items-center mt-4">
                                 <div class="text-muted">
-                                    显示第 <%= startIndex + 1 %>-<%= Math.min(endIndex, totalTransactions) %> 条，共 <%= totalTransactions %> 条记录
+                                    显示第 <%= ((pagination.page - 1) * pagination.limit) + 1 %>-<%= Math.min(pagination.page * pagination.limit, pagination.total) %> 条，共 <%= pagination.total %> 条记录
                                 </div>
                                 <nav aria-label="交易记录分页">
                                     <ul class="pagination pagination-sm mb-0">
                                         <!-- 上一页 -->
-                                        <li class="page-item <%= page === 1 ? 'disabled' : '' %>">
-                                            <a class="page-link" href="/wallet?page=<%= page - 1 %>" aria-label="上一页">
+                                        <li class="page-item <%= pagination.page === 1 ? 'disabled' : '' %>">
+                                            <a class="page-link" href="/wallet?page=<%= pagination.page - 1 %>" aria-label="上一页">
                                                 <span aria-hidden="true">&laquo;</span>
                                             </a>
                                         </li>
@@ -302,13 +205,13 @@
                                         <!-- 页码 -->
                                         <%
                                         // 计算显示的页码范围
-                                        let startPage = Math.max(1, page - 2);
-                                        let endPage = Math.min(totalPages, page + 2);
+                                        let startPage = Math.max(1, pagination.page - 2);
+                                        let endPage = Math.min(pagination.totalPages, pagination.page + 2);
 
                                         // 确保显示5个页码（如果总页数足够）
                                         if (endPage - startPage < 4) {
                                             if (startPage === 1) {
-                                                endPage = Math.min(totalPages, startPage + 4);
+                                                endPage = Math.min(pagination.totalPages, startPage + 4);
                                             } else {
                                                 startPage = Math.max(1, endPage - 4);
                                             }
@@ -329,26 +232,26 @@
 
                                         <!-- 中间页码 -->
                                         <% for (let i = startPage; i <= endPage; i++) { %>
-                                            <li class="page-item <%= i === page ? 'active' : '' %>">
+                                            <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
                                                 <a class="page-link" href="/wallet?page=<%= i %>"><%= i %></a>
                                             </li>
                                         <% } %>
 
                                         <!-- 最后一页 -->
-                                        <% if (endPage < totalPages) { %>
-                                            <% if (endPage < totalPages - 1) { %>
+                                        <% if (endPage < pagination.totalPages) { %>
+                                            <% if (endPage < pagination.totalPages - 1) { %>
                                                 <li class="page-item disabled">
                                                     <span class="page-link">...</span>
                                                 </li>
                                             <% } %>
                                             <li class="page-item">
-                                                <a class="page-link" href="/wallet?page=<%= totalPages %>"><%= totalPages %></a>
+                                                <a class="page-link" href="/wallet?page=<%= pagination.totalPages %>"><%= pagination.totalPages %></a>
                                             </li>
                                         <% } %>
 
                                         <!-- 下一页 -->
-                                        <li class="page-item <%= page === totalPages ? 'disabled' : '' %>">
-                                            <a class="page-link" href="/wallet?page=<%= page + 1 %>" aria-label="下一页">
+                                        <li class="page-item <%= pagination.page === pagination.totalPages ? 'disabled' : '' %>">
+                                            <a class="page-link" href="/wallet?page=<%= pagination.page + 1 %>" aria-label="下一页">
                                                 <span aria-hidden="true">&raquo;</span>
                                             </a>
                                         </li>
@@ -362,8 +265,8 @@
                             <p class="text-muted mb-0">暂无交易记录</p>
                         </div>
                     <% } %>
-                </div>
-            </div>
+        </div>
+    </div>
         </div>
     </div>
 </div>
@@ -404,6 +307,8 @@
     </div>
 </div>
 
+<%- include('../partials/footer') %>
+
 <script>
 $(document).ready(function() {
     // 交易记录现在通过服务端渲染，不再需要AJAX加载
@@ -416,11 +321,26 @@ $(document).ready(function() {
         $.post('/api/wallet/daily-checkin')
             .done(function(response) {
                 if (response.success) {
-                    KanbanApp.showAlert(response.message, 'success');
+                    // 显示详细的奖励信息
+                    let rewardText = response.message;
+                    if (response.data && response.data.rewards) {
+                        const rewards = response.data.rewards;
+                        const rewardParts = [];
+
+                        if (rewards.gold) rewardParts.push(`${rewards.gold}金币`);
+                        if (rewards.silver) rewardParts.push(`${rewards.silver}银币`);
+                        if (rewards.diamond) rewardParts.push(`${rewards.diamond}钻石`);
+
+                        if (rewardParts.length > 0) {
+                            rewardText = `签到成功！获得 ${rewardParts.join('、')}`;
+                        }
+                    }
+
+                    KanbanApp.showAlert(rewardText, 'success');
                     // 刷新页面以显示最新数据
                     setTimeout(() => {
                         window.location.reload();
-                    }, 1000);
+                    }, 1500);
                 } else {
                     KanbanApp.showAlert(response.message, 'warning');
                     KanbanApp.setLoading(btn, false);
@@ -432,8 +352,6 @@ $(document).ready(function() {
                 KanbanApp.setLoading(btn, false);
             });
     });
-
-
 
     // 货币兑换
     $('#exchangeBtn').click(function() {
@@ -487,5 +405,3 @@ function updateExchangePreview() {
     $('#exchangePreview').text(preview);
 }
 </script>
-
-<%- include('../partials/footer') %>

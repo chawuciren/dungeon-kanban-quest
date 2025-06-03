@@ -70,9 +70,9 @@ router.post('/register', [
     // 创建用户钱包
     await UserWallet.create({
       userId: user.id,
-      goldBalance: config.gamification.dailyCoinReward, // 新用户奖励
+      goldBalance: config.gamification.dailyCheckin.baseRewards.gold, // 新用户基础奖励
       diamondBalance: 0,
-      silverBalance: 0,
+      silverBalance: config.gamification.dailyCheckin.baseRewards.silver,
       copperBalance: 0
     });
 

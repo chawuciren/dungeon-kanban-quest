@@ -2,6 +2,8 @@ const express = require('express');
 const { UserWallet, User } = require('../models');
 const config = require('../config');
 const logger = require('../config/logger');
+const TransactionService = require('../services/TransactionService');
+const CheckinService = require('../services/CheckinService');
 
 const router = express.Router();
 
@@ -28,7 +30,7 @@ router.get('/balance', requireAuth, async (req, res) => {
       const newWallet = await UserWallet.create({
         userId: req.session.userId
       });
-      
+
       return res.json({
         success: true,
         data: newWallet
@@ -52,53 +54,38 @@ router.get('/balance', requireAuth, async (req, res) => {
 // 每日签到奖励
 router.post('/daily-checkin', requireAuth, async (req, res) => {
   try {
-    const wallet = await UserWallet.findOne({
-      where: { userId: req.session.userId }
-    });
-
-    if (!wallet) {
+    // 获取用户信息
+    const user = await User.findByPk(req.session.userId);
+    if (!user) {
       return res.status(404).json({
         success: false,
-        message: '钱包不存在'
+        message: '用户不存在'
       });
     }
 
-    const today = new Date();
-    const lastCheckin = wallet.lastDailyRechargeAt;
-    
-    // 检查是否已经签到过
-    if (lastCheckin) {
-      const lastCheckinDate = new Date(lastCheckin);
-      if (lastCheckinDate.toDateString() === today.toDateString()) {
-        return res.status(400).json({
-          success: false,
-          message: '今日已签到过了'
-        });
-      }
+    // 执行签到
+    const result = await CheckinService.performDailyCheckin(req.session.userId, user);
+
+    if (result.success) {
+      logger.info(`用户每日签到: ${req.session.userId}`, {
+        role: user.role,
+        rewards: result.rewards
+      });
+
+      res.json({
+        success: true,
+        message: result.message,
+        data: {
+          rewards: result.rewards,
+          userRole: user.role
+        }
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: result.message
+      });
     }
-
-    // 发放每日奖励
-    const dailyReward = config.gamification.dailyCoinReward;
-    await wallet.update({
-      goldBalance: wallet.goldBalance + dailyReward,
-      totalEarned: wallet.totalEarned + dailyReward,
-      lastDailyRechargeAt: today
-    });
-
-    logger.info(`用户每日签到: ${req.session.userId}`, { 
-      reward: dailyReward,
-      newBalance: wallet.goldBalance + dailyReward
-    });
-
-    res.json({
-      success: true,
-      message: `签到成功！获得 ${dailyReward} 金币`,
-      data: {
-        reward: dailyReward,
-        currency: 'gold',
-        newBalance: wallet.goldBalance + dailyReward
-      }
-    });
 
   } catch (error) {
     logger.error('每日签到失败:', error);
@@ -125,11 +112,11 @@ router.post('/monthly-recharge', requireAuth, async (req, res) => {
 
     const today = new Date();
     const lastRecharge = wallet.lastMonthlyRechargeAt;
-    
+
     // 检查是否已经领取过本月奖励
     if (lastRecharge) {
       const lastRechargeDate = new Date(lastRecharge);
-      if (lastRechargeDate.getMonth() === today.getMonth() && 
+      if (lastRechargeDate.getMonth() === today.getMonth() &&
           lastRechargeDate.getFullYear() === today.getFullYear()) {
         return res.status(400).json({
           success: false,
@@ -141,7 +128,7 @@ router.post('/monthly-recharge', requireAuth, async (req, res) => {
     // 发放月度奖励
     const monthlyGoldReward = config.gamification.monthlyCoinReward;
     const monthlyDiamondReward = config.gamification.monthlyDiamondReward;
-    
+
     await wallet.update({
       goldBalance: wallet.goldBalance + monthlyGoldReward,
       diamondBalance: wallet.diamondBalance + monthlyDiamondReward,
@@ -149,7 +136,7 @@ router.post('/monthly-recharge', requireAuth, async (req, res) => {
       lastMonthlyRechargeAt: today
     });
 
-    logger.info(`用户月度充值: ${req.session.userId}`, { 
+    logger.info(`用户月度充值: ${req.session.userId}`, {
       goldReward: monthlyGoldReward,
       diamondReward: monthlyDiamondReward
     });
@@ -216,7 +203,7 @@ router.get('/stats', requireAuth, async (req, res) => {
 
     // 计算总资产（以铜币为单位）
     const rates = config.gamification.currencyRates;
-    const totalAssets = 
+    const totalAssets =
       wallet.diamondBalance * rates.diamond * rates.gold * rates.silver +
       wallet.goldBalance * rates.gold * rates.silver +
       wallet.silverBalance * rates.silver +

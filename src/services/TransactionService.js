@@ -20,7 +20,7 @@ class TransactionService {
    */
   static async createTransaction(params) {
     const transaction = await sequelize.transaction();
-    
+
     try {
       const {
         userId,
@@ -134,11 +134,11 @@ class TransactionService {
     } = options;
 
     const where = { userId };
-    
+
     if (type) {
       where.type = type;
     }
-    
+
     if (currency) {
       where.currency = currency;
     }
@@ -178,12 +178,11 @@ class TransactionService {
   }
 
   /**
-   * 每日签到奖励
-   * @param {string} userId 用户ID
-   * @param {number} amount 奖励金额
-   * @returns {Promise<Object>} 交易结果
+   * 每日签到奖励（已废弃，请使用CheckinService）
+   * @deprecated 请使用CheckinService.performDailyCheckin()
    */
   static async dailyCheckin(userId, amount = 100) {
+    console.warn('TransactionService.dailyCheckin已废弃，请使用CheckinService.performDailyCheckin');
     return await this.createTransaction({
       userId,
       type: 'income',
