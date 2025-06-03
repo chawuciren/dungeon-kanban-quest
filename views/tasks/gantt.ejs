@@ -1,0 +1,1793 @@
+<%- include('../partials/header', { title: title }) %>
+
+<!-- 页面标题和控制栏 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2>
+                    <i class="fas fa-chart-gantt me-2 text-primary"></i>
+                    任务甘特图
+                </h2>
+                <p class="text-muted mb-0">时间轴视图展示任务进度和时间安排</p>
+            </div>
+            <div class="btn-group">
+                <%
+                    const currentQuery = new URLSearchParams();
+                    if (projectId) currentQuery.set('projectId', projectId);
+                    const queryString = currentQuery.toString();
+                    const queryPrefix = queryString ? '?' + queryString : '';
+                %>
+                <a href="/tasks<%= queryPrefix %>" class="btn btn-outline-secondary">
+                    <i class="fas fa-list me-1"></i>列表视图
+                </a>
+                <a href="/tasks/tree<%= queryPrefix %>" class="btn btn-outline-secondary">
+                    <i class="fas fa-sitemap me-1"></i>树形视图
+                </a>
+                <a href="/tasks/kanban<%= queryPrefix %>" class="btn btn-outline-secondary">
+                    <i class="fas fa-columns me-1"></i>看板视图
+                </a>
+                <a href="/tasks/gantt<%= queryPrefix %>" class="btn btn-primary active">
+                    <i class="fas fa-chart-gantt me-1"></i>甘特视图
+                </a>
+            </div>
+            <a href="/tasks/create<%= queryPrefix ? queryPrefix + '&' : '?' %>view=gantt" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                发布任务
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- 甘特图控制面板 -->
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body py-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-secondary" id="viewModeDay">日</button>
+                        <button type="button" class="btn btn-outline-secondary active" id="viewModeWeek">周</button>
+                        <button type="button" class="btn btn-outline-secondary" id="viewModeMonth">月</button>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="gantt-legend">
+                            <span class="legend-item">
+                                <span class="legend-color task-published"></span>
+                                待接单
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color task-assigned"></span>
+                                进行中
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color task-review"></span>
+                                待审核
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color task-completed"></span>
+                                已完成
+                            </span>
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="todayBtn">
+                            <i class="fas fa-calendar-day me-1"></i>今天
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 甘特图容器 -->
+<div class="row">
+    <!-- 左侧任务列表面板 -->
+    <div class="col-lg-4 col-md-5">
+        <div class="card h-100">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>任务列表
+                </h6>
+            </div>
+            <div class="card-body p-0">
+                <div id="task-list-container" class="task-list-container">
+                    <!-- 任务列表将在这里渲染 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右侧甘特图 -->
+    <div class="col-lg-8 col-md-7">
+        <div class="card h-100">
+            <div class="card-body p-0">
+                <div id="gantt-container" class="gantt-container">
+                    <!-- 甘特图头部 -->
+                    <div class="gantt-header">
+                        <div class="gantt-timeline" id="gantt-timeline">
+                            <!-- 时间轴将在这里生成 -->
+                        </div>
+                    </div>
+                    <!-- 甘特图主体 -->
+                    <div class="gantt-body" id="gantt-body">
+                        <!-- 任务条将在这里生成 -->
+                    </div>
+                    <!-- 今天线 -->
+                    <div class="gantt-today-line" id="gantt-today-line"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 任务详情模态框 -->
+<div class="modal fade" id="taskDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">任务详情</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="taskDetailContent">
+                <!-- 任务详情内容将动态加载 -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                <a href="#" class="btn btn-primary" id="viewTaskBtn">查看详情</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 自定义甘特图，不使用外部插件 -->
+
+<style>
+/* 任务列表面板样式 */
+.task-list-container {
+    max-height: 600px;
+    overflow-y: auto;
+    border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.task-list-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.task-list-item:hover {
+    background-color: #f8f9fa;
+}
+
+.task-list-item.active {
+    background-color: #e3f2fd;
+    border-left: 4px solid var(--primary-color);
+}
+
+.task-list-item:last-child {
+    border-bottom: none;
+}
+
+.task-name {
+    font-weight: 500;
+    color: var(--dark-color);
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    line-height: 1.3;
+}
+
+.task-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+}
+
+.task-status {
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.task-assignee {
+    color: var(--info-color);
+    font-weight: 500;
+}
+
+/* 自定义甘特图样式 */
+.gantt-container {
+    min-height: 600px;
+    overflow-x: auto;
+    background: #fff;
+    position: relative;
+    border: 1px solid #dee2e6;
+}
+
+.gantt-header {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.gantt-timeline {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* 月份行 */
+.gantt-timeline-month-row {
+    display: flex;
+    height: 30px;
+    background: #e9ecef;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.gantt-timeline-month-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #dee2e6;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #495057;
+}
+
+/* 周行 */
+.gantt-timeline-week-row {
+    display: flex;
+    height: 30px;
+    background: #e9ecef;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.gantt-timeline-week-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #dee2e6;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #495057;
+}
+
+.gantt-timeline-week-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #dee2e6;
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: #495057;
+    background: #f8f9fa;
+    height: 40px;
+}
+
+.gantt-timeline-week-cell.has-today {
+    background: #fff3cd;
+    color: #856404;
+    font-weight: 600;
+}
+
+/* 日期行 */
+.gantt-timeline-day-row {
+    display: flex;
+    height: 40px;
+}
+
+.gantt-timeline-day-cell {
+    flex: 1;
+    min-width: 80px;
+    border-right: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.8rem;
+    background: #f8f9fa;
+}
+
+.gantt-timeline-day-cell.today {
+    background: #fff3cd;
+    color: #856404;
+    font-weight: 700;
+}
+
+.gantt-timeline-day-cell .day-number {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.gantt-timeline-day-cell .day-week {
+    font-size: 0.7rem;
+    color: #6c757d;
+    margin-top: 2px;
+}
+
+/* 兼容旧样式 */
+.gantt-timeline-cell {
+    flex: 1;
+    min-width: 100px;
+    border-right: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 0.875rem;
+}
+
+.gantt-timeline-month {
+    background: #e9ecef;
+    padding: 4px;
+    font-weight: 600;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.gantt-timeline-day {
+    padding: 8px 4px;
+    font-weight: 500;
+}
+
+.gantt-timeline-day.today {
+    background: #fff3cd;
+    color: #856404;
+    font-weight: 700;
+}
+
+/* 月视图特殊样式 */
+.gantt-timeline-month-header.month-view {
+    flex-direction: column;
+    padding: 8px;
+    text-align: center;
+}
+
+.gantt-timeline-month-header.month-view.has-today {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.gantt-timeline-month-header .month-year {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-bottom: 2px;
+}
+
+.gantt-timeline-month-header .month-name {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.gantt-timeline-month-header .month-days {
+    font-size: 0.7rem;
+    color: #6c757d;
+}
+
+/* 兼容旧的月视图样式 */
+.gantt-timeline-month-cell {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #dee2e6;
+}
+
+.gantt-timeline-days {
+    display: flex;
+    border-top: 1px solid #dee2e6;
+}
+
+.gantt-timeline-days .gantt-timeline-day {
+    border-right: 1px solid #e9ecef;
+    font-size: 0.75rem;
+    padding: 4px 2px;
+}
+
+.gantt-body {
+    position: relative;
+}
+
+.gantt-row {
+    display: flex;
+    height: 50px;
+    border-bottom: 1px solid #e9ecef;
+    position: relative;
+}
+
+.gantt-row:hover {
+    background: #f8f9fa;
+}
+
+.gantt-cell {
+    flex: 1;
+    min-width: 100px;
+    border-right: 1px solid #e9ecef;
+    position: relative;
+}
+
+.gantt-task-bar {
+    position: absolute;
+    height: 30px;
+    top: 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.gantt-task-bar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.gantt-task-bar .task-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gantt-task-bar .task-progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.gantt-time-label {
+    position: absolute;
+    font-size: 0.7rem;
+    color: #6c757d;
+    background: rgba(255,255,255,0.9);
+    padding: 2px 4px;
+    border-radius: 2px;
+    white-space: nowrap;
+}
+
+.gantt-time-label.start {
+    left: -50px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.gantt-time-label.end {
+    right: -50px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 甘特图图例 */
+.gantt-legend {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+/* 任务状态颜色 */
+.gantt-task-bar.task-published {
+    background-color: #007bff;
+}
+
+.gantt-task-bar.task-assigned,
+.gantt-task-bar.task-in_progress {
+    background-color: #ffc107;
+}
+
+.gantt-task-bar.task-review {
+    background-color: #17a2b8;
+}
+
+.gantt-task-bar.task-completed {
+    background-color: #28a745;
+}
+
+.legend-color.task-published {
+    background-color: #007bff;
+}
+
+.legend-color.task-assigned,
+.legend-color.task-in_progress {
+    background-color: #ffc107;
+}
+
+.legend-color.task-review {
+    background-color: #17a2b8;
+}
+
+.legend-color.task-completed {
+    background-color: #28a745;
+}
+
+/* 今天线 */
+.gantt-today-line {
+    position: absolute;
+    top: 70px; /* 默认值，会被JavaScript动态调整 */
+    bottom: 0;
+    width: 2px;
+    background-color: #dc3545;
+    z-index: 100;
+    pointer-events: none;
+    display: none; /* 默认隐藏，由JavaScript控制显示 */
+}
+
+.gantt-today-line::before {
+    content: '今天';
+    position: absolute;
+    top: -25px;
+    left: -15px;
+    background-color: #dc3545;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* 自定义甘特图样式以匹配界面风格 */
+.gantt-container .grid-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.gantt-container .grid-row {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.gantt-container .grid-row:hover {
+    background-color: #f8f9fa;
+}
+
+.gantt-container .bar {
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.gantt-container .bar:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+}
+
+.gantt-container .bar-progress {
+    border-radius: 4px;
+    background-color: rgba(255,255,255,0.3) !important;
+}
+
+.gantt-container .bar-label {
+    color: white;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Frappe Gantt 今天线样式自定义 */
+.gantt .today-highlight {
+    background-color: rgba(255, 0, 0, 0.1) !important;
+    border-left: 2px solid #dc3545 !important;
+}
+
+.gantt .today-line {
+    stroke: #dc3545 !important;
+    stroke-width: 2px !important;
+}
+
+/* 如果Frappe Gantt使用不同的类名 */
+.gantt .current-date-line,
+.gantt .today-marker {
+    stroke: #dc3545 !important;
+    stroke-width: 2px !important;
+}
+
+.gantt .current-date-highlight,
+.gantt .today-column {
+    background-color: rgba(255, 0, 0, 0.05) !important;
+    border-left: 2px solid #dc3545 !important;
+}
+
+/* 时间标签样式 */
+.gantt-time-label {
+    font-size: 0.7rem;
+    color: #6c757d;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1px 4px;
+    border-radius: 2px;
+    font-weight: 500;
+    z-index: 5;
+}
+
+.gantt-time-label.start {
+    left: -50px;
+}
+
+.gantt-time-label.end {
+    right: -50px;
+}
+
+/* 甘特图条样式增强 */
+.gantt-container .bar {
+    position: relative;
+}
+
+/* 中文日历样式 */
+.gantt-container .grid-header .grid-header-cell {
+    font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .gantt-legend {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .legend-item {
+        font-size: 0.75rem;
+    }
+    
+    .btn-group {
+        flex-wrap: wrap;
+    }
+}
+</style>
+
+<script>
+// 等待页面和库加载完成
+window.addEventListener('load', function() {
+    // 延迟初始化以确保库完全加载
+    setTimeout(function() {
+        initGanttChart();
+    }, 100);
+});
+
+function initGanttChart() {
+    // 甘特图数据
+    const tasks = <%- JSON.stringify(ganttTasks) %>;
+
+    if (tasks.length === 0) {
+        document.getElementById('gantt-container').innerHTML = '<div class="alert alert-info text-center py-5"><i class="fas fa-info-circle me-2"></i>暂无任务数据，请先创建一些任务</div>';
+        document.getElementById('task-list-container').innerHTML = '<div class="alert alert-info text-center py-5"><i class="fas fa-info-circle me-2"></i>暂无任务数据</div>';
+        return;
+    }
+
+    try {
+        console.log('开始渲染自定义甘特图，任务数量:', tasks.length);
+
+        // 渲染任务列表
+        renderTaskList(tasks);
+
+        // 渲染甘特图
+        renderGanttChart(tasks);
+
+        // 绑定事件监听器
+        bindEventListeners();
+
+    } catch (error) {
+        console.error('甘特图初始化失败:', error);
+        document.getElementById('gantt-container').innerHTML = '<div class="alert alert-danger text-center py-5"><i class="fas fa-exclamation-triangle me-2"></i>甘特图初始化失败: ' + error.message + '</div>';
+        document.getElementById('task-list-container').innerHTML = '<div class="alert alert-danger text-center py-5"><i class="fas fa-exclamation-triangle me-2"></i>任务列表加载失败</div>';
+    }
+}
+
+// 当前视图模式
+let currentViewMode = 'Week';
+
+// 渲染自定义甘特图
+function renderGanttChart(tasks, viewMode = 'Week') {
+    console.log('开始渲染甘特图，视图模式:', viewMode);
+    currentViewMode = viewMode;
+
+    // 计算日期范围
+    const dateRange = calculateDateRange(tasks, viewMode);
+    console.log('日期范围:', dateRange);
+
+    // 渲染时间轴
+    renderTimeline(dateRange, viewMode);
+
+    // 渲染任务条
+    renderTaskBars(tasks, dateRange);
+
+    // 渲染今天线
+    renderTodayLine(dateRange);
+}
+
+// 计算日期范围
+function calculateDateRange(tasks, viewMode = 'Week') {
+    if (tasks.length === 0) return null;
+
+    let minDate = new Date(tasks[0].start);
+    let maxDate = new Date(tasks[0].end);
+
+    tasks.forEach(task => {
+        const startDate = new Date(task.start);
+        const endDate = new Date(task.end);
+
+        if (startDate < minDate) minDate = startDate;
+        if (endDate > maxDate) maxDate = endDate;
+    });
+
+    let startDate, endDate;
+
+    if (viewMode === 'Day') {
+        // 日视图：显示前后3天
+        startDate = new Date(minDate);
+        startDate.setDate(startDate.getDate() - 3);
+
+        endDate = new Date(maxDate);
+        endDate.setDate(endDate.getDate() + 3);
+    } else if (viewMode === 'Week') {
+        // 周视图：显示前后1周
+        startDate = new Date(minDate);
+        startDate.setDate(startDate.getDate() - 7);
+
+        endDate = new Date(maxDate);
+        endDate.setDate(endDate.getDate() + 7);
+    } else if (viewMode === 'Month') {
+        // 月视图：显示前后1个月
+        startDate = new Date(minDate);
+        startDate.setMonth(startDate.getMonth() - 1);
+
+        endDate = new Date(maxDate);
+        endDate.setMonth(endDate.getMonth() + 1);
+    }
+
+    // 生成日期数组
+    const dates = [];
+    const currentDate = new Date(startDate);
+
+    while (currentDate <= endDate) {
+        dates.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return {
+        startDate,
+        endDate,
+        dates,
+        totalDays: dates.length,
+        viewMode
+    };
+}
+
+// 渲染时间轴
+function renderTimeline(dateRange, viewMode = 'Week') {
+    const timeline = document.getElementById('gantt-timeline');
+    timeline.innerHTML = '';
+
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
+    // 根据视图模式决定显示方式
+    if (viewMode === 'Month') {
+        renderMonthTimeline(dateRange, timeline, todayStr);
+    } else {
+        renderDayWeekTimeline(dateRange, timeline, todayStr, viewMode);
+    }
+}
+
+// 渲染月视图时间轴
+function renderMonthTimeline(dateRange, timeline, todayStr) {
+    // 月视图：只显示月份，不显示具体日期
+    const monthGroups = {};
+    dateRange.dates.forEach(date => {
+        const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+        if (!monthGroups[monthKey]) {
+            monthGroups[monthKey] = {
+                year: date.getFullYear(),
+                month: date.getMonth(),
+                dates: [],
+                hasToday: false
+            };
+        }
+        monthGroups[monthKey].dates.push(date);
+
+        // 检查这个月是否包含今天
+        const dateStr = date.toISOString().split('T')[0];
+        if (dateStr === todayStr) {
+            monthGroups[monthKey].hasToday = true;
+        }
+    });
+
+    // 创建单行月份显示
+    const monthRow = document.createElement('div');
+    monthRow.className = 'gantt-timeline-month-row';
+    monthRow.style.height = '70px'; // 月视图时间轴更高
+
+    Object.values(monthGroups).forEach(monthGroup => {
+        const monthCell = document.createElement('div');
+        monthCell.className = 'gantt-timeline-month-header month-view';
+        monthCell.style.flex = monthGroup.dates.length;
+
+        if (monthGroup.hasToday) {
+            monthCell.classList.add('has-today');
+        }
+
+        monthCell.innerHTML = `
+            <div class="month-year">${monthGroup.year}年</div>
+            <div class="month-name">${monthGroup.month + 1}月</div>
+            <div class="month-days">${monthGroup.dates.length}天</div>
+        `;
+
+        monthRow.appendChild(monthCell);
+    });
+
+    timeline.appendChild(monthRow);
+}
+
+// 渲染日/周视图时间轴
+function renderDayWeekTimeline(dateRange, timeline, todayStr, viewMode) {
+    if (viewMode === 'Week') {
+        renderWeekTimeline(dateRange, timeline, todayStr);
+    } else {
+        renderDayTimeline(dateRange, timeline, todayStr);
+    }
+}
+
+// 渲染周视图时间轴
+function renderWeekTimeline(dateRange, timeline, todayStr) {
+    // 按月分组（上行显示年月）
+    const monthGroups = [];
+    let currentMonthGroup = null;
+
+    // 按周分组（下行显示第几周）
+    const weekGroups = [];
+    let currentWeekGroup = null;
+
+    dateRange.dates.forEach((date, index) => {
+        // 月份分组
+        const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+        if (!currentMonthGroup || currentMonthGroup.key !== monthKey) {
+            currentMonthGroup = {
+                key: monthKey,
+                year: date.getFullYear(),
+                month: date.getMonth(),
+                dates: [],
+                startIndex: index
+            };
+            monthGroups.push(currentMonthGroup);
+        }
+        currentMonthGroup.dates.push(date);
+
+        // 周分组
+        const weekNumber = getWeekNumber(date);
+        const weekKey = `${date.getFullYear()}-W${weekNumber}`;
+        if (!currentWeekGroup || currentWeekGroup.key !== weekKey) {
+            currentWeekGroup = {
+                key: weekKey,
+                year: date.getFullYear(),
+                weekNumber: weekNumber,
+                dates: [],
+                startIndex: index
+            };
+            weekGroups.push(currentWeekGroup);
+        }
+        currentWeekGroup.dates.push(date);
+    });
+
+    // 创建两行结构：月份行和周行
+    const monthRow = document.createElement('div');
+    monthRow.className = 'gantt-timeline-month-row';
+
+    const weekRow = document.createElement('div');
+    weekRow.className = 'gantt-timeline-week-row';
+
+    // 渲染月份行（上行）
+    monthGroups.forEach(monthGroup => {
+        const monthCell = document.createElement('div');
+        monthCell.className = 'gantt-timeline-month-header';
+        monthCell.style.flex = monthGroup.dates.length;
+        monthCell.textContent = `${monthGroup.year}年${monthGroup.month + 1}月`;
+        monthRow.appendChild(monthCell);
+    });
+
+    // 渲染周行（下行）
+    weekGroups.forEach(weekGroup => {
+        const weekCell = document.createElement('div');
+        weekCell.className = 'gantt-timeline-week-cell';
+        weekCell.style.flex = weekGroup.dates.length;
+
+        // 检查这周是否包含今天
+        const hasToday = weekGroup.dates.some(date =>
+            date.toISOString().split('T')[0] === todayStr
+        );
+
+        if (hasToday) {
+            weekCell.classList.add('has-today');
+        }
+
+        weekCell.textContent = `第${weekGroup.weekNumber}周`;
+        weekRow.appendChild(weekCell);
+    });
+
+    timeline.appendChild(monthRow);
+    timeline.appendChild(weekRow);
+}
+
+// 渲染日视图时间轴
+function renderDayTimeline(dateRange, timeline, todayStr) {
+    // 创建两行结构：月份行和日期行
+    const monthRow = document.createElement('div');
+    monthRow.className = 'gantt-timeline-month-row';
+
+    const dayRow = document.createElement('div');
+    dayRow.className = 'gantt-timeline-day-row';
+
+    // 按月分组
+    const monthGroups = [];
+    let currentMonthGroup = null;
+
+    dateRange.dates.forEach((date, index) => {
+        const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+
+        if (!currentMonthGroup || currentMonthGroup.key !== monthKey) {
+            currentMonthGroup = {
+                key: monthKey,
+                year: date.getFullYear(),
+                month: date.getMonth(),
+                dates: [],
+                startIndex: index
+            };
+            monthGroups.push(currentMonthGroup);
+        }
+
+        currentMonthGroup.dates.push(date);
+    });
+
+    // 渲染月份行
+    monthGroups.forEach(monthGroup => {
+        const monthCell = document.createElement('div');
+        monthCell.className = 'gantt-timeline-month-header';
+        monthCell.style.flex = monthGroup.dates.length;
+        monthCell.textContent = `${monthGroup.year}年${monthGroup.month + 1}月`;
+        monthRow.appendChild(monthCell);
+    });
+
+    // 渲染日期行
+    dateRange.dates.forEach(date => {
+        const dayCell = document.createElement('div');
+        dayCell.className = 'gantt-timeline-day-cell';
+
+        const dateStr = date.toISOString().split('T')[0];
+        if (dateStr === todayStr) {
+            dayCell.classList.add('today');
+        }
+
+        dayCell.textContent = `${date.getDate()}日`;
+        dayRow.appendChild(dayCell);
+    });
+
+    timeline.appendChild(monthRow);
+    timeline.appendChild(dayRow);
+}
+
+// 计算一年中的第几周
+function getWeekNumber(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+// 渲染任务条
+function renderTaskBars(tasks, dateRange) {
+    const ganttBody = document.getElementById('gantt-body');
+    ganttBody.innerHTML = '';
+
+    tasks.forEach((task, index) => {
+        const row = document.createElement('div');
+        row.className = 'gantt-row';
+
+        // 创建每日的单元格
+        dateRange.dates.forEach(date => {
+            const cell = document.createElement('div');
+            cell.className = 'gantt-cell';
+            row.appendChild(cell);
+        });
+
+        // 计算任务条的位置和宽度
+        const taskStart = new Date(task.start);
+        const taskEnd = new Date(task.end);
+
+        const startIndex = dateRange.dates.findIndex(date =>
+            date.toISOString().split('T')[0] === task.start
+        );
+        const endIndex = dateRange.dates.findIndex(date =>
+            date.toISOString().split('T')[0] === task.end
+        );
+
+        if (startIndex >= 0 && endIndex >= 0) {
+            const taskBar = document.createElement('div');
+            taskBar.className = `gantt-task-bar task-${task.task.status}`;
+            taskBar.style.left = `${(startIndex / dateRange.totalDays) * 100}%`;
+            taskBar.style.width = `${((endIndex - startIndex + 1) / dateRange.totalDays) * 100}%`;
+
+            // 添加进度条
+            const progressBar = document.createElement('div');
+            progressBar.className = 'task-progress';
+            progressBar.style.width = `${task.progress}%`;
+            taskBar.appendChild(progressBar);
+
+            // 添加任务名称
+            const taskName = document.createElement('span');
+            taskName.className = 'task-name';
+            taskName.textContent = task.name;
+            taskBar.appendChild(taskName);
+
+            // 添加开始时间标签
+            const startLabel = document.createElement('div');
+            startLabel.className = 'gantt-time-label start';
+            startLabel.textContent = formatDate(task.start);
+            taskBar.appendChild(startLabel);
+
+            // 添加结束时间标签
+            const endLabel = document.createElement('div');
+            endLabel.className = 'gantt-time-label end';
+            endLabel.textContent = formatDate(task.end);
+            taskBar.appendChild(endLabel);
+
+            // 添加点击事件
+            taskBar.addEventListener('click', () => {
+                highlightTask(task.id);
+                showTaskDetail(task.task);
+            });
+
+            row.appendChild(taskBar);
+        }
+
+        ganttBody.appendChild(row);
+    });
+}
+
+// 渲染今天线
+function renderTodayLine(dateRange) {
+    const todayLine = document.getElementById('gantt-today-line');
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
+    console.log('查找今天:', todayStr);
+    console.log('日期范围:', dateRange.dates.map(d => d.toISOString().split('T')[0]));
+
+    const todayIndex = dateRange.dates.findIndex(date =>
+        date.toISOString().split('T')[0] === todayStr
+    );
+
+    console.log('今天的索引:', todayIndex, '总天数:', dateRange.totalDays);
+
+    if (todayIndex >= 0) {
+        // 等待DOM渲染完成后再计算位置
+        setTimeout(() => {
+            const timeline = document.getElementById('gantt-timeline');
+            const ganttContainer = document.getElementById('gantt-container');
+
+            if (timeline && ganttContainer) {
+                // 根据视图模式选择不同的计算方式
+                if (currentViewMode === 'Week') {
+                    // 周视图：基于周单元格计算
+                    const weekRow = timeline.querySelector('.gantt-timeline-week-row');
+                    if (weekRow) {
+                        const weekCells = weekRow.querySelectorAll('.gantt-timeline-week-cell');
+                        const todayWeekCell = weekRow.querySelector('.gantt-timeline-week-cell.has-today');
+
+                        if (todayWeekCell) {
+                            const cellRect = todayWeekCell.getBoundingClientRect();
+                            const containerRect = ganttContainer.getBoundingClientRect();
+
+                            // 计算今天在这周中的位置
+                            const todayWeekNumber = getWeekNumber(today);
+                            const weekDates = dateRange.dates.filter(date => getWeekNumber(date) === todayWeekNumber);
+                            const todayIndexInWeek = weekDates.findIndex(date =>
+                                date.toISOString().split('T')[0] === todayStr
+                            );
+
+                            const cellWidth = cellRect.width;
+                            const dayWidth = cellWidth / weekDates.length;
+                            const position = cellRect.left - containerRect.left + (todayIndexInWeek * dayWidth) + (dayWidth / 2);
+
+                            todayLine.style.left = `${position}px`;
+                            todayLine.style.top = `${timeline.offsetHeight}px`;
+                            todayLine.style.display = 'block';
+
+                            console.log('周视图今天线位置:', {
+                                todayWeekNumber,
+                                todayIndexInWeek,
+                                weekDates: weekDates.length,
+                                position: position + 'px'
+                            });
+                        }
+                    }
+                } else if (currentViewMode === 'Month') {
+                    // 月视图：基于月单元格计算
+                    const monthRow = timeline.querySelector('.gantt-timeline-month-row');
+                    if (monthRow) {
+                        const monthCells = monthRow.querySelectorAll('.gantt-timeline-month-header.month-view');
+                        const todayMonthCell = monthRow.querySelector('.gantt-timeline-month-header.month-view.has-today');
+
+                        if (todayMonthCell) {
+                            const cellRect = todayMonthCell.getBoundingClientRect();
+                            const containerRect = ganttContainer.getBoundingClientRect();
+
+                            // 计算今天在这个月中的位置
+                            const todayMonth = today.getMonth();
+                            const todayYear = today.getFullYear();
+                            const monthDates = dateRange.dates.filter(date =>
+                                date.getMonth() === todayMonth && date.getFullYear() === todayYear
+                            );
+                            const todayIndexInMonth = monthDates.findIndex(date =>
+                                date.toISOString().split('T')[0] === todayStr
+                            );
+
+                            const cellWidth = cellRect.width;
+                            const dayWidth = cellWidth / monthDates.length;
+                            const position = cellRect.left - containerRect.left + (todayIndexInMonth * dayWidth) + (dayWidth / 2);
+
+                            todayLine.style.left = `${position}px`;
+                            todayLine.style.top = `${timeline.offsetHeight}px`;
+                            todayLine.style.display = 'block';
+
+                            console.log('月视图今天线位置:', {
+                                todayMonth: todayMonth + 1,
+                                todayIndexInMonth,
+                                monthDates: monthDates.length,
+                                position: position + 'px'
+                            });
+                        }
+                    }
+                } else {
+                    // 日视图：基于日期单元格计算
+                    const dayRow = timeline.querySelector('.gantt-timeline-day-row');
+                    if (dayRow) {
+                        const dayCells = dayRow.querySelectorAll('.gantt-timeline-day-cell');
+
+                        if (dayCells[todayIndex]) {
+                            const todayCell = dayCells[todayIndex];
+                            const cellRect = todayCell.getBoundingClientRect();
+                            const containerRect = ganttContainer.getBoundingClientRect();
+
+                            const position = cellRect.left - containerRect.left + (cellRect.width / 2);
+
+                            todayLine.style.left = `${position}px`;
+                            todayLine.style.top = `${timeline.offsetHeight}px`;
+                            todayLine.style.display = 'block';
+
+                            console.log('日视图今天线位置:', {
+                                todayIndex,
+                                position: position + 'px'
+                            });
+                        }
+                    }
+                }
+            }
+        }, 300); // 增加延迟确保DOM完全渲染
+    } else {
+        todayLine.style.display = 'none';
+        console.log('今天不在当前日期范围内');
+    }
+}
+
+// 等待甘特图完全渲染
+function waitForGanttRender(callback, maxAttempts = 20, currentAttempt = 0) {
+    if (currentAttempt >= maxAttempts) {
+        console.warn('等待甘特图渲染超时，强制执行回调');
+        callback();
+        return;
+    }
+
+    // 检查甘特图是否已经渲染完成
+    const ganttContainer = document.querySelector('#gantt-container');
+    const ganttSvg = ganttContainer ? ganttContainer.querySelector('svg') : null;
+    const ganttBars = ganttContainer ? ganttContainer.querySelectorAll('.bar') : [];
+    const ganttHeaders = ganttContainer ? ganttContainer.querySelectorAll('.grid-header-cell') : [];
+
+    console.log(`渲染检查 ${currentAttempt + 1}/${maxAttempts}:`, {
+        container: !!ganttContainer,
+        svg: !!ganttSvg,
+        bars: ganttBars.length,
+        headers: ganttHeaders.length,
+        containerWidth: ganttContainer ? ganttContainer.offsetWidth : 0
+    });
+
+    // 检查甘特图是否已经有内容
+    if (ganttContainer &&
+        ganttContainer.offsetWidth > 0 &&
+        (ganttSvg || ganttBars.length > 0 || ganttHeaders.length > 0)) {
+
+        console.log('甘特图渲染完成，执行回调');
+        // 再等一点时间确保完全渲染
+        setTimeout(callback, 200);
+        return;
+    }
+
+    // 如果还没有渲染完成，继续等待
+    setTimeout(() => {
+        waitForGanttRender(callback, maxAttempts, currentAttempt + 1);
+    }, 300);
+}
+
+function bindEventListeners() {
+    // 视图模式切换
+    document.getElementById('viewModeDay').addEventListener('click', function() {
+        updateActiveButton(this);
+        const tasks = <%- JSON.stringify(ganttTasks) %>;
+        renderGanttChart(tasks, 'Day');
+        console.log('切换到日视图');
+    });
+
+    document.getElementById('viewModeWeek').addEventListener('click', function() {
+        updateActiveButton(this);
+        const tasks = <%- JSON.stringify(ganttTasks) %>;
+        renderGanttChart(tasks, 'Week');
+        console.log('切换到周视图');
+    });
+
+    document.getElementById('viewModeMonth').addEventListener('click', function() {
+        updateActiveButton(this);
+        const tasks = <%- JSON.stringify(ganttTasks) %>;
+        renderGanttChart(tasks, 'Month');
+        console.log('切换到月视图');
+    });
+
+    // 今天按钮
+    document.getElementById('todayBtn').addEventListener('click', function() {
+        // 滚动到今天线的位置
+        const todayLine = document.getElementById('gantt-today-line');
+        if (todayLine && todayLine.style.display !== 'none') {
+            todayLine.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+        }
+    });
+}
+
+// 更新活动按钮
+function updateActiveButton(activeBtn) {
+    document.querySelectorAll('.btn-group button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    activeBtn.classList.add('active');
+}
+
+// 渲染任务列表
+function renderTaskList(tasks) {
+    const container = document.getElementById('task-list-container');
+    const taskListHtml = tasks.map(task => {
+        const taskData = task.task;
+        const statusClass = getStatusClass(taskData.status);
+        const assigneeName = taskData.assignee ?
+            `${taskData.assignee.firstName || ''} ${taskData.assignee.lastName || ''}`.trim() || taskData.assignee.username :
+            '未分配';
+
+        return `
+            <div class="task-list-item" data-task-id="${task.id}" onclick="highlightTask('${task.id}')">
+                <div class="task-name">${task.name}</div>
+                <div class="task-meta">
+                    <span class="task-status ${statusClass}">${getStatusText(taskData.status)}</span>
+                    <span class="task-assignee">${assigneeName}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = taskListHtml;
+}
+
+// 高亮任务
+function highlightTask(taskId) {
+    // 清除所有高亮
+    document.querySelectorAll('.task-list-item').forEach(item => {
+        item.classList.remove('active');
+    });
+
+    // 高亮选中的任务
+    const taskItem = document.querySelector(`[data-task-id="${taskId}"]`);
+    if (taskItem) {
+        taskItem.classList.add('active');
+    }
+}
+
+// 格式化日期
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return `${date.getMonth() + 1}/${date.getDate()}`;
+}
+
+// 格式化中文日期
+function formatDateChinese(dateStr) {
+    const date = new Date(dateStr);
+    const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+    return `${months[date.getMonth()]}${date.getDate()}日`;
+}
+
+// 不再需要的函数，已集成到自定义甘特图中
+// 添加时间标签
+function addTimeLabels(tasks) {
+    setTimeout(() => {
+        // 移除已存在的时间标签
+        const existingLabels = document.querySelectorAll('.gantt-time-label');
+        existingLabels.forEach(label => label.remove());
+
+        // 尝试多种选择器找到甘特图条
+        const bars = document.querySelectorAll('#gantt-container .bar') ||
+                    document.querySelectorAll('.gantt-container .bar') ||
+                    document.querySelectorAll('.bar');
+
+        console.log('找到的甘特图条数量:', bars.length, '任务数量:', tasks.length);
+
+        bars.forEach((bar, index) => {
+            if (tasks[index]) {
+                const task = tasks[index];
+
+                // 清除该条上已有的时间标签
+                const existingLabelsInBar = bar.querySelectorAll('.gantt-time-label');
+                existingLabelsInBar.forEach(label => label.remove());
+
+                // 确保bar有相对定位
+                bar.style.position = 'relative';
+
+                // 添加开始时间标签
+                const startLabel = document.createElement('div');
+                startLabel.className = 'gantt-time-label start';
+                startLabel.textContent = formatDate(task.start);
+                startLabel.style.position = 'absolute';
+                startLabel.style.left = '-50px';
+                startLabel.style.top = '50%';
+                startLabel.style.transform = 'translateY(-50%)';
+                startLabel.style.fontSize = '0.7rem';
+                startLabel.style.color = '#6c757d';
+                startLabel.style.whiteSpace = 'nowrap';
+                startLabel.style.background = 'rgba(255, 255, 255, 0.9)';
+                startLabel.style.padding = '1px 4px';
+                startLabel.style.borderRadius = '2px';
+                startLabel.style.zIndex = '5';
+                bar.appendChild(startLabel);
+
+                // 添加结束时间标签
+                const endLabel = document.createElement('div');
+                endLabel.className = 'gantt-time-label end';
+                endLabel.textContent = formatDate(task.end);
+                endLabel.style.position = 'absolute';
+                endLabel.style.right = '-50px';
+                endLabel.style.top = '50%';
+                endLabel.style.transform = 'translateY(-50%)';
+                endLabel.style.fontSize = '0.7rem';
+                endLabel.style.color = '#6c757d';
+                endLabel.style.whiteSpace = 'nowrap';
+                endLabel.style.background = 'rgba(255, 255, 255, 0.9)';
+                endLabel.style.padding = '1px 4px';
+                endLabel.style.borderRadius = '2px';
+                endLabel.style.zIndex = '5';
+                bar.appendChild(endLabel);
+
+                console.log(`为任务 ${index} 添加了时间标签:`, task.start, '-', task.end);
+            }
+        });
+    }, 1000);
+}
+
+// 强制应用任务状态颜色
+function applyTaskColors(tasks) {
+    console.log('开始应用任务状态颜色...');
+
+    // 多次尝试应用颜色，确保甘特图完全渲染
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    function tryApplyColors() {
+        attempts++;
+
+        // 尝试多种选择器找到甘特图条
+        let bars = document.querySelectorAll('#gantt-container .bar');
+        if (bars.length === 0) {
+            bars = document.querySelectorAll('#gantt-container rect.bar');
+        }
+        if (bars.length === 0) {
+            bars = document.querySelectorAll('#gantt-container .gantt-bar');
+        }
+        if (bars.length === 0) {
+            bars = document.querySelectorAll('#gantt-container rect');
+        }
+
+        console.log(`第${attempts}次尝试应用颜色，找到${bars.length}个甘特图条`);
+        console.log('甘特图容器内容:', document.querySelector('#gantt-container').innerHTML.substring(0, 200));
+
+        if (bars.length === 0 && attempts < maxAttempts) {
+            setTimeout(tryApplyColors, 200);
+            return;
+        }
+
+        bars.forEach((bar, index) => {
+            if (tasks[index]) {
+                const task = tasks[index];
+                const status = task.task ? task.task.status : task.status;
+
+                // 定义颜色映射
+                const colorMap = {
+                    'published': '#007bff',    // 蓝色 - 待接单
+                    'assigned': '#ffc107',     // 黄色 - 进行中
+                    'in_progress': '#ffc107',  // 黄色 - 进行中
+                    'review': '#17a2b8',       // 青色 - 待审核
+                    'completed': '#28a745'     // 绿色 - 已完成
+                };
+
+                const color = colorMap[status] || '#6c757d';
+
+                console.log(`处理任务 ${index}:`, {
+                    status: status,
+                    color: color,
+                    element: bar.tagName,
+                    classes: bar.className
+                });
+
+                // 根据元素类型设置颜色
+                if (bar.tagName === 'rect' || bar.tagName === 'RECT') {
+                    // SVG rect元素
+                    bar.setAttribute('fill', color);
+                    bar.style.fill = color;
+                } else {
+                    // HTML元素
+                    bar.style.backgroundColor = color;
+                    bar.style.background = color;
+                }
+
+                // 设置进度条内部的进度颜色
+                const progressBar = bar.querySelector('.bar-progress') ||
+                                  bar.querySelector('rect.bar-progress');
+                if (progressBar) {
+                    if (progressBar.tagName === 'rect' || progressBar.tagName === 'RECT') {
+                        progressBar.setAttribute('fill', 'rgba(255,255,255,0.3)');
+                        progressBar.style.fill = 'rgba(255,255,255,0.3)';
+                    } else {
+                        progressBar.style.backgroundColor = 'rgba(255,255,255,0.3)';
+                        progressBar.style.background = 'rgba(255,255,255,0.3)';
+                    }
+                }
+
+                // 添加CSS类和属性用于后续识别
+                bar.classList.add(`task-${status}`);
+                bar.setAttribute('data-status', status);
+            }
+        });
+
+        // 如果还有更多尝试机会，继续尝试
+        if (attempts < maxAttempts) {
+            setTimeout(tryApplyColors, 300);
+        }
+    }
+
+    // 立即开始第一次尝试
+    tryApplyColors();
+}
+
+// 格式化日期
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return `${date.getMonth() + 1}/${date.getDate()}`;
+}
+
+// 格式化中文日期
+function formatDateChinese(dateStr) {
+    const date = new Date(dateStr);
+    const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+    return `${months[date.getMonth()]}${date.getDate()}日`;
+}
+
+// 自定义中文日历显示
+function customizeChineseCalendar() {
+    setTimeout(() => {
+        try {
+            // 替换月份显示
+            const headerCells = document.querySelectorAll('#gantt-container .grid-header .grid-header-cell');
+            headerCells.forEach(cell => {
+                const text = cell.textContent.trim();
+
+                // 替换英文月份为中文
+                const monthMap = {
+                    'January': '1月', 'Jan': '1月',
+                    'February': '2月', 'Feb': '2月',
+                    'March': '3月', 'Mar': '3月',
+                    'April': '4月', 'Apr': '4月',
+                    'May': '5月',
+                    'June': '6月', 'Jun': '6月',
+                    'July': '7月', 'Jul': '7月',
+                    'August': '8月', 'Aug': '8月',
+                    'September': '9月', 'Sep': '9月',
+                    'October': '10月', 'Oct': '10月',
+                    'November': '11月', 'Nov': '11月',
+                    'December': '12月', 'Dec': '12月'
+                };
+
+                // 替换星期显示
+                const dayMap = {
+                    'Monday': '周一', 'Mon': '周一',
+                    'Tuesday': '周二', 'Tue': '周二',
+                    'Wednesday': '周三', 'Wed': '周三',
+                    'Thursday': '周四', 'Thu': '周四',
+                    'Friday': '周五', 'Fri': '周五',
+                    'Saturday': '周六', 'Sat': '周六',
+                    'Sunday': '周日', 'Sun': '周日'
+                };
+
+                let newText = text;
+
+                // 替换月份
+                Object.keys(monthMap).forEach(eng => {
+                    newText = newText.replace(new RegExp(eng, 'gi'), monthMap[eng]);
+                });
+
+                // 替换星期
+                Object.keys(dayMap).forEach(eng => {
+                    newText = newText.replace(new RegExp(eng, 'gi'), dayMap[eng]);
+                });
+
+                // 处理年份显示
+                newText = newText.replace(/(\d{4})/g, '$1年');
+
+                if (newText !== text) {
+                    cell.textContent = newText;
+                }
+            });
+
+            // 替换今天按钮的文本
+            const todayButtons = document.querySelectorAll('#gantt-container .gantt-today');
+            todayButtons.forEach(btn => {
+                if (btn.textContent.toLowerCase().includes('today')) {
+                    btn.textContent = '今天';
+                }
+            });
+
+        } catch (error) {
+            console.warn('中文日历自定义失败:', error);
+        }
+    }, 800);
+}
+
+// 设置DOM观察器来监控甘特图变化
+function setupGanttObserver() {
+    const ganttContainer = document.getElementById('gantt-container');
+    if (!ganttContainer) return;
+
+    // 创建观察器实例
+    const observer = new MutationObserver(function(mutations) {
+        let shouldUpdate = false;
+
+        mutations.forEach(function(mutation) {
+            // 检查是否有新的节点添加
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                for (let node of mutation.addedNodes) {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        // 检查是否是甘特图相关的元素
+                        if (node.classList && (
+                            node.classList.contains('grid-header') ||
+                            node.classList.contains('grid-header-cell') ||
+                            node.querySelector && node.querySelector('.grid-header-cell')
+                        )) {
+                            shouldUpdate = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+
+        if (shouldUpdate) {
+            // 延迟执行以确保DOM完全更新
+            setTimeout(() => {
+                customizeChineseCalendar();
+            }, 100);
+        }
+    });
+
+    // 开始观察
+    observer.observe(ganttContainer, {
+        childList: true,
+        subtree: true
+    });
+
+    // 保存观察器引用以便后续清理
+    window.ganttObserver = observer;
+}
+
+// 获取状态样式类
+function getStatusClass(status) {
+    const classMap = {
+        'published': 'bg-primary text-white',
+        'assigned': 'bg-warning text-dark',
+        'in_progress': 'bg-warning text-dark',
+        'review': 'bg-info text-white',
+        'completed': 'bg-success text-white'
+    };
+    return classMap[status] || 'bg-secondary text-white';
+}
+
+// 获取状态文本
+function getStatusText(status) {
+    const statusMap = {
+        'published': '待接单',
+        'assigned': '进行中',
+        'in_progress': '进行中',
+        'review': '待审核',
+        'completed': '已完成'
+    };
+    return statusMap[status] || status;
+}
+
+// 显示任务详情
+function showTaskDetail(task) {
+    const modal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
+    const content = document.getElementById('taskDetailContent');
+    const viewBtn = document.getElementById('viewTaskBtn');
+
+    // 设置任务详情内容
+    content.innerHTML = `
+        <div class="row">
+            <div class="col-lg-8 col-md-7">
+                <div class="mb-4">
+                    <h5 class="mb-3">${task.title}</h5>
+                    <p class="text-muted mb-3">${task.description || '暂无描述'}</p>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6 col-md-4">
+                        <div class="info-item">
+                            <label class="form-label text-muted mb-1">任务类型</label>
+                            <div class="fw-medium">${getTaskTypeText(task.taskType)}</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="info-item">
+                            <label class="form-label text-muted mb-1">状态</label>
+                            <div class="fw-medium">
+                                <span class="badge ${getStatusClass(task.status)}">${getStatusText(task.status)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="info-item">
+                            <label class="form-label text-muted mb-1">星级</label>
+                            <div class="fw-medium">${'⭐'.repeat(task.starLevel)}</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="info-item">
+                            <label class="form-label text-muted mb-1">技能要求</label>
+                            <div class="fw-medium">${getSkillText(task.skillRequired)}</div>
+                        </div>
+                    </div>
+                    ${task.estimatedHours ? `
+                    <div class="col-sm-6 col-md-4">
+                        <div class="info-item">
+                            <label class="form-label text-muted mb-1">预估工时</label>
+                            <div class="fw-medium">${task.estimatedHours} 小时</div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    <div class="col-sm-6 col-md-4">
+                        <div class="info-item">
+                            <label class="form-label text-muted mb-1">截止时间</label>
+                            <div class="fw-medium">${task.dueDate ? formatDateChinese(task.dueDate.split('T')[0]) : '未设置'}</div>
+                        </div>
+                    </div>
+                </div>
+
+                ${task.publisher || task.assignee ? `
+                <div class="row g-3">
+                    ${task.publisher ? `
+                    <div class="col-sm-6">
+                        <div class="info-item">
+                            <label class="form-label text-muted mb-1">发布者</label>
+                            <div class="fw-medium">${task.publisher.firstName || ''} ${task.publisher.lastName || ''} (${task.publisher.username})</div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    ${task.assignee ? `
+                    <div class="col-sm-6">
+                        <div class="info-item">
+                            <label class="form-label text-muted mb-1">负责人</label>
+                            <div class="fw-medium">${task.assignee.firstName || ''} ${task.assignee.lastName || ''} (${task.assignee.username})</div>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+                ` : ''}
+            </div>
+            <div class="col-lg-4 col-md-5">
+                <div class="card bg-light h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0"><i class="fas fa-coins me-2"></i>奖励信息</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="reward-item mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">基础奖励</span>
+                                <span class="fw-bold text-primary">${task.baseReward} ${getCurrencyText(task.rewardCurrency)}</span>
+                            </div>
+                        </div>
+                        ${task.bonusReward > 0 ? `
+                        <div class="reward-item mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">奖励金</span>
+                                <span class="fw-bold text-warning">${task.bonusReward} ${getCurrencyText(task.rewardCurrency)}</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                        <hr>
+                        <div class="reward-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-medium">总预算</span>
+                                <span class="fw-bold text-success fs-5">${task.totalBudget} ${getCurrencyText(task.rewardCurrency)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 设置查看详情按钮链接
+    viewBtn.href = `/tasks/${task.id}`;
+
+    modal.show();
+}
+
+// 辅助函数
+function getTaskTypeText(type) {
+    const typeMap = {
+        'requirement': '需求',
+        'task': '任务',
+        'bug': '缺陷',
+        'epic': '史诗',
+        'story': '用户故事'
+    };
+    return typeMap[type] || type;
+}
+
+function getSkillText(skill) {
+    const skillMap = {
+        'novice': '🔰 新手',
+        'bronze': '🥉 青铜',
+        'silver': '🥈 白银',
+        'gold': '🥇 黄金',
+        'diamond': '💎 钻石'
+    };
+    return skillMap[skill] || skill;
+}
+
+function getCurrencyText(currency) {
+    const currencyMap = {
+        'diamond': '💎',
+        'gold': '🪙',
+        'silver': '🥈',
+        'copper': '🥉'
+    };
+    return currencyMap[currency] || currency;
+}
+</script>
+
+<%- include('../partials/footer') %>

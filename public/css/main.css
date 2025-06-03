@@ -392,6 +392,120 @@ body {
   }
 }
 
+/* 甘特图样式 */
+.gantt-container {
+  min-height: 500px;
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 0.5rem;
+}
+
+/* 甘特图图例 */
+.gantt-legend {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* 甘特图任务状态颜色 */
+.legend-color.task-published,
+.gantt-container .bar.task-published {
+  background-color: var(--primary-color) !important;
+}
+
+.legend-color.task-assigned,
+.gantt-container .bar.task-assigned {
+  background-color: var(--warning-color) !important;
+}
+
+.legend-color.task-review,
+.gantt-container .bar.task-review {
+  background-color: var(--info-color) !important;
+}
+
+.legend-color.task-completed,
+.gantt-container .bar.task-completed {
+  background-color: var(--success-color) !important;
+}
+
+/* 自定义甘特图样式以匹配界面风格 */
+.gantt-container .grid-header {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 500;
+}
+
+.gantt-container .grid-row {
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s ease;
+}
+
+.gantt-container .grid-row:hover {
+  background-color: #f8f9fa;
+}
+
+.gantt-container .bar {
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.gantt-container .bar:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transform: translateY(-1px);
+}
+
+.gantt-container .bar-progress {
+  border-radius: 4px;
+  background-color: rgba(255,255,255,0.3) !important;
+}
+
+.gantt-container .bar-label {
+  color: white;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  font-size: 0.875rem;
+}
+
+/* 甘特图弹出框样式 */
+.gantt-popup {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border: 1px solid #dee2e6;
+  max-width: 300px;
+}
+
+.gantt-popup h6 {
+  color: var(--dark-color);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.gantt-popup p {
+  color: var(--secondary-color);
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
 /* 动画效果 */
 @keyframes fadeInUp {
   from {

@@ -258,6 +258,94 @@ router.get('/kanban', requireProjectSelection, validateProjectAccess, async (req
   }
 });
 
+// 甘特视图
+router.get('/gantt', requireProjectSelection, validateProjectAccess, async (req, res) => {
+  try {
+    const projectId = req.session.selectedProjectId;
+
+    let where = {
+      projectId: projectId // 只显示当前选中项目的任务
+    };
+
+    // 获取所有任务
+    const tasks = await BountyTask.findAll({
+      where,
+      include: [
+        {
+          model: User,
+          as: 'publisher',
+          attributes: ['id', 'username', 'firstName', 'lastName']
+        },
+        {
+          model: User,
+          as: 'assignee',
+          attributes: ['id', 'username', 'firstName', 'lastName']
+        },
+        {
+          model: Project,
+          as: 'project',
+          attributes: ['id', 'name', 'key']
+        }
+      ],
+      order: [['createdAt', 'ASC']]
+    });
+
+    // 格式化任务数据为甘特图格式
+    const ganttTasks = tasks.map((task, index) => {
+      // 计算开始和结束时间
+      let startDate = task.startDate || task.createdAt;
+      let endDate = task.dueDate;
+
+      // 确保startDate是Date对象
+      if (typeof startDate === 'string') {
+        startDate = new Date(startDate);
+      }
+
+      // 如果没有截止时间，默认设置为开始时间后的估算工时天数
+      if (!endDate && task.estimatedHours) {
+        const estimatedDays = Math.ceil(task.estimatedHours / 8); // 假设每天8小时
+        endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + estimatedDays);
+      } else if (!endDate) {
+        // 如果都没有，默认设置为7天后
+        endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + 7);
+      } else if (typeof endDate === 'string') {
+        endDate = new Date(endDate);
+      }
+
+      // 确保结束时间不早于开始时间
+      if (endDate <= startDate) {
+        endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + 1);
+      }
+
+      return {
+        id: task.id,
+        name: task.title || `任务 ${index + 1}`,
+        start: startDate.toISOString().split('T')[0],
+        end: endDate.toISOString().split('T')[0],
+        progress: task.status === 'completed' ? 100 :
+                 task.status === 'review' ? 80 :
+                 task.status === 'assigned' || task.status === 'in_progress' ? 50 : 0,
+        custom_class: `task-${task.status}`,
+        task: task // 保存完整任务信息用于显示
+      };
+    });
+
+    res.render('tasks/gantt', {
+      title: '任务甘特图',
+      ganttTasks,
+      projectId
+    });
+
+  } catch (error) {
+    logger.error('获取甘特图数据失败:', error);
+    req.flash('error', '获取甘特图数据失败');
+    res.redirect('/tasks');
+  }
+});
+
 // 创建任务页面
 router.get('/create', requireAuth, requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
