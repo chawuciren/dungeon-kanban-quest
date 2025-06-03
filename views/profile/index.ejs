@@ -1,4 +1,25 @@
 <%- include('../partials/header', { title: title }) %>
+<%- include('../helpers/roleHelper') %>
+
+<!-- 自定义样式 -->
+<style>
+.profile-avatar {
+    transition: transform 0.3s ease;
+}
+.profile-avatar:hover {
+    transform: scale(1.05);
+}
+.info-card {
+    transition: box-shadow 0.3s ease;
+}
+.info-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.badge-large {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+}
+</style>
 
 <!-- 页面标题 -->
 <div class="row mb-4">
@@ -11,20 +32,212 @@
                 </h2>
                 <p class="text-muted mb-0">管理您的个人信息和设置</p>
             </div>
+            <div>
+                <a href="/profile/edit" class="btn btn-primary">
+                    <i class="fas fa-edit me-1"></i>
+                    编辑资料
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- 个人资料内容 -->
 <div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body text-center py-5">
-                <i class="fas fa-user fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">个人资料功能正在开发中</h5>
-                <p class="text-muted">敬请期待...</p>
+    <!-- 基本信息卡片 -->
+    <div class="col-lg-8">
+        <div class="card mb-4 info-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-id-card me-2"></i>
+                    基本信息
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">用户名</label>
+                        <div class="fw-bold"><%= user.username %></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">邮箱</label>
+                        <div class="fw-bold">
+                            <%= user.email %>
+                            <% if (user.emailVerifiedAt) { %>
+                                <i class="fas fa-check-circle text-success ms-1" title="邮箱已验证"></i>
+                            <% } else { %>
+                                <i class="fas fa-exclamation-circle text-warning ms-1" title="邮箱未验证"></i>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">姓名</label>
+                        <div class="fw-bold"><%= user.firstName %> <%= user.lastName %></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">电话</label>
+                        <div class="fw-bold"><%= user.phone || '未设置' %></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">状态</label>
+                        <div>
+                            <% if (user.status === 'active') { %>
+                                <span class="badge bg-success">活跃</span>
+                            <% } else if (user.status === 'inactive') { %>
+                                <span class="badge bg-secondary">非活跃</span>
+                            <% } else { %>
+                                <span class="badge bg-danger">已暂停</span>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">最后登录</label>
+                        <div class="fw-bold">
+                            <% if (user.lastLoginAt) { %>
+                                <%= new Date(user.lastLoginAt).toLocaleString('zh-CN') %>
+                            <% } else { %>
+                                从未登录
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- 偏好设置卡片 -->
+        <div class="card info-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-cog me-2"></i>
+                    偏好设置
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">时区</label>
+                        <div class="fw-bold"><%= user.timezone %></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">语言</label>
+                        <div class="fw-bold">
+                            <% if (user.language === 'zh-CN') { %>
+                                简体中文
+                            <% } else if (user.language === 'en-US') { %>
+                                English
+                            <% } else { %>
+                                <%= user.language %>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏化信息卡片 -->
+    <div class="col-lg-4">
+        <div class="card mb-4 info-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-gamepad me-2"></i>
+                    冒险者档案
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <!-- 头像 -->
+                <div class="mb-3">
+                    <% if (user.avatar) { %>
+                        <img src="<%= user.avatar %>" alt="头像" class="rounded-circle profile-avatar" width="80" height="80">
+                    <% } else { %>
+                        <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center profile-avatar" style="width: 80px; height: 80px;">
+                            <i class="fas fa-user fa-2x text-white"></i>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- 角色信息 -->
+                <div class="mb-3">
+                    <h6 class="mb-2">职业</h6>
+                    <%- renderRoleBadge(user.role, true) %>
+                    <div class="small text-muted mt-1">(<%= getRoleDisplayName(user.role, false) %>)</div>
+                </div>
+
+                <!-- 技能等级 -->
+                <div class="mb-3">
+                    <h6 class="mb-2">技能等级</h6>
+                    <%
+                        const skillLevelConfig = {
+                            'novice': { name: '新手', icon: '🔰', color: 'secondary' },
+                            'bronze': { name: '铜牌', icon: '🥉', color: 'warning' },
+                            'silver': { name: '银牌', icon: '🥈', color: 'info' },
+                            'gold': { name: '金牌', icon: '🥇', color: 'warning' },
+                            'diamond': { name: '钻石', icon: '💎', color: 'primary' }
+                        };
+                        const skillConfig = skillLevelConfig[user.skillLevel] || { name: user.skillLevel, icon: '❓', color: 'secondary' };
+                    %>
+                    <span class="badge bg-<%= skillConfig.color %> badge-large">
+                        <%= skillConfig.icon %> <%= skillConfig.name %>
+                    </span>
+                </div>
+
+                <!-- 账户创建时间 -->
+                <div class="text-muted small">
+                    <i class="fas fa-calendar-alt me-1"></i>
+                    加入时间：<%= new Date(user.createdAt).toLocaleDateString('zh-CN') %>
+                </div>
+            </div>
+        </div>
+
+        <!-- 钱包信息卡片 -->
+        <% if (wallet) { %>
+        <div class="card info-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-wallet me-2"></i>
+                    钱包概览
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-2">
+                        <div class="text-primary">
+                            <i class="fas fa-gem"></i>
+                            <span class="fw-bold"><%= wallet.diamondBalance %></span>
+                        </div>
+                        <small class="text-muted">钻石</small>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <div class="text-warning">
+                            <i class="fas fa-coins"></i>
+                            <span class="fw-bold"><%= wallet.goldBalance %></span>
+                        </div>
+                        <small class="text-muted">金币</small>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <div class="text-info">
+                            <i class="fas fa-circle"></i>
+                            <span class="fw-bold"><%= wallet.silverBalance %></span>
+                        </div>
+                        <small class="text-muted">银币</small>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <div style="color: #2d5016;">
+                            <i class="fas fa-circle"></i>
+                            <span class="fw-bold"><%= wallet.copperBalance %></span>
+                        </div>
+                        <small class="text-muted">铜币</small>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="/wallet" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-wallet me-1"></i>
+                        查看详情
+                    </a>
+                </div>
+            </div>
+        </div>
+        <% } %>
     </div>
 </div>
 

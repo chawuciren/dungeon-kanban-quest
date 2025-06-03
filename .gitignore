@@ -9,3 +9,7 @@ database/*
 # 忽略logs目录下的所有文件
 logs/
 logs/*
+
+# 忽略uploads目录下的所有文件（用户上传的文件）
+public/uploads/
+public/uploads/*

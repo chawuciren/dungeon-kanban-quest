@@ -491,14 +491,196 @@ router.get('/wallet/exchange', async (req, res) => {
 });
 
 // 个人资料
-router.get('/profile', (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect('/login');
-  }
+router.get('/profile', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/login');
+    }
 
-  res.render('profile/index', {
-    title: '个人资料'
-  });
+    const user = await User.findByPk(req.session.userId, {
+      include: [{
+        model: UserWallet,
+        as: 'wallet'
+      }]
+    });
+
+    if (!user) {
+      req.flash('error', '用户不存在');
+      return res.redirect('/login');
+    }
+
+    res.render('profile/index', {
+      title: '个人资料',
+      user,
+      wallet: user.wallet
+    });
+
+  } catch (error) {
+    console.error('获取个人资料失败:', error);
+    req.flash('error', '获取个人资料失败');
+    res.redirect('/dashboard');
+  }
+});
+
+// 个人资料编辑页面
+router.get('/profile/edit', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/login');
+    }
+
+    const user = await User.findByPk(req.session.userId);
+    if (!user) {
+      req.flash('error', '用户不存在');
+      return res.redirect('/login');
+    }
+
+    const { getAllRoles } = require('../config/roles');
+
+    res.render('profile/edit', {
+      title: '编辑个人资料',
+      user,
+      roles: getAllRoles(),
+      errorMessage: req.session.errorMessage,
+      successMessage: req.session.successMessage
+    });
+
+    // 清除消息
+    delete req.session.errorMessage;
+    delete req.session.successMessage;
+
+  } catch (error) {
+    console.error('获取编辑页面失败:', error);
+    req.flash('error', '获取编辑页面失败');
+    res.redirect('/profile');
+  }
+});
+
+// 个人资料编辑处理
+const { handleAvatarUpload, deleteOldAvatar } = require('../middleware/upload');
+router.post('/profile/edit', handleAvatarUpload, async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/login');
+    }
+
+    const user = await User.findByPk(req.session.userId);
+    if (!user) {
+      req.session.errorMessage = '用户不存在';
+      return res.redirect('/profile/edit');
+    }
+
+    const {
+      email,
+      firstName,
+      lastName,
+      phone,
+      timezone,
+      language,
+      currentPassword,
+      newPassword,
+      confirmPassword,
+      removeAvatar
+    } = req.body;
+
+    // 验证必填字段
+    if (!email || !firstName || !lastName) {
+      req.session.errorMessage = '请填写所有必填字段';
+      return res.redirect('/profile/edit');
+    }
+
+    // 检查邮箱是否被其他用户使用
+    if (email !== user.email) {
+      const existingUser = await User.findOne({
+        where: {
+          email,
+          id: { [Op.ne]: req.session.userId }
+        }
+      });
+
+      if (existingUser) {
+        req.session.errorMessage = '邮箱已被其他用户使用';
+        return res.redirect('/profile/edit');
+      }
+    }
+
+    // 密码修改验证
+    if (currentPassword || newPassword || confirmPassword) {
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        req.session.errorMessage = '修改密码时，请填写完整的密码信息';
+        return res.redirect('/profile/edit');
+      }
+
+      // 验证当前密码
+      const isValidPassword = await user.validatePassword(currentPassword);
+      if (!isValidPassword) {
+        req.session.errorMessage = '当前密码不正确';
+        return res.redirect('/profile/edit');
+      }
+
+      // 验证新密码
+      if (newPassword.length < 6) {
+        req.session.errorMessage = '新密码长度至少6个字符';
+        return res.redirect('/profile/edit');
+      }
+
+      if (newPassword !== confirmPassword) {
+        req.session.errorMessage = '新密码和确认密码不匹配';
+        return res.redirect('/profile/edit');
+      }
+    }
+
+    // 准备更新数据
+    const updateData = {
+      email,
+      firstName,
+      lastName,
+      phone: phone || null,
+      timezone,
+      language
+    };
+
+    // 如果有新密码，添加到更新数据中
+    if (newPassword) {
+      updateData.password = newPassword;
+    }
+
+    // 处理头像
+    if (removeAvatar === '1') {
+      // 删除旧头像文件
+      if (user.avatar) {
+        deleteOldAvatar(user.avatar);
+      }
+      updateData.avatar = null;
+    } else if (req.file) {
+      // 上传了新头像
+      // 删除旧头像文件
+      if (user.avatar) {
+        deleteOldAvatar(user.avatar);
+      }
+      // 设置新头像路径
+      updateData.avatar = `/uploads/avatars/${req.file.filename}`;
+    }
+
+    // 更新用户信息
+    await user.update(updateData);
+
+    // 更新会话中的用户信息
+    req.session.user = {
+      ...req.session.user,
+      email: updateData.email,
+      firstName: updateData.firstName,
+      lastName: updateData.lastName
+    };
+
+    req.session.successMessage = '个人资料更新成功';
+    res.redirect('/profile');
+
+  } catch (error) {
+    console.error('更新个人资料失败:', error);
+    req.session.errorMessage = '更新个人资料失败，请稍后重试';
+    res.redirect('/profile/edit');
+  }
 });
 
 // 选择项目

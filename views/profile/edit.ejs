@@ -1,0 +1,376 @@
+<%- include('../partials/header', { title: title }) %>
+<%- include('../helpers/roleHelper') %>
+
+<!-- 页面标题 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2>
+                    <i class="fas fa-edit me-2 text-primary"></i>
+                    编辑个人资料
+                </h2>
+                <p class="text-muted mb-0">更新您的个人信息和偏好设置</p>
+            </div>
+            <div>
+                <a href="/profile" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    返回
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 错误提示 -->
+<% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    <%= errorMessage %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<% } %>
+
+<!-- 成功提示 -->
+<% if (typeof successMessage !== 'undefined' && successMessage) { %>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    <%= successMessage %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<% } %>
+
+<form action="/profile/edit" method="POST" enctype="multipart/form-data">
+    <div class="row">
+        <!-- 基本信息 -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-id-card me-2"></i>
+                        基本信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">用户名 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="username" name="username"
+                                   value="<%= user.username %>" required readonly>
+                            <div class="form-text">用户名不可修改</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">邮箱 <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   value="<%= user.email %>" required>
+                            <% if (user.emailVerifiedAt) { %>
+                                <div class="form-text text-success">
+                                    <i class="fas fa-check-circle me-1"></i>邮箱已验证
+                                </div>
+                            <% } else { %>
+                                <div class="form-text text-warning">
+                                    <i class="fas fa-exclamation-circle me-1"></i>邮箱未验证
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName" class="form-label">名 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="firstName" name="firstName"
+                                   value="<%= user.firstName %>" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName" class="form-label">姓 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="lastName" name="lastName"
+                                   value="<%= user.lastName %>" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">电话</label>
+                            <input type="tel" class="form-control" id="phone" name="phone"
+                                   value="<%= user.phone || '' %>">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">默认职业</label>
+                            <div class="fw-bold">
+                                <%
+                                    const currentRole = roles.find(r => r.value === user.role) || { icon: '❓', alias: '未知', name: '未知职业' };
+                                %>
+                                <%= currentRole.icon %> <%= currentRole.alias %> (<%= currentRole.name %>)
+                            </div>
+                            <div class="form-text text-muted">职业由管理员在项目级别管理，无法自行修改</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 偏好设置 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-cog me-2"></i>
+                        偏好设置
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="timezone" class="form-label">时区</label>
+                            <select class="form-select" id="timezone" name="timezone">
+                                <option value="Asia/Shanghai" <%= user.timezone === 'Asia/Shanghai' ? 'selected' : '' %>>
+                                    Asia/Shanghai (中国标准时间)
+                                </option>
+                                <option value="Asia/Tokyo" <%= user.timezone === 'Asia/Tokyo' ? 'selected' : '' %>>
+                                    Asia/Tokyo (日本标准时间)
+                                </option>
+                                <option value="Asia/Seoul" <%= user.timezone === 'Asia/Seoul' ? 'selected' : '' %>>
+                                    Asia/Seoul (韩国标准时间)
+                                </option>
+                                <option value="UTC" <%= user.timezone === 'UTC' ? 'selected' : '' %>>
+                                    UTC (协调世界时)
+                                </option>
+                                <option value="America/New_York" <%= user.timezone === 'America/New_York' ? 'selected' : '' %>>
+                                    America/New_York (美国东部时间)
+                                </option>
+                                <option value="America/Los_Angeles" <%= user.timezone === 'America/Los_Angeles' ? 'selected' : '' %>>
+                                    America/Los_Angeles (美国西部时间)
+                                </option>
+                                <option value="Europe/London" <%= user.timezone === 'Europe/London' ? 'selected' : '' %>>
+                                    Europe/London (英国时间)
+                                </option>
+                                <option value="Europe/Paris" <%= user.timezone === 'Europe/Paris' ? 'selected' : '' %>>
+                                    Europe/Paris (欧洲中部时间)
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="language" class="form-label">语言</label>
+                            <select class="form-select" id="language" name="language">
+                                <option value="zh-CN" <%= user.language === 'zh-CN' ? 'selected' : '' %>>
+                                    简体中文
+                                </option>
+                                <option value="en-US" <%= user.language === 'en-US' ? 'selected' : '' %>>
+                                    English (US)
+                                </option>
+                                <option value="ja-JP" <%= user.language === 'ja-JP' ? 'selected' : '' %>>
+                                    日本語
+                                </option>
+                                <option value="ko-KR" <%= user.language === 'ko-KR' ? 'selected' : '' %>>
+                                    한국어
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">技能等级</label>
+                            <div class="fw-bold">
+                                <%
+                                    const skillLevelConfig = {
+                                        'novice': { name: '新手', icon: '🔰', color: 'secondary' },
+                                        'bronze': { name: '铜牌', icon: '🥉', color: 'warning' },
+                                        'silver': { name: '银牌', icon: '🥈', color: 'info' },
+                                        'gold': { name: '金牌', icon: '🥇', color: 'warning' },
+                                        'diamond': { name: '钻石', icon: '💎', color: 'primary' }
+                                    };
+                                    const currentSkill = skillLevelConfig[user.skillLevel] || { name: '未知', icon: '❓', color: 'secondary' };
+                                %>
+                                <span class="badge bg-<%= currentSkill.color %> fs-6">
+                                    <%= currentSkill.icon %> <%= currentSkill.name %>
+                                </span>
+                            </div>
+                            <div class="form-text text-muted">技能等级根据任务完成情况自动提升，无法手动修改</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 密码修改 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-lock me-2"></i>
+                        密码修改
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        如果不需要修改密码，请留空以下字段
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="currentPassword" class="form-label">当前密码</label>
+                            <input type="password" class="form-control" id="currentPassword" name="currentPassword">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="newPassword" class="form-label">新密码</label>
+                            <input type="password" class="form-control" id="newPassword" name="newPassword">
+                            <div class="form-text">密码长度至少6个字符</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="confirmPassword" class="form-label">确认新密码</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 头像和操作 -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-image me-2"></i>
+                        头像设置
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <!-- 当前头像 -->
+                    <div class="mb-3">
+                        <% if (user.avatar) { %>
+                            <img src="<%= user.avatar %>" alt="头像" class="rounded-circle" width="120" height="120" id="avatarPreview">
+                        <% } else { %>
+                            <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center"
+                                 style="width: 120px; height: 120px;" id="avatarPreview">
+                                <i class="fas fa-user fa-3x text-white"></i>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <!-- 头像上传 -->
+                    <div class="mb-3">
+                        <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
+                        <div class="form-text">支持 JPG、PNG 格式，最大 2MB</div>
+                    </div>
+
+                    <!-- 移除头像 -->
+                    <% if (user.avatar) { %>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="removeAvatar" name="removeAvatar" value="1">
+                        <label class="form-check-label" for="removeAvatar">
+                            移除当前头像
+                        </label>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary" id="saveButton">
+                            <i class="fas fa-save me-1"></i>
+                            保存修改
+                        </button>
+                        <a href="/profile" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>
+                            取消
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- 头像预览和表单验证脚本 -->
+<script>
+// 头像预览
+document.getElementById('avatar').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        // 检查文件大小
+        if (file.size > 2 * 1024 * 1024) {
+            alert('文件大小不能超过2MB');
+            this.value = '';
+            return;
+        }
+
+        // 检查文件类型
+        if (!file.type.startsWith('image/')) {
+            alert('只能上传图片文件');
+            this.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('avatarPreview');
+            preview.innerHTML = `<img src="${e.target.result}" alt="头像预览" class="rounded-circle" width="120" height="120">`;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// 密码确认验证
+document.getElementById('confirmPassword').addEventListener('input', function() {
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = this.value;
+
+    if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+        this.setCustomValidity('密码不匹配');
+        this.classList.add('is-invalid');
+    } else {
+        this.setCustomValidity('');
+        this.classList.remove('is-invalid');
+    }
+});
+
+// 新密码输入时也要检查确认密码
+document.getElementById('newPassword').addEventListener('input', function() {
+    const confirmPassword = document.getElementById('confirmPassword');
+    if (confirmPassword.value) {
+        confirmPassword.dispatchEvent(new Event('input'));
+    }
+});
+
+// 表单提交确认
+document.querySelector('form').addEventListener('submit', function(e) {
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    // 如果填写了任何密码字段，检查是否完整
+    if (currentPassword || newPassword || confirmPassword) {
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            e.preventDefault();
+            alert('修改密码时，请填写完整的密码信息');
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            e.preventDefault();
+            alert('新密码和确认密码不匹配');
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            e.preventDefault();
+            alert('新密码长度至少6个字符');
+            return;
+        }
+
+        // 确认密码修改
+        if (!confirm('您确定要修改密码吗？')) {
+            e.preventDefault();
+            return;
+        }
+    }
+
+    // 确认保存修改
+    if (!confirm('确定要保存这些修改吗？')) {
+        e.preventDefault();
+        return;
+    }
+});
+
+// 移除头像确认
+document.getElementById('removeAvatar')?.addEventListener('change', function() {
+    if (this.checked) {
+        if (!confirm('确定要移除当前头像吗？')) {
+            this.checked = false;
+        }
+    }
+});
+</script>
+
+<%- include('../partials/footer') %>
