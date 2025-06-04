@@ -124,7 +124,7 @@ router.get('/dashboard', async (req, res) => {
   try {
     // 获取用户信息
     const user = await User.findByPk(req.session.userId, {
-      attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'role', 'skillLevel', 'createdAt']
+      attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'role', 'createdAt']
     });
 
     if (!user) {
@@ -247,17 +247,6 @@ router.get('/dashboard', async (req, res) => {
       userProjects = uniqueProjects.sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    // 技能等级配置
-    const skillConfig = {
-      novice: { icon: '🔰', name: '新手', progress: 20 },
-      bronze: { icon: '🥉', name: '铜牌', progress: 40 },
-      silver: { icon: '🥈', name: '银牌', progress: 60 },
-      gold: { icon: '🥇', name: '金牌', progress: 80 },
-      diamond: { icon: '💎', name: '钻石', progress: 100 }
-    };
-
-    const userSkill = skillConfig[user.skillLevel] || skillConfig.novice;
-
     res.render('dashboard/index', {
       title: '仪表板',
       user,
@@ -266,7 +255,6 @@ router.get('/dashboard', async (req, res) => {
         completed: completedTasks
       },
       recentTasks,
-      userSkill,
       userProjects,
       selectedProject: req.session.selectedProjectId ? userProjects.find(p => p.id === req.session.selectedProjectId) : null
     });

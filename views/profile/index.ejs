@@ -163,23 +163,7 @@
                     <div class="small text-muted mt-1">(<%= getRoleDisplayName(user.role, false) %>)</div>
                 </div>
 
-                <!-- 技能等级 -->
-                <div class="mb-3">
-                    <h6 class="mb-2">技能等级</h6>
-                    <%
-                        const skillLevelConfig = {
-                            'novice': { name: '新手', icon: '🔰', color: 'secondary' },
-                            'bronze': { name: '铜牌', icon: '🥉', color: 'warning' },
-                            'silver': { name: '银牌', icon: '🥈', color: 'info' },
-                            'gold': { name: '金牌', icon: '🥇', color: 'warning' },
-                            'diamond': { name: '钻石', icon: '💎', color: 'primary' }
-                        };
-                        const skillConfig = skillLevelConfig[user.skillLevel] || { name: user.skillLevel, icon: '❓', color: 'secondary' };
-                    %>
-                    <span class="badge bg-<%= skillConfig.color %> badge-large">
-                        <%= skillConfig.icon %> <%= skillConfig.name %>
-                    </span>
-                </div>
+
 
                 <!-- 账户创建时间 -->
                 <div class="text-muted small">

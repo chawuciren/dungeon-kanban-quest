@@ -158,25 +158,7 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label text-muted">技能等级</label>
-                            <div class="fw-bold">
-                                <%
-                                    const skillLevelConfig = {
-                                        'novice': { name: '新手', icon: '🔰', color: 'secondary' },
-                                        'bronze': { name: '铜牌', icon: '🥉', color: 'warning' },
-                                        'silver': { name: '银牌', icon: '🥈', color: 'info' },
-                                        'gold': { name: '金牌', icon: '🥇', color: 'warning' },
-                                        'diamond': { name: '钻石', icon: '💎', color: 'primary' }
-                                    };
-                                    const currentSkill = skillLevelConfig[user.skillLevel] || { name: '未知', icon: '❓', color: 'secondary' };
-                                %>
-                                <span class="badge bg-<%= currentSkill.color %> fs-6">
-                                    <%= currentSkill.icon %> <%= currentSkill.name %>
-                                </span>
-                            </div>
-                            <div class="form-text text-muted">技能等级根据任务完成情况自动提升，无法手动修改</div>
-                        </div>
+
                     </div>
                 </div>
             </div>

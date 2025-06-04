@@ -167,13 +167,6 @@
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-user me-1"></i>
                                 <%= user.firstName %>
-                                <span class="badge bg-<%= user.skillLevel === 'diamond' ? 'info' : user.skillLevel === 'gold' ? 'warning' : user.skillLevel === 'silver' ? 'secondary' : user.skillLevel === 'bronze' ? 'dark' : 'light' %> ms-1">
-                                    <% if (user.skillLevel === 'diamond') { %>💎
-                                    <% } else if (user.skillLevel === 'gold') { %>🥇
-                                    <% } else if (user.skillLevel === 'silver') { %>🥈
-                                    <% } else if (user.skillLevel === 'bronze') { %>🥉
-                                    <% } else { %>🔰<% } %>
-                                </span>
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="/profile">个人资料</a></li>

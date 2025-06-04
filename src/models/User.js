@@ -60,11 +60,7 @@ const User = sequelize.define('User', {
     type: DataTypes.ENUM('admin', 'product_manager', 'developer', 'tester', 'ui_designer', 'devops', 'client'),
     defaultValue: 'developer'
   },
-  skillLevel: {
-    type: DataTypes.ENUM('novice', 'bronze', 'silver', 'gold', 'diamond'),
-    defaultValue: 'novice',
-    field: 'skill_level'
-  },
+
   timezone: {
     type: DataTypes.STRING(50),
     defaultValue: 'Asia/Shanghai'
@@ -97,9 +93,6 @@ const User = sequelize.define('User', {
     },
     {
       fields: ['role']
-    },
-    {
-      fields: ['skill_level']
     }
   ]
 });

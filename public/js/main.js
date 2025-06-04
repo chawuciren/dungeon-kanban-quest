@@ -136,23 +136,7 @@ function renderStarRating(level, maxLevel = 5, size = 'md') {
 
 
 
-// 技能等级徽章
-function renderSkillBadge(skillLevel) {
-    const skillConfig = {
-        novice: { icon: '🔰', name: '新手', class: 'novice' },
-        bronze: { icon: '🥉', name: '铜牌', class: 'bronze' },
-        silver: { icon: '🥈', name: '银牌', class: 'silver' },
-        gold: { icon: '🥇', name: '金牌', class: 'gold' },
-        diamond: { icon: '💎', name: '钻石', class: 'diamond' }
-    };
 
-    const config = skillConfig[skillLevel] || skillConfig.novice;
-
-    return `<span class="skill-badge ${config.class}">
-        <span>${config.icon}</span>
-        <span>${config.name}</span>
-    </span>`;
-}
 
 // 紧急程度徽章
 function renderUrgencyBadge(urgencyLevel) {

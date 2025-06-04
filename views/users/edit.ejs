@@ -47,16 +47,7 @@
                             <strong>当前职业：</strong><br>
                             <%- renderRoleBadge(editUser.role, true) %>
                         </div>
-                        <div class="col-md-3">
-                            <strong>技能等级：</strong><br>
-                            <span class="badge bg-<%= editUser.skillLevel === 'diamond' ? 'info' : editUser.skillLevel === 'gold' ? 'warning' : editUser.skillLevel === 'silver' ? 'secondary' : editUser.skillLevel === 'bronze' ? 'dark' : 'light' %>">
-                                <% if (editUser.skillLevel === 'diamond') { %>💎 钻石
-                                <% } else if (editUser.skillLevel === 'gold') { %>🥇 黄金
-                                <% } else if (editUser.skillLevel === 'silver') { %>🥈 白银
-                                <% } else if (editUser.skillLevel === 'bronze') { %>🥉 青铜
-                                <% } else { %>🔰 新手<% } %>
-                            </span>
-                        </div>
+
                         <div class="col-md-3">
                             <strong>账户状态：</strong><br>
                             <span class="badge bg-<%= editUser.status === 'active' ? 'success' : editUser.status === 'inactive' ? 'warning' : 'danger' %>">
@@ -190,17 +181,7 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="skillLevel" class="form-label">技能等级</label>
-                                    <select class="form-select" id="skillLevel" name="skillLevel">
-                                        <option value="novice" <% if (isCreateMode || (!isCreateMode && editUser && editUser.skillLevel === 'novice')) { %>selected<% } %>>🔰 新手 - 初学者</option>
-                                        <option value="bronze" <% if (!isCreateMode && editUser && editUser.skillLevel === 'bronze') { %>selected<% } %>>🥉 青铜 - 有一定经验</option>
-                                        <option value="silver" <% if (!isCreateMode && editUser && editUser.skillLevel === 'silver') { %>selected<% } %>>🥈 白银 - 经验丰富</option>
-                                        <option value="gold" <% if (!isCreateMode && editUser && editUser.skillLevel === 'gold') { %>selected<% } %>>🥇 黄金 - 技能精湛</option>
-                                        <option value="diamond" <% if (!isCreateMode && editUser && editUser.skillLevel === 'diamond') { %>selected<% } %>>💎 钻石 - 顶级专家</option>
-                                    </select>
-                                    <div class="form-text">技能等级影响可接取的任务难度</div>
-                                </div>
+
 
                                 <div class="mb-3">
                                     <label for="status" class="form-label">账户状态</label>

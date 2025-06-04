@@ -47,15 +47,6 @@ const config = {
 
   // 游戏化系统配置
   gamification: {
-    // 保留技能等级配置，用于用户技能评级
-    skillLevels: {
-      novice: { name: '新手', icon: '🔰', multiplier: 1.0 },
-      bronze: { name: '青铜', icon: '🥉', multiplier: 1.1 },
-      silver: { name: '白银', icon: '🥈', multiplier: 1.15 },
-      gold: { name: '黄金', icon: '🥇', multiplier: 1.2 },
-      diamond: { name: '钻石', icon: '💎', multiplier: 1.3 }
-    },
-
     // 星级配置，用于任务难度评级
     starLevels: {
       1: { name: '简单', multiplier: 1.0 },

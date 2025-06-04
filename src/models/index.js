@@ -247,7 +247,6 @@ const createDefaultData = async () => {
       firstName: '系统',
       lastName: '管理员',
       role: 'admin', // 管理员角色
-      skillLevel: 'diamond',
       status: 'active',
       emailVerifiedAt: new Date()
     });

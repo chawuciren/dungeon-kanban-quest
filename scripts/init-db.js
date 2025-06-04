@@ -38,6 +38,10 @@ function showHelp() {
   node scripts/init-db.js              # 正常初始化
   node scripts/init-db.js --force      # 强制重置
   node scripts/init-db.js --schema-only # 仅创建表
+
+迁移工具：
+  如果您有现有数据库需要移除技能等级字段，请使用：
+  node scripts/migrate-remove-skill-level.js
 `);
 }
 
@@ -122,7 +126,7 @@ async function initDatabase() {
       console.log('   🔮 艾丽丝产品 (alice_pm) - 预言师 (产品经理)');
       console.log('   ⚔️  鲍勃开发 (bob_dev) - 剑士 (开发者)');
       console.log('   🏹 查理测试 (charlie_test) - 弓箭手 (测试员)');
-      console.log('   ✨ 戴安娜设计 (diana_ui) - 附魔师 (UI设计师)');
+      console.log('   ✨ 戴安娜设计 (diana_ui) - 魔法师 (UI设计师)');
       console.log('   密码均为: [用户名]123 (如 alice123)');
       console.log('');
       console.log('🏰 默认公会（组织）：');
@@ -143,6 +147,7 @@ async function initDatabase() {
       console.log('   • 一个勇者可以在不同大陆中担任不同角色');
       console.log('   • 大陆可以关联多个公会，支持跨公会协作');
       console.log('   • 任务完成度和排行榜基于工时贡献计算');
+      console.log('   • 任务难度使用星级评定，不再使用技能等级要求');
     }
 
     console.log('');

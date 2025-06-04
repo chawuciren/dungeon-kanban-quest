@@ -32,7 +32,6 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
     const search = req.query.search || '';
     const role = req.query.role || '';
     const status = req.query.status || '';
-    const skillLevel = req.query.skillLevel || '';
 
     // 构建查询条件
     const whereClause = {};
@@ -52,10 +51,6 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
 
     if (status) {
       whereClause.status = status;
-    }
-
-    if (skillLevel) {
-      whereClause.skillLevel = skillLevel;
     }
 
     // 获取用户列表
@@ -81,8 +76,7 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
       filters: {
         search,
         role,
-        status,
-        skillLevel
+        status
       },
       roles: getAllRoles()
     });
@@ -94,7 +88,7 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
       title: '成员管理',
       users: [],
       pagination: { page: 1, totalPages: 0, hasNext: false, hasPrev: false, total: 0 },
-      filters: { search: '', role: '', status: '', skillLevel: '' },
+      filters: { search: '', role: '', status: '' },
       roles: getAllRoles()
     });
   }
@@ -121,7 +115,6 @@ router.post('/create', requireAuth, requireAdmin, async (req, res) => {
       lastName,
       phone,
       role,
-      skillLevel,
       status
     } = req.body;
 
@@ -155,7 +148,6 @@ router.post('/create', requireAuth, requireAdmin, async (req, res) => {
       lastName,
       phone: phone || null,
       role: role || 'developer', // 默认为开发者
-      skillLevel: skillLevel || 'novice',
       status: status || 'active'
     });
 
@@ -213,7 +205,6 @@ router.post('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
       lastName,
       phone,
       role,
-      skillLevel,
       status,
       password
     } = req.body;
@@ -253,7 +244,6 @@ router.post('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
       lastName,
       phone: phone || null,
       role: role || 'developer',
-      skillLevel: skillLevel || 'novice',
       status: status || 'active'
     };
 

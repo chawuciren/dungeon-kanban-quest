@@ -25,7 +25,7 @@
                             <input type="text" class="form-control" id="search" name="search"
                                    value="<%= filters.search %>" placeholder="用户名、邮箱、姓名">
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-4">
                             <label for="role" class="form-label">角色</label>
                             <select class="form-select" id="role" name="role">
                                 <option value="">全部角色</option>
@@ -38,7 +38,7 @@
                                 <option value="devops" <%= filters.role === 'devops' ? 'selected' : '' %>>✨ 运维工程师 </option>
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <label for="status" class="form-label">状态</label>
                             <select class="form-select" id="status" name="status">
                                 <option value="">全部状态</option>
@@ -47,18 +47,8 @@
                                 <option value="suspended" <%= filters.status === 'suspended' ? 'selected' : '' %>>已禁用</option>
                             </select>
                         </div>
-                        <div class="col-md-2">
-                            <label for="skillLevel" class="form-label">技能等级</label>
-                            <select class="form-select" id="skillLevel" name="skillLevel">
-                                <option value="">全部等级</option>
-                                <option value="novice" <%= filters.skillLevel === 'novice' ? 'selected' : '' %>>🔰 新手</option>
-                                <option value="bronze" <%= filters.skillLevel === 'bronze' ? 'selected' : '' %>>🥉 青铜</option>
-                                <option value="silver" <%= filters.skillLevel === 'silver' ? 'selected' : '' %>>🥈 白银</option>
-                                <option value="gold" <%= filters.skillLevel === 'gold' ? 'selected' : '' %>>🥇 黄金</option>
-                                <option value="diamond" <%= filters.skillLevel === 'diamond' ? 'selected' : '' %>>💎 钻石</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3 d-flex align-items-end">
+
+                        <div class="col-md-2 d-flex align-items-end">
                             <button type="submit" class="btn btn-outline-primary me-2">
                                 <i class="fas fa-search me-1"></i>
                                 搜索
@@ -88,7 +78,6 @@
                                     <tr>
                                         <th>成员信息</th>
                                         <th>职业角色</th>
-                                        <th>技能等级</th>
                                         <th>状态</th>
                                         <th>入会时间</th>
                                         <th>最后活动</th>
@@ -118,15 +107,6 @@
                                             </td>
                                             <td>
                                                 <%- renderRoleBadge(user.role, true) %>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-<%= user.skillLevel === 'diamond' ? 'info' : user.skillLevel === 'gold' ? 'warning' : user.skillLevel === 'silver' ? 'secondary' : user.skillLevel === 'bronze' ? 'dark' : 'light' %>">
-                                                    <% if (user.skillLevel === 'diamond') { %>💎 钻石
-                                                    <% } else if (user.skillLevel === 'gold') { %>🥇 黄金
-                                                    <% } else if (user.skillLevel === 'silver') { %>🥈 白银
-                                                    <% } else if (user.skillLevel === 'bronze') { %>🥉 青铜
-                                                    <% } else { %>🔰 新手<% } %>
-                                                </span>
                                             </td>
                                             <td>
                                                 <span class="badge bg-<%= user.status === 'active' ? 'success' : user.status === 'inactive' ? 'warning' : 'danger' %>">
@@ -183,21 +163,21 @@
                         <nav aria-label="用户列表分页">
                             <ul class="pagination justify-content-center mb-0">
                                 <li class="page-item <%= !pagination.hasPrev ? 'disabled' : '' %>">
-                                    <a class="page-link" href="?page=<%= pagination.page - 1 %>&search=<%= filters.search %>&role=<%= filters.role %>&status=<%= filters.status %>&skillLevel=<%= filters.skillLevel %>">
+                                    <a class="page-link" href="?page=<%= pagination.page - 1 %>&search=<%= filters.search %>&role=<%= filters.role %>&status=<%= filters.status %>">
                                         上一页
                                     </a>
                                 </li>
 
                                 <% for (let i = Math.max(1, pagination.page - 2); i <= Math.min(pagination.totalPages, pagination.page + 2); i++) { %>
                                     <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
-                                        <a class="page-link" href="?page=<%= i %>&search=<%= filters.search %>&role=<%= filters.role %>&status=<%= filters.status %>&skillLevel=<%= filters.skillLevel %>">
+                                        <a class="page-link" href="?page=<%= i %>&search=<%= filters.search %>&role=<%= filters.role %>&status=<%= filters.status %>">
                                             <%= i %>
                                         </a>
                                     </li>
                                 <% } %>
 
                                 <li class="page-item <%= !pagination.hasNext ? 'disabled' : '' %>">
-                                    <a class="page-link" href="?page=<%= pagination.page + 1 %>&search=<%= filters.search %>&role=<%= filters.role %>&status=<%= filters.status %>&skillLevel=<%= filters.skillLevel %>">
+                                    <a class="page-link" href="?page=<%= pagination.page + 1 %>&search=<%= filters.search %>&role=<%= filters.role %>&status=<%= filters.status %>">
                                         下一页
                                     </a>
                                 </li>
