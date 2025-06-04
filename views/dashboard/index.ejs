@@ -57,7 +57,7 @@
                 <div class="mb-3">
                     <i class="fas fa-coins fa-2x text-warning"></i>
                 </div>
-                <h4 class="mb-1"><%= (wallet.totalEarned || 0).toLocaleString() %></h4>
+                <h4 class="mb-1"><%= (wallet && wallet.totalEarned || 0).toLocaleString() %></h4>
                 <p class="text-muted mb-0">累计收入</p>
             </div>
         </div>
@@ -260,7 +260,7 @@
                             <div class="mb-1">
                                 <i class="fas fa-gem" style="color: #00bcd4; font-size: 1.2rem;"></i>
                             </div>
-                            <div class="fw-bold"><%= wallet.diamondBalance || 0 %></div>
+                            <div class="fw-bold"><%= (wallet && wallet.diamondBalance) || 0 %></div>
                             <small class="text-muted">钻石</small>
                         </div>
                     </div>
@@ -269,7 +269,7 @@
                             <div class="mb-1">
                                 <i class="fas fa-coins" style="color: #ffd700; font-size: 1.2rem;"></i>
                             </div>
-                            <div class="fw-bold"><%= wallet.goldBalance || 0 %></div>
+                            <div class="fw-bold"><%= (wallet && wallet.goldBalance) || 0 %></div>
                             <small class="text-muted">金币</small>
                         </div>
                     </div>
@@ -278,7 +278,7 @@
                             <div class="mb-1">
                                 <i class="fas fa-coins" style="color: #c0c0c0; font-size: 1.2rem;"></i>
                             </div>
-                            <div class="fw-bold"><%= wallet.silverBalance || 0 %></div>
+                            <div class="fw-bold"><%= (wallet && wallet.silverBalance) || 0 %></div>
                             <small class="text-muted">银币</small>
                         </div>
                     </div>
@@ -287,7 +287,7 @@
                             <div class="mb-1">
                                 <i class="fas fa-coins" style="color: #2d5016; font-size: 1.2rem;"></i>
                             </div>
-                            <div class="fw-bold"><%= wallet.copperBalance || 0 %></div>
+                            <div class="fw-bold"><%= (wallet && wallet.copperBalance) || 0 %></div>
                             <small class="text-muted">铜币</small>
                         </div>
                     </div>

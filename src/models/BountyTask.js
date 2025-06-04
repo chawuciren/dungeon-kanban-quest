@@ -79,6 +79,24 @@ const BountyTask = sequelize.define('BountyTask', {
       key: 'id'
     }
   },
+  // 协助人员（可以有多个）
+  assistantIds: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    defaultValue: [],
+    field: 'assistant_ids',
+    comment: '协助人员ID数组'
+  },
+  // 审核人员
+  reviewerId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    field: 'reviewer_id',
+    references: {
+      model: 'users',
+      key: 'id'
+    }
+  },
   parentTaskId: {
     type: DataTypes.UUID,
     allowNull: true,

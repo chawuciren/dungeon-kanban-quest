@@ -17,37 +17,34 @@
                     <% } %>
                 </p>
             </div>
-            <div class="d-flex gap-2">
-                <!-- 视图切换按钮 -->
-                <div class="btn-group">
-                    <%
-                        const currentQuery = new URLSearchParams();
-                        Object.keys(filters).forEach(key => {
-                            if (filters[key] && filters[key] !== '') {
-                                currentQuery.set(key, filters[key]);
-                            }
-                        });
-                        const queryString = currentQuery.toString();
-                        const queryPrefix = queryString ? '?' + queryString : '';
-                    %>
-                    <a href="/tasks<%= queryPrefix %>" class="btn btn-primary active">
-                        <i class="fas fa-list me-1"></i>列表视图
-                    </a>
-                    <a href="/tasks/tree<%= queryPrefix %>" class="btn btn-outline-secondary">
-                        <i class="fas fa-sitemap me-1"></i>树形视图
-                    </a>
-                    <a href="/tasks/kanban<%= queryPrefix %>" class="btn btn-outline-secondary">
-                        <i class="fas fa-columns me-1"></i>看板视图
-                    </a>
-                    <a href="/tasks/gantt<%= queryPrefix %>" class="btn btn-outline-secondary">
-                        <i class="fas fa-chart-gantt me-1"></i>甘特视图
-                    </a>
-                </div>
-                <a href="/tasks/create<%= queryPrefix ? queryPrefix + '&' : '?' %>view=list" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>
-                    发布任务
+            <div class="btn-group">
+                <%
+                    const currentQuery = new URLSearchParams();
+                    Object.keys(filters).forEach(key => {
+                        if (filters[key] && filters[key] !== '') {
+                            currentQuery.set(key, filters[key]);
+                        }
+                    });
+                    const queryString = currentQuery.toString();
+                    const queryPrefix = queryString ? '?' + queryString : '';
+                %>
+                <a href="/tasks<%= queryPrefix %>" class="btn btn-primary active">
+                    <i class="fas fa-list me-1"></i>列表视图
+                </a>
+                <a href="/tasks/tree<%= queryPrefix %>" class="btn btn-outline-secondary">
+                    <i class="fas fa-sitemap me-1"></i>树形视图
+                </a>
+                <a href="/tasks/kanban<%= queryPrefix %>" class="btn btn-outline-secondary">
+                    <i class="fas fa-columns me-1"></i>看板视图
+                </a>
+                <a href="/tasks/gantt<%= queryPrefix %>" class="btn btn-outline-secondary">
+                    <i class="fas fa-chart-gantt me-1"></i>甘特视图
                 </a>
             </div>
+            <a href="/tasks/create<%= queryPrefix ? queryPrefix + '&' : '?' %>view=list" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                发布任务
+            </a>
         </div>
     </div>
 </div>
@@ -92,13 +89,35 @@
                             </select>
                         </div>
                         <div class="col-md-3">
+                            <label class="form-label">任务状态</label>
+                            <select class="form-select" name="status">
+                                <option value="">全部状态</option>
+                                <option value="draft" <%= filters.status == 'draft' ? 'selected' : '' %>>草稿</option>
+                                <option value="published" <%= filters.status == 'published' ? 'selected' : '' %>>已发布</option>
+                                <option value="bidding" <%= filters.status == 'bidding' ? 'selected' : '' %>>竞标中</option>
+                                <option value="assigned" <%= filters.status == 'assigned' ? 'selected' : '' %>>已分配</option>
+                                <option value="in_progress" <%= filters.status == 'in_progress' ? 'selected' : '' %>>进行中</option>
+                                <option value="review" <%= filters.status == 'review' ? 'selected' : '' %>>待审核</option>
+                                <option value="completed" <%= filters.status == 'completed' ? 'selected' : '' %>>已完成</option>
+                                <option value="cancelled" <%= filters.status == 'cancelled' ? 'selected' : '' %>>已取消</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <label class="form-label">奖励货币</label>
                             <select class="form-select" name="rewardCurrency">
                                 <option value="">全部货币</option>
-                                <option value="diamond" <%= filters.rewardCurrency == 'diamond' ? 'selected' : '' %>>💎 钻石</option>
-                                <option value="gold" <%= filters.rewardCurrency == 'gold' ? 'selected' : '' %>>🥇 金币</option>
-                                <option value="silver" <%= filters.rewardCurrency == 'silver' ? 'selected' : '' %>>🥈 银币</option>
-                                <option value="copper" <%= filters.rewardCurrency == 'copper' ? 'selected' : '' %>>🥉 铜币</option>
+                                <option value="diamond" <%= filters.rewardCurrency == 'diamond' ? 'selected' : '' %>>
+                                    <i class="fas fa-gem" style="color: #00bcd4;"></i> 钻石
+                                </option>
+                                <option value="gold" <%= filters.rewardCurrency == 'gold' ? 'selected' : '' %>>
+                                    <i class="fas fa-coins" style="color: #ffd700;"></i> 金币
+                                </option>
+                                <option value="silver" <%= filters.rewardCurrency == 'silver' ? 'selected' : '' %>>
+                                    <i class="fas fa-coins" style="color: #c0c0c0;"></i> 银币
+                                </option>
+                                <option value="copper" <%= filters.rewardCurrency == 'copper' ? 'selected' : '' %>>
+                                    <i class="fas fa-coins" style="color: #2d5016;"></i> 铜币
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -175,6 +194,23 @@
                                             <span class="badge bg-warning me-1">
                                                 <% for(let i = 0; i < task.starLevel; i++) { %>⭐<% } %>
                                             </span>
+                                            <%
+                                            const statusConfig = {
+                                                'draft': { text: '草稿', class: 'secondary', icon: 'fas fa-edit' },
+                                                'published': { text: '已发布', class: 'primary', icon: 'fas fa-bullhorn' },
+                                                'bidding': { text: '竞标中', class: 'info', icon: 'fas fa-gavel' },
+                                                'assigned': { text: '已分配', class: 'warning', icon: 'fas fa-user-check' },
+                                                'in_progress': { text: '进行中', class: 'warning', icon: 'fas fa-play' },
+                                                'review': { text: '待审核', class: 'info', icon: 'fas fa-search' },
+                                                'completed': { text: '已完成', class: 'success', icon: 'fas fa-check' },
+                                                'cancelled': { text: '已取消', class: 'danger', icon: 'fas fa-times' }
+                                            };
+                                            const currentStatus = statusConfig[task.status] || statusConfig['draft'];
+                                            %>
+                                            <span class="badge bg-<%= currentStatus.class %> me-1">
+                                                <i class="<%= currentStatus.icon %> me-1"></i>
+                                                <%= currentStatus.text %>
+                                            </span>
                                             <span class="badge bg-secondary me-1">
                                                 <% if (task.skillRequired === 'novice') { %>🔰
                                                 <% } else if (task.skillRequired === 'bronze') { %>🥉
@@ -209,10 +245,15 @@
                                 <div class="col-md-4 text-end">
                                     <div class="reward-info mb-3">
                                         <div class="h4 mb-1">
-                                            <% if (task.rewardCurrency === 'diamond') { %>💎
-                                            <% } else if (task.rewardCurrency === 'gold') { %>🥇
-                                            <% } else if (task.rewardCurrency === 'silver') { %>🥈
-                                            <% } else if (task.rewardCurrency === 'copper') { %>🥉<% } %>
+                                            <% if (task.rewardCurrency === 'diamond') { %>
+                                                <i class="fas fa-gem me-1" style="color: #00bcd4;"></i>
+                                            <% } else if (task.rewardCurrency === 'gold') { %>
+                                                <i class="fas fa-coins me-1" style="color: #ffd700;"></i>
+                                            <% } else if (task.rewardCurrency === 'silver') { %>
+                                                <i class="fas fa-coins me-1" style="color: #c0c0c0;"></i>
+                                            <% } else if (task.rewardCurrency === 'copper') { %>
+                                                <i class="fas fa-coins me-1" style="color: #2d5016;"></i>
+                                            <% } %>
                                             <%= (task.baseReward || 0) + (task.bonusReward || 0) %>
                                         </div>
                                         <small class="text-muted">
@@ -231,9 +272,20 @@
                                                 已接单
                                             </span>
                                         <% } %>
-                                        <a href="/tasks/<%= task.id %>" class="btn btn-outline-secondary btn-sm">
-                                            查看详情
-                                        </a>
+
+                                        <div class="btn-group" role="group">
+                                            <a href="/tasks/<%= task.id %>" class="btn btn-outline-secondary btn-sm">
+                                                <i class="fas fa-eye me-1"></i>查看详情
+                                            </a>
+                                            <% if (user && (user.role === 'admin' || task.publisherId === user.id)) { %>
+                                                <a href="/tasks/<%= task.id %>/edit" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-edit me-1"></i>编辑
+                                                </a>
+                                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteTask('<%= task.id %>', '<%= task.title %>')">
+                                                    <i class="fas fa-trash me-1"></i>删除
+                                                </button>
+                                            <% } %>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -299,9 +351,30 @@ $(document).ready(function() {
     $('#filterForm select').change(function() {
         $('#filterForm').submit();
     });
-
-
 });
+
+// 删除任务函数
+function deleteTask(taskId, taskTitle) {
+    if (confirm(`确定要删除任务"${taskTitle}"吗？\n\n此操作不可撤销，任务的所有相关数据都将被删除。`)) {
+        // 创建表单并提交
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/tasks/${taskId}/delete`;
+
+        // 添加CSRF token（如果需要）
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (csrfToken) {
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = csrfToken.getAttribute('content');
+            form.appendChild(csrfInput);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
 </script>
 
 <%- include('../partials/footer') %>

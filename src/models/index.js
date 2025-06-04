@@ -190,6 +190,17 @@ BountyTask.belongsTo(User, {
   as: 'assignee'
 });
 
+// 审核人关联
+User.hasMany(BountyTask, {
+  foreignKey: 'reviewerId',
+  as: 'reviewTasks',
+  onDelete: 'SET NULL'
+});
+BountyTask.belongsTo(User, {
+  foreignKey: 'reviewerId',
+  as: 'reviewer'
+});
+
 // BountyTask 自关联 (父子任务)
 BountyTask.hasMany(BountyTask, {
   foreignKey: 'parentTaskId',

@@ -5,31 +5,23 @@
             <!-- 页面标题 -->
             <div class="mb-4">
                 <h2>
-                    <i class="fas fa-plus me-2 text-primary"></i>
-                    <%= parentTask ? '创建子任务' : '创建任务' %>
+                    <i class="fas fa-edit me-2 text-primary"></i>
+                    编辑任务
                 </h2>
-                <% if (parentTask) { %>
-                    <p class="text-muted mb-0">
-                        父任务：<a href="/tasks/<%= parentTask.id %>" class="text-decoration-none"><%= parentTask.title %></a>
-                    </p>
-                <% } %>
+                <p class="text-muted mb-0">
+                    修改任务信息和分配
+                </p>
             </div>
 
-            <!-- 创建表单 -->
+            <!-- 编辑表单 -->
             <div class="card">
                 <div class="card-body">
-                    <form action="/tasks/create" method="POST" class="needs-validation" novalidate>
-                        <!-- 隐藏字段 -->
-                        <% if (parentTask) { %>
-                            <input type="hidden" name="parentTaskId" value="<%= parentTask.id %>">
-                            <input type="hidden" name="projectId" value="<%= parentTask.projectId %>">
-                        <% } %>
-
+                    <form action="/tasks/<%= task.id %>/edit" method="POST" class="needs-validation" novalidate>
                         <!-- 基本信息 -->
                         <div class="row">
                             <div class="col-12 mb-3">
                                 <label for="title" class="form-label">任务标题 <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="title" name="title" required>
+                                <input type="text" class="form-control" id="title" name="title" value="<%= task.title %>" required>
                                 <div class="invalid-feedback">请输入任务标题</div>
                             </div>
                         </div>
@@ -37,73 +29,97 @@
                         <div class="row">
                             <div class="col-12 mb-3">
                                 <label for="description" class="form-label">任务描述 <span class="text-danger">*</span></label>
-                                <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                                <textarea class="form-control" id="description" name="description" rows="4" required><%= task.description %></textarea>
                                 <div class="invalid-feedback">请输入任务描述</div>
                             </div>
                         </div>
 
                         <!-- 项目信息 -->
-                        <% if (!parentTask) { %>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">所属大陆</label>
-                                    <div class="form-control-plaintext bg-light border rounded px-3 py-2">
-                                        <i class="fas fa-globe me-2 text-primary"></i>
-                                        <% if (projects && projects.length > 0) { %>
-                                            [<%= projects[0].key %>] <%= projects[0].name %>
-                                        <% } else { %>
-                                            未选择大陆
-                                        <% } %>
-                                    </div>
-                                    <div class="form-text">当前选中的探险大陆</div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">所属大陆</label>
+                                <div class="form-control-plaintext bg-light border rounded px-3 py-2">
+                                    <i class="fas fa-globe me-2 text-primary"></i>
+                                    [<%= task.project.key %>] <%= task.project.name %>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="taskType" class="form-label">任务类型</label>
-                                    <select class="form-select" id="taskType" name="taskType">
-                                        <option value="task">探险行动（任务）</option>
-                                        <option value="requirement">探险计划（需求）</option>
-                                        <option value="bug">魔物讨伐（Bug）</option>
-                                        <option value="epic">史诗委托（史诗）</option>
-                                        <option value="story">探险委托（故事）</option>
-                                    </select>
-                                </div>
+                                <div class="form-text">任务所属的探险大陆</div>
                             </div>
-                        <% } %>
+                            <div class="col-md-6 mb-3">
+                                <label for="taskType" class="form-label">任务类型</label>
+                                <select class="form-select" id="taskType" name="taskType">
+                                    <option value="task" <%= task.taskType === 'task' ? 'selected' : '' %>>探险行动（任务）</option>
+                                    <option value="requirement" <%= task.taskType === 'requirement' ? 'selected' : '' %>>探险计划（需求）</option>
+                                    <option value="bug" <%= task.taskType === 'bug' ? 'selected' : '' %>>魔物讨伐（Bug）</option>
+                                    <option value="epic" <%= task.taskType === 'epic' ? 'selected' : '' %>>史诗委托（史诗）</option>
+                                    <option value="story" <%= task.taskType === 'story' ? 'selected' : '' %>>探险委托（故事）</option>
+                                </select>
+                            </div>
+                        </div>
 
                         <!-- 任务属性 -->
                         <div class="row">
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-3 mb-3">
                                 <label for="starLevel" class="form-label">星级难度 <span class="text-danger">*</span></label>
                                 <select class="form-select" id="starLevel" name="starLevel" required>
                                     <option value="">选择难度</option>
-                                    <option value="1">⭐ 一星 - 简单任务（半天内）</option>
-                                    <option value="2">⭐⭐ 二星 - 常规任务（1-2天）</option>
-                                    <option value="3">⭐⭐⭐ 三星 - 复杂任务（3-5天）</option>
-                                    <option value="4">⭐⭐⭐⭐ 四星 - 核心任务（1-2周）</option>
-                                    <option value="5">⭐⭐⭐⭐⭐ 五星 - 关键任务（2周以上）</option>
+                                    <option value="1" <%= task.starLevel === 1 ? 'selected' : '' %>>⭐ 一星 - 简单任务（半天内）</option>
+                                    <option value="2" <%= task.starLevel === 2 ? 'selected' : '' %>>⭐⭐ 二星 - 常规任务（1-2天）</option>
+                                    <option value="3" <%= task.starLevel === 3 ? 'selected' : '' %>>⭐⭐⭐ 三星 - 复杂任务（3-5天）</option>
+                                    <option value="4" <%= task.starLevel === 4 ? 'selected' : '' %>>⭐⭐⭐⭐ 四星 - 核心任务（1-2周）</option>
+                                    <option value="5" <%= task.starLevel === 5 ? 'selected' : '' %>>⭐⭐⭐⭐⭐ 五星 - 关键任务（2周以上）</option>
                                 </select>
                                 <div class="invalid-feedback">请选择任务难度</div>
                             </div>
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-3 mb-3">
                                 <label for="skillRequired" class="form-label">技能要求 <span class="text-danger">*</span></label>
                                 <select class="form-select" id="skillRequired" name="skillRequired" required>
                                     <option value="">选择技能</option>
-                                    <option value="novice">🔰 新手</option>
-                                    <option value="bronze">🥉 铜牌</option>
-                                    <option value="silver">🥈 银牌</option>
-                                    <option value="gold">🥇 金牌</option>
-                                    <option value="diamond">💎 钻石</option>
+                                    <option value="novice" <%= task.skillRequired === 'novice' ? 'selected' : '' %>>🔰 新手</option>
+                                    <option value="bronze" <%= task.skillRequired === 'bronze' ? 'selected' : '' %>>🥉 铜牌</option>
+                                    <option value="silver" <%= task.skillRequired === 'silver' ? 'selected' : '' %>>🥈 银牌</option>
+                                    <option value="gold" <%= task.skillRequired === 'gold' ? 'selected' : '' %>>🥇 金牌</option>
+                                    <option value="diamond" <%= task.skillRequired === 'diamond' ? 'selected' : '' %>>💎 钻石</option>
                                 </select>
                                 <div class="invalid-feedback">请选择技能要求</div>
                             </div>
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-3 mb-3">
                                 <label for="urgencyLevel" class="form-label">紧急程度</label>
                                 <select class="form-select" id="urgencyLevel" name="urgencyLevel">
-                                    <option value="normal">📅 普通</option>
-                                    <option value="important">⚡ 重要</option>
-                                    <option value="urgent">🔥 紧急</option>
-                                    <option value="delayed">🕐 延后</option>
+                                    <option value="normal" <%= task.urgencyLevel === 'normal' ? 'selected' : '' %>>📅 普通</option>
+                                    <option value="important" <%= task.urgencyLevel === 'important' ? 'selected' : '' %>>⚡ 重要</option>
+                                    <option value="urgent" <%= task.urgencyLevel === 'urgent' ? 'selected' : '' %>>🔥 紧急</option>
+                                    <option value="delayed" <%= task.urgencyLevel === 'delayed' ? 'selected' : '' %>>🕐 延后</option>
                                 </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="status" class="form-label">任务状态</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="draft" <%= task.status === 'draft' ? 'selected' : '' %>>
+                                        <i class="fas fa-edit"></i> 草稿
+                                    </option>
+                                    <option value="published" <%= task.status === 'published' ? 'selected' : '' %>>
+                                        <i class="fas fa-bullhorn"></i> 已发布
+                                    </option>
+                                    <option value="bidding" <%= task.status === 'bidding' ? 'selected' : '' %>>
+                                        <i class="fas fa-gavel"></i> 竞标中
+                                    </option>
+                                    <option value="assigned" <%= task.status === 'assigned' ? 'selected' : '' %>>
+                                        <i class="fas fa-user-check"></i> 已分配
+                                    </option>
+                                    <option value="in_progress" <%= task.status === 'in_progress' ? 'selected' : '' %>>
+                                        <i class="fas fa-play"></i> 进行中
+                                    </option>
+                                    <option value="review" <%= task.status === 'review' ? 'selected' : '' %>>
+                                        <i class="fas fa-search"></i> 待审核
+                                    </option>
+                                    <option value="completed" <%= task.status === 'completed' ? 'selected' : '' %>>
+                                        <i class="fas fa-check"></i> 已完成
+                                    </option>
+                                    <option value="cancelled" <%= task.status === 'cancelled' ? 'selected' : '' %>>
+                                        <i class="fas fa-times"></i> 已取消
+                                    </option>
+                                </select>
+                                <div class="form-text">根据任务进展选择合适的状态</div>
                             </div>
                         </div>
 
@@ -111,34 +127,34 @@
                         <div class="row">
                             <div class="col-md-3 mb-3">
                                 <label for="baseReward" class="form-label">基础奖励 <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="baseReward" name="baseReward" min="1" required>
+                                <input type="number" class="form-control" id="baseReward" name="baseReward" min="1" value="<%= task.baseReward %>" required>
                                 <div class="invalid-feedback">请输入基础奖励</div>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label for="bonusReward" class="form-label">奖励金</label>
-                                <input type="number" class="form-control" id="bonusReward" name="bonusReward" min="0" value="0">
+                                <input type="number" class="form-control" id="bonusReward" name="bonusReward" min="0" value="<%= task.bonusReward %>">
                                 <div class="form-text">按时完成可获得</div>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label for="rewardCurrency" class="form-label">奖励货币</label>
                                 <select class="form-select" id="rewardCurrency" name="rewardCurrency">
-                                    <option value="gold">
+                                    <option value="gold" <%= task.rewardCurrency === 'gold' ? 'selected' : '' %>>
                                         <i class="fas fa-coins" style="color: #ffd700;"></i> 金币
                                     </option>
-                                    <option value="silver">
+                                    <option value="silver" <%= task.rewardCurrency === 'silver' ? 'selected' : '' %>>
                                         <i class="fas fa-coins" style="color: #c0c0c0;"></i> 银币
                                     </option>
-                                    <option value="copper">
+                                    <option value="copper" <%= task.rewardCurrency === 'copper' ? 'selected' : '' %>>
                                         <i class="fas fa-coins" style="color: #2d5016;"></i> 铜币
                                     </option>
-                                    <option value="diamond">
+                                    <option value="diamond" <%= task.rewardCurrency === 'diamond' ? 'selected' : '' %>>
                                         <i class="fas fa-gem" style="color: #00bcd4;"></i> 钻石
                                     </option>
                                 </select>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label class="form-label">总预算</label>
-                                <div class="form-control-plaintext fw-bold" id="totalBudget">0</div>
+                                <div class="form-control-plaintext fw-bold" id="totalBudget"><%= task.totalBudget %></div>
                             </div>
                         </div>
 
@@ -146,12 +162,12 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="estimatedHours" class="form-label">预估工时（小时）</label>
-                                <input type="number" class="form-control" id="estimatedHours" name="estimatedHours" min="0.5" step="0.5">
+                                <input type="number" class="form-control" id="estimatedHours" name="estimatedHours" min="0.5" step="0.5" value="<%= task.estimatedHours || '' %>">
                                 <div class="form-text">用于工时管理和奖励计算</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="dueDate" class="form-label">截止日期</label>
-                                <input type="date" class="form-control" id="dueDate" name="dueDate">
+                                <input type="date" class="form-control" id="dueDate" name="dueDate" value="<%= task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '' %>">
                             </div>
                         </div>
 
@@ -171,7 +187,7 @@
                                     <select class="form-select" id="assigneeId" name="assigneeId">
                                         <option value="">选择负责人</option>
                                         <% projectMembers.forEach(member => { %>
-                                            <option value="<%= member.user.id %>">
+                                            <option value="<%= member.user.id %>" <%= task.assigneeId === member.user.id ? 'selected' : '' %>>
                                                 <%= member.user.firstName %> <%= member.user.lastName %>
                                                 <% if (member.user.role === 'product_manager') { %>（产品经理）
                                                 <% } else if (member.user.role === 'developer') { %>（开发者）
@@ -189,7 +205,7 @@
                                     <label for="assistantIds" class="form-label">协助人员</label>
                                     <select class="form-select" id="assistantIds" name="assistantIds" multiple>
                                         <% projectMembers.forEach(member => { %>
-                                            <option value="<%= member.user.id %>">
+                                            <option value="<%= member.user.id %>" <%= task.assistantIds && task.assistantIds.includes(member.user.id) ? 'selected' : '' %>>
                                                 <%= member.user.firstName %> <%= member.user.lastName %>
                                                 <% if (member.user.role === 'product_manager') { %>（产品经理）
                                                 <% } else if (member.user.role === 'developer') { %>（开发者）
@@ -208,7 +224,7 @@
                                     <select class="form-select" id="reviewerId" name="reviewerId">
                                         <option value="">选择审核人员</option>
                                         <% projectMembers.forEach(member => { %>
-                                            <option value="<%= member.user.id %>">
+                                            <option value="<%= member.user.id %>" <%= task.reviewerId === member.user.id ? 'selected' : '' %>>
                                                 <%= member.user.firstName %> <%= member.user.lastName %>
                                                 <% if (member.user.role === 'product_manager') { %>（产品经理）
                                                 <% } else if (member.user.role === 'developer') { %>（开发者）
@@ -230,12 +246,12 @@
                             <div class="col-12">
                                 <hr>
                                 <div class="d-flex justify-content-between">
-                                    <a href="/tasks" class="btn btn-secondary">
+                                    <a href="/tasks/<%= task.id %>" class="btn btn-secondary">
                                         <i class="fas fa-arrow-left me-2"></i>返回
                                     </a>
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-paper-plane me-2"></i>
-                                        <%= parentTask ? '创建子任务' : '发布任务' %>
+                                        <i class="fas fa-save me-2"></i>
+                                        保存修改
                                     </button>
                                 </div>
                             </div>
@@ -258,45 +274,6 @@ $(document).ready(function() {
 
     // 监听奖励输入变化
     $('#baseReward, #bonusReward').on('input', updateTotalBudget);
-
-    // 根据星级推荐奖励
-    $('#starLevel').change(function() {
-        const starLevel = parseInt($(this).val());
-        const currency = $('#rewardCurrency').val();
-
-        let suggestedReward = 0;
-        switch (starLevel) {
-            case 1: suggestedReward = currency === 'gold' ? 50 : 500; break;
-            case 2: suggestedReward = currency === 'gold' ? 100 : 1000; break;
-            case 3: suggestedReward = currency === 'gold' ? 200 : 2000; break;
-            case 4: suggestedReward = currency === 'gold' ? 500 : 5000; break;
-            case 5: suggestedReward = currency === 'gold' ? 1000 : 10000; break;
-        }
-
-        if (suggestedReward > 0 && !$('#baseReward').val()) {
-            $('#baseReward').val(suggestedReward);
-            $('#bonusReward').val(Math.round(suggestedReward * 0.2));
-            updateTotalBudget();
-        }
-    });
-
-    // 根据星级推荐工时
-    $('#starLevel').change(function() {
-        const starLevel = parseInt($(this).val());
-        let suggestedHours = 0;
-
-        switch (starLevel) {
-            case 1: suggestedHours = 4; break;
-            case 2: suggestedHours = 12; break;
-            case 3: suggestedHours = 32; break;
-            case 4: suggestedHours = 80; break;
-            case 5: suggestedHours = 160; break;
-        }
-
-        if (suggestedHours > 0 && !$('#estimatedHours').val()) {
-            $('#estimatedHours').val(suggestedHours);
-        }
-    });
 
     // 表单验证
     $('form').on('submit', function(e) {

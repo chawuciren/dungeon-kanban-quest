@@ -151,7 +151,13 @@ router.get('/dashboard', async (req, res) => {
         diamondBalance: 0,
         goldBalance: 0,
         silverBalance: 0,
-        copperBalance: 0
+        copperBalance: 0,
+        frozenDiamond: 0,
+        frozenGold: 0,
+        frozenSilver: 0,
+        frozenCopper: 0,
+        totalEarned: 0,
+        totalSpent: 0
       });
     }
 

@@ -11,31 +11,30 @@
                 </h2>
                 <p class="text-muted mb-0">层级化展示任务的从属关系</p>
             </div>
-            <div class="d-flex gap-2">
-                <div class="btn-group">
-                    <%
-                        const currentQuery = new URLSearchParams();
-                        if (projectId) currentQuery.set('projectId', projectId);
-                        const queryString = currentQuery.toString();
-                        const queryPrefix = queryString ? '?' + queryString : '';
-                    %>
-                    <a href="/tasks<%= queryPrefix %>" class="btn btn-outline-secondary">
-                        <i class="fas fa-list me-1"></i>列表视图
-                    </a>
-                    <a href="/tasks/tree<%= queryPrefix %>" class="btn btn-primary active">
-                        <i class="fas fa-sitemap me-1"></i>树形视图
-                    </a>
-                    <a href="/tasks/kanban<%= queryPrefix %>" class="btn btn-outline-secondary">
-                        <i class="fas fa-columns me-1"></i>看板视图
-                    </a>
-                    <a href="/tasks/gantt<%= queryPrefix %>" class="btn btn-outline-secondary">
-                        <i class="fas fa-chart-gantt me-1"></i>甘特视图
-                    </a>
-                </div>
-                <a href="/tasks/create<%= queryPrefix ? queryPrefix + '&' : '?' %>view=tree" class="btn btn-primary">
-                    <i class="fas fa-plus me-1"></i>发布任务
+            <div class="btn-group">
+                <%
+                    const currentQuery = new URLSearchParams();
+                    if (projectId) currentQuery.set('projectId', projectId);
+                    const queryString = currentQuery.toString();
+                    const queryPrefix = queryString ? '?' + queryString : '';
+                %>
+                <a href="/tasks<%= queryPrefix %>" class="btn btn-outline-secondary">
+                    <i class="fas fa-list me-1"></i>列表视图
+                </a>
+                <a href="/tasks/tree<%= queryPrefix %>" class="btn btn-primary active">
+                    <i class="fas fa-sitemap me-1"></i>树形视图
+                </a>
+                <a href="/tasks/kanban<%= queryPrefix %>" class="btn btn-outline-secondary">
+                    <i class="fas fa-columns me-1"></i>看板视图
+                </a>
+                <a href="/tasks/gantt<%= queryPrefix %>" class="btn btn-outline-secondary">
+                    <i class="fas fa-chart-gantt me-1"></i>甘特视图
                 </a>
             </div>
+            <a href="/tasks/create<%= queryPrefix ? queryPrefix + '&' : '?' %>view=tree" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                发布任务
+            </a>
         </div>
     </div>
 </div>

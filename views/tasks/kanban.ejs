@@ -31,6 +31,10 @@
                     <i class="fas fa-chart-gantt me-1"></i>甘特视图
                 </a>
             </div>
+            <a href="/tasks/create<%= queryPrefix ? queryPrefix + '&' : '?' %>view=kanban" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                发布任务
+            </a>
         </div>
     </div>
 </div>
@@ -61,7 +65,7 @@
                                                 <%= task.title %>
                                             </a>
                                         </h6>
-                                        
+
                                         <!-- 任务元信息 -->
                                         <div class="task-meta mb-2">
                                             <span class="badge bg-warning me-1">
@@ -85,8 +89,8 @@
                                         <!-- 任务描述 -->
                                         <% if (task.description) { %>
                                             <p class="card-text text-muted small mb-2">
-                                                <%= task.description.length > 60 ? 
-                                                    task.description.substring(0, 60) + '...' : 
+                                                <%= task.description.length > 60 ?
+                                                    task.description.substring(0, 60) + '...' :
                                                     task.description %>
                                             </p>
                                         <% } %>
@@ -221,7 +225,7 @@
 $(document).ready(function() {
     // 初始化拖拽功能
     initDragAndDrop();
-    
+
     // 任务卡片点击事件
     $('.kanban-card').click(function(e) {
         if (!$(e.target).closest('a').length) {
@@ -235,42 +239,42 @@ $(document).ready(function() {
 function initDragAndDrop() {
     // 使任务卡片可拖拽
     $('.kanban-card').attr('draggable', true);
-    
+
     // 拖拽开始
     $(document).on('dragstart', '.kanban-card', function(e) {
         $(this).addClass('dragging');
         e.originalEvent.dataTransfer.setData('text/plain', $(this).data('task-id'));
     });
-    
+
     // 拖拽结束
     $(document).on('dragend', '.kanban-card', function(e) {
         $(this).removeClass('dragging');
         $('.kanban-body').removeClass('drag-over');
     });
-    
+
     // 拖拽进入列
     $(document).on('dragover', '.kanban-body', function(e) {
         e.preventDefault();
         $(this).addClass('drag-over');
     });
-    
+
     // 拖拽离开列
     $(document).on('dragleave', '.kanban-body', function(e) {
         $(this).removeClass('drag-over');
     });
-    
+
     // 放置任务
     $(document).on('drop', '.kanban-body', function(e) {
         e.preventDefault();
         $(this).removeClass('drag-over');
-        
+
         const taskId = e.originalEvent.dataTransfer.getData('text/plain');
         const newStatus = $(this).data('status');
         const $taskCard = $(`.kanban-card[data-task-id="${taskId}"]`);
-        
+
         // 移动卡片到新列
         $taskCard.appendTo(this);
-        
+
         // 这里应该调用API更新任务状态
         updateTaskStatus(taskId, newStatus);
     });
@@ -280,7 +284,7 @@ function initDragAndDrop() {
 function updateTaskStatus(taskId, newStatus) {
     // 显示加载状态
     KanbanApp.showAlert('正在更新任务状态...', 'info');
-    
+
     // 这里应该调用实际的API
     setTimeout(() => {
         KanbanApp.showAlert('任务状态更新功能正在开发中...', 'warning');

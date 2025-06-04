@@ -157,10 +157,10 @@ function renderStarRating(level, maxLevel = 5, size = 'md') {
 // 货币显示组件
 function renderCurrencyDisplay(amount, currency, showIcon = true) {
     const currencyConfig = {
-        diamond: { icon: '💎', class: 'diamond', name: '钻石' },
-        gold: { icon: '🥇', class: 'gold', name: '金币' },
-        silver: { icon: '🥈', class: 'silver', name: '银币' },
-        copper: { icon: '🥉', class: 'copper', name: '铜币' }
+        diamond: { icon: '<i class="fas fa-gem" style="color: #00bcd4;"></i>', class: 'diamond', name: '钻石' },
+        gold: { icon: '<i class="fas fa-coins" style="color: #ffd700;"></i>', class: 'gold', name: '金币' },
+        silver: { icon: '<i class="fas fa-coins" style="color: #c0c0c0;"></i>', class: 'silver', name: '银币' },
+        copper: { icon: '<i class="fas fa-coins" style="color: #2d5016;"></i>', class: 'copper', name: '铜币' }
     };
 
     const config = currencyConfig[currency] || currencyConfig.gold;
