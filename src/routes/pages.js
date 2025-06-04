@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { User, UserWallet, BountyTask, Project, CurrencyTransaction } = require('../models');
+const { User, BountyTask, Project } = require('../models');
 const { Op } = require('sequelize');
-const TransactionService = require('../services/TransactionService');
-const CheckinService = require('../services/CheckinService');
-const ExchangeService = require('../services/ExchangeService');
 
 // 首页
 router.get('/', (req, res) => {
@@ -36,7 +33,7 @@ router.post('/login', async (req, res) => {
       return res.redirect('/login');
     }
 
-    const { User, UserWallet } = require('../models');
+    const { User } = require('../models');
     const { Op } = require('sequelize');
 
     // 查找用户
@@ -46,11 +43,7 @@ router.post('/login', async (req, res) => {
           { username: login },
           { email: login }
         ]
-      },
-      include: [{
-        model: UserWallet,
-        as: 'wallet'
-      }]
+      }
     });
 
     if (!user) {

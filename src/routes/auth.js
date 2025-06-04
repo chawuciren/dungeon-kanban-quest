@@ -2,7 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const { Op } = require('sequelize');
-const { User, UserWallet } = require('../models');
+const { User } = require('../models');
 const config = require('../config');
 const logger = require('../config/logger');
 
@@ -67,14 +67,7 @@ router.post('/register', [
       status: 'active'
     });
 
-    // 创建用户钱包
-    await UserWallet.create({
-      userId: user.id,
-      goldBalance: config.gamification.dailyCheckin.baseRewards.gold, // 新用户基础奖励
-      diamondBalance: 0,
-      silverBalance: config.gamification.dailyCheckin.baseRewards.silver,
-      copperBalance: 0
-    });
+
 
     // 生成JWT令牌
     const token = jwt.sign(
@@ -144,11 +137,7 @@ router.post('/login', [
           { username: login },
           { email: login }
         ]
-      },
-      include: [{
-        model: UserWallet,
-        as: 'wallet'
-      }]
+      }
     });
 
     if (!user) {
@@ -246,12 +235,7 @@ router.get('/me', async (req, res) => {
       });
     }
 
-    const user = await User.findByPk(req.session.userId, {
-      include: [{
-        model: UserWallet,
-        as: 'wallet'
-      }]
-    });
+    const user = await User.findByPk(req.session.userId);
 
     if (!user) {
       return res.status(404).json({
@@ -263,8 +247,7 @@ router.get('/me', async (req, res) => {
     res.json({
       success: true,
       data: {
-        user: user.toJSON(),
-        wallet: user.wallet
+        user: user.toJSON()
       }
     });
 
