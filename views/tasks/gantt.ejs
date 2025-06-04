@@ -46,18 +46,30 @@
             <div class="card-body py-2">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-outline-secondary" id="viewModeDay">日</button>
-                        <button type="button" class="btn btn-outline-secondary active" id="viewModeWeek">周</button>
+                        <button type="button" class="btn btn-outline-secondary active" id="viewModeDay">日</button>
+                        <button type="button" class="btn btn-outline-secondary" id="viewModeWeek">周</button>
                         <button type="button" class="btn btn-outline-secondary" id="viewModeMonth">月</button>
                     </div>
                     <div class="d-flex align-items-center gap-3">
                         <div class="gantt-legend">
                             <span class="legend-item">
+                                <span class="legend-color task-draft"></span>
+                                草稿
+                            </span>
+                            <span class="legend-item">
                                 <span class="legend-color task-published"></span>
-                                待接单
+                                已发布
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color task-bidding"></span>
+                                竞标中
                             </span>
                             <span class="legend-item">
                                 <span class="legend-color task-assigned"></span>
+                                已分配
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color task-in_progress"></span>
                                 进行中
                             </span>
                             <span class="legend-item">
@@ -67,6 +79,10 @@
                             <span class="legend-item">
                                 <span class="legend-color task-completed"></span>
                                 已完成
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color task-cancelled"></span>
+                                已取消
                             </span>
                         </div>
                         <button type="button" class="btn btn-outline-secondary btn-sm" id="todayBtn">
@@ -90,6 +106,11 @@
                 </h6>
             </div>
             <div class="card-body p-0">
+                <!-- 任务列表头部，与右侧时间轴对齐 -->
+                <div class="task-list-header" id="task-list-header">
+                    <!-- 头部内容将动态生成以匹配右侧时间轴高度 -->
+                </div>
+                <!-- 任务列表内容 -->
                 <div id="task-list-container" class="task-list-container">
                     <!-- 任务列表将在这里渲染 -->
                 </div>
@@ -143,11 +164,33 @@
 
 <style>
 /* 任务列表面板样式 */
+.task-list-header {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+}
+
 .task-list-container {
     max-height: 600px;
     overflow-y: auto;
     overflow-x: auto;
-    border-radius: 0 0 0.5rem 0.5rem;
+}
+
+/* 左侧任务卡片选中状态 */
+.task-card.active {
+    background: #e3f2fd !important;
+    border-left: 4px solid #2196f3 !important;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3) !important;
+    transform: translateX(2px);
+    transition: all 0.2s ease;
+}
+
+.task-card.active .card-body {
+    background: transparent !important;
 }
 
 /* 复用列表视图的样式 */
@@ -186,7 +229,7 @@
 }
 
 .task-card .card-body {
-    padding: 0.75rem 1rem;
+    padding: 0 1rem !important;
     min-height: 60px;
 }
 
@@ -245,6 +288,75 @@
     background-color: #e3f2fd;
 }
 
+/* 甘特图树形结构样式 */
+.gantt-tree-item {
+    transition: all 0.2s ease;
+}
+
+.tree-toggle {
+    transition: all 0.2s ease;
+}
+
+.tree-toggle:hover {
+    background-color: #e9ecef !important;
+}
+
+.tree-children {
+    transition: all 0.2s ease;
+}
+
+/* 甘特图右侧样式 */
+.gantt-row {
+    display: flex;
+    border-bottom: 1px solid #e9ecef;
+    position: relative;
+}
+
+.gantt-tree-row {
+    transition: all 0.2s ease;
+}
+
+.gantt-cell {
+    flex: 1;
+    min-width: 30px;
+    border-right: 1px solid #f8f9fa;
+}
+
+.gantt-task-bar {
+    /* 移除固定背景，让状态颜色生效 */
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+}
+
+.gantt-task-bar:hover {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transform: translateY(-1px);
+}
+
+.gantt-task-bar .task-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gantt-tree-children {
+    transition: all 0.2s ease;
+}
+
+/* 甘特图容器样式 */
+#gantt-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+#gantt-body {
+    min-height: 200px;
+}
+
 /* 自定义甘特图样式 */
 .gantt-container {
     min-height: 600px;
@@ -266,6 +378,10 @@
     display: flex;
     flex-direction: column;
     border-bottom: 1px solid #dee2e6;
+    /* 确保时间轴背景覆盖整个内容宽度 */
+    min-width: 100%;
+    width: max-content;
+    background: #f8f9fa;
 }
 
 /* 月份行 */
@@ -274,6 +390,9 @@
     height: 30px;
     background: #e9ecef;
     border-bottom: 1px solid #dee2e6;
+    /* 确保月份行背景覆盖整个宽度 */
+    min-width: 100%;
+    width: max-content;
 }
 
 .gantt-timeline-month-header {
@@ -284,6 +403,7 @@
     font-weight: 600;
     font-size: 0.875rem;
     color: #495057;
+    flex-shrink: 0; /* 防止被压缩 */
 }
 
 /* 周行 */
@@ -313,7 +433,7 @@
     font-size: 0.8rem;
     color: #495057;
     background: #f8f9fa;
-    height: 40px;
+    height: 30px;
 }
 
 .gantt-timeline-week-cell.has-today {
@@ -325,12 +445,16 @@
 /* 日期行 */
 .gantt-timeline-day-row {
     display: flex;
-    height: 40px;
+    height: 30px;
+    /* 确保日期行背景覆盖整个宽度 */
+    min-width: 100%;
+    width: max-content;
+    background: #f8f9fa;
 }
 
 .gantt-timeline-day-cell {
     flex: 1;
-    min-width: 80px;
+    min-width: 70px;
     border-right: 1px solid #dee2e6;
     display: flex;
     flex-direction: column;
@@ -361,7 +485,7 @@
 /* 兼容旧样式 */
 .gantt-timeline-cell {
     flex: 1;
-    min-width: 100px;
+    min-width: 70px;
     border-right: 1px solid #dee2e6;
     display: flex;
     flex-direction: column;
@@ -436,6 +560,9 @@
 
 .gantt-body {
     position: relative;
+    /* 确保甘特图主体能够容纳所有内容 */
+    min-width: 100%;
+    width: max-content;
 }
 
 .gantt-row {
@@ -443,17 +570,48 @@
     height: 50px;
     border-bottom: 1px solid #e9ecef;
     position: relative;
+    /* 确保甘特图行背景和边框覆盖整个宽度 */
+    min-width: 100%;
+    width: max-content;
 }
 
 .gantt-row:hover {
     background: #f8f9fa;
 }
 
+/* 右侧甘特图行选中状态 */
+.gantt-row.selected {
+    background: #e3f2fd !important;
+    border-left: 4px solid #2196f3;
+    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.2);
+}
+
+.gantt-row.selected:hover {
+    background: #e3f2fd !important;
+}
+
 .gantt-cell {
     flex: 1;
-    min-width: 100px;
+    min-width: 70px;
     border-right: 1px solid #e9ecef;
     position: relative;
+}
+
+/* 日视图使用固定宽度 */
+.gantt-cell.day-view {
+    flex: none;
+    width: 70px;
+    min-width: 70px;
+}
+
+.gantt-timeline-day-cell {
+    flex: none;
+    width: 70px;
+    min-width: 70px;
+    text-align: center;
+    padding: 5px 2px;
+    border-right: 1px solid #e9ecef;
+    font-size: 0.875rem;
 }
 
 .gantt-task-bar {
@@ -537,39 +695,70 @@
     display: inline-block;
 }
 
-/* 任务状态颜色 */
-.gantt-task-bar.task-published {
-    background-color: #007bff;
+/* 任务状态颜色 - 优化区分度 (使用 !important 确保优先级) */
+.gantt-task-bar.task-draft {
+    background-color: #6c757d !important; /* 灰色 - 草稿 */
 }
 
-.gantt-task-bar.task-assigned,
+.gantt-task-bar.task-published {
+    background-color: #0d6efd !important; /* 亮蓝色 - 已发布 */
+}
+
+.gantt-task-bar.task-bidding {
+    background-color: #20c997 !important; /* 青绿色 - 竞标中 */
+}
+
+.gantt-task-bar.task-assigned {
+    background-color: #ffc107 !important; /* 黄色 - 已分配 */
+}
+
 .gantt-task-bar.task-in_progress {
-    background-color: #ffc107;
+    background-color: #f39c12 !important; /* 金黄色 - 进行中 */
 }
 
 .gantt-task-bar.task-review {
-    background-color: #17a2b8;
+    background-color: #6f42c1 !important; /* 紫色 - 待审核 */
 }
 
 .gantt-task-bar.task-completed {
-    background-color: #28a745;
+    background-color: #198754 !important; /* 深绿色 - 已完成 */
+}
+
+.gantt-task-bar.task-cancelled {
+    background-color: #dc3545 !important; /* 红色 - 已取消 */
+}
+
+/* 图例颜色 - 优化区分度 */
+.legend-color.task-draft {
+    background-color: #6c757d;
 }
 
 .legend-color.task-published {
-    background-color: #007bff;
+    background-color: #0d6efd;
 }
 
-.legend-color.task-assigned,
-.legend-color.task-in_progress {
+.legend-color.task-bidding {
+    background-color: #20c997;
+}
+
+.legend-color.task-assigned {
     background-color: #ffc107;
 }
 
+.legend-color.task-in_progress {
+    background-color: #f39c12;
+}
+
 .legend-color.task-review {
-    background-color: #17a2b8;
+    background-color: #6f42c1;
 }
 
 .legend-color.task-completed {
-    background-color: #28a745;
+    background-color: #198754;
+}
+
+.legend-color.task-cancelled {
+    background-color: #dc3545;
 }
 
 /* 今天线 */
@@ -691,6 +880,24 @@
     font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
 }
 
+/* 下拉菜单层级修复 - 简单有效的解决方案 */
+.dropdown-menu {
+    z-index: 1050 !important;
+}
+
+/* 当下拉菜单打开时，提升整个任务卡片的层级 */
+.gantt-task-item:has(.dropdown.show),
+.gantt-task-item.dropdown-active {
+    z-index: 1051 !important;
+    position: relative;
+}
+
+/* 确保下拉菜单容器有足够的层级 */
+.gantt-task-item .dropdown.show {
+    z-index: 1052 !important;
+    position: relative;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
     .gantt-legend {
@@ -733,8 +940,8 @@ function initGanttChart() {
         // 渲染任务列表
         renderTaskList(tasks);
 
-        // 渲染甘特图
-        renderGanttChart(tasks);
+        // 渲染甘特图 - 默认使用天视图
+        renderGanttChart(tasks, 'Day');
 
         // 绑定事件监听器
         bindEventListeners();
@@ -746,11 +953,11 @@ function initGanttChart() {
     }
 }
 
-// 当前视图模式
-let currentViewMode = 'Week';
+// 当前视图模式 - 默认改为天视图
+let currentViewMode = 'Day';
 
 // 渲染自定义甘特图
-function renderGanttChart(tasks, viewMode = 'Week') {
+function renderGanttChart(tasks, viewMode = 'Day') {
     console.log('开始渲染甘特图，视图模式:', viewMode);
     currentViewMode = viewMode;
 
@@ -761,8 +968,14 @@ function renderGanttChart(tasks, viewMode = 'Week') {
     // 渲染时间轴
     renderTimeline(dateRange, viewMode);
 
+    // 渲染左侧任务列表头部（与右侧时间轴对齐）
+    renderTaskListHeader(viewMode);
+
     // 渲染任务条
     renderTaskBars(tasks, dateRange);
+
+    // 设置甘特图容器的最小宽度，确保背景和边框覆盖所有内容
+    setGanttContainerWidth(dateRange, viewMode);
 
     // 渲染今天线
     renderTodayLine(dateRange);
@@ -826,6 +1039,49 @@ function calculateDateRange(tasks, viewMode = 'Week') {
     };
 }
 
+// 渲染左侧任务列表头部
+function renderTaskListHeader(viewMode) {
+    const header = document.getElementById('task-list-header');
+    header.innerHTML = '';
+
+    // 所有视图模式都使用统一的简单头部
+    const headerRow = document.createElement('div');
+    headerRow.className = 'task-list-header-row';
+    headerRow.style.height = '30px';
+    headerRow.style.background = '#e9ecef';
+    headerRow.style.borderBottom = '1px solid #dee2e6';
+    header.appendChild(headerRow);
+}
+
+// 设置甘特图容器宽度
+function setGanttContainerWidth(dateRange, viewMode) {
+    if (!dateRange) return;
+
+    let totalWidth;
+
+    if (viewMode === 'Day') {
+        // 日视图：每天70px固定宽度
+        totalWidth = dateRange.totalDays * 70;
+    } else {
+        // 周视图和月视图：使用默认的flex布局，不设置固定宽度
+        return;
+    }
+
+    // 设置甘特图相关元素的最小宽度
+    const timeline = document.getElementById('gantt-timeline');
+    const ganttBody = document.getElementById('gantt-body');
+
+    if (timeline) {
+        timeline.style.minWidth = `${totalWidth}px`;
+    }
+
+    if (ganttBody) {
+        ganttBody.style.minWidth = `${totalWidth}px`;
+    }
+
+    console.log(`设置甘特图宽度: ${totalWidth}px (${dateRange.totalDays}天 × 70px)`);
+}
+
 // 渲染时间轴
 function renderTimeline(dateRange, viewMode = 'Week') {
     const timeline = document.getElementById('gantt-timeline');
@@ -868,12 +1124,14 @@ function renderMonthTimeline(dateRange, timeline, todayStr) {
     // 创建单行月份显示
     const monthRow = document.createElement('div');
     monthRow.className = 'gantt-timeline-month-row';
-    monthRow.style.height = '70px'; // 月视图时间轴更高
+    monthRow.style.height = '30px'; // 统一高度
 
     Object.values(monthGroups).forEach(monthGroup => {
         const monthCell = document.createElement('div');
         monthCell.className = 'gantt-timeline-month-header month-view';
         monthCell.style.flex = monthGroup.dates.length;
+        // 设置最小宽度确保与日期列对齐
+        monthCell.style.minWidth = `${monthGroup.dates.length * 70}px`;
 
         if (monthGroup.hasToday) {
             monthCell.classList.add('has-today');
@@ -953,6 +1211,8 @@ function renderWeekTimeline(dateRange, timeline, todayStr) {
         const monthCell = document.createElement('div');
         monthCell.className = 'gantt-timeline-month-header';
         monthCell.style.flex = monthGroup.dates.length;
+        // 设置最小宽度确保与日期列对齐
+        monthCell.style.minWidth = `${monthGroup.dates.length * 70}px`;
         monthCell.textContent = `${monthGroup.year}年${monthGroup.month + 1}月`;
         monthRow.appendChild(monthCell);
     });
@@ -1014,7 +1274,16 @@ function renderDayTimeline(dateRange, timeline, todayStr) {
     monthGroups.forEach(monthGroup => {
         const monthCell = document.createElement('div');
         monthCell.className = 'gantt-timeline-month-header';
-        monthCell.style.flex = monthGroup.dates.length;
+
+        // 日视图使用固定宽度，其他视图使用flex
+        if (currentViewMode === 'Day') {
+            monthCell.style.flex = 'none';
+            monthCell.style.width = `${monthGroup.dates.length * 70}px`;
+        } else {
+            monthCell.style.flex = monthGroup.dates.length;
+            monthCell.style.minWidth = `${monthGroup.dates.length * 70}px`;
+        }
+
         monthCell.textContent = `${monthGroup.year}年${monthGroup.month + 1}月`;
         monthRow.appendChild(monthCell);
     });
@@ -1046,73 +1315,145 @@ function getWeekNumber(date) {
     return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 }
 
-// 渲染任务条
+// 渲染任务条 - 支持树形结构
 function renderTaskBars(tasks, dateRange) {
     const ganttBody = document.getElementById('gantt-body');
     ganttBody.innerHTML = '';
 
-    tasks.forEach((task, index) => {
+    // 构建树形结构
+    const taskTree = buildTaskTree(tasks);
+
+    // 渲染树形任务条
+    renderTaskBarNodes(taskTree, dateRange, ganttBody, 0);
+}
+
+// 渲染树形任务条节点
+function renderTaskBarNodes(nodes, dateRange, container, level) {
+    nodes.forEach(task => {
+        const hasChildren = task.children && task.children.length > 0;
+
+        // 创建任务行
         const row = document.createElement('div');
-        row.className = 'gantt-row';
+        row.className = 'gantt-row gantt-tree-row';
+        row.setAttribute('data-task-id', task.id);
+        row.setAttribute('data-level', level);
+        // 不设置 marginLeft，保持与左侧对齐
+
+        // 设置行高与左侧任务卡片一致
+        row.style.height = '60px'; // 与任务卡片高度一致
+        row.style.minHeight = '60px';
+        row.style.marginBottom = '4px'; // 与任务卡片间距一致
+        row.style.cursor = 'pointer'; // 添加鼠标指针样式
+
+        // 添加点击事件
+        row.addEventListener('click', () => {
+            highlightTask(task.id);
+        });
 
         // 创建每日的单元格
         dateRange.dates.forEach(date => {
             const cell = document.createElement('div');
-            cell.className = 'gantt-cell';
+            cell.className = currentViewMode === 'Day' ? 'gantt-cell day-view' : 'gantt-cell';
+            cell.style.height = '100%';
             row.appendChild(cell);
         });
 
         // 计算任务条的位置和宽度
-        const taskStart = new Date(task.start);
-        const taskEnd = new Date(task.end);
+        if (task.start && task.end) {
+            const startIndex = dateRange.dates.findIndex(date =>
+                date.toISOString().split('T')[0] === task.start
+            );
+            const endIndex = dateRange.dates.findIndex(date =>
+                date.toISOString().split('T')[0] === task.end
+            );
 
-        const startIndex = dateRange.dates.findIndex(date =>
-            date.toISOString().split('T')[0] === task.start
-        );
-        const endIndex = dateRange.dates.findIndex(date =>
-            date.toISOString().split('T')[0] === task.end
-        );
+            // 调试信息：检查日期计算
+            if (startIndex < 0 || endIndex < 0) {
+                console.warn(`任务 ${task.name} 日期超出范围:`, {
+                    taskStart: task.start,
+                    taskEnd: task.end,
+                    startIndex,
+                    endIndex,
+                    dateRangeStart: dateRange.dates[0]?.toISOString().split('T')[0],
+                    dateRangeEnd: dateRange.dates[dateRange.dates.length - 1]?.toISOString().split('T')[0]
+                });
+            }
 
-        if (startIndex >= 0 && endIndex >= 0) {
-            const taskBar = document.createElement('div');
-            taskBar.className = `gantt-task-bar task-${task.task.status}`;
-            taskBar.style.left = `${(startIndex / dateRange.totalDays) * 100}%`;
-            taskBar.style.width = `${((endIndex - startIndex + 1) / dateRange.totalDays) * 100}%`;
+            if (startIndex >= 0 && endIndex >= 0) {
+                const taskBar = document.createElement('div');
+                taskBar.className = `gantt-task-bar task-${task.task.status}`;
+                taskBar.style.position = 'absolute';
 
-            // 添加进度条
-            const progressBar = document.createElement('div');
-            progressBar.className = 'task-progress';
-            progressBar.style.width = `${task.progress}%`;
-            taskBar.appendChild(progressBar);
+                // 日视图使用固定宽度计算，其他视图使用百分比
+                if (currentViewMode === 'Day') {
+                    const dayWidth = 70; // 固定日期单元格宽度
+                    taskBar.style.left = `${startIndex * dayWidth}px`;
+                    taskBar.style.width = `${(endIndex - startIndex + 1) * dayWidth}px`;
+                } else {
+                    // 周视图和月视图保持原有的百分比计算
+                    taskBar.style.left = `${(startIndex / dateRange.totalDays) * 100}%`;
+                    taskBar.style.width = `${((endIndex - startIndex + 1) / dateRange.totalDays) * 100}%`;
+                }
 
-            // 添加任务名称
-            const taskName = document.createElement('span');
-            taskName.className = 'task-name';
-            taskName.textContent = task.name;
-            taskBar.appendChild(taskName);
+                taskBar.style.height = '24px';
+                taskBar.style.top = '50%';
+                taskBar.style.transform = 'translateY(-50%)';
+                taskBar.style.borderRadius = '4px';
+                taskBar.style.cursor = 'pointer';
 
-            // 添加开始时间标签
-            const startLabel = document.createElement('div');
-            startLabel.className = 'gantt-time-label start';
-            startLabel.textContent = formatDate(task.start);
-            taskBar.appendChild(startLabel);
+                // 根据任务状态设置颜色 - 优化区分度的颜色映射
+                const statusColors = {
+                    'draft': '#6c757d',        // 灰色 - 草稿
+                    'published': '#0d6efd',    // 亮蓝色 - 已发布
+                    'bidding': '#20c997',      // 青绿色 - 竞标中
+                    'assigned': '#ffc107',     // 黄色 - 已分配
+                    'in_progress': '#f39c12',  // 金黄色 - 进行中
+                    'review': '#6f42c1',       // 紫色 - 待审核
+                    'completed': '#198754',    // 深绿色 - 已完成
+                    'cancelled': '#dc3545'     // 红色 - 已取消
+                };
+                taskBar.style.backgroundColor = statusColors[task.task.status] || '#6c757d';
 
-            // 添加结束时间标签
-            const endLabel = document.createElement('div');
-            endLabel.className = 'gantt-time-label end';
-            endLabel.textContent = formatDate(task.end);
-            taskBar.appendChild(endLabel);
+                // 暂时移除进度条功能，只显示状态颜色
+                // TODO: 后续可以根据需要添加实际进度功能
 
-            // 添加点击事件
-            taskBar.addEventListener('click', () => {
-                highlightTask(task.id);
-                showTaskDetail(task.task);
-            });
+                // 添加任务名称
+                const taskName = document.createElement('span');
+                taskName.className = 'task-name';
+                taskName.textContent = task.name;
+                taskName.style.color = 'white';
+                taskName.style.fontSize = '12px';
+                taskName.style.fontWeight = '500';
+                taskName.style.padding = '0 8px';
+                taskName.style.lineHeight = '24px';
+                taskName.style.whiteSpace = 'nowrap';
+                taskName.style.overflow = 'hidden';
+                taskName.style.textOverflow = 'ellipsis';
+                taskBar.appendChild(taskName);
 
-            row.appendChild(taskBar);
+                // 添加点击事件 - 只保留高亮功能
+                taskBar.addEventListener('click', (e) => {
+                    e.stopPropagation(); // 阻止事件冒泡到行
+                    highlightTask(task.id);
+                });
+
+                row.style.position = 'relative';
+                row.appendChild(taskBar);
+            }
         }
 
-        ganttBody.appendChild(row);
+        container.appendChild(row);
+
+        // 渲染子任务（默认隐藏）
+        if (hasChildren) {
+            const childrenContainer = document.createElement('div');
+            childrenContainer.className = 'gantt-tree-children';
+            childrenContainer.setAttribute('data-parent-id', task.id);
+            childrenContainer.style.display = 'none';
+
+            renderTaskBarNodes(task.children, dateRange, childrenContainer, level + 1);
+            container.appendChild(childrenContainer);
+        }
     });
 }
 
@@ -1312,6 +1653,9 @@ function bindEventListeners() {
             todayLine.scrollIntoView({ behavior: 'smooth', inline: 'center' });
         }
     });
+
+    // 初始化下拉菜单定位修复
+    initDropdownFix();
 }
 
 // 更新活动按钮
@@ -1322,7 +1666,7 @@ function updateActiveButton(activeBtn) {
     activeBtn.classList.add('active');
 }
 
-// 渲染任务列表
+// 渲染任务列表 - 树形结构
 function renderTaskList(tasks) {
     const container = document.getElementById('task-list-container');
 
@@ -1331,20 +1675,84 @@ function renderTaskList(tasks) {
         return;
     }
 
-    const taskListHtml = tasks.map(task => {
+    // 构建树形结构
+    const taskTree = buildTaskTree(tasks);
+
+    // 渲染树形任务列表
+    const taskListHtml = renderTaskTreeNodes(taskTree, 0);
+
+    container.innerHTML = taskListHtml;
+
+    // 初始化快速编辑功能
+    initQuickEdit();
+
+    // 初始化树形展开/折叠功能
+    initTreeToggle();
+}
+
+// 构建任务树形结构
+function buildTaskTree(tasks) {
+    const taskMap = new Map();
+    const rootTasks = [];
+
+    // 创建任务映射
+    tasks.forEach(task => {
+        taskMap.set(task.id, {
+            ...task,
+            children: []
+        });
+    });
+
+    // 构建父子关系
+    tasks.forEach(task => {
+        const taskNode = taskMap.get(task.id);
+        if (task.task.parentTaskId) {
+            const parent = taskMap.get(task.task.parentTaskId);
+            if (parent) {
+                parent.children.push(taskNode);
+            } else {
+                // 父任务不在当前列表中，作为根任务处理
+                rootTasks.push(taskNode);
+            }
+        } else {
+            rootTasks.push(taskNode);
+        }
+    });
+
+    return rootTasks;
+}
+
+// 渲染树形节点
+function renderTaskTreeNodes(nodes, level) {
+    return nodes.map(task => {
+        const hasChildren = task.children && task.children.length > 0;
         const taskData = task.task;
         const assigneeName = taskData.assignee ?
             `${taskData.assignee.firstName || ''} ${taskData.assignee.lastName || ''}`.trim() || taskData.assignee.username :
             '未分配';
 
-        return `
-            <div class="card mb-1 task-card gantt-task-item" data-task-id="${task.id}" onclick="highlightTask('${task.id}')">
+        // 生成当前任务的HTML
+        let taskHtml = `
+            <div class="card mb-1 task-card gantt-task-item gantt-tree-item"
+                 data-task-id="${task.id}"
+                 data-level="${level}"
+                 onclick="highlightTask('${task.id}')"
+                 style="margin-left: ${level * 20}px;">
                 <div class="card-body py-1 px-2">
                     <div class="row align-items-center">
-                        <!-- 任务标题和星级 -->
+                        <!-- 树形展开按钮和任务标题 -->
                         <div class="col-md-3">
                             <div class="d-flex align-items-center">
-                                <h6 class="card-title mb-0 me-2 text-truncate" style="max-width: 200px;">
+                                ${hasChildren ? `
+                                    <button class="btn btn-sm btn-outline-secondary tree-toggle me-2"
+                                            data-task-id="${task.id}"
+                                            style="width: 24px; height: 24px; padding: 0; font-size: 12px;">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                ` : `
+                                    <div style="width: 24px; height: 24px; margin-right: 8px;"></div>
+                                `}
+                                <h6 class="card-title mb-0 me-2 text-truncate" style="max-width: 180px;">
                                     <a href="/tasks/${taskData.id}" class="text-decoration-none task-title-link">
                                         ${task.name}
                                     </a>
@@ -1434,12 +1842,78 @@ function renderTaskList(tasks) {
                 </div>
             </div>
         `;
+
+        // 添加子任务（默认隐藏）
+        if (hasChildren) {
+            const childrenHtml = renderTaskTreeNodes(task.children, level + 1);
+            taskHtml += `
+                <div class="tree-children" data-parent-id="${task.id}" style="display: none;">
+                    ${childrenHtml}
+                </div>
+            `;
+        }
+
+        return taskHtml;
     }).join('');
+}
 
-    container.innerHTML = taskListHtml;
+// 初始化树形展开/折叠功能
+function initTreeToggle() {
+    // 绑定展开/折叠按钮事件
+    $(document).off('click', '.tree-toggle').on('click', '.tree-toggle', function(e) {
+        e.stopPropagation(); // 阻止事件冒泡
 
-    // 初始化快速编辑功能
-    initQuickEdit();
+        const $button = $(this);
+        const taskId = $button.data('task-id');
+        const $icon = $button.find('i');
+
+        // 左侧任务列表的子任务
+        const $taskChildren = $(`.tree-children[data-parent-id="${taskId}"]`);
+
+        // 右侧甘特图的子任务条
+        const $ganttChildren = $(`.gantt-tree-children[data-parent-id="${taskId}"]`);
+
+        if ($taskChildren.is(':visible')) {
+            // 折叠
+            $taskChildren.slideUp(200);
+            $ganttChildren.slideUp(200);
+            $icon.removeClass('fa-chevron-down').addClass('fa-chevron-right');
+        } else {
+            // 展开
+            $taskChildren.slideDown(200);
+            $ganttChildren.slideDown(200);
+            $icon.removeClass('fa-chevron-right').addClass('fa-chevron-down');
+        }
+    });
+}
+
+// 初始化下拉菜单定位修复
+function initDropdownFix() {
+    // 监听所有下拉菜单的显示事件
+    $(document).on('show.bs.dropdown', '.gantt-task-item .dropdown', function(e) {
+        const $dropdown = $(this);
+        const $toggle = $dropdown.find('.dropdown-toggle');
+        const $menu = $dropdown.find('.dropdown-menu');
+
+        // 标记任务卡片为活动状态，提升z-index
+        $dropdown.closest('.gantt-task-item').addClass('dropdown-active');
+
+        // 简化定位逻辑，让Bootstrap自己处理定位
+        // 只需要确保z-index足够高
+        setTimeout(() => {
+            $menu.css({
+                zIndex: 10000
+            });
+        }, 0);
+    });
+
+    // 监听下拉菜单的隐藏事件
+    $(document).on('hide.bs.dropdown', '.gantt-task-item .dropdown', function(e) {
+        const $dropdown = $(this);
+
+        // 移除任务卡片的活动状态
+        $dropdown.closest('.gantt-task-item').removeClass('dropdown-active');
+    });
 }
 
 // 初始化快速编辑功能
@@ -1564,17 +2038,26 @@ function deleteTask(taskId, taskTitle) {
     }
 }
 
-// 高亮任务
+// 高亮任务 - 左右两侧联动
 function highlightTask(taskId) {
     // 清除所有高亮
     document.querySelectorAll('.gantt-task-item').forEach(item => {
         item.classList.remove('active');
     });
+    document.querySelectorAll('.gantt-row').forEach(row => {
+        row.classList.remove('selected');
+    });
 
-    // 高亮选中的任务
-    const taskItem = document.querySelector(`[data-task-id="${taskId}"]`);
-    if (taskItem) {
-        taskItem.classList.add('active');
+    // 高亮左侧任务列表中的任务
+    const leftTaskItem = document.querySelector(`.gantt-task-item[data-task-id="${taskId}"]`);
+    if (leftTaskItem) {
+        leftTaskItem.classList.add('active');
+    }
+
+    // 高亮右侧甘特图中的任务行
+    const rightTaskRow = document.querySelector(`.gantt-row[data-task-id="${taskId}"]`);
+    if (rightTaskRow) {
+        rightTaskRow.classList.add('selected');
     }
 }
 

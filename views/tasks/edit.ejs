@@ -137,7 +137,7 @@ const getValue = (field, defaultValue = '') => {
                                 <label for="urgencyLevel" class="form-label">紧急程度 <span class="text-danger">*</span></label>
                                 <select class="form-select" id="urgencyLevel" name="urgencyLevel" required>
                                     <option value="">选择紧急程度</option>
-                                    <option value="normal" <%= getValue('urgencyLevel', 'normal') === 'normal' ? 'selected' : '' %>>📅 普通</option>
+                                    <option value="normal" <%= getValue('urgencyLevel') === 'normal' ? 'selected' : '' %>>📅 普通</option>
                                     <option value="important" <%= getValue('urgencyLevel') === 'important' ? 'selected' : '' %>>⚡ 重要</option>
                                     <option value="urgent" <%= getValue('urgencyLevel') === 'urgent' ? 'selected' : '' %>>🔥 紧急</option>
                                     <option value="delayed" <%= getValue('urgencyLevel') === 'delayed' ? 'selected' : '' %>>🕐 延后</option>
@@ -178,13 +178,13 @@ const getValue = (field, defaultValue = '') => {
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label for="startDate" class="form-label">起始日期 <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" id="startDate" name="startDate" value="<%= getValue('startDate') && getValue('startDate') !== '' ? (getValue('startDate').includes('-') ? getValue('startDate') : new Date(getValue('startDate')).toISOString().split('T')[0]) : '' %>" required>
+                                <input type="date" class="form-control" id="startDate" name="startDate" value="<%= getValue('startDate') && getValue('startDate') !== '' ? (typeof getValue('startDate') === 'string' && getValue('startDate').includes('-') ? getValue('startDate') : new Date(getValue('startDate')).toISOString().split('T')[0]) : '' %>" required>
                                 <div class="invalid-feedback">请选择起始日期</div>
                                 <div class="form-text">任务计划开始时间</div>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label for="dueDate" class="form-label">截止日期 <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" id="dueDate" name="dueDate" value="<%= getValue('dueDate') && getValue('dueDate') !== '' ? (getValue('dueDate').includes('-') ? getValue('dueDate') : new Date(getValue('dueDate')).toISOString().split('T')[0]) : '' %>" required>
+                                <input type="date" class="form-control" id="dueDate" name="dueDate" value="<%= getValue('dueDate') && getValue('dueDate') !== '' ? (typeof getValue('dueDate') === 'string' && getValue('dueDate').includes('-') ? getValue('dueDate') : new Date(getValue('dueDate')).toISOString().split('T')[0]) : '' %>" required>
                                 <div class="invalid-feedback">请选择截止日期</div>
                                 <div class="form-text">任务必须完成时间</div>
                             </div>
@@ -234,7 +234,7 @@ const getValue = (field, defaultValue = '') => {
                                     <select class="form-select" id="assigneeId" name="assigneeId" required>
                                         <option value="">选择负责人</option>
                                         <% projectMembers.forEach(member => { %>
-                                            <option value="<%= member.user.id %>" <%= task && task.assigneeId === member.user.id ? 'selected' : '' %>>
+                                            <option value="<%= member.user.id %>" <%= getValue('assigneeId') === member.user.id ? 'selected' : '' %>>
                                                 <%= member.user.firstName %> <%= member.user.lastName %>
                                                 <% if (member.user.role === 'product_manager') { %>（产品经理）
                                                 <% } else if (member.user.role === 'developer') { %>（开发者）
@@ -268,7 +268,7 @@ const getValue = (field, defaultValue = '') => {
                                                                name="assistantIds"
                                                                value="<%= member.user.id %>"
                                                                id="assistant_<%= member.user.id %>"
-                                                               <%= task && task.assistantIds && task.assistantIds.includes(member.user.id) ? 'checked' : '' %>>
+                                                               <%= getValue('assistantIds') && Array.isArray(getValue('assistantIds')) && getValue('assistantIds').includes(member.user.id) ? 'checked' : (task && task.assistantIds && task.assistantIds.includes(member.user.id) ? 'checked' : '') %>>
                                                         <div class="flex-grow-1">
                                                             <div class="d-flex justify-content-between align-items-center">
                                                                 <span class="fw-medium">
@@ -302,7 +302,7 @@ const getValue = (field, defaultValue = '') => {
                                     <select class="form-select" id="reviewerId" name="reviewerId" required>
                                         <option value="">选择审核人</option>
                                         <% projectMembers.forEach(member => { %>
-                                            <option value="<%= member.user.id %>" <%= task && task.reviewerId === member.user.id ? 'selected' : '' %>>
+                                            <option value="<%= member.user.id %>" <%= getValue('reviewerId') === member.user.id ? 'selected' : '' %>>
                                                 <%= member.user.firstName %> <%= member.user.lastName %>
                                                 <% if (member.user.role === 'product_manager') { %>（产品经理）
                                                 <% } else if (member.user.role === 'developer') { %>（开发者）

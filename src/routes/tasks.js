@@ -310,9 +310,21 @@ router.get('/gantt', requireProjectSelection, validateProjectAccess, async (req,
       let startDate = task.startDate || task.createdAt;
       let endDate = task.dueDate;
 
-      // 确保startDate是Date对象
+      // 调试信息（可选）
+      // console.log(`任务 ${task.title} 原始日期:`, {
+      //   originalStartDate: task.startDate,
+      //   originalDueDate: task.dueDate,
+      //   createdAt: task.createdAt
+      // });
+
+      // 确保startDate是Date对象，处理时区问题
       if (typeof startDate === 'string') {
-        startDate = new Date(startDate);
+        // 如果是YYYY-MM-DD格式，添加时间部分避免时区问题
+        if (startDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          startDate = new Date(startDate + 'T00:00:00');
+        } else {
+          startDate = new Date(startDate);
+        }
       }
 
       // 如果没有截止时间，默认设置为开始时间后的估算工时天数
@@ -325,7 +337,12 @@ router.get('/gantt', requireProjectSelection, validateProjectAccess, async (req,
         endDate = new Date(startDate);
         endDate.setDate(endDate.getDate() + 7);
       } else if (typeof endDate === 'string') {
-        endDate = new Date(endDate);
+        // 如果是YYYY-MM-DD格式，添加时间部分避免时区问题
+        if (endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          endDate = new Date(endDate + 'T23:59:59');
+        } else {
+          endDate = new Date(endDate);
+        }
       }
 
       // 确保结束时间不早于开始时间
@@ -334,11 +351,22 @@ router.get('/gantt', requireProjectSelection, validateProjectAccess, async (req,
         endDate.setDate(endDate.getDate() + 1);
       }
 
+      const formattedStart = startDate.toISOString().split('T')[0];
+      const formattedEnd = endDate.toISOString().split('T')[0];
+
+      // 调试信息（可选）
+      // console.log(`任务 ${task.title} 格式化后日期:`, {
+      //   formattedStart,
+      //   formattedEnd,
+      //   startDateObj: startDate,
+      //   endDateObj: endDate
+      // });
+
       return {
         id: task.id,
         name: task.title || `任务 ${index + 1}`,
-        start: startDate.toISOString().split('T')[0],
-        end: endDate.toISOString().split('T')[0],
+        start: formattedStart,
+        end: formattedEnd,
         progress: task.status === 'completed' ? 100 :
                  task.status === 'review' ? 80 :
                  task.status === 'assigned' || task.status === 'in_progress' ? 50 : 0,

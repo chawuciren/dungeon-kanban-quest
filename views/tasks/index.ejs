@@ -395,6 +395,24 @@
     color: #0d6efd !important;
     text-decoration: underline !important;
 }
+
+/* 下拉菜单层级修复 - 解决被遮挡问题 */
+.dropdown-menu {
+    z-index: 1050 !important;
+}
+
+/* 当下拉菜单打开时，提升整个任务卡片的层级 */
+.task-card:has(.dropdown.show),
+.task-card.dropdown-active {
+    z-index: 1051 !important;
+    position: relative;
+}
+
+/* 确保下拉菜单容器有足够的层级 */
+.task-card .dropdown.show {
+    z-index: 1052 !important;
+    position: relative;
+}
 </style>
 
 <script>
@@ -409,6 +427,9 @@ $(document).ready(function() {
         const $select = $(this);
         $select.data('original-value', $select.val());
     });
+
+    // 初始化下拉菜单定位修复
+    initDropdownFix();
 
     // 快速编辑字段处理
     $('.quick-edit-field').change(function() {
@@ -501,6 +522,34 @@ function showToast(type, message) {
     // 自动移除
     toast.on('hidden.bs.toast', function() {
         $(this).remove();
+    });
+}
+
+// 初始化下拉菜单定位修复
+function initDropdownFix() {
+    // 监听所有下拉菜单的显示事件
+    $(document).on('show.bs.dropdown', '.task-card .dropdown', function(e) {
+        const $dropdown = $(this);
+        const $menu = $dropdown.find('.dropdown-menu');
+
+        // 标记任务卡片为活动状态，提升z-index
+        $dropdown.closest('.task-card').addClass('dropdown-active');
+
+        // 简化定位逻辑，让Bootstrap自己处理定位
+        // 只需要确保z-index足够高
+        setTimeout(() => {
+            $menu.css({
+                zIndex: 10000
+            });
+        }, 0);
+    });
+
+    // 监听下拉菜单的隐藏事件
+    $(document).on('hide.bs.dropdown', '.task-card .dropdown', function(e) {
+        const $dropdown = $(this);
+
+        // 移除任务卡片的活动状态
+        $dropdown.closest('.task-card').removeClass('dropdown-active');
     });
 }
 

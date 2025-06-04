@@ -1,5 +1,20 @@
 <%- include('../partials/header', { title: title }) %>
 
+<%
+// 统一的状态配置
+const statusConfig = {
+    'draft': { text: '草稿', class: 'secondary', icon: 'fas fa-edit' },
+    'published': { text: '已发布', class: 'primary', icon: 'fas fa-bullhorn' },
+    'bidding': { text: '竞标中', class: 'info', icon: 'fas fa-gavel' },
+    'assigned': { text: '已分配', class: 'warning', icon: 'fas fa-user-check' },
+    'in_progress': { text: '进行中', class: 'warning', icon: 'fas fa-play' },
+    'review': { text: '待审核', class: 'info', icon: 'fas fa-search' },
+    'completed': { text: '已完成', class: 'success', icon: 'fas fa-check' },
+    'cancelled': { text: '已取消', class: 'danger', icon: 'fas fa-times' }
+};
+const currentStatus = statusConfig[task.status] || statusConfig['draft'];
+%>
+
 <div class="row">
         <!-- 主要内容 -->
         <div class="col-lg-8">
@@ -19,6 +34,13 @@
                             <li class="breadcrumb-item active"><%= task.title %></li>
                         </ol>
                     </nav>
+
+                    <!-- 返回按钮 -->
+                    <div class="mb-3">
+                        <a href="/tasks" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>返回任务列表
+                        </a>
+                    </div>
 
                     <!-- 任务标题 -->
                     <div class="d-flex justify-content-between align-items-start mb-3">
@@ -93,12 +115,9 @@
                             </span>
                         </div>
                         <div class="col-auto">
-                            <span class="badge bg-<%= task.status === 'published' ? 'success' : task.status === 'assigned' ? 'primary' : 'dark' %> fs-6">
-                                <% if (task.status === 'published') { %>可接单
-                                <% } else if (task.status === 'assigned') { %>进行中
-                                <% } else if (task.status === 'completed') { %>已完成
-                                <% } else { %><%= task.status %>
-                                <% } %>
+                            <span class="badge bg-<%= currentStatus.class %> fs-6">
+                                <i class="<%= currentStatus.icon %> me-1"></i>
+                                <%= currentStatus.text %>
                             </span>
                         </div>
                     </div>
@@ -126,12 +145,11 @@
                                                 </small>
                                             </div>
                                             <div class="text-end">
-                                                <span class="badge bg-<%= subtask.status === 'published' ? 'success' : subtask.status === 'assigned' ? 'primary' : 'dark' %>">
-                                                    <% if (subtask.status === 'published') { %>可接单
-                                                    <% } else if (subtask.status === 'assigned') { %>进行中
-                                                    <% } else if (subtask.status === 'completed') { %>已完成
-                                                    <% } else { %><%= subtask.status %>
-                                                    <% } %>
+                                                <%
+                                                const subtaskStatus = statusConfig[subtask.status] || statusConfig['draft'];
+                                                %>
+                                                <span class="badge bg-<%= subtaskStatus.class %>">
+                                                    <%= subtaskStatus.text %>
                                                 </span>
                                                 <div class="mt-1">
                                                     <small class="text-muted">
@@ -251,19 +269,6 @@
                         <div class="col-12">
                             <strong>任务状态：</strong>
                             <span class="ms-2">
-                                <%
-                                const statusConfig = {
-                                    'draft': { text: '草稿', class: 'secondary', icon: 'fas fa-edit' },
-                                    'published': { text: '已发布', class: 'primary', icon: 'fas fa-bullhorn' },
-                                    'bidding': { text: '竞标中', class: 'info', icon: 'fas fa-gavel' },
-                                    'assigned': { text: '已分配', class: 'warning', icon: 'fas fa-user-check' },
-                                    'in_progress': { text: '进行中', class: 'warning', icon: 'fas fa-play' },
-                                    'review': { text: '待审核', class: 'info', icon: 'fas fa-search' },
-                                    'completed': { text: '已完成', class: 'success', icon: 'fas fa-check' },
-                                    'cancelled': { text: '已取消', class: 'danger', icon: 'fas fa-times' }
-                                };
-                                const currentStatus = statusConfig[task.status] || statusConfig['draft'];
-                                %>
                                 <span class="badge bg-<%= currentStatus.class %>">
                                     <i class="<%= currentStatus.icon %> me-1"></i>
                                     <%= currentStatus.text %>
