@@ -51,7 +51,7 @@ const getValue = (field, defaultValue = '') => {
                         <div class="row">
                             <div class="col-12 mb-3">
                                 <label for="title" class="form-label">任务标题 <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="title" name="title" value="<%= task ? task.title : '' %>" required>
+                                <input type="text" class="form-control" id="title" name="title" value="<%= getValue('title') %>" required>
                                 <div class="invalid-feedback">请输入任务标题</div>
                             </div>
                         </div>
@@ -59,7 +59,7 @@ const getValue = (field, defaultValue = '') => {
                         <div class="row">
                             <div class="col-12 mb-3">
                                 <label for="description" class="form-label">任务描述 <span class="text-danger">*</span></label>
-                                <textarea class="form-control" id="description" name="description" rows="4" required><%= task ? task.description : '' %></textarea>
+                                <textarea class="form-control" id="description" name="description" rows="4" required><%= getValue('description') %></textarea>
                                 <div class="invalid-feedback">请输入任务描述</div>
                             </div>
                         </div>
@@ -81,14 +81,16 @@ const getValue = (field, defaultValue = '') => {
                                 <div class="form-text"><%= task ? '任务所属的项目' : '当前选中的项目' %></div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="taskType" class="form-label">任务类型</label>
-                                <select class="form-select" id="taskType" name="taskType">
-                                    <option value="task" <%= (task && task.taskType === 'task') || (!task) ? 'selected' : '' %>>任务</option>
-                                    <option value="requirement" <%= task && task.taskType === 'requirement' ? 'selected' : '' %>>需求</option>
-                                    <option value="bug" <%= task && task.taskType === 'bug' ? 'selected' : '' %>>Bug</option>
-                                    <option value="epic" <%= task && task.taskType === 'epic' ? 'selected' : '' %>>史诗</option>
-                                    <option value="story" <%= task && task.taskType === 'story' ? 'selected' : '' %>>故事</option>
+                                <label for="taskType" class="form-label">任务类型 <span class="text-danger">*</span></label>
+                                <select class="form-select" id="taskType" name="taskType" required>
+                                    <option value="">选择任务类型</option>
+                                    <option value="task" <%= getValue('taskType') === 'task' ? 'selected' : '' %>>任务</option>
+                                    <option value="requirement" <%= getValue('taskType') === 'requirement' ? 'selected' : '' %>>需求</option>
+                                    <option value="bug" <%= getValue('taskType') === 'bug' ? 'selected' : '' %>>Bug</option>
+                                    <option value="epic" <%= getValue('taskType') === 'epic' ? 'selected' : '' %>>史诗</option>
+                                    <option value="story" <%= getValue('taskType') === 'story' ? 'selected' : '' %>>故事</option>
                                 </select>
+                                <div class="invalid-feedback">请选择任务类型</div>
                             </div>
                         </div>
 
@@ -122,24 +124,26 @@ const getValue = (field, defaultValue = '') => {
                                 <label for="starLevel" class="form-label">星级难度 <span class="text-danger">*</span></label>
                                 <select class="form-select" id="starLevel" name="starLevel" required>
                                     <option value="">选择难度</option>
-                                    <option value="1" <%= (task && task.starLevel === 1) || (!task) ? 'selected' : '' %>>⭐ 一星 - 简单任务（半天内）</option>
-                                    <option value="2" <%= task && task.starLevel === 2 ? 'selected' : '' %>>⭐⭐ 二星 - 常规任务（1-2天）</option>
-                                    <option value="3" <%= task && task.starLevel === 3 ? 'selected' : '' %>>⭐⭐⭐ 三星 - 复杂任务（3-5天）</option>
-                                    <option value="4" <%= task && task.starLevel === 4 ? 'selected' : '' %>>⭐⭐⭐⭐ 四星 - 核心任务（1-2周）</option>
-                                    <option value="5" <%= task && task.starLevel === 5 ? 'selected' : '' %>>⭐⭐⭐⭐⭐ 五星 - 关键任务（2周以上）</option>
+                                    <option value="1" <%= getValue('starLevel', 1) == 1 ? 'selected' : '' %>>⭐ 一星 - 简单任务（半天内）</option>
+                                    <option value="2" <%= getValue('starLevel') == 2 ? 'selected' : '' %>>⭐⭐ 二星 - 常规任务（1-2天）</option>
+                                    <option value="3" <%= getValue('starLevel') == 3 ? 'selected' : '' %>>⭐⭐⭐ 三星 - 复杂任务（3-5天）</option>
+                                    <option value="4" <%= getValue('starLevel') == 4 ? 'selected' : '' %>>⭐⭐⭐⭐ 四星 - 核心任务（1-2周）</option>
+                                    <option value="5" <%= getValue('starLevel') == 5 ? 'selected' : '' %>>⭐⭐⭐⭐⭐ 五星 - 关键任务（2周以上）</option>
                                 </select>
                                 <div class="invalid-feedback">请选择任务难度</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="urgencyLevel" class="form-label">紧急程度</label>
-                                <select class="form-select" id="urgencyLevel" name="urgencyLevel">
-                                    <option value="normal" <%= (task && task.urgencyLevel === 'normal') || (!task) ? 'selected' : '' %>>📅 普通</option>
-                                    <option value="important" <%= task && task.urgencyLevel === 'important' ? 'selected' : '' %>>⚡ 重要</option>
-                                    <option value="urgent" <%= task && task.urgencyLevel === 'urgent' ? 'selected' : '' %>>🔥 紧急</option>
-                                    <option value="delayed" <%= task && task.urgencyLevel === 'delayed' ? 'selected' : '' %>>🕐 延后</option>
-                                    <option value="frozen" <%= task && task.urgencyLevel === 'frozen' ? 'selected' : '' %>>❄️ 冻结</option>
+                                <label for="urgencyLevel" class="form-label">紧急程度 <span class="text-danger">*</span></label>
+                                <select class="form-select" id="urgencyLevel" name="urgencyLevel" required>
+                                    <option value="">选择紧急程度</option>
+                                    <option value="normal" <%= getValue('urgencyLevel', 'normal') === 'normal' ? 'selected' : '' %>>📅 普通</option>
+                                    <option value="important" <%= getValue('urgencyLevel') === 'important' ? 'selected' : '' %>>⚡ 重要</option>
+                                    <option value="urgent" <%= getValue('urgencyLevel') === 'urgent' ? 'selected' : '' %>>🔥 紧急</option>
+                                    <option value="delayed" <%= getValue('urgencyLevel') === 'delayed' ? 'selected' : '' %>>🕐 延后</option>
+                                    <option value="frozen" <%= getValue('urgencyLevel') === 'frozen' ? 'selected' : '' %>>❄️ 冻结</option>
                                 </select>
+                                <div class="invalid-feedback">请选择紧急程度</div>
                             </div>
 
                         </div>
@@ -167,18 +171,21 @@ const getValue = (field, defaultValue = '') => {
                         <!-- 时间设置 -->
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label for="estimatedHours" class="form-label">预估工时（小时）</label>
-                                <input type="number" class="form-control" id="estimatedHours" name="estimatedHours" min="0.5" step="0.5" value="<%= task ? (task.estimatedHours || '') : '' %>">
+                                <label for="estimatedHours" class="form-label">预估工时（小时） <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="estimatedHours" name="estimatedHours" min="0.5" step="0.5" value="<%= getValue('estimatedHours') %>" required>
+                                <div class="invalid-feedback">请输入预估工时</div>
                                 <div class="form-text">用于工时管理</div>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label for="startDate" class="form-label">起始日期</label>
-                                <input type="date" class="form-control" id="startDate" name="startDate" value="<%= task && task.startDate ? new Date(task.startDate).toISOString().split('T')[0] : '' %>">
+                                <label for="startDate" class="form-label">起始日期 <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="startDate" name="startDate" value="<%= getValue('startDate') && getValue('startDate') !== '' ? (getValue('startDate').includes('-') ? getValue('startDate') : new Date(getValue('startDate')).toISOString().split('T')[0]) : '' %>" required>
+                                <div class="invalid-feedback">请选择起始日期</div>
                                 <div class="form-text">任务计划开始时间</div>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label for="dueDate" class="form-label">截止日期</label>
-                                <input type="date" class="form-control" id="dueDate" name="dueDate" value="<%= task && task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '' %>">
+                                <label for="dueDate" class="form-label">截止日期 <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="dueDate" name="dueDate" value="<%= getValue('dueDate') && getValue('dueDate') !== '' ? (getValue('dueDate').includes('-') ? getValue('dueDate') : new Date(getValue('dueDate')).toISOString().split('T')[0]) : '' %>" required>
+                                <div class="invalid-feedback">请选择截止日期</div>
                                 <div class="form-text">任务必须完成时间</div>
                             </div>
                         </div>
@@ -223,8 +230,8 @@ const getValue = (field, defaultValue = '') => {
                             </div>
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label for="assigneeId" class="form-label">负责人</label>
-                                    <select class="form-select" id="assigneeId" name="assigneeId">
+                                    <label for="assigneeId" class="form-label">负责人 <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="assigneeId" name="assigneeId" required>
                                         <option value="">选择负责人</option>
                                         <% projectMembers.forEach(member => { %>
                                             <option value="<%= member.user.id %>" <%= task && task.assigneeId === member.user.id ? 'selected' : '' %>>
@@ -239,6 +246,7 @@ const getValue = (field, defaultValue = '') => {
                                             </option>
                                         <% }); %>
                                     </select>
+                                    <div class="invalid-feedback">请选择负责人</div>
                                     <div class="form-text">主要负责任务执行的人员</div>
                                 </div>
                                 <div class="col-md-4 mb-3">
@@ -290,8 +298,8 @@ const getValue = (field, defaultValue = '') => {
                                     <div class="form-text">参与完成任务的人员（可多选）</div>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="reviewerId" class="form-label">审核人</label>
-                                    <select class="form-select" id="reviewerId" name="reviewerId">
+                                    <label for="reviewerId" class="form-label">审核人 <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="reviewerId" name="reviewerId" required>
                                         <option value="">选择审核人</option>
                                         <% projectMembers.forEach(member => { %>
                                             <option value="<%= member.user.id %>" <%= task && task.reviewerId === member.user.id ? 'selected' : '' %>>
@@ -306,6 +314,7 @@ const getValue = (field, defaultValue = '') => {
                                             </option>
                                         <% }); %>
                                     </select>
+                                    <div class="invalid-feedback">请选择审核人</div>
                                     <div class="form-text">负责审核任务完成情况的人员</div>
                                 </div>
                             </div>

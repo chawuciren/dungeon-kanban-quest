@@ -441,6 +441,10 @@ router.get('/create', requireAuth, requireProjectSelection, validateProjectAcces
       });
     }
 
+    // 获取保存的表单数据（如果有）
+    const formData = req.session.formData;
+    delete req.session.formData; // 使用后删除
+
     // 使用edit模板，但传入创建模式的参数
     res.render('tasks/edit', {
       title: parentTask ? '创建子任务' : '创建任务',
@@ -450,7 +454,8 @@ router.get('/create', requireAuth, requireProjectSelection, validateProjectAcces
       projectMembers,
       projectTasks,
       sprints,
-      defaultProjectId: req.session.selectedProjectId
+      defaultProjectId: req.session.selectedProjectId,
+      formData // 传递表单数据用于恢复
     });
 
   } catch (error) {
@@ -603,8 +608,9 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
     const projectId = req.session.selectedProjectId;
 
     // 验证必填字段
-    if (!title || !description || !projectId) {
-      req.flash('error', '请填写必填字段');
+    if (!title || !description || !projectId || !taskType || !starLevel || !urgencyLevel ||
+        !estimatedHours || !startDate || !dueDate || !assigneeId || !reviewerId) {
+      req.flash('error', '请填写所有必填字段');
       return res.redirect('back');
     }
 
@@ -694,11 +700,14 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
         const fieldMap = {
           'title': '任务标题',
           'description': '任务描述',
+          'taskType': '任务类型',
           'starLevel': '星级难度',
           'urgencyLevel': '紧急程度',
           'estimatedHours': '预估工时',
           'startDate': '开始日期',
-          'dueDate': '截止日期'
+          'dueDate': '截止日期',
+          'assigneeId': '负责人',
+          'reviewerId': '审核人'
         };
 
         const fieldLabel = fieldMap[err.path] || err.path;
@@ -812,11 +821,16 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
       });
     }
 
+    // 获取保存的表单数据（如果有）
+    const formData = req.session.formData;
+    delete req.session.formData; // 使用后删除
+
     res.render('tasks/edit', {
       title: '编辑任务',
       task,
       projectMembers,
-      sprints
+      sprints,
+      formData // 传递表单数据用于恢复
     });
 
   } catch (error) {
@@ -860,8 +874,9 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
     }
 
     // 验证必填字段
-    if (!title || !description) {
-      req.flash('error', '请填写必填字段');
+    if (!title || !description || !taskType || !starLevel || !urgencyLevel ||
+        !estimatedHours || !startDate || !dueDate || !assigneeId || !reviewerId) {
+      req.flash('error', '请填写所有必填字段');
       return res.redirect('back');
     }
 
@@ -945,12 +960,15 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
         const fieldMap = {
           'title': '任务标题',
           'description': '任务描述',
+          'taskType': '任务类型',
           'starLevel': '星级难度',
           'urgencyLevel': '紧急程度',
           'status': '任务状态',
           'estimatedHours': '预估工时',
           'startDate': '开始日期',
-          'dueDate': '截止日期'
+          'dueDate': '截止日期',
+          'assigneeId': '负责人',
+          'reviewerId': '审核人'
         };
 
         const fieldLabel = fieldMap[err.path] || err.path;
