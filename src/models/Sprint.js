@@ -104,29 +104,7 @@ const Sprint = sequelize.define('Sprint', {
       min: 0
     }
   },
-  // 迭代预算
-  budget: {
-    type: DataTypes.JSON,
-    defaultValue: {
-      diamond: 0,
-      gold: 0,
-      silver: 0,
-      copper: 0,
-      allocated: {
-        diamond: 0,
-        gold: 0,
-        silver: 0,
-        copper: 0
-      },
-      spent: {
-        diamond: 0,
-        gold: 0,
-        silver: 0,
-        copper: 0
-      }
-    }
-  },
-  // 迭代设置
+  // 探险季设置
   settings: {
     type: DataTypes.JSON,
     defaultValue: {
