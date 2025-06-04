@@ -68,9 +68,6 @@ router.get('/', requireProjectSelection, validateProjectAccess, async (req, res)
     if (req.query.starLevel) {
       where.starLevel = req.query.starLevel;
     }
-    if (req.query.skillRequired) {
-      where.skillRequired = req.query.skillRequired;
-    }
     if (req.query.urgencyLevel) {
       where.urgencyLevel = req.query.urgencyLevel;
     }
@@ -102,9 +99,25 @@ router.get('/', requireProjectSelection, validateProjectAccess, async (req, res)
           attributes: ['id', 'username', 'firstName', 'lastName']
         },
         {
+          model: User,
+          as: 'assignee',
+          attributes: ['id', 'username', 'firstName', 'lastName']
+        },
+        {
           model: Project,
           as: 'project',
-          attributes: ['id', 'name', 'key']
+          attributes: ['id', 'name', 'key'],
+          include: [
+            {
+              model: User,
+              as: 'members',
+              attributes: ['id', 'firstName', 'lastName', 'username'],
+              through: {
+                attributes: ['roles', 'status'],
+                as: 'membership'
+              }
+            }
+          ]
         }
       ],
       order,
@@ -576,7 +589,6 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       taskType,
       starLevel,
       urgencyLevel,
-      skillRequired,
       parentTaskId,
       estimatedHours,
       startDate,
@@ -632,7 +644,6 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       taskType: taskType || 'task',
       starLevel: parseInt(starLevel),
       urgencyLevel,
-      skillRequired,
       status: 'published',
       projectId,
       publisherId: req.session.userId,
@@ -760,7 +771,6 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       taskType,
       starLevel,
       urgencyLevel,
-      skillRequired,
       status,
       estimatedHours,
       startDate,
@@ -813,7 +823,6 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       taskType: taskType || 'task',
       starLevel: parseInt(starLevel),
       urgencyLevel,
-      skillRequired,
       status: newStatus,
       assigneeId: assigneeId && assigneeId.trim() !== '' ? assigneeId : null,
       assistantIds: processedAssistantIds,
@@ -908,7 +917,122 @@ router.post('/:id/delete', requireAuth, async (req, res) => {
   }
 });
 
-// 快速状态变更API
+// 快速字段更新API
+router.post('/:id/quick-update', requireAuth, async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const { field, value } = req.body;
+
+    const task = await BountyTask.findByPk(taskId, {
+      include: [
+        {
+          model: Project,
+          as: 'project',
+          include: [
+            {
+              model: User,
+              as: 'members',
+              attributes: ['id', 'firstName', 'lastName', 'username'],
+              through: {
+                attributes: ['roles', 'status'],
+                as: 'membership'
+              }
+            }
+          ]
+        }
+      ]
+    });
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: '任务不存在'
+      });
+    }
+
+    // 检查权限：只有管理员、任务发布者、负责人或审核人可以更改
+    const hasPermission = req.session.user?.role === 'admin' ||
+                         task.publisherId === req.session.userId ||
+                         task.assigneeId === req.session.userId ||
+                         task.reviewerId === req.session.userId;
+
+    if (!hasPermission) {
+      return res.status(403).json({
+        success: false,
+        message: '您没有权限更改此任务'
+      });
+    }
+
+    // 验证字段和值
+    const allowedFields = ['status', 'assigneeId', 'urgencyLevel'];
+    if (!allowedFields.includes(field)) {
+      return res.status(400).json({
+        success: false,
+        message: '不支持的字段'
+      });
+    }
+
+    // 如果是分配负责人，验证用户是否为项目成员
+    if (field === 'assigneeId' && value) {
+      const projectMembers = task.project.members;
+      const isMember = projectMembers.some(member => member.id === value);
+      if (!isMember) {
+        return res.status(400).json({
+          success: false,
+          message: '只能分配给项目成员'
+        });
+      }
+    }
+
+    // 更新字段
+    await task.update({ [field]: value || null });
+
+    // 获取更新后的显示值
+    let displayValue = value;
+    if (field === 'assigneeId' && value) {
+      const assignee = task.project.members.find(member => member.id === value);
+      if (assignee) {
+        displayValue = `${assignee.firstName || ''} ${assignee.lastName || ''}`.trim() || assignee.username;
+      }
+    } else if (field === 'status') {
+      const statusConfig = {
+        'draft': '草稿',
+        'published': '已发布',
+        'bidding': '竞标中',
+        'assigned': '已分配',
+        'in_progress': '进行中',
+        'review': '待审核',
+        'completed': '已完成',
+        'cancelled': '已取消'
+      };
+      displayValue = statusConfig[value] || value;
+    } else if (field === 'urgencyLevel') {
+      const urgencyConfig = {
+        'urgent': '紧急',
+        'important': '重要',
+        'normal': '普通',
+        'delayed': '延期',
+        'frozen': '冻结'
+      };
+      displayValue = urgencyConfig[value] || value;
+    }
+
+    res.json({
+      success: true,
+      message: '更新成功',
+      displayValue: displayValue
+    });
+
+  } catch (error) {
+    logger.error('快速更新任务失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '更新失败'
+    });
+  }
+});
+
+// 快速状态变更API（保留兼容性）
 router.post('/:id/status', requireAuth, async (req, res) => {
   try {
     const taskId = req.params.id;

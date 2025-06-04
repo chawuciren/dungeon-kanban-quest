@@ -104,7 +104,7 @@
 
                         <!-- 任务属性 -->
                         <div class="row">
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label for="starLevel" class="form-label">星级难度 <span class="text-danger">*</span></label>
                                 <select class="form-select" id="starLevel" name="starLevel" required>
                                     <option value="">选择难度</option>
@@ -116,62 +116,39 @@
                                 </select>
                                 <div class="invalid-feedback">请选择任务难度</div>
                             </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="skillRequired" class="form-label">技能要求 <span class="text-danger">*</span></label>
-                                <select class="form-select" id="skillRequired" name="skillRequired" required>
-                                    <option value="">选择技能</option>
-                                    <option value="novice" <%= (task && task.skillRequired === 'novice') || (!task) ? 'selected' : '' %>>🔰 新手</option>
-                                    <option value="bronze" <%= task && task.skillRequired === 'bronze' ? 'selected' : '' %>>🥉 铜牌</option>
-                                    <option value="silver" <%= task && task.skillRequired === 'silver' ? 'selected' : '' %>>🥈 银牌</option>
-                                    <option value="gold" <%= task && task.skillRequired === 'gold' ? 'selected' : '' %>>🥇 金牌</option>
-                                    <option value="diamond" <%= task && task.skillRequired === 'diamond' ? 'selected' : '' %>>💎 钻石</option>
-                                </select>
-                                <div class="invalid-feedback">请选择技能要求</div>
-                            </div>
-                            <div class="col-md-3 mb-3">
+
+                            <div class="col-md-6 mb-3">
                                 <label for="urgencyLevel" class="form-label">紧急程度</label>
                                 <select class="form-select" id="urgencyLevel" name="urgencyLevel">
                                     <option value="normal" <%= (task && task.urgencyLevel === 'normal') || (!task) ? 'selected' : '' %>>📅 普通</option>
                                     <option value="important" <%= task && task.urgencyLevel === 'important' ? 'selected' : '' %>>⚡ 重要</option>
                                     <option value="urgent" <%= task && task.urgencyLevel === 'urgent' ? 'selected' : '' %>>🔥 紧急</option>
                                     <option value="delayed" <%= task && task.urgencyLevel === 'delayed' ? 'selected' : '' %>>🕐 延后</option>
+                                    <option value="frozen" <%= task && task.urgencyLevel === 'frozen' ? 'selected' : '' %>>❄️ 冻结</option>
                                 </select>
                             </div>
-                            <% if (task) { %>
-                                <div class="col-md-3 mb-3">
+
+                        </div>
+
+                        <!-- 任务状态（仅编辑模式） -->
+                        <% if (task) { %>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
                                     <label for="status" class="form-label">任务状态</label>
                                     <select class="form-select" id="status" name="status">
-                                        <option value="draft" <%= task.status === 'draft' ? 'selected' : '' %>>
-                                            <i class="fas fa-edit"></i> 草稿
-                                        </option>
-                                        <option value="published" <%= task.status === 'published' ? 'selected' : '' %>>
-                                            <i class="fas fa-bullhorn"></i> 已发布
-                                        </option>
-                                        <option value="bidding" <%= task.status === 'bidding' ? 'selected' : '' %>>
-                                            <i class="fas fa-gavel"></i> 竞标中
-                                        </option>
-                                        <option value="assigned" <%= task.status === 'assigned' ? 'selected' : '' %>>
-                                            <i class="fas fa-user-check"></i> 已分配
-                                        </option>
-                                        <option value="in_progress" <%= task.status === 'in_progress' ? 'selected' : '' %>>
-                                            <i class="fas fa-play"></i> 进行中
-                                        </option>
-                                        <option value="review" <%= task.status === 'review' ? 'selected' : '' %>>
-                                            <i class="fas fa-search"></i> 待审核
-                                        </option>
-                                        <option value="completed" <%= task.status === 'completed' ? 'selected' : '' %>>
-                                            <i class="fas fa-check"></i> 已完成
-                                        </option>
-                                        <option value="cancelled" <%= task.status === 'cancelled' ? 'selected' : '' %>>
-                                            <i class="fas fa-times"></i> 已取消
-                                        </option>
+                                        <option value="draft" <%= task.status === 'draft' ? 'selected' : '' %>>草稿</option>
+                                        <option value="published" <%= task.status === 'published' ? 'selected' : '' %>>已发布</option>
+                                        <option value="bidding" <%= task.status === 'bidding' ? 'selected' : '' %>>竞标中</option>
+                                        <option value="assigned" <%= task.status === 'assigned' ? 'selected' : '' %>>已分配</option>
+                                        <option value="in_progress" <%= task.status === 'in_progress' ? 'selected' : '' %>>进行中</option>
+                                        <option value="review" <%= task.status === 'review' ? 'selected' : '' %>>待审核</option>
+                                        <option value="completed" <%= task.status === 'completed' ? 'selected' : '' %>>已完成</option>
+                                        <option value="cancelled" <%= task.status === 'cancelled' ? 'selected' : '' %>>已取消</option>
                                     </select>
                                     <div class="form-text">根据任务进展选择合适的状态</div>
                                 </div>
-                            <% } %>
-                        </div>
-
-
+                            </div>
+                        <% } %>
 
                         <!-- 时间设置 -->
                         <div class="row">

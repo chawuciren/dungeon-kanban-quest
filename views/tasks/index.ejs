@@ -67,17 +67,7 @@
                                 <option value="5" <%= filters.starLevel == '5' ? 'selected' : '' %>>⭐⭐⭐⭐⭐ 五星任务</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label">技能要求</label>
-                            <select class="form-select" name="skillRequired">
-                                <option value="">全部技能</option>
-                                <option value="novice" <%= filters.skillRequired == 'novice' ? 'selected' : '' %>>🔰 新手</option>
-                                <option value="bronze" <%= filters.skillRequired == 'bronze' ? 'selected' : '' %>>🥉 铜牌</option>
-                                <option value="silver" <%= filters.skillRequired == 'silver' ? 'selected' : '' %>>🥈 银牌</option>
-                                <option value="gold" <%= filters.skillRequired == 'gold' ? 'selected' : '' %>>🥇 金牌</option>
-                                <option value="diamond" <%= filters.skillRequired == 'diamond' ? 'selected' : '' %>>💎 钻石</option>
-                            </select>
-                        </div>
+
                         <div class="col-md-3">
                             <label class="form-label">紧急程度</label>
                             <select class="form-select" name="urgencyLevel">
@@ -186,23 +176,53 @@
                                             };
                                             const currentStatus = statusConfig[task.status] || statusConfig['draft'];
                                             %>
-                                            <span class="badge bg-<%= currentStatus.class %> me-1">
-                                                <i class="<%= currentStatus.icon %> me-1"></i>
-                                                <%= currentStatus.text %>
-                                            </span>
-                                            <span class="badge bg-secondary me-1">
-                                                <% if (task.skillRequired === 'novice') { %>🔰
-                                                <% } else if (task.skillRequired === 'bronze') { %>🥉
-                                                <% } else if (task.skillRequired === 'silver') { %>🥈
-                                                <% } else if (task.skillRequired === 'gold') { %>🥇
-                                                <% } else if (task.skillRequired === 'diamond') { %>💎<% } %>
-                                            </span>
-                                            <span class="badge bg-info">
-                                                <% if (task.urgencyLevel === 'urgent') { %>🔥
-                                                <% } else if (task.urgencyLevel === 'important') { %>⚡
-                                                <% } else if (task.urgencyLevel === 'normal') { %>📅
-                                                <% } else if (task.urgencyLevel === 'delayed') { %>🕐<% } %>
-                                            </span>
+
+                                        </div>
+                                    </div>
+
+                                    <!-- 可编辑字段区域 -->
+                                    <div class="row mb-2">
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted">状态</label>
+                                            <select class="form-select form-select-sm quick-edit-field"
+                                                    data-task-id="<%= task.id %>"
+                                                    data-field="status">
+                                                <option value="draft" <%= task.status === 'draft' ? 'selected' : '' %>>草稿</option>
+                                                <option value="published" <%= task.status === 'published' ? 'selected' : '' %>>已发布</option>
+                                                <option value="bidding" <%= task.status === 'bidding' ? 'selected' : '' %>>竞标中</option>
+                                                <option value="assigned" <%= task.status === 'assigned' ? 'selected' : '' %>>已分配</option>
+                                                <option value="in_progress" <%= task.status === 'in_progress' ? 'selected' : '' %>>进行中</option>
+                                                <option value="review" <%= task.status === 'review' ? 'selected' : '' %>>待审核</option>
+                                                <option value="completed" <%= task.status === 'completed' ? 'selected' : '' %>>已完成</option>
+                                                <option value="cancelled" <%= task.status === 'cancelled' ? 'selected' : '' %>>已取消</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted">负责人</label>
+                                            <select class="form-select form-select-sm quick-edit-field"
+                                                    data-task-id="<%= task.id %>"
+                                                    data-field="assigneeId">
+                                                <option value="">未分配</option>
+                                                <% if (task.project && task.project.members) { %>
+                                                    <% task.project.members.forEach(function(member) { %>
+                                                        <option value="<%= member.id %>" <%= task.assigneeId === member.id ? 'selected' : '' %>>
+                                                            <%= (member.firstName + ' ' + member.lastName).trim() || member.username %>
+                                                        </option>
+                                                    <% }); %>
+                                                <% } %>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted">优先级</label>
+                                            <select class="form-select form-select-sm quick-edit-field"
+                                                    data-task-id="<%= task.id %>"
+                                                    data-field="urgencyLevel">
+                                                <option value="urgent" <%= task.urgencyLevel === 'urgent' ? 'selected' : '' %>>🔥 紧急</option>
+                                                <option value="important" <%= task.urgencyLevel === 'important' ? 'selected' : '' %>>⚡ 重要</option>
+                                                <option value="normal" <%= task.urgencyLevel === 'normal' ? 'selected' : '' %>>📅 普通</option>
+                                                <option value="delayed" <%= task.urgencyLevel === 'delayed' ? 'selected' : '' %>>🕐 延期</option>
+                                                <option value="frozen" <%= task.urgencyLevel === 'frozen' ? 'selected' : '' %>>❄️ 冻结</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <p class="card-text text-muted"><%= task.description %></p>
@@ -223,18 +243,6 @@
                                 </div>
                                 <div class="col-md-4 text-end">
                                     <div class="d-grid gap-2">
-                                        <% if (task.status === 'published' && (!user || task.publisherId !== user.id) && !task.assigneeId) { %>
-                                            <a href="/tasks/<%= task.id %>/bid" class="btn btn-primary">
-                                                <i class="fas fa-hand-paper me-2"></i>
-                                                接单
-                                            </a>
-                                        <% } else if (task.assigneeId) { %>
-                                            <span class="btn btn-secondary disabled">
-                                                <i class="fas fa-user-check me-2"></i>
-                                                已接单
-                                            </span>
-                                        <% } %>
-
                                         <div class="btn-group" role="group">
                                             <a href="/tasks/<%= task.id %>" class="btn btn-outline-secondary btn-sm">
                                                 <i class="fas fa-eye me-1"></i>查看详情
@@ -313,7 +321,93 @@ $(document).ready(function() {
     $('#filterForm select').change(function() {
         $('#filterForm').submit();
     });
+
+    // 初始化快速编辑字段，保存原始值
+    $('.quick-edit-field').each(function() {
+        const $select = $(this);
+        $select.data('original-value', $select.val());
+    });
+
+    // 快速编辑字段处理
+    $('.quick-edit-field').change(function() {
+        const $select = $(this);
+        const taskId = $select.data('task-id');
+        const field = $select.data('field');
+        const value = $select.val();
+        const originalValue = $select.data('original-value');
+
+        // 禁用选择框并显示加载状态
+        $select.prop('disabled', true);
+        $select.addClass('loading');
+
+        // 发送AJAX请求
+        $.ajax({
+            url: `/tasks/${taskId}/quick-update`,
+            method: 'POST',
+            data: {
+                field: field,
+                value: value
+            },
+            success: function(response) {
+                if (response.success) {
+                    // 显示成功提示
+                    showToast('success', response.message);
+                    // 更新原始值
+                    $select.data('original-value', value);
+                } else {
+                    // 恢复原始值
+                    $select.val($select.data('original-value'));
+                    showToast('error', response.message || '更新失败');
+                }
+            },
+            error: function(xhr) {
+                // 恢复原始值
+                $select.val($select.data('original-value'));
+                const errorMsg = xhr.responseJSON?.message || '网络错误，请稍后重试';
+                showToast('error', errorMsg);
+            },
+            complete: function() {
+                // 恢复选择框状态
+                $select.prop('disabled', false);
+                $select.removeClass('loading');
+            }
+        });
+    });
 });
+
+// 显示提示消息
+function showToast(type, message) {
+    // 创建提示元素
+    const toast = $(`
+        <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-${type === 'success' ? 'check' : 'exclamation-triangle'} me-2"></i>
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `);
+
+    // 添加到页面
+    let toastContainer = $('#toast-container');
+    if (toastContainer.length === 0) {
+        toastContainer = $('<div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>');
+        $('body').append(toastContainer);
+    }
+
+    toastContainer.append(toast);
+
+    // 显示提示
+    const bsToast = new bootstrap.Toast(toast[0]);
+    bsToast.show();
+
+    // 自动移除
+    toast.on('hidden.bs.toast', function() {
+        $(this).remove();
+    });
+}
 
 // 删除任务函数
 function deleteTask(taskId, taskTitle) {
@@ -338,5 +432,40 @@ function deleteTask(taskId, taskTitle) {
     }
 }
 </script>
+
+<style>
+.quick-edit-field.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.quick-edit-field.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 16px;
+    height: 16px;
+    margin-top: -8px;
+    border: 2px solid #ccc;
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.task-card {
+    transition: box-shadow 0.2s ease;
+}
+
+.task-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+</style>
 
 <%- include('../partials/footer') %>

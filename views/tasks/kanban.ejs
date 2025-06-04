@@ -71,13 +71,7 @@
                                             <span class="badge bg-warning me-1">
                                                 <% for(let i = 0; i < task.starLevel; i++) { %>⭐<% } %>
                                             </span>
-                                            <span class="badge bg-secondary me-1">
-                                                <% if (task.skillRequired === 'novice') { %>🔰
-                                                <% } else if (task.skillRequired === 'bronze') { %>🥉
-                                                <% } else if (task.skillRequired === 'silver') { %>🥈
-                                                <% } else if (task.skillRequired === 'gold') { %>🥇
-                                                <% } else if (task.skillRequired === 'diamond') { %>💎<% } %>
-                                            </span>
+
                                             <span class="badge bg-info">
                                                 <% if (task.urgencyLevel === 'urgent') { %>🔥
                                                 <% } else if (task.urgencyLevel === 'important') { %>⚡

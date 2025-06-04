@@ -41,12 +41,7 @@ const BountyTask = sequelize.define('BountyTask', {
     defaultValue: 'normal',
     field: 'urgency_level'
   },
-  // 技能要求
-  skillRequired: {
-    type: DataTypes.ENUM('novice', 'bronze', 'silver', 'gold', 'diamond'),
-    defaultValue: 'novice',
-    field: 'skill_required'
-  },
+
   // 任务状态
   status: {
     type: DataTypes.ENUM('draft', 'published', 'bidding', 'assigned', 'in_progress', 'review', 'completed', 'cancelled'),
@@ -211,9 +206,6 @@ const BountyTask = sequelize.define('BountyTask', {
       fields: ['urgency_level']
     },
     {
-      fields: ['skill_required']
-    },
-    {
       fields: ['due_date']
     },
     {
@@ -245,25 +237,15 @@ BountyTask.prototype.getHoursOverrunPercentage = function() {
 
 
 
-BountyTask.prototype.canBeBidBy = function(userId, userSkillLevel) {
-  // 检查技能要求
-  const skillLevels = ['novice', 'bronze', 'silver', 'gold', 'diamond'];
-  const requiredIndex = skillLevels.indexOf(this.skillRequired);
-  const userIndex = skillLevels.indexOf(userSkillLevel);
-
-  return userIndex >= requiredIndex && this.status === 'published';
+BountyTask.prototype.canBeBidBy = function(userId) {
+  return this.status === 'published';
 };
 
 // 类方法
-BountyTask.findAvailableForUser = function(userId, userSkillLevel) {
-  const skillLevels = ['novice', 'bronze', 'silver', 'gold', 'diamond'];
-  const userIndex = skillLevels.indexOf(userSkillLevel);
-  const availableSkills = skillLevels.slice(0, userIndex + 1);
-
+BountyTask.findAvailableForUser = function(userId) {
   return this.findAll({
     where: {
-      status: 'published',
-      skillRequired: availableSkills
+      status: 'published'
     },
     order: [['createdAt', 'DESC']]
   });
