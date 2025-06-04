@@ -203,7 +203,6 @@ app.use('/users', require('./routes/users'));
 
 // API路由
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/wallet', require('./routes/wallet'));
 // app.use('/api/users', require('./routes/users'));
 // app.use('/api/organizations', require('./routes/organizations'));
 // app.use('/api/projects', require('./routes/projects'));

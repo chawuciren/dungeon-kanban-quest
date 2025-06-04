@@ -2,8 +2,6 @@ const { sequelize } = require('../config/database');
 
 // 导入所有模型
 const User = require('./User');
-const UserWallet = require('./UserWallet');
-const CurrencyTransaction = require('./CurrencyTransaction');
 const Organization = require('./Organization');
 const OrganizationMember = require('./OrganizationMember');
 const Project = require('./Project');
@@ -13,38 +11,6 @@ const BountyTask = require('./BountyTask');
 const Sprint = require('./Sprint');
 
 // 定义模型关联关系
-
-// User 和 UserWallet 的关联 (1:1)
-User.hasOne(UserWallet, {
-  foreignKey: 'userId',
-  as: 'wallet',
-  onDelete: 'CASCADE'
-});
-UserWallet.belongsTo(User, {
-  foreignKey: 'userId',
-  as: 'user'
-});
-
-// User 和 CurrencyTransaction 的关联 (1:N)
-User.hasMany(CurrencyTransaction, {
-  foreignKey: 'userId',
-  as: 'transactions',
-  onDelete: 'CASCADE'
-});
-CurrencyTransaction.belongsTo(User, {
-  foreignKey: 'userId',
-  as: 'user'
-});
-
-// 转账相关的关联
-CurrencyTransaction.belongsTo(User, {
-  foreignKey: 'fromUserId',
-  as: 'fromUser'
-});
-CurrencyTransaction.belongsTo(User, {
-  foreignKey: 'toUserId',
-  as: 'toUser'
-});
 
 // User 和 Organization 的关联
 User.hasMany(Organization, {
@@ -286,14 +252,7 @@ const createDefaultData = async () => {
       emailVerifiedAt: new Date()
     });
 
-    // 创建管理员钱包
-    await UserWallet.create({
-      userId: adminUser.id,
-      diamondBalance: 100,
-      goldBalance: 10000,
-      silverBalance: 100000,
-      copperBalance: 1000000
-    });
+
 
     // 创建默认组织
     const defaultOrg = await Organization.create({
@@ -314,8 +273,7 @@ const createDefaultData = async () => {
         canManageMembers: true,
         canCreateProjects: true,
         canManageProjects: true,
-        canViewReports: true,
-        canManageBudget: true
+        canViewReports: true
       }
     });
 
@@ -328,15 +286,7 @@ const createDefaultData = async () => {
       starLevel: 3,
       status: 'active',
       ownerId: adminUser.id,
-      leaderId: adminUser.id,
-      budgetPool: {
-        diamond: 10,
-        gold: 1000,
-        silver: 10000,
-        copper: 100000,
-        allocated: { diamond: 0, gold: 0, silver: 0, copper: 0 },
-        spent: { diamond: 0, gold: 0, silver: 0, copper: 0 }
-      }
+      leaderId: adminUser.id
     });
 
     // 关联项目与组织
@@ -359,7 +309,6 @@ const createDefaultData = async () => {
         canCreateTasks: true,
         canAssignTasks: true,
         canDeleteTasks: true,
-        canManageBudget: true,
         canViewReports: true
       }
     });
@@ -375,10 +324,6 @@ const createDefaultData = async () => {
       status: 'published',
       projectId: sampleProject.id,
       publisherId: adminUser.id,
-      baseReward: 80,
-      bonusReward: 20,
-      rewardCurrency: 'gold',
-      totalBudget: 100,
       estimatedHours: 8.0,
       dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7天后
       tags: ['frontend', 'authentication'],
@@ -438,14 +383,7 @@ const createDefaultData = async () => {
     for (const userData of sampleUsers) {
       const user = await User.create(userData);
 
-      // 为每个用户创建钱包
-      await UserWallet.create({
-        userId: user.id,
-        diamondBalance: 5,
-        goldBalance: 1000,
-        silverBalance: 10000,
-        copperBalance: 100000
-      });
+
 
       createdUsers.push(user);
     }
@@ -461,8 +399,7 @@ const createDefaultData = async () => {
           canManageMembers: false,
           canCreateProjects: user.role === 'product_manager',
           canManageProjects: user.role === 'product_manager',
-          canViewReports: true,
-          canManageBudget: false
+          canViewReports: true
         }
       });
     }
@@ -481,7 +418,6 @@ const createDefaultData = async () => {
           canCreateTasks: true,
           canAssignTasks: user.role === 'product_manager',
           canDeleteTasks: false,
-          canManageBudget: user.role === 'product_manager',
           canViewReports: true
         }
       });
@@ -499,8 +435,6 @@ const createDefaultData = async () => {
 module.exports = {
   sequelize,
   User,
-  UserWallet,
-  CurrencyTransaction,
   Organization,
   OrganizationMember,
   Project,

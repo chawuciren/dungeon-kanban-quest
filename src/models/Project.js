@@ -81,29 +81,6 @@ const Project = sequelize.define('Project', {
     allowNull: true,
     field: 'end_date'
   },
-  // 预算池配置
-  budgetPool: {
-    type: DataTypes.JSON,
-    defaultValue: {
-      diamond: 0,
-      gold: 0,
-      silver: 0,
-      copper: 0,
-      allocated: {
-        diamond: 0,
-        gold: 0,
-        silver: 0,
-        copper: 0
-      },
-      spent: {
-        diamond: 0,
-        gold: 0,
-        silver: 0,
-        copper: 0
-      }
-    },
-    field: 'budget_pool'
-  },
   // 项目设置
   settings: {
     type: DataTypes.JSON,
@@ -112,7 +89,6 @@ const Project = sequelize.define('Project', {
       enableBountyTasks: true,
       autoAssignTasks: false,
       requireApproval: true,
-      defaultTaskCurrency: 'gold',
       workflowStages: ['todo', 'in_progress', 'review', 'done'],
       notifications: {
         taskAssigned: true,
@@ -128,7 +104,6 @@ const Project = sequelize.define('Project', {
       totalTasks: 0,
       completedTasks: 0,
       totalMembers: 0,
-      totalBudgetSpent: 0,
       averageTaskCompletionTime: 0,
       onTimeCompletionRate: 0
     }
@@ -178,44 +153,7 @@ Project.prototype.isLeader = function(userId) {
   return this.leaderId === userId;
 };
 
-Project.prototype.updateBudget = async function(currency, amount, operation = 'add') {
-  if (!this.budgetPool[currency]) {
-    this.budgetPool[currency] = 0;
-  }
 
-  if (operation === 'add') {
-    this.budgetPool[currency] += amount;
-  } else if (operation === 'subtract') {
-    this.budgetPool[currency] = Math.max(0, this.budgetPool[currency] - amount);
-  }
-
-  this.changed('budgetPool', true);
-  return this.save();
-};
-
-Project.prototype.allocateBudget = async function(currency, amount) {
-  if (this.budgetPool[currency] < amount) {
-    throw new Error('预算不足');
-  }
-
-  this.budgetPool[currency] -= amount;
-  this.budgetPool.allocated[currency] += amount;
-
-  this.changed('budgetPool', true);
-  return this.save();
-};
-
-Project.prototype.spendBudget = async function(currency, amount) {
-  if (this.budgetPool.allocated[currency] < amount) {
-    throw new Error('分配预算不足');
-  }
-
-  this.budgetPool.allocated[currency] -= amount;
-  this.budgetPool.spent[currency] += amount;
-
-  this.changed('budgetPool', true);
-  return this.save();
-};
 
 Project.prototype.updateStats = async function(newStats) {
   this.stats = { ...this.stats, ...newStats };

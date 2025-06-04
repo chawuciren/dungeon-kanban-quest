@@ -72,7 +72,6 @@ const Organization = sequelize.define('Organization', {
       allowPublicProjects: false,
       defaultProjectVisibility: 'private',
       enableGamification: true,
-      defaultCurrency: 'gold',
       workingHours: {
         start: '09:00',
         end: '18:00',

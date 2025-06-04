@@ -136,39 +136,6 @@ const BountyTask = sequelize.define('BountyTask', {
     field: 'sort_order',
     comment: '同级任务排序'
   },
-  // 奖励配置
-  baseReward: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: 0,
-    field: 'base_reward',
-    validate: {
-      min: 0
-    }
-  },
-  bonusReward: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: 0,
-    field: 'bonus_reward',
-    validate: {
-      min: 0
-    }
-  },
-  rewardCurrency: {
-    type: DataTypes.ENUM('diamond', 'gold', 'silver', 'copper'),
-    defaultValue: 'gold',
-    field: 'reward_currency'
-  },
-  totalBudget: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: 0,
-    field: 'total_budget',
-    validate: {
-      min: 0
-    }
-  },
   // 工时相关
   estimatedHours: {
     type: DataTypes.DECIMAL(5, 2),
@@ -256,9 +223,6 @@ const BountyTask = sequelize.define('BountyTask', {
 });
 
 // 实例方法
-BountyTask.prototype.getTotalReward = function() {
-  return this.baseReward + this.bonusReward;
-};
 
 BountyTask.prototype.isOverdue = function() {
   return this.dueDate && new Date() > this.dueDate;
@@ -279,44 +243,7 @@ BountyTask.prototype.getHoursOverrunPercentage = function() {
   return (overrun / this.estimatedHours) * 100;
 };
 
-BountyTask.prototype.calculateFinalReward = function() {
-  const config = require('../config');
-  let finalReward = this.baseReward;
 
-  // 星级奖励倍数
-  const starMultiplier = config.gamification.starMultipliers[this.starLevel] || 1.0;
-  finalReward *= starMultiplier;
-
-  // 紧急程度奖励
-  const urgencyMultiplier = config.gamification.urgencyMultipliers[this.urgencyLevel] || 1.0;
-  finalReward *= urgencyMultiplier;
-
-  // 工时达标奖励
-  if (this.actualHours && this.estimatedHours) {
-    if (this.actualHours <= this.estimatedHours) {
-      // 工时达标，获得奖励金
-      finalReward += this.bonusReward;
-    } else {
-      // 工时超标，按比例扣除
-      const overrunPercentage = this.getHoursOverrunPercentage();
-      let discountFactor = 1.0;
-
-      if (overrunPercentage <= 20) {
-        discountFactor = 0.9;
-      } else if (overrunPercentage <= 50) {
-        discountFactor = 0.8;
-      } else if (overrunPercentage <= 100) {
-        discountFactor = 0.7;
-      } else {
-        discountFactor = 0.6;
-      }
-
-      finalReward *= discountFactor;
-    }
-  }
-
-  return Math.round(finalReward);
-};
 
 BountyTask.prototype.canBeBidBy = function(userId, userSkillLevel) {
   // 检查技能要求

@@ -75,7 +75,6 @@ const ProjectMember = sequelize.define('ProjectMember', {
       canCreateTasks: true,
       canAssignTasks: false,
       canDeleteTasks: false,
-      canManageBudget: false,
       canViewReports: true
     }
   },
