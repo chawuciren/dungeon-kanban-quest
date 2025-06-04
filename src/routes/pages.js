@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { User, BountyTask, Project } = require('../models');
 const { Op } = require('sequelize');
+const { loadUserProjects } = require('../middleware/projects');
 
 // 首页
 router.get('/', (req, res) => {
@@ -12,14 +13,19 @@ router.get('/', (req, res) => {
 
 // 登录页面
 router.get('/login', (req, res) => {
-  // 如果已登录，重定向到仪表板
-  if (req.session.userId) {
-    return res.redirect('/dashboard');
-  }
+  try {
+    // 如果已登录，重定向到仪表板
+    if (req.session.userId) {
+      return res.redirect('/dashboard');
+    }
 
-  res.render('auth/login', {
-    title: '用户登录'
-  });
+    res.render('auth/login', {
+      title: '用户登录'
+    });
+  } catch (error) {
+    console.error('登录页面渲染错误:', error);
+    res.status(500).send('系统出现错误，请刷新页面重试。');
+  }
 });
 
 // 登录处理
@@ -75,8 +81,7 @@ router.post('/login', async (req, res) => {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      role: user.role,
-      skillLevel: user.skillLevel
+      role: user.role
     };
 
     const logger = require('../config/logger');
@@ -172,80 +177,8 @@ router.get('/dashboard', async (req, res) => {
       limit: 5
     });
 
-    // 获取用户参与的所有项目
-    let userProjects = [];
-    if (req.session.user?.role === 'admin') {
-      // 管理员可以看到所有项目
-      userProjects = await Project.findAll({
-        attributes: ['id', 'name', 'key', 'description', 'projectType', 'starLevel', 'status', 'color'],
-        include: [
-          {
-            model: User,
-            as: 'owner',
-            attributes: ['id', 'firstName', 'lastName']
-          }
-        ],
-        where: { status: 'active' },
-        order: [['name', 'ASC']]
-      });
-    } else {
-      // 普通用户只能看到自己参与的项目
-      const { Op } = require('sequelize');
-
-      // 查询用户作为owner或leader的项目
-      const ownedProjects = await Project.findAll({
-        attributes: ['id', 'name', 'key', 'description', 'projectType', 'starLevel', 'status', 'color'],
-        include: [
-          {
-            model: User,
-            as: 'owner',
-            attributes: ['id', 'firstName', 'lastName']
-          }
-        ],
-        where: {
-          [Op.and]: [
-            { status: 'active' },
-            {
-              [Op.or]: [
-                { ownerId: req.session.userId },
-                { leaderId: req.session.userId }
-              ]
-            }
-          ]
-        }
-      });
-
-      // 查询用户作为成员的项目
-      const memberProjects = await Project.findAll({
-        attributes: ['id', 'name', 'key', 'description', 'projectType', 'starLevel', 'status', 'color'],
-        include: [
-          {
-            model: User,
-            as: 'owner',
-            attributes: ['id', 'firstName', 'lastName']
-          },
-          {
-            model: User,
-            as: 'members',
-            where: { id: req.session.userId },
-            attributes: [],
-            through: {
-              where: { status: 'active' },
-              attributes: []
-            }
-          }
-        ],
-        where: { status: 'active' }
-      });
-
-      // 合并并去重
-      const allProjects = [...ownedProjects, ...memberProjects];
-      const uniqueProjects = allProjects.filter((project, index, self) =>
-        index === self.findIndex(p => p.id === project.id)
-      );
-
-      userProjects = uniqueProjects.sort((a, b) => a.name.localeCompare(b.name));
-    }
+    // 项目信息已经通过中间件加载到 res.locals.userProjects
+    const userProjects = res.locals.userProjects || [];
 
     res.render('dashboard/index', {
       title: '仪表板',
@@ -256,7 +189,7 @@ router.get('/dashboard', async (req, res) => {
       },
       recentTasks,
       userProjects,
-      selectedProject: req.session.selectedProjectId ? userProjects.find(p => p.id === req.session.selectedProjectId) : null
+      selectedProject: res.locals.selectedProject
     });
 
   } catch (error) {
@@ -266,7 +199,6 @@ router.get('/dashboard', async (req, res) => {
       user: null,
       taskStats: { total: 0, completed: 0 },
       recentTasks: [],
-      userSkill: { icon: '🔰', name: '新手', progress: 20 },
       userProjects: [],
       selectedProject: null
     });

@@ -8,7 +8,7 @@ async function listUsers() {
     console.log('📋 查询所有用户...');
 
     const users = await User.findAll({
-      attributes: ['id', 'username', 'email', 'role', 'skillLevel', 'status', 'createdAt']
+      attributes: ['id', 'username', 'email', 'role', 'status', 'createdAt']
     });
 
     if (users.length === 0) {
@@ -24,7 +24,7 @@ async function listUsers() {
       console.log(`   ID: ${user.id}`);
       console.log(`   邮箱: ${user.email}`);
       console.log(`   角色: ${user.role}`);
-      console.log(`   技能等级: ${user.skillLevel}`);
+
       console.log(`   状态: ${user.status}`);
       console.log(`   创建时间: ${user.createdAt}`);
       console.log('');

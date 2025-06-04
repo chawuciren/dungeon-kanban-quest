@@ -156,41 +156,7 @@ body {
 
 
 
-/* 技能等级徽章 */
-.skill-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
 
-.skill-badge.novice {
-  background-color: #e8f5e8;
-  color: #2e7d32;
-}
-
-.skill-badge.bronze {
-  background-color: #fdf6e3;
-  color: #e65100;
-}
-
-.skill-badge.silver {
-  background-color: #f3f4f6;
-  color: #455a64;
-}
-
-.skill-badge.gold {
-  background-color: #fff8e1;
-  color: #f57c00;
-}
-
-.skill-badge.diamond {
-  background-color: #e0f7fa;
-  color: #00695c;
-}
 
 /* 紧急程度标签 */
 .urgency-badge {

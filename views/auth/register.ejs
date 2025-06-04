@@ -39,7 +39,7 @@
                                 <span class="input-group-text">
                                     <i class="fas fa-user"></i>
                                 </span>
-                                <input type="text" class="form-control" id="username" name="username" 
+                                <input type="text" class="form-control" id="username" name="username"
                                        pattern="[a-zA-Z0-9]{3,50}" required>
                                 <div class="invalid-feedback">
                                     用户名长度3-50个字符，只能包含字母和数字
@@ -67,7 +67,7 @@
                                 <span class="input-group-text">
                                     <i class="fas fa-lock"></i>
                                 </span>
-                                <input type="password" class="form-control" id="password" name="password" 
+                                <input type="password" class="form-control" id="password" name="password"
                                        minlength="6" required>
                                 <button class="btn btn-outline-secondary" type="button" id="togglePassword">
                                     <i class="fas fa-eye"></i>
@@ -91,17 +91,7 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="skillLevel" class="form-label">技能等级</label>
-                            <select class="form-select" id="skillLevel" name="skillLevel">
-                                <option value="novice" selected>🔰 新手 - 刚开始学习编程</option>
-                                <option value="bronze">🥉 铜牌 - 有一定编程经验</option>
-                                <option value="silver">🥈 银牌 - 中级开发者</option>
-                                <option value="gold">🥇 金牌 - 高级开发者</option>
-                                <option value="diamond">💎 钻石 - 专家级开发者</option>
-                            </select>
-                            <div class="form-text">选择您当前的技能等级，这将影响推荐给您的任务</div>
-                        </div>
+
 
                         <div class="mb-4 form-check">
                             <input type="checkbox" class="form-check-input" id="agreeTerms" required>
@@ -157,7 +147,7 @@ $(document).ready(function() {
     $('#togglePassword').click(function() {
         const passwordField = $('#password');
         const icon = $(this).find('i');
-        
+
         if (passwordField.attr('type') === 'password') {
             passwordField.attr('type', 'text');
             icon.removeClass('fa-eye').addClass('fa-eye-slash');
@@ -171,7 +161,7 @@ $(document).ready(function() {
     $('#confirmPassword').on('input', function() {
         const password = $('#password').val();
         const confirmPassword = $(this).val();
-        
+
         if (password !== confirmPassword) {
             this.setCustomValidity('两次输入的密码不一致');
         } else {
@@ -182,7 +172,7 @@ $(document).ready(function() {
     // 注册表单提交
     $('#registerForm').submit(function(e) {
         e.preventDefault();
-        
+
         const form = this;
         if (!form.checkValidity()) {
             e.stopPropagation();
@@ -198,8 +188,7 @@ $(document).ready(function() {
             lastName: $('#lastName').val(),
             username: $('#username').val(),
             email: $('#email').val(),
-            password: $('#password').val(),
-            skillLevel: $('#skillLevel').val()
+            password: $('#password').val()
         };
 
         $.ajax({

@@ -256,14 +256,28 @@ function throttle(func, limit) {
 // 全局错误处理
 window.addEventListener('error', function(e) {
     console.error('全局错误:', e.error);
-    showAlert('系统出现错误，请刷新页面重试', 'danger');
+    console.error('错误详情:', {
+        message: e.message,
+        filename: e.filename,
+        lineno: e.lineno,
+        colno: e.colno,
+        stack: e.error ? e.error.stack : null
+    });
+
+    // 只在开发环境显示详细错误，生产环境显示通用错误
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isDevelopment) {
+        showAlert(`JavaScript错误: ${e.message} (${e.filename}:${e.lineno})`, 'danger', 10000);
+    } else {
+        showAlert('系统出现错误，请刷新页面重试', 'danger');
+    }
 });
 
 // 导出全局函数
 window.KanbanApp = {
     showAlert,
     renderStarRating,
-    renderSkillBadge,
     renderUrgencyBadge,
     formatTime,
     setLoading,

@@ -84,8 +84,7 @@ router.post('/register', [
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      role: user.role,
-      skillLevel: user.skillLevel
+      role: user.role
     };
 
     logger.info(`用户注册成功: ${username}`, { userId: user.id });
@@ -182,8 +181,7 @@ router.post('/login', [
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      role: user.role,
-      skillLevel: user.skillLevel
+      role: user.role
     };
 
     logger.info(`用户登录成功: ${user.username}`, { userId: user.id });

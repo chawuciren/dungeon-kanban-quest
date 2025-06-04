@@ -470,17 +470,17 @@ router.get('/:id', async (req, res) => {
         {
           model: User,
           as: 'publisher',
-          attributes: ['id', 'username', 'firstName', 'lastName', 'skillLevel']
+          attributes: ['id', 'username', 'firstName', 'lastName']
         },
         {
           model: User,
           as: 'assignee',
-          attributes: ['id', 'username', 'firstName', 'lastName', 'skillLevel']
+          attributes: ['id', 'username', 'firstName', 'lastName']
         },
         {
           model: User,
           as: 'reviewer',
-          attributes: ['id', 'username', 'firstName', 'lastName', 'skillLevel']
+          attributes: ['id', 'username', 'firstName', 'lastName']
         },
         {
           model: Project,
@@ -510,7 +510,7 @@ router.get('/:id', async (req, res) => {
         where: {
           id: task.assistantIds
         },
-        attributes: ['id', 'username', 'firstName', 'lastName', 'skillLevel']
+        attributes: ['id', 'username', 'firstName', 'lastName']
       });
     }
 
