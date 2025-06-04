@@ -59,6 +59,29 @@
                             <div class="kanban-card" data-task-id="<%= task.id %>">
                                 <div class="card mb-3">
                                     <div class="card-body p-3">
+                                        <!-- 任务类型标签 -->
+                                        <div class="mb-2">
+                                            <span class="badge bg-<%=
+                                                task.taskType === 'requirement' ? 'info' :
+                                                task.taskType === 'epic' ? 'purple' :
+                                                task.taskType === 'story' ? 'primary' :
+                                                task.taskType === 'dev_task' ? 'primary' :
+                                                task.taskType === 'design_task' ? 'success' :
+                                                task.taskType === 'test_task' ? 'warning' :
+                                                task.taskType === 'devops_task' ? 'dark' :
+                                                task.taskType === 'bug' ? 'danger' : 'secondary'
+                                            %> task-type-badge-kanban">
+                                                <%= task.taskType === 'requirement' ? '📋 需求' :
+                                                    task.taskType === 'epic' ? '🏰 史诗' :
+                                                    task.taskType === 'story' ? '📖 故事' :
+                                                    task.taskType === 'dev_task' ? '⚔️ 开发' :
+                                                    task.taskType === 'design_task' ? '🎨 设计' :
+                                                    task.taskType === 'test_task' ? '🏹 测试' :
+                                                    task.taskType === 'devops_task' ? '⚙️ 运维' :
+                                                    task.taskType === 'bug' ? '🐛 缺陷' : '📝 任务' %>
+                                            </span>
+                                        </div>
+
                                         <!-- 任务标题 -->
                                         <h6 class="card-title mb-2">
                                             <a href="/tasks/<%= task.id %>" class="text-decoration-none">
@@ -198,6 +221,20 @@
 
 .task-info {
     font-size: 0.8em;
+}
+
+.task-type-badge-kanban {
+    font-size: 0.75em !important;
+    padding: 0.4em 0.6em !important;
+    font-weight: 500 !important;
+    display: block;
+    width: fit-content;
+}
+
+/* 自定义紫色背景 */
+.bg-purple {
+    background-color: #6f42c1 !important;
+    color: white !important;
 }
 
 /* 拖拽样式 */

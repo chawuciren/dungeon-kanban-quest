@@ -246,6 +246,20 @@
     padding: 0.25em 0.5em;
 }
 
+.task-type-badge {
+    font-size: 0.8em !important;
+    padding: 0.4em 0.6em !important;
+    font-weight: 500 !important;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* 自定义紫色背景 */
+.bg-purple {
+    background-color: #6f42c1 !important;
+    color: white !important;
+}
+
 .task-card small {
     font-size: 0.875rem;
     line-height: 1.4;
@@ -1752,7 +1766,10 @@ function renderTaskTreeNodes(nodes, level) {
                                 ` : `
                                     <div style="width: 24px; height: 24px; margin-right: 8px;"></div>
                                 `}
-                                <h6 class="card-title mb-0 me-2 text-truncate" style="max-width: 180px;">
+                                <span class="badge bg-${getTaskTypeBadgeColor(taskData.taskType)} me-2 task-type-badge">
+                                    ${getTaskTypeText(taskData.taskType)}
+                                </span>
+                                <h6 class="card-title mb-0 me-2 text-truncate" style="max-width: 120px;">
                                     <a href="/tasks/${taskData.id}" class="text-decoration-none task-title-link">
                                         ${task.name}
                                     </a>
@@ -2510,13 +2527,33 @@ function showTaskDetail(task) {
 // 辅助函数
 function getTaskTypeText(type) {
     const typeMap = {
-        'requirement': '需求',
-        'task': '任务',
-        'bug': '缺陷',
-        'epic': '史诗',
-        'story': '用户故事'
+        'requirement': '📋 需求',
+        'task': '📝 任务',
+        'bug': '🐛 缺陷',
+        'epic': '🏰 史诗',
+        'story': '📖 故事',
+        'dev_task': '⚔️ 开发',
+        'design_task': '🎨 设计',
+        'test_task': '🏹 测试',
+        'devops_task': '⚙️ 运维'
     };
     return typeMap[type] || type;
+}
+
+// 任务类型徽章颜色映射
+function getTaskTypeBadgeColor(taskType) {
+    const colorMap = {
+        'requirement': 'info',
+        'task': 'secondary',
+        'bug': 'danger',
+        'epic': 'purple',
+        'story': 'primary',
+        'dev_task': 'primary',
+        'design_task': 'success',
+        'test_task': 'warning',
+        'devops_task': 'dark'
+    };
+    return colorMap[taskType] || 'secondary';
 }
 
 

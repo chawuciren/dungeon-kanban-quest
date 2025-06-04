@@ -483,6 +483,7 @@ router.get('/create', requireAuth, requireProjectSelection, validateProjectAcces
       projectTasks,
       sprints,
       defaultProjectId: req.session.selectedProjectId,
+      user: req.session.user, // 传递用户信息用于权限检查
       formData // 传递表单数据用于恢复
     });
 
@@ -639,6 +640,15 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
     if (!title || !description || !projectId || !taskType || !starLevel || !urgencyLevel ||
         !estimatedHours || !startDate || !dueDate || !assigneeId || !reviewerId) {
       req.flash('error', '请填写所有必填字段');
+      return res.redirect('back');
+    }
+
+    // 检查用户是否有权限创建指定类型的任务
+    const { canCreateTaskType } = require('../config/taskTypes');
+    const userRole = req.session.user?.role;
+
+    if (!canCreateTaskType(userRole, taskType)) {
+      req.flash('error', `您没有权限创建${taskType}类型的任务`);
       return res.redirect('back');
     }
 
@@ -858,6 +868,7 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
       task,
       projectMembers,
       sprints,
+      user: req.session.user, // 传递用户信息用于权限检查
       formData // 传递表单数据用于恢复
     });
 
@@ -880,6 +891,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       urgencyLevel,
       status,
       estimatedHours,
+      actualHours,
       startDate,
       dueDate,
       sprintId,
@@ -906,6 +918,17 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
         !estimatedHours || !startDate || !dueDate || !assigneeId || !reviewerId) {
       req.flash('error', '请填写所有必填字段');
       return res.redirect('back');
+    }
+
+    // 检查用户是否有权限编辑为指定类型的任务（如果任务类型发生变化）
+    if (taskType !== task.taskType) {
+      const { canCreateTaskType } = require('../config/taskTypes');
+      const userRole = req.session.user?.role;
+
+      if (!canCreateTaskType(userRole, taskType)) {
+        req.flash('error', `您没有权限将任务修改为${taskType}类型`);
+        return res.redirect('back');
+      }
     }
 
     // 处理协助人员ID数组
@@ -937,6 +960,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       reviewerId: reviewerId && reviewerId.trim() !== '' ? reviewerId : null,
       sprintId: sprintId && sprintId.trim() !== '' ? sprintId : null,
       estimatedHours: estimatedHours ? parseFloat(estimatedHours) : null,
+      actualHours: actualHours ? parseFloat(actualHours) : null,
       startDate: startDate || null,
       dueDate: dueDate || null
     };
@@ -975,6 +999,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
         urgencyLevel,
         status,
         estimatedHours,
+        actualHours,
         startDate,
         dueDate,
         sprintId,
@@ -1197,6 +1222,19 @@ router.post('/:id/quick-update', requireAuth, requireProjectSelection, validateP
         'frozen': '冻结'
       };
       displayValue = urgencyConfig[value] || value;
+    } else if (field === 'taskType') {
+      const taskTypeConfig = {
+        'requirement': '📋 需求',
+        'task': '📝 通用任务',
+        'bug': '🐛 缺陷',
+        'epic': '🏰 史诗',
+        'story': '📖 用户故事',
+        'dev_task': '⚔️ 开发任务',
+        'design_task': '🎨 设计任务',
+        'test_task': '🏹 测试任务',
+        'devops_task': '⚙️ 运维任务'
+      };
+      displayValue = taskTypeConfig[value] || value;
     }
 
     res.json({

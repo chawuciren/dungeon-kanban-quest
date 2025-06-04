@@ -312,27 +312,196 @@ const createDefaultData = async () => {
       }
     });
 
-    // 创建示例任务
-    await BountyTask.create({
-      title: '实现用户登录功能',
-      description: '开发用户登录和注册功能，包括表单验证和错误处理',
-      taskType: 'task',
-      starLevel: 2,
-      urgencyLevel: 'normal',
+    // 创建示例任务 - 展示不同的任务类型
+
+    // 史诗任务
+    const epicTask = await BountyTask.create({
+      title: '用户管理系统',
+      description: '构建完整的用户管理系统，包括注册、登录、权限管理等功能',
+      taskType: 'epic',
+      starLevel: 5,
+      urgencyLevel: 'important',
       status: 'published',
       projectId: sampleProject.id,
       publisherId: adminUser.id,
-      estimatedHours: 8.0,
-      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7天后
-      tags: ['frontend', 'authentication'],
+      estimatedHours: 80.0,
+      startDate: new Date(),
+      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30天后
+      level: 0,
+      tags: ['epic', 'user-management'],
       metadata: {
-        priority: 'medium',
+        priority: 'high',
+        complexity: 'high',
+        estimationMethod: 'expert',
+        acceptanceCriteria: [
+          '用户可以注册和登录',
+          '支持角色权限管理',
+          '提供用户资料管理功能'
+        ]
+      }
+    });
+
+    // 用户故事
+    const storyTask = await BountyTask.create({
+      title: '用户登录流程',
+      description: '作为用户，我希望能够安全地登录系统，以便访问个人功能',
+      taskType: 'story',
+      starLevel: 3,
+      urgencyLevel: 'important',
+      status: 'published',
+      projectId: sampleProject.id,
+      publisherId: adminUser.id,
+      parentTaskId: epicTask.id,
+      estimatedHours: 24.0,
+      startDate: new Date(),
+      dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14天后
+      level: 1,
+      tags: ['story', 'authentication'],
+      metadata: {
+        priority: 'high',
         complexity: 'medium',
         estimationMethod: 'expert',
         acceptanceCriteria: [
           '用户可以使用邮箱和密码登录',
           '登录失败时显示错误信息',
           '登录成功后跳转到仪表板'
+        ]
+      }
+    });
+
+    // 开发任务
+    await BountyTask.create({
+      title: '实现登录API接口',
+      description: '开发用户登录的后端API接口，包括身份验证和JWT令牌生成',
+      taskType: 'dev_task',
+      starLevel: 2,
+      urgencyLevel: 'normal',
+      status: 'published',
+      projectId: sampleProject.id,
+      publisherId: adminUser.id,
+      parentTaskId: storyTask.id,
+      estimatedHours: 8.0,
+      startDate: new Date(),
+      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7天后
+      level: 2,
+      tags: ['development', 'backend', 'api'],
+      metadata: {
+        priority: 'medium',
+        complexity: 'medium',
+        estimationMethod: 'expert',
+        acceptanceCriteria: [
+          'API接口返回正确的JWT令牌',
+          '密码验证逻辑正确',
+          '错误处理完善'
+        ]
+      }
+    });
+
+    // 设计任务
+    await BountyTask.create({
+      title: '设计登录页面UI',
+      description: '设计用户友好的登录页面界面，包括响应式布局和交互效果',
+      taskType: 'design_task',
+      starLevel: 2,
+      urgencyLevel: 'normal',
+      status: 'published',
+      projectId: sampleProject.id,
+      publisherId: adminUser.id,
+      parentTaskId: storyTask.id,
+      estimatedHours: 6.0,
+      startDate: new Date(),
+      dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5天后
+      level: 2,
+      tags: ['design', 'ui', 'frontend'],
+      metadata: {
+        priority: 'medium',
+        complexity: 'low',
+        estimationMethod: 'expert',
+        acceptanceCriteria: [
+          '设计稿符合品牌风格',
+          '支持移动端适配',
+          '交互流程清晰'
+        ]
+      }
+    });
+
+    // 测试任务
+    await BountyTask.create({
+      title: '编写登录功能测试用例',
+      description: '编写登录功能的自动化测试用例，确保功能稳定性',
+      taskType: 'test_task',
+      starLevel: 2,
+      urgencyLevel: 'normal',
+      status: 'published',
+      projectId: sampleProject.id,
+      publisherId: adminUser.id,
+      parentTaskId: storyTask.id,
+      estimatedHours: 4.0,
+      startDate: new Date(),
+      dueDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10天后
+      level: 2,
+      tags: ['testing', 'automation'],
+      metadata: {
+        priority: 'medium',
+        complexity: 'low',
+        estimationMethod: 'expert',
+        acceptanceCriteria: [
+          '覆盖正常登录流程',
+          '覆盖异常情况处理',
+          '测试用例可自动执行'
+        ]
+      }
+    });
+
+    // 运维任务
+    await BountyTask.create({
+      title: '配置生产环境部署',
+      description: '配置生产环境的部署流程和监控系统',
+      taskType: 'devops_task',
+      starLevel: 3,
+      urgencyLevel: 'normal',
+      status: 'published',
+      projectId: sampleProject.id,
+      publisherId: adminUser.id,
+      estimatedHours: 12.0,
+      startDate: new Date(),
+      dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15天后
+      level: 0,
+      tags: ['devops', 'deployment', 'monitoring'],
+      metadata: {
+        priority: 'medium',
+        complexity: 'high',
+        estimationMethod: 'expert',
+        acceptanceCriteria: [
+          '自动化部署流程配置完成',
+          '监控系统正常运行',
+          '日志收集系统配置完成'
+        ]
+      }
+    });
+
+    // Bug示例
+    await BountyTask.create({
+      title: '修复登录页面在IE浏览器下的显示问题',
+      description: '登录页面在IE浏览器下样式错乱，需要修复兼容性问题',
+      taskType: 'bug',
+      starLevel: 1,
+      urgencyLevel: 'delayed',
+      status: 'published',
+      projectId: sampleProject.id,
+      publisherId: adminUser.id,
+      estimatedHours: 2.0,
+      startDate: new Date(),
+      dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3天后
+      level: 0,
+      tags: ['bug', 'frontend', 'compatibility'],
+      metadata: {
+        priority: 'low',
+        complexity: 'low',
+        estimationMethod: 'expert',
+        acceptanceCriteria: [
+          'IE浏览器下页面显示正常',
+          '不影响其他浏览器的显示'
         ]
       }
     });

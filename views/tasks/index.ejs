@@ -159,7 +159,26 @@
                                 <!-- 任务标题和星级 -->
                                 <div class="col-md-3">
                                     <div class="d-flex align-items-center">
-                                        <h6 class="card-title mb-0 me-2 text-truncate" style="max-width: 200px;">
+                                        <span class="badge bg-<%=
+                                            task.taskType === 'requirement' ? 'info' :
+                                            task.taskType === 'epic' ? 'purple' :
+                                            task.taskType === 'story' ? 'primary' :
+                                            task.taskType === 'dev_task' ? 'primary' :
+                                            task.taskType === 'design_task' ? 'success' :
+                                            task.taskType === 'test_task' ? 'warning' :
+                                            task.taskType === 'devops_task' ? 'dark' :
+                                            task.taskType === 'bug' ? 'danger' : 'secondary'
+                                        %> me-2 task-type-badge">
+                                            <%= task.taskType === 'requirement' ? '📋 需求' :
+                                                task.taskType === 'epic' ? '🏰 史诗' :
+                                                task.taskType === 'story' ? '📖 故事' :
+                                                task.taskType === 'dev_task' ? '⚔️ 开发' :
+                                                task.taskType === 'design_task' ? '🎨 设计' :
+                                                task.taskType === 'test_task' ? '🏹 测试' :
+                                                task.taskType === 'devops_task' ? '⚙️ 运维' :
+                                                task.taskType === 'bug' ? '🐛 缺陷' : '📝 任务' %>
+                                        </span>
+                                        <h6 class="card-title mb-0 me-2 text-truncate" style="max-width: 140px;">
                                             <a href="/tasks/<%= task.id %>" class="text-decoration-none task-title-link">
                                                 <%= task.title %>
                                             </a>
@@ -362,6 +381,20 @@
 .task-card .badge {
     font-size: 0.75em;
     padding: 0.25em 0.5em;
+}
+
+.task-type-badge {
+    font-size: 0.8em !important;
+    padding: 0.4em 0.6em !important;
+    font-weight: 500 !important;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* 自定义紫色背景 */
+.bg-purple {
+    background-color: #6f42c1 !important;
+    color: white !important;
 }
 
 .task-card small {

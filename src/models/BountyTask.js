@@ -20,7 +20,7 @@ const BountyTask = sequelize.define('BountyTask', {
   },
   // 任务类型
   taskType: {
-    type: DataTypes.ENUM('requirement', 'task', 'bug', 'epic', 'story'),
+    type: DataTypes.ENUM('requirement', 'task', 'bug', 'epic', 'story', 'dev_task', 'design_task', 'test_task', 'devops_task'),
     defaultValue: 'task',
     field: 'task_type'
   },

@@ -84,13 +84,52 @@ const getValue = (field, defaultValue = '') => {
                                 <label for="taskType" class="form-label">任务类型 <span class="text-danger">*</span></label>
                                 <select class="form-select" id="taskType" name="taskType" required>
                                     <option value="">选择任务类型</option>
-                                    <option value="task" <%= getValue('taskType') === 'task' ? 'selected' : '' %>>任务</option>
-                                    <option value="requirement" <%= getValue('taskType') === 'requirement' ? 'selected' : '' %>>需求</option>
-                                    <option value="bug" <%= getValue('taskType') === 'bug' ? 'selected' : '' %>>Bug</option>
-                                    <option value="epic" <%= getValue('taskType') === 'epic' ? 'selected' : '' %>>史诗</option>
-                                    <option value="story" <%= getValue('taskType') === 'story' ? 'selected' : '' %>>故事</option>
+
+                                    <!-- 史诗 - 管理员、产品经理、客户可创建 -->
+                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'client')) { %>
+                                        <option value="epic" <%= getValue('taskType') === 'epic' ? 'selected' : '' %>>🏰 史诗</option>
+                                    <% } %>
+
+                                    <!-- 用户故事 - 管理员、产品经理、客户可创建 -->
+                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'client')) { %>
+                                        <option value="story" <%= getValue('taskType') === 'story' ? 'selected' : '' %>>📖 用户故事</option>
+                                    <% } %>
+
+                                    <!-- 需求 - 管理员、产品经理可创建 -->
+                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager')) { %>
+                                        <option value="requirement" <%= getValue('taskType') === 'requirement' ? 'selected' : '' %>>📋 需求</option>
+                                    <% } %>
+
+                                    <!-- 开发任务 - 管理员、产品经理、开发者可创建 -->
+                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'developer')) { %>
+                                        <option value="dev_task" <%= getValue('taskType') === 'dev_task' ? 'selected' : '' %>>⚔️ 开发任务</option>
+                                    <% } %>
+
+                                    <!-- 设计任务 - 管理员、产品经理、UI设计师可创建 -->
+                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'ui_designer')) { %>
+                                        <option value="design_task" <%= getValue('taskType') === 'design_task' ? 'selected' : '' %>>🎨 设计任务</option>
+                                    <% } %>
+
+                                    <!-- 测试任务 - 管理员、产品经理、测试员可创建 -->
+                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'tester')) { %>
+                                        <option value="test_task" <%= getValue('taskType') === 'test_task' ? 'selected' : '' %>>🏹 测试任务</option>
+                                    <% } %>
+
+                                    <!-- 运维任务 - 管理员、产品经理、运维工程师可创建 -->
+                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'devops')) { %>
+                                        <option value="devops_task" <%= getValue('taskType') === 'devops_task' ? 'selected' : '' %>>⚙️ 运维任务</option>
+                                    <% } %>
+
+                                    <!-- 通用任务 - 所有角色都可创建 -->
+                                    <option value="task" <%= getValue('taskType', !task ? 'task' : '') === 'task' ? 'selected' : '' %>>📝 通用任务</option>
+
+                                    <!-- Bug - 管理员、产品经理、测试员可创建 -->
+                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'tester')) { %>
+                                        <option value="bug" <%= getValue('taskType') === 'bug' ? 'selected' : '' %>>🐛 缺陷</option>
+                                    <% } %>
                                 </select>
                                 <div class="invalid-feedback">请选择任务类型</div>
+                                <div class="form-text">根据您的角色显示可创建的任务类型</div>
                             </div>
                         </div>
 
@@ -105,10 +144,14 @@ const getValue = (field, defaultValue = '') => {
                                             <option value="<%= projectTask.id %>">
                                                 <%= projectTask.title %>
                                                 <% if (projectTask.taskType !== 'task') { %>
-                                                    （<%= projectTask.taskType === 'requirement' ? '需求' :
-                                                         projectTask.taskType === 'epic' ? '史诗' :
-                                                         projectTask.taskType === 'story' ? '故事' :
-                                                         projectTask.taskType === 'bug' ? 'Bug' : projectTask.taskType %>）
+                                                    （<%= projectTask.taskType === 'requirement' ? '📋 需求' :
+                                                         projectTask.taskType === 'epic' ? '🏰 史诗' :
+                                                         projectTask.taskType === 'story' ? '📖 用户故事' :
+                                                         projectTask.taskType === 'dev_task' ? '⚔️ 开发任务' :
+                                                         projectTask.taskType === 'design_task' ? '🎨 设计任务' :
+                                                         projectTask.taskType === 'test_task' ? '🏹 测试任务' :
+                                                         projectTask.taskType === 'devops_task' ? '⚙️ 运维任务' :
+                                                         projectTask.taskType === 'bug' ? '🐛 缺陷' : projectTask.taskType %>）
                                                 <% } %>
                                             </option>
                                         <% }); %>
@@ -137,7 +180,7 @@ const getValue = (field, defaultValue = '') => {
                                 <label for="urgencyLevel" class="form-label">紧急程度 <span class="text-danger">*</span></label>
                                 <select class="form-select" id="urgencyLevel" name="urgencyLevel" required>
                                     <option value="">选择紧急程度</option>
-                                    <option value="normal" <%= getValue('urgencyLevel') === 'normal' ? 'selected' : '' %>>📅 普通</option>
+                                    <option value="normal" <%= getValue('urgencyLevel', !task ? 'normal' : '') === 'normal' ? 'selected' : '' %>>📅 普通</option>
                                     <option value="important" <%= getValue('urgencyLevel') === 'important' ? 'selected' : '' %>>⚡ 重要</option>
                                     <option value="urgent" <%= getValue('urgencyLevel') === 'urgent' ? 'selected' : '' %>>🔥 紧急</option>
                                     <option value="delayed" <%= getValue('urgencyLevel') === 'delayed' ? 'selected' : '' %>>🕐 延后</option>
@@ -170,19 +213,40 @@ const getValue = (field, defaultValue = '') => {
 
                         <!-- 时间设置 -->
                         <div class="row">
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-3 mb-3">
                                 <label for="estimatedHours" class="form-label">预估工时（小时） <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="estimatedHours" name="estimatedHours" min="0.5" step="0.5" value="<%= getValue('estimatedHours') %>" required>
+                                <input type="number" class="form-control" id="estimatedHours" name="estimatedHours" min="0.5" step="0.5" value="<%= getValue('estimatedHours', !task ? '0' : '') %>" required>
                                 <div class="invalid-feedback">请输入预估工时</div>
                                 <div class="form-text">用于工时管理</div>
                             </div>
-                            <div class="col-md-4 mb-3">
+                            <% if (task) { %>
+                            <div class="col-md-3 mb-3">
+                                <label for="actualHours" class="form-label">实际工时（小时）</label>
+                                <input type="number" class="form-control" id="actualHours" name="actualHours" min="0" step="0.5" value="<%= getValue('actualHours') %>">
+                                <div class="form-text">
+                                    <% if (task.estimatedHours && getValue('actualHours')) { %>
+                                        <% const estimated = parseFloat(task.estimatedHours); %>
+                                        <% const actual = parseFloat(getValue('actualHours')); %>
+                                        <% if (actual > estimated) { %>
+                                            <span class="text-warning">超出预估 <%= (actual - estimated).toFixed(1) %> 小时</span>
+                                        <% } else if (actual < estimated) { %>
+                                            <span class="text-success">节省 <%= (estimated - actual).toFixed(1) %> 小时</span>
+                                        <% } else { %>
+                                            <span class="text-info">与预估一致</span>
+                                        <% } %>
+                                    <% } else { %>
+                                        实际消耗的工时
+                                    <% } %>
+                                </div>
+                            </div>
+                            <% } %>
+                            <div class="col-md-3 mb-3">
                                 <label for="startDate" class="form-label">起始日期 <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" id="startDate" name="startDate" value="<%= getValue('startDate') && getValue('startDate') !== '' ? (typeof getValue('startDate') === 'string' && getValue('startDate').includes('-') ? getValue('startDate') : new Date(getValue('startDate')).toISOString().split('T')[0]) : '' %>" required>
                                 <div class="invalid-feedback">请选择起始日期</div>
                                 <div class="form-text">任务计划开始时间</div>
                             </div>
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-3 mb-3">
                                 <label for="dueDate" class="form-label">截止日期 <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" id="dueDate" name="dueDate" value="<%= getValue('dueDate') && getValue('dueDate') !== '' ? (typeof getValue('dueDate') === 'string' && getValue('dueDate').includes('-') ? getValue('dueDate') : new Date(getValue('dueDate')).toISOString().split('T')[0]) : '' %>" required>
                                 <div class="invalid-feedback">请选择截止日期</div>
@@ -436,6 +500,14 @@ const getValue = (field, defaultValue = '') => {
 <script>
 $(document).ready(function() {
     <% if (!task) { %>
+    // 设置默认日期为当天（仅创建模式）
+    const today = new Date().toISOString().split('T')[0];
+    if (!$('#startDate').val()) {
+        $('#startDate').val(today);
+    }
+    if (!$('#dueDate').val()) {
+        $('#dueDate').val(today);
+    }
 
     // 根据星级推荐工时（仅创建模式）
     $('#starLevel').change(function() {
