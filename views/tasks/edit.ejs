@@ -53,7 +53,7 @@
                         <!-- 项目信息 -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">所属大陆</label>
+                                <label class="form-label">所属项目</label>
                                 <div class="form-control-plaintext bg-light border rounded px-3 py-2">
                                     <i class="fas fa-globe me-2 text-primary"></i>
                                     <% if (task && task.project) { %>
@@ -61,10 +61,10 @@
                                     <% } else if (projects && projects.length > 0) { %>
                                         [<%= projects[0].key %>] <%= projects[0].name %>
                                     <% } else { %>
-                                        未选择大陆
+                                        未选择项目
                                     <% } %>
                                 </div>
-                                <div class="form-text"><%= task ? '任务所属的探险大陆' : '当前选中的探险大陆' %></div>
+                                <div class="form-text"><%= task ? '任务所属的项目' : '当前选中的项目' %></div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="taskType" class="form-label">任务类型</label>
@@ -229,9 +229,9 @@
                         <% if (sprints && sprints.length > 0) { %>
                             <div class="row">
                                 <div class="col-12 mb-3">
-                                    <label for="sprintId" class="form-label">所属探险季（可选）</label>
+                                    <label for="sprintId" class="form-label">所属迭代（可选）</label>
                                     <select class="form-select" id="sprintId" name="sprintId">
-                                        <option value="">不属于任何探险季</option>
+                                        <option value="">不属于任何迭代</option>
                                         <% sprints.forEach(sprint => { %>
                                             <option value="<%= sprint.id %>" <%= task && task.sprintId === sprint.id ? 'selected' : '' %>>
                                                 <%= sprint.name %>
@@ -248,7 +248,7 @@
                                             </option>
                                         <% }); %>
                                     </select>
-                                    <div class="form-text">选择任务所属的探险季（迭代），可以不选择</div>
+                                    <div class="form-text">选择任务所属的迭代，可以不选择</div>
                                 </div>
                             </div>
                         <% } %>

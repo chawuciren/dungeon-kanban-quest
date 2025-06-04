@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>创建失败 - <%= title || '地下城看板任务系统' %></title>
+    <title>创建失败 - <%= title || '任务管理' %></title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/fontawesome.min.css" rel="stylesheet">
     <style>
@@ -92,7 +92,7 @@
                 </div>
                 <h2 class="mb-0">创建失败</h2>
                 <p class="mb-0 mt-2 opacity-75">
-                    <%= errorContext || '大陆' %>创建过程中遇到了一些问题
+                    <%= errorContext || '项目' %>创建过程中遇到了一些问题
                 </p>
             </div>
 
@@ -222,17 +222,17 @@
 // 辅助函数：获取字段标签
 function getFieldLabel(key) {
     const labels = {
-        name: '大陆名称',
-        key: '大陆标识符',
-        description: '大陆描述',
+        name: '项目名称',
+        key: '项目标识符',
+        description: '项目描述',
         projectType: '项目类型',
         starLevel: '星级',
-        organizationId: '主要公会',
+        organizationId: '主要组织',
         leaderId: '项目负责人',
         startDate: '开始日期',
         endDate: '结束日期',
         visibility: '可见性',
-        secondaryOrganizations: '协作公会'
+        secondaryOrganizations: '协作组织'
     };
     return labels[key] || key;
 }

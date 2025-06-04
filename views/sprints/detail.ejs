@@ -68,30 +68,30 @@
                 <% if (['planning', 'active'].includes(sprint.status)) { %>
                     <a href="/sprints/<%= sprint.id %>/edit" class="btn btn-outline-warning">
                         <i class="fas fa-edit me-2"></i>
-                        编辑探险季
+                        编辑迭代
                     </a>
                 <% } %>
                 <% if (sprint.status === 'planning') { %>
                     <button class="btn btn-success" onclick="startSprint()">
                         <i class="fas fa-play me-2"></i>
-                        开始探险季
+                        开始迭代
                     </button>
                 <% } else if (sprint.status === 'active') { %>
                     <button class="btn btn-primary" onclick="completeSprint()">
                         <i class="fas fa-check me-2"></i>
-                        完成探险季
+                        完成迭代
                     </button>
                 <% } %>
                 <% if (['planning', 'active'].includes(sprint.status)) { %>
                     <button class="btn btn-outline-danger" onclick="cancelSprint()">
                         <i class="fas fa-times me-2"></i>
-                        取消探险季
+                        取消迭代
                     </button>
                 <% } %>
                 <% if (['planning', 'completed', 'cancelled'].includes(sprint.status)) { %>
                     <button class="btn btn-danger" onclick="deleteSprint()">
                         <i class="fas fa-trash me-2"></i>
-                        删除探险季
+                        删除迭代
                     </button>
                 <% } %>
             </div>
@@ -99,7 +99,7 @@
     </div>
 </div>
 
-<!-- 探险季概览 -->
+<!-- 迭代概览 -->
 <div class="row mb-4">
     <!-- 基本信息 -->
     <div class="col-lg-8">
@@ -107,7 +107,7 @@
             <div class="card-header">
                 <h5 class="card-title mb-0">
                     <i class="fas fa-info-circle me-2"></i>
-                    探险季信息
+                    迭代信息
                 </h5>
             </div>
             <div class="card-body">
@@ -115,7 +115,7 @@
                 <div class="mb-3">
                     <h6 class="text-muted mb-2">
                         <i class="fas fa-bullseye me-1"></i>
-                        探险季目标
+                        迭代目标
                     </h6>
                     <p class="mb-0"><%= sprint.goal %></p>
                 </div>
@@ -226,7 +226,7 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">
                     <i class="fas fa-tasks me-2"></i>
-                    探险季任务
+                    迭代任务
                 </h5>
                 <a href="/tasks/create?sprintId=<%= sprint.id %>" class="btn btn-sm btn-primary">
                     <i class="fas fa-plus me-1"></i>
@@ -311,7 +311,7 @@
                     <div class="text-center py-4">
                         <i class="fas fa-tasks fa-2x text-muted mb-3"></i>
                         <h5 class="text-muted">暂无任务</h5>
-                        <p class="text-muted">开始为这个探险季添加任务吧</p>
+                        <p class="text-muted">开始为这个迭代添加任务吧</p>
                         <a href="/tasks/create?sprintId=<%= sprint.id %>" class="btn btn-primary">
                             <i class="fas fa-plus me-2"></i>
                             添加第一个任务
@@ -325,7 +325,7 @@
 
 <script>
 function startSprint() {
-    if (confirm('确定要开始这个探险季吗？开始后探险季状态将变为进行中。')) {
+    if (confirm('确定要开始这个迭代吗？开始后迭代状态将变为进行中。')) {
         // 创建表单并提交
         const form = document.createElement('form');
         form.method = 'POST';
@@ -337,7 +337,7 @@ function startSprint() {
 
 function completeSprint() {
     const uncompletedTasks = <%= taskStats.total - taskStats.completed %>;
-    let message = '确定要完成这个探险季吗？完成后将无法再添加或修改任务。';
+    let message = '确定要完成这个迭代吗？完成后将无法再添加或修改任务。';
 
     if (uncompletedTasks > 0) {
         message += `\n\n注意：还有 ${uncompletedTasks} 个任务未完成，这些任务将保持当前状态。`;
@@ -354,14 +354,14 @@ function completeSprint() {
 }
 
 function cancelSprint() {
-    const reason = prompt('请输入取消探险季的原因（可选）：');
+    const reason = prompt('请输入取消迭代的原因（可选）：');
 
     // 用户点击取消按钮时，reason 为 null
     if (reason === null) {
         return;
     }
 
-    if (confirm('确定要取消这个探险季吗？取消后探险季状态将变为已取消。')) {
+    if (confirm('确定要取消这个迭代吗？取消后迭代状态将变为已取消。')) {
         // 创建表单并提交
         const form = document.createElement('form');
         form.method = 'POST';
@@ -383,10 +383,10 @@ function cancelSprint() {
 
 function deleteSprint() {
     const taskCount = <%= taskStats.total %>;
-    let message = '确定要删除这个探险季吗？此操作无法撤销！';
+    let message = '确定要删除这个迭代吗？此操作无法撤销！';
 
     if (taskCount > 0) {
-        message += `\n\n注意：此探险季包含 ${taskCount} 个任务，删除后这些任务将从探险季中移除，但任务本身不会被删除。`;
+        message += `\n\n注意：此迭代包含 ${taskCount} 个任务，删除后这些任务将从迭代中移除，但任务本身不会被删除。`;
     }
 
     // 第一次确认
@@ -396,14 +396,14 @@ function deleteSprint() {
 
     // 第二次确认（更严格）
     const sprintName = '<%= sprint.name %>';
-    const confirmText = prompt(`请输入探险季名称"${sprintName}"以确认删除：`);
+    const confirmText = prompt(`请输入迭代名称"${sprintName}"以确认删除：`);
 
     if (confirmText === null) {
         return; // 用户取消
     }
 
     if (confirmText !== sprintName) {
-        alert('输入的探险季名称不正确，删除操作已取消。');
+        alert('输入的迭代名称不正确，删除操作已取消。');
         return;
     }
 

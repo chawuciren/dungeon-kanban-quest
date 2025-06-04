@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * 地下城看板探险 - 数据库初始化脚本
+ * 项目看板探险 - 数据库初始化脚本
  * 用于创建数据库表和初始数据
  *
  * 使用方法：
@@ -23,7 +23,7 @@ const isHelp = args.includes('--help') || args.includes('-h');
 // 显示帮助信息
 function showHelp() {
   console.log(`
-🎮 地下城看板探险 - 数据库初始化工具
+🎮 项目看板 - 数据库初始化工具
 
 使用方法：
   node scripts/init-db.js [选项]
@@ -62,7 +62,7 @@ async function initDatabase() {
       process.exit(0);
     }
 
-    console.log('🎮 地下城看板探险 - 数据库初始化');
+    console.log('🎮 项目看板探险 - 数据库初始化');
     console.log('=====================================');
 
     // 检查数据库连接
@@ -124,12 +124,12 @@ async function initDatabase() {
       console.log('   🔮 戴安娜设计 (diana_ui) - 魔法师 (UI设计师)');
       console.log('   密码均为: [用户名]123 (如 alice123)');
       console.log('');
-      console.log('🏰 默认公会：');
+      console.log('🏰 默认组织：');
       console.log('   名称: 默认组织');
       console.log('   标识: default');
       console.log('   成员: 5人 (管理员 + 4个示例用户)');
       console.log('');
-      console.log('🗺️  示例大陆（项目）：');
+      console.log('🗺️  示例项目（项目）：');
       console.log('   名称: 示例项目');
       console.log('   标识: SAMPLE');
       console.log('   类型: 🏗️ 据点建设');
@@ -137,9 +137,9 @@ async function initDatabase() {
       console.log('');
       console.log('💡 重要说明：');
       console.log('   • 用户的职业仅作参考，实际角色在项目中单独管理');
-      console.log('   • 公会级别不设置角色，只管理成员关系');
+      console.log('   • 组织级别不设置角色，只管理成员关系');
       console.log('   • 一个用户可以在不同项目中担任不同角色');
-      console.log('   • 项目可以关联多个公会，支持跨组织协作');
+      console.log('   • 项目可以关联多个组织，支持跨组织协作');
     }
 
     console.log('');

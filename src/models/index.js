@@ -234,7 +234,7 @@ Sprint.belongsTo(User, {
   as: 'creator'
 });
 
-// Sprint 和 BountyTask 的关联 (1:N) - 任务可以分配到探险季
+// Sprint 和 BountyTask 的关联 (1:N) - 任务可以分配到迭代
 Sprint.hasMany(BountyTask, {
   foreignKey: 'sprintId',
   as: 'tasks',
@@ -489,8 +489,8 @@ const createDefaultData = async () => {
 
     console.log('✅ 默认数据创建成功');
     console.log(`👥 创建了 ${1 + sampleUsers.length} 个用户 (1个管理员 + ${sampleUsers.length}个示例用户)`);
-    console.log(`🏰 创建了 1 个默认公会，包含 ${1 + sampleUsers.length} 个成员`);
-    console.log(`🗺️  创建了 1 个示例大陆，包含 ${1 + projectMembers.length} 个成员`);
+    console.log(`🏰 创建了 1 个默认组织，包含 ${1 + sampleUsers.length} 个成员`);
+    console.log(`🗺️  创建了 1 个示例项目，包含 ${1 + projectMembers.length} 个成员`);
   } catch (error) {
     console.error('❌ 默认数据创建失败:', error);
   }

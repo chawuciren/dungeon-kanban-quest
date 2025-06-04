@@ -7,21 +7,21 @@
             <div>
                 <h2>
                     <i class="fas fa-calendar-alt me-2 text-primary"></i>
-                    探险季管理
+                    迭代管理
                 </h2>
                 <p class="text-muted mb-0">管理项目的探险周期和迭代计划</p>
             </div>
             <div>
                 <a href="/sprints/create" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>
-                    创建探险季
+                    创建迭代
                 </a>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 当前大陆信息和筛选器 -->
+<!-- 当前项目信息和筛选器 -->
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
@@ -61,7 +61,7 @@
     </div>
 </div>
 
-<!-- 探险季列表 -->
+<!-- 迭代列表 -->
 <div class="row">
     <div class="col-12">
         <% if (sprints && sprints.length > 0) { %>
@@ -205,7 +205,7 @@
                                                     data-sprint-name="<%= sprint.name %>"
                                                     data-task-count="<%= sprint.stats.totalTasks || 0 %>"
                                                     onclick="quickDeleteSprint(this)"
-                                                    title="删除探险季">
+                                                    title="删除迭代">
                                                 <i class="fas fa-trash"></i>
                                                 <span class="d-none d-xl-inline ms-1">删除</span>
                                             </button>
@@ -220,7 +220,7 @@
 
             <!-- 分页 -->
             <% if (pagination.totalPages > 1) { %>
-                <nav aria-label="探险季分页">
+                <nav aria-label="迭代分页">
                     <ul class="pagination justify-content-center">
                         <% if (pagination.hasPrev) { %>
                             <li class="page-item">
@@ -253,11 +253,11 @@
             <!-- 空状态 -->
             <div class="text-center py-5">
                 <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
-                <h4 class="text-muted">暂无探险季</h4>
-                <p class="text-muted">开始创建您的第一个探险季，规划项目的迭代周期</p>
+                <h4 class="text-muted">暂无迭代</h4>
+                <p class="text-muted">开始创建您的第一个迭代，规划项目的迭代周期</p>
                 <a href="/sprints/create" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>
-                    创建探险季
+                    创建迭代
                 </a>
             </div>
         <% } %>
@@ -290,7 +290,7 @@
 
 <script>
 function quickStartSprint(sprintId, sprintName) {
-    if (confirm(`确定要开始探险季"${sprintName}"吗？开始后探险季状态将变为进行中。`)) {
+    if (confirm(`确定要开始迭代"${sprintName}"吗？开始后迭代状态将变为进行中。`)) {
         // 创建表单并提交
         const form = document.createElement('form');
         form.method = 'POST';
@@ -301,7 +301,7 @@ function quickStartSprint(sprintId, sprintName) {
 }
 
 function quickCompleteSprint(sprintId, sprintName) {
-    if (confirm(`确定要完成探险季"${sprintName}"吗？完成后将无法再添加或修改任务。`)) {
+    if (confirm(`确定要完成迭代"${sprintName}"吗？完成后将无法再添加或修改任务。`)) {
         // 创建表单并提交
         const form = document.createElement('form');
         form.method = 'POST';
@@ -316,10 +316,10 @@ function quickDeleteSprint(button) {
     const sprintName = button.getAttribute('data-sprint-name');
     const taskCount = parseInt(button.getAttribute('data-task-count')) || 0;
 
-    let message = `确定要删除探险季"${sprintName}"吗？此操作无法撤销！`;
+    let message = `确定要删除迭代"${sprintName}"吗？此操作无法撤销！`;
 
     if (taskCount > 0) {
-        message += `\n\n注意：此探险季包含 ${taskCount} 个任务，删除后这些任务将从探险季中移除，但任务本身不会被删除。`;
+        message += `\n\n注意：此迭代包含 ${taskCount} 个任务，删除后这些任务将从迭代中移除，但任务本身不会被删除。`;
     }
 
     // 第一次确认
@@ -328,14 +328,14 @@ function quickDeleteSprint(button) {
     }
 
     // 第二次确认（更严格）
-    const confirmText = prompt(`请输入探险季名称"${sprintName}"以确认删除：`);
+    const confirmText = prompt(`请输入迭代名称"${sprintName}"以确认删除：`);
 
     if (confirmText === null) {
         return; // 用户取消
     }
 
     if (confirmText !== sprintName) {
-        alert('输入的探险季名称不正确，删除操作已取消。');
+        alert('输入的迭代名称不正确，删除操作已取消。');
         return;
     }
 

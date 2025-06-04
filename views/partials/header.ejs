@@ -49,21 +49,21 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
 
-                    <!-- 大陆选择 - 非管理员必须选择，管理员可选 -->
+                    <!-- 项目选择 - 非管理员必须选择，管理员可选 -->
                     <% if (user) { %>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle <%= !selectedProject && user.role !== 'admin' ? 'text-warning' : '' %>"
                                href="#" id="projectSelector" role="button" data-bs-toggle="dropdown"
                                data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="<%= selectedProject ? '当前大陆: ' + selectedProject.name : '选择要探险的大陆' %>">
+                               title="<%= selectedProject ? '当前项目: ' + selectedProject.name : '选择要探险的项目' %>">
                                 <i class="fas fa-globe me-1"></i>
-                                <%= selectedProject ? selectedProject.name : '选择大陆' %>
+                                <%= selectedProject ? selectedProject.name : '选择项目' %>
                                 <% if (!selectedProject && user.role !== 'admin') { %>
                                     <i class="fas fa-exclamation-triangle ms-1 text-warning"></i>
                                 <% } %>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><h6 class="dropdown-header">可用大陆</h6></li>
+                                <li><h6 class="dropdown-header">可用项目</h6></li>
                                 <% if (typeof userProjects !== 'undefined' && userProjects && userProjects.length > 0) { %>
                                     <% userProjects.forEach(project => { %>
                                         <li>
@@ -78,7 +78,7 @@
                                         </li>
                                     <% }) %>
                                 <% } else { %>
-                                    <li><span class="dropdown-item-text text-muted">暂无可用大陆</span></li>
+                                    <li><span class="dropdown-item-text text-muted">暂无可用项目</span></li>
                                     <% if (user.role !== 'admin') { %>
                                         <li><span class="dropdown-item-text text-muted small">请联系管理员加入项目</span></li>
                                     <% } %>
@@ -96,38 +96,38 @@
                         </li>
                     <% } %>
 
-                    <!-- 勇者大厅 - 始终显示 -->
+                    <!-- 成员大厅 - 始终显示 -->
                     <% if (user) { %>
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/dashboard') ? 'active' : '' %>" href="/dashboard"
-                               data-bs-toggle="tooltip" data-bs-placement="bottom" title="勇者大厅 - 查看整体状况">
+                               data-bs-toggle="tooltip" data-bs-placement="bottom" title="仪表盘 - 查看整体状况">
                                 <i class="fas fa-home me-1"></i>
-                                勇者大厅
+                                仪表盘
                             </a>
                         </li>
                     <% } %>
 
-                    <!-- 项目相关功能 - 只有选择了大陆才显示 -->
+                    <!-- 项目相关功能 - 只有选择了项目才显示 -->
                     <% if (user && selectedProject) { %>
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/tasks') ? 'active' : '' %>" href="/tasks"
-                               data-bs-toggle="tooltip" data-bs-placement="bottom" title="酒馆 - 任务委托市场">
+                               data-bs-toggle="tooltip" data-bs-placement="bottom" title="任务">
                                 <i class="fas fa-beer me-1"></i>
-                                酒馆
+                                任务
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/sprints') ? 'active' : '' %>" href="/sprints"
-                               data-bs-toggle="tooltip" data-bs-placement="bottom" title="探险季 - 冒险周期管理">
+                               data-bs-toggle="tooltip" data-bs-placement="bottom" title="迭代">
                                 <i class="fas fa-calendar-alt me-1"></i>
-                                探险季
+                                迭代
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/leaderboard') ? 'active' : '' %>" href="/leaderboard"
-                               data-bs-toggle="tooltip" data-bs-placement="bottom" title="荣誉殿堂 - 冒险者排名">
+                               data-bs-toggle="tooltip" data-bs-placement="bottom" title="榜单">
                                 <i class="fas fa-crown me-1"></i>
-                                荣誉殿堂
+                                榜单
                             </a>
                         </li>
                     <% } %>
@@ -136,23 +136,23 @@
                     <% if (user && user.role === 'admin') { %>
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/projects') ? 'active' : '' %>" href="/projects"
-                            data-bs-toggle="tooltip" data-bs-placement="bottom" title="大陆 - 探险项目管理">
+                            data-bs-toggle="tooltip" data-bs-placement="bottom" title="项目- 项目 管理">
                                 <i class="fas fa-map me-1"></i>
-                                大陆
+                                项目
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/organizations') ? 'active' : '' %>" href="/organizations"
-                               data-bs-toggle="tooltip" data-bs-placement="bottom" title="公会 - 组织管理">
+                               data-bs-toggle="tooltip" data-bs-placement="bottom" title="组织 - 组织管理">
                                 <i class="fas fa-shield-alt me-1"></i>
-                                公会
+                                组织
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/users') ? 'active' : '' %>" href="/users"
-                               data-bs-toggle="tooltip" data-bs-placement="bottom" title="冒险者 - 人员管理">
+                               data-bs-toggle="tooltip" data-bs-placement="bottom" title="成员 - 人员管理">
                                 <i class="fas fa-users me-1"></i>
-                                勇者
+                                成员
                             </a>
                         </li>
                     <% } %>

@@ -18,7 +18,7 @@ const Sprint = sequelize.define('Sprint', {
     type: DataTypes.TEXT,
     allowNull: true
   },
-  // 探险季目标
+  // 迭代目标
   goal: {
     type: DataTypes.TEXT,
     allowNull: false,
@@ -26,7 +26,7 @@ const Sprint = sequelize.define('Sprint', {
       len: [5, 1000]
     }
   },
-  // 探险季状态
+  // 迭代状态
   status: {
     type: DataTypes.ENUM('planning', 'active', 'completed', 'cancelled'),
     defaultValue: 'planning'
@@ -75,7 +75,7 @@ const Sprint = sequelize.define('Sprint', {
       key: 'id'
     }
   },
-  // 探险季容量（计划工时）
+  // 迭代容量（计划工时）
   capacity: {
     type: DataTypes.DECIMAL(8, 2),
     allowNull: true,
@@ -104,7 +104,7 @@ const Sprint = sequelize.define('Sprint', {
       min: 0
     }
   },
-  // 探险季预算
+  // 迭代预算
   budget: {
     type: DataTypes.JSON,
     defaultValue: {
@@ -126,7 +126,7 @@ const Sprint = sequelize.define('Sprint', {
       }
     }
   },
-  // 探险季设置
+  // 迭代设置
   settings: {
     type: DataTypes.JSON,
     defaultValue: {
@@ -138,7 +138,7 @@ const Sprint = sequelize.define('Sprint', {
       hoursPerDay: 8
     }
   },
-  // 探险季统计
+  // 迭代统计
   stats: {
     type: DataTypes.JSON,
     defaultValue: {

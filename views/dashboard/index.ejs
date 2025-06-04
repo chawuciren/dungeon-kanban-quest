@@ -79,12 +79,12 @@
 <div class="row">
     <!-- 左侧内容 -->
     <div class="col-lg-8">
-        <!-- 我的大陆 -->
+        <!-- 我的项目 -->
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
                     <i class="fas fa-globe me-2"></i>
-                    我的大陆
+                    我的项目
                 </h5>
                 <% if (user && user.role === 'admin') { %>
                     <a href="/projects" class="btn btn-outline-primary btn-sm">
@@ -148,11 +148,11 @@
                 <% } else { %>
                     <div class="text-center py-4">
                         <i class="fas fa-globe fa-2x text-muted mb-2"></i>
-                        <p class="text-muted mb-2">暂无可用大陆</p>
+                        <p class="text-muted mb-2">暂无可用项目</p>
                         <% if (user && user.role === 'admin') { %>
                             <a href="/projects/create" class="btn btn-outline-primary btn-sm">
                                 <i class="fas fa-plus me-1"></i>
-                                创建大陆
+                                创建项目
                             </a>
                         <% } else { %>
                             <small class="text-muted">请联系管理员加入项目</small>

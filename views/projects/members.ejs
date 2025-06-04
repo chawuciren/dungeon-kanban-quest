@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %> - 地下城看板探险</title>
+    <title><%= title %> - 任务管理</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/fontawesome.all.min.css" rel="stylesheet">
     <link href="/css/fontawesome-fix.css" rel="stylesheet">
@@ -36,19 +36,19 @@
                     <div>
                         <h2 class="mb-1">
                             <i class="fas fa-users text-primary me-2"></i>
-                            <%= project.name %> - 勇者管理
+                            <%= project.name %> - 成员管理
                         </h2>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/projects">大陆管理</a></li>
+                                <li class="breadcrumb-item"><a href="/projects">项目管理</a></li>
                                 <li class="breadcrumb-item"><a href="/projects/<%= project.id %>"><%= project.name %></a></li>
-                                <li class="breadcrumb-item active">勇者管理</li>
+                                <li class="breadcrumb-item active">成员管理</li>
                             </ol>
                         </nav>
                     </div>
                     <div>
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMemberModal">
-                            <i class="fas fa-user-plus me-2"></i>添加勇者
+                            <i class="fas fa-user-plus me-2"></i>添加成员
                         </button>
                         <a href="/projects/<%= project.id %>" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-2"></i>返回项目
@@ -138,7 +138,7 @@
                             <div class="text-center py-5">
                                 <i class="fas fa-users fa-3x text-muted mb-3"></i>
                                 <h5 class="text-muted">暂无项目成员</h5>
-                                <p class="text-muted">点击"添加勇者"按钮邀请成员加入项目</p>
+                                <p class="text-muted">点击"添加成员"按钮邀请成员加入项目</p>
                             </div>
                         </div>
                     <% } %>
@@ -153,7 +153,7 @@
             <div class="modal-content">
                 <form action="/projects/<%= project.id %>/members" method="POST">
                     <div class="modal-header">
-                        <h5 class="modal-title">添加勇者</h5>
+                        <h5 class="modal-title">添加成员</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">

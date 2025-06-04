@@ -8,10 +8,10 @@
                 <h1 class="h3 mb-0">
                     <% if (isCreateMode) { %>
                         <i class="fas fa-plus me-2"></i>
-                        创建公会
+                        创建组织
                     <% } else { %>
                         <i class="fas fa-edit me-2"></i>
-                        编辑公会
+                        编辑组织
                     <% } %>
                 </h1>
                 <div class="btn-group">
@@ -27,7 +27,7 @@
                         </a>
                         <a href="/organizations" class="btn btn-outline-secondary">
                             <i class="fas fa-list me-1"></i>
-                            公会列表
+                            组织列表
                         </a>
                     <% } %>
                 </div>
@@ -38,7 +38,7 @@
                 <div class="card-header">
                     <h5 class="mb-0">
                         <i class="fas fa-shield-alt me-2"></i>
-                        公会信息
+                        组织信息
                     </h5>
                 </div>
                 <div class="card-body">
@@ -46,15 +46,15 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="name" class="form-label">
-                                    公会名称 <span class="text-danger">*</span>
+                                    组织名称 <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" class="form-control" id="name" name="name" required
-                                       value="<%= isCreateMode ? '' : organization.name %>" placeholder="请输入公会名称">
-                                <div class="form-text">公会的正式名称，将在各处显示</div>
+                                       value="<%= isCreateMode ? '' : organization.name %>" placeholder="请输入组织名称">
+                                <div class="form-text">组织的正式名称，将在各处显示</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="slug" class="form-label">
-                                    公会标识符 <span class="text-danger">*</span>
+                                    组织标识符 <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" class="form-control" id="slug" name="slug" required
                                        value="<%= isCreateMode ? '' : organization.slug %>" placeholder="guild-name" pattern="[a-z0-9-]+">
@@ -63,10 +63,10 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="description" class="form-label">公会描述</label>
+                            <label for="description" class="form-label">组织描述</label>
                             <textarea class="form-control" id="description" name="description" rows="3"
-                                      placeholder="请描述公会的宗旨、目标或特色"><%= isCreateMode ? '' : (organization.description || '') %></textarea>
-                            <div class="form-text">简要介绍公会的背景和目标</div>
+                                      placeholder="请描述组织的宗旨、目标或特色"><%= isCreateMode ? '' : (organization.description || '') %></textarea>
+                            <div class="form-text">简要介绍组织的背景和目标</div>
                         </div>
 
                         <div class="row">
@@ -89,15 +89,15 @@
                                        value="<%= isCreateMode ? '' : (organization.phone || '') %>" placeholder="+86 138-0000-0000">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="address" class="form-label">公会地址</label>
+                                <label for="address" class="form-label">组织地址</label>
                                 <input type="text" class="form-control" id="address" name="address"
-                                       value="<%= isCreateMode ? '' : (organization.address || '') %>" placeholder="公会总部地址">
+                                       value="<%= isCreateMode ? '' : (organization.address || '') %>" placeholder="组织总部地址">
                             </div>
                         </div>
 
                         <% if (!isCreateMode) { %>
                         <div class="mb-3">
-                            <label for="status" class="form-label">公会状态</label>
+                            <label for="status" class="form-label">组织状态</label>
                             <select class="form-select" id="status" name="status">
                                 <option value="active" <%= organization.status === 'active' ? 'selected' : '' %>>活跃</option>
                                 <option value="inactive" <%= organization.status === 'inactive' ? 'selected' : '' %>>非活跃</option>
@@ -119,7 +119,7 @@
                                 </a>
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-plus me-1"></i>
-                                    创建公会
+                                    创建组织
                                 </button>
                             <% } else { %>
                                 <a href="/organizations/<%= organization.id %>" class="btn btn-secondary">
@@ -152,19 +152,19 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <h6>暂停公会</h6>
-                            <p class="text-muted small">暂停公会将停止所有相关活动，但保留数据。</p>
+                            <h6>暂停组织</h6>
+                            <p class="text-muted small">暂停组织将停止所有相关活动，但保留数据。</p>
                             <button type="button" class="btn btn-warning btn-sm" onclick="suspendOrganization()">
                                 <i class="fas fa-pause me-1"></i>
-                                暂停公会
+                                暂停组织
                             </button>
                         </div>
                         <div class="col-md-6">
-                            <h6>删除公会</h6>
-                            <p class="text-muted small">删除公会将永久删除所有相关数据，此操作不可恢复。</p>
+                            <h6>删除组织</h6>
+                            <p class="text-muted small">删除组织将永久删除所有相关数据，此操作不可恢复。</p>
                             <button type="button" class="btn btn-danger btn-sm" onclick="deleteOrganization()">
                                 <i class="fas fa-trash me-1"></i>
-                                删除公会
+                                删除组织
                             </button>
                         </div>
                     </div>
@@ -181,10 +181,10 @@
                 </div>
                 <div class="card-body">
                     <ul class="mb-0">
-                        <li>修改公会标识符可能会影响现有的URL链接</li>
-                        <li>暂停公会会影响所有相关的地下城和任务</li>
-                        <li>公会状态变更会通知所有相关成员</li>
-                        <li>删除公会将同时删除所有相关的地下城和任务数据</li>
+                        <li>修改组织标识符可能会影响现有的URL链接</li>
+                        <li>暂停组织会影响所有相关的项目和任务</li>
+                        <li>组织状态变更会通知所有相关成员</li>
+                        <li>删除组织将同时删除所有相关的项目和任务数据</li>
                     </ul>
                 </div>
             </div>
@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <% if (!isCreateMode) { %>
 function suspendOrganization() {
-    if (confirm('确定要暂停这个公会吗？这将停止所有相关活动。')) {
+    if (confirm('确定要暂停这个组织吗？这将停止所有相关活动。')) {
         document.getElementById('status').value = 'suspended';
         document.querySelector('form').submit();
     }
@@ -242,15 +242,15 @@ function suspendOrganization() {
 
 function deleteOrganization() {
     const orgName = '<%= organization.name %>';
-    const confirmText = prompt(`删除公会是不可恢复的操作！\n\n请输入公会名称 "${orgName}" 来确认删除：`);
+    const confirmText = prompt(`删除组织是不可恢复的操作！\n\n请输入组织名称 "${orgName}" 来确认删除：`);
 
     if (confirmText === orgName) {
-        if (confirm('最后确认：确定要永久删除这个公会及其所有数据吗？')) {
+        if (confirm('最后确认：确定要永久删除这个组织及其所有数据吗？')) {
             // 这里可以添加删除API调用
             alert('删除功能正在开发中...');
         }
     } else if (confirmText !== null) {
-        alert('公会名称不匹配，删除操作已取消。');
+        alert('组织名称不匹配，删除操作已取消。');
     }
 }
 <% } %>

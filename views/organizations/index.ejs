@@ -7,11 +7,11 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="h3 mb-0">
                     <i class="fas fa-shield-alt me-2"></i>
-                    公会管理（组织管理）
+                    组织（组织管理）
                 </h1>
                 <a href="/organizations/create" class="btn btn-primary">
                     <i class="fas fa-plus me-1"></i>
-                    创建公会
+                    创建组织
                 </a>
             </div>
 
@@ -20,9 +20,9 @@
                 <div class="card-body">
                     <form method="GET" action="/organizations" class="row g-3">
                         <div class="col-md-4">
-                            <label for="search" class="form-label">搜索公会</label>
+                            <label for="search" class="form-label">搜索组织</label>
                             <input type="text" class="form-control" id="search" name="search"
-                                   value="<%= filters.search %>" placeholder="公会名称或描述">
+                                   value="<%= filters.search %>" placeholder="组织名称或描述">
                         </div>
                         <div class="col-md-3">
                             <label for="status" class="form-label">状态</label>
@@ -45,7 +45,7 @@
                 </div>
             </div>
 
-            <!-- 公会列表 -->
+            <!-- 组织列表 -->
             <div class="row">
                 <% if (organizations && organizations.length > 0) { %>
                     <% organizations.forEach(org => { %>
@@ -73,7 +73,7 @@
                                         <div class="col-6">
                                             <div class="border-end">
                                                 <h6 class="mb-0"><%= org.projectCount || 0 %></h6>
-                                                <small class="text-muted">大陆</small>
+                                                <small class="text-muted">项目</small>
                                             </div>
                                         </div>
                                         <div class="col-6">
@@ -105,10 +105,10 @@
                     <div class="col-12">
                         <div class="text-center py-5">
                             <i class="fas fa-shield-alt fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">暂无公会</h5>
-                            <p class="text-muted mb-3">还没有创建任何公会</p>
+                            <h5 class="text-muted">暂无组织</h5>
+                            <p class="text-muted mb-3">还没有创建任何组织</p>
                             <a href="/organizations/create" class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>创建第一个公会
+                                <i class="fas fa-plus me-2"></i>创建第一个组织
                             </a>
                         </div>
                     </div>
@@ -117,7 +117,7 @@
 
             <!-- 分页 -->
             <% if (pagination.totalPages > 1) { %>
-                <nav aria-label="公会列表分页">
+                <nav aria-label="组织列表分页">
                     <ul class="pagination justify-content-center">
                         <li class="page-item <%= !pagination.hasPrev ? 'disabled' : '' %>">
                             <a class="page-link" href="?page=<%= pagination.page - 1 %>&search=<%= filters.search %>&status=<%= filters.status %>">

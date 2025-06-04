@@ -25,19 +25,19 @@
                         </a>
                         <a href="/organizations/<%= organization.id %>/edit" class="btn btn-primary">
                             <i class="fas fa-edit me-1"></i>
-                            编辑公会
+                            编辑组织
                         </a>
                     <% } %>
                 </div>
             </div>
 
-            <!-- 公会描述 -->
+            <!-- 组织描述 -->
             <% if (organization.description) { %>
                 <div class="card mb-4">
                     <div class="card-header">
                         <h5 class="mb-0">
                             <i class="fas fa-scroll me-2"></i>
-                            公会简介
+                            组织简介
                         </h5>
                     </div>
                     <div class="card-body">
@@ -46,12 +46,12 @@
                 </div>
             <% } %>
 
-            <!-- 公会成员管理 -->
+            <!-- 组织成员管理 -->
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
                         <i class="fas fa-users me-2"></i>
-                        公会勇者
+                        组织成员
                         <span class="badge bg-primary ms-2"><%= organization.members ? organization.members.length : 0 %></span>
                     </h5>
                     <% if (user && (user.role === 'admin' || user.id === organization.ownerId)) { %>
@@ -84,7 +84,7 @@
                                                     <% if (member.id === organization.ownerId) { %>
                                                         <div class="mt-1">
                                                             <span class="badge bg-warning text-dark">
-                                                                <i class="fas fa-crown me-1"></i>公会会长
+                                                                <i class="fas fa-crown me-1"></i>组织会长
                                                             </span>
                                                         </div>
                                                     <% } %>
@@ -114,8 +114,8 @@
                     <% } else { %>
                         <div class="text-center py-5">
                             <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">暂无公会成员</h5>
-                            <p class="text-muted mb-3">该公会还没有任何成员</p>
+                            <h5 class="text-muted">暂无组织成员</h5>
+                            <p class="text-muted mb-3">该组织还没有任何成员</p>
                             <% if (user && (user.role === 'admin' || user.id === organization.ownerId)) { %>
                                 <a href="/organizations/<%= organization.id %>/members" class="btn btn-primary">
                                     <i class="fas fa-user-plus me-2"></i>添加第一个成员
@@ -129,12 +129,12 @@
 
         <!-- 右侧信息栏 -->
         <div class="col-lg-4">
-            <!-- 公会信息 -->
+            <!-- 组织信息 -->
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">
                         <i class="fas fa-info-circle me-2"></i>
-                        公会信息
+                        组织信息
                     </h5>
                 </div>
                 <div class="card-body">
@@ -228,13 +228,13 @@
                 </div>
             <% } %>
 
-            <!-- 关联大陆 -->
+            <!-- 关联项目 -->
             <% if (organization.projects && organization.projects.length > 0) { %>
                 <div class="card mb-4">
                     <div class="card-header">
                         <h5 class="mb-0">
                             <i class="fas fa-map me-2"></i>
-                            关联大陆
+                            关联项目
                             <span class="badge bg-primary ms-2"><%= organization.projects.length %></span>
                         </h5>
                     </div>
@@ -247,9 +247,9 @@
                                     </a>
                                     <div class="small text-muted">
                                         <% if (project.ProjectOrganization && project.ProjectOrganization.relationshipType === 'primary') { %>
-                                            <span class="badge bg-primary">主要公会</span>
+                                            <span class="badge bg-primary">主要组织</span>
                                         <% } else { %>
-                                            <span class="badge bg-secondary">协作公会</span>
+                                            <span class="badge bg-secondary">协作组织</span>
                                         <% } %>
                                     </div>
                                 </div>
@@ -260,7 +260,7 @@
                         <% }); %>
                         <% if (organization.projects.length > 5) { %>
                             <div class="text-center mt-2">
-                                <small class="text-muted">还有 <%= organization.projects.length - 5 %> 个大陆...</small>
+                                <small class="text-muted">还有 <%= organization.projects.length - 5 %> 个项目...</small>
                             </div>
                         <% } %>
                     </div>
@@ -279,7 +279,7 @@
                     <div class="row text-center">
                         <div class="col-4">
                             <h4 class="mb-0 text-primary"><%= organization.projects ? organization.projects.length : 0 %></h4>
-                            <small class="text-muted">地下城总数</small>
+                            <small class="text-muted">项目</small>
                         </div>
                         <div class="col-4">
                             <h4 class="mb-0 text-success">

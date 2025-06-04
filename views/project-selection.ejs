@@ -7,14 +7,14 @@
                 <div class="card-header bg-primary text-white text-center">
                     <h4 class="mb-0">
                         <i class="fas fa-globe me-2"></i>
-                        选择探险大陆
+                        选择项目
                     </h4>
                 </div>
                 <div class="card-body">
                     <% if (user.role !== 'admin') { %>
                         <div class="alert alert-warning">
                             <i class="fas fa-exclamation-triangle me-2"></i>
-                            请选择一个大陆开始您的探险之旅！
+                            请选择一个项目开始您的探险之旅！
                         </div>
                     <% } %>
 
@@ -46,10 +46,10 @@
                     <% } else { %>
                         <div class="text-center py-5">
                             <i class="fas fa-map-marked-alt fa-4x text-muted mb-3"></i>
-                            <h5 class="text-muted">暂无可用大陆</h5>
+                            <h5 class="text-muted">暂无可用项目</h5>
                             <% if (user.role !== 'admin') { %>
                                 <p class="text-muted">
-                                    您还没有加入任何探险项目。<br>
+                                    您还没有加入任何项目。<br>
                                     请联系管理员将您加入到项目中。
                                 </p>
                                 <div class="mt-4">
@@ -61,12 +61,12 @@
                             <% } else { %>
                                 <p class="text-muted">
                                     系统中还没有任何项目。<br>
-                                    您可以创建第一个探险项目。
+                                    您可以创建第一个项目。
                                 </p>
                                 <div class="mt-4">
                                     <a href="/projects/create" class="btn btn-primary">
                                         <i class="fas fa-plus me-1"></i>
-                                        创建大陆
+                                        创建项目
                                     </a>
                                 </div>
                             <% } %>

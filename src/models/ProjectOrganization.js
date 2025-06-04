@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 
-// 项目与公会的关联表
+// 项目与组织的关联表
 const ProjectOrganization = sequelize.define('ProjectOrganization', {
   id: {
     type: DataTypes.UUID,
@@ -26,7 +26,7 @@ const ProjectOrganization = sequelize.define('ProjectOrganization', {
       key: 'id'
     }
   },
-  // 关联类型：primary(主要公会), secondary(协作公会)
+  // 关联类型：primary(主要组织), secondary(协作组织)
   relationshipType: {
     type: DataTypes.ENUM('primary', 'secondary'),
     defaultValue: 'secondary',

@@ -1,13 +1,13 @@
-// 异世界冒险者角色配置
+// 异世界成员角色配置
 // 保留原有英文角色名称，添加游戏化别名
 
 const roleConfig = {
-  // 👑 公会管理员 (原admin)
+  // 👑 组织员 (原admin)
   admin: {
     name: '管理员',
     alias: '神域守护者',
     icon: '⚡',
-    description: '冒险者公会总管，拥有所有权限',
+    description: '成员组织总管，拥有所有权限',
     color: 'danger',
     permissions: ['all']
   },
@@ -17,7 +17,7 @@ const roleConfig = {
     name: '产品经理',
     alias: '预言师',
     icon: '🔮',
-    description: '地下城攻略规划师，负责项目管理和任务分配',
+    description: '项目攻略规划师，负责项目管理和任务分配',
     color: 'warning',
     permissions: ['project_manage', 'task_assign', 'team_lead']
   },
@@ -27,7 +27,7 @@ const roleConfig = {
     name: '开发者',
     alias: '剑士',
     icon: '⚔️',
-    description: '挥剑斩敌的勇者，负责任务开发和实现',
+    description: '挥剑斩敌的成员，负责任务开发和实现',
     color: 'primary',
     permissions: ['task_execute', 'code_develop']
   },
@@ -47,7 +47,7 @@ const roleConfig = {
     name: '客户',
     alias: '委托贵族',
     icon: '💎',
-    description: '发布地下城探险委托的需求方',
+    description: '发布项目探险委托的需求方',
     color: 'secondary',
     permissions: ['task_publish', 'requirement_define']
   },
@@ -79,7 +79,7 @@ const getRoleConfig = (role) => {
     name: '未知角色',
     alias: '流浪者',
     icon: '❓',
-    description: '身份不明的冒险者',
+    description: '身份不明的成员',
     color: 'secondary',
     permissions: []
   };

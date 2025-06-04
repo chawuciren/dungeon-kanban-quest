@@ -744,9 +744,9 @@ router.get('/select-project/:id', async (req, res) => {
 
     if (hasAccess) {
       req.session.selectedProjectId = projectId;
-      req.flash('success', '大陆选择成功');
+      req.flash('success', '项目选择成功');
     } else {
-      req.flash('error', '您没有权限访问此大陆');
+      req.flash('error', '您没有权限访问此项目');
     }
 
     // 重定向到来源页面或仪表盘
@@ -759,7 +759,7 @@ router.get('/select-project/:id', async (req, res) => {
 
   } catch (error) {
     console.error('选择项目失败:', error);
-    req.flash('error', '选择大陆失败');
+    req.flash('error', '选择项目失败');
     res.redirect('/dashboard');
   }
 });
@@ -771,7 +771,7 @@ router.get('/clear-project', (req, res) => {
   }
 
   req.session.selectedProjectId = null;
-  req.flash('info', '已清除大陆选择');
+  req.flash('info', '已清除项目选择');
 
   // 重定向到来源页面或仪表盘
   const referer = req.get('Referer');
@@ -789,7 +789,7 @@ router.get('/select-project', (req, res) => {
   }
 
   res.render('project-selection', {
-    title: '选择探险大陆'
+    title: '选择项目'
   });
 });
 

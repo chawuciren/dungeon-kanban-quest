@@ -186,7 +186,7 @@ router.get('/create', requireAuth, async (req, res) => {
 
     // 使用edit模板，但传入创建模式的参数
     res.render('projects/edit', {
-      title: '创建大陆',
+      title: '创建项目',
       project: null, // 创建模式时project为null
       organizations,
       potentialLeaders,
@@ -278,24 +278,24 @@ router.post('/create', requireAuth, async (req, res) => {
       }
     });
 
-    // 处理协作公会关联和成员自动加入
+    // 处理协作组织关联和成员自动加入
     const allOrganizationIds = [];
 
-    // 添加主要公会
+    // 添加主要组织
     if (organizationId) {
       allOrganizationIds.push(organizationId);
     }
 
-    // 添加协作公会
+    // 添加协作组织
     if (secondaryOrganizations) {
       const secondaryOrgIds = Array.isArray(secondaryOrganizations)
         ? secondaryOrganizations
         : [secondaryOrganizations];
 
-      // 过滤掉与主要公会重复的组织
+      // 过滤掉与主要组织重复的组织
       const filteredSecondaryOrgIds = secondaryOrgIds.filter(orgId => orgId !== organizationId);
 
-      // 创建协作公会关联
+      // 创建协作组织关联
       for (const orgId of filteredSecondaryOrgIds) {
         try {
           await ProjectOrganization.create({
@@ -316,11 +316,11 @@ router.post('/create', requireAuth, async (req, res) => {
       }
     }
 
-    // 自动加入所有相关公会的成员
+    // 自动加入所有相关组织的成员
     if (allOrganizationIds.length > 0) {
       const { OrganizationMember } = require('../models');
 
-      // 获取所有公会的活跃成员
+      // 获取所有组织的活跃成员
       const orgMembers = await OrganizationMember.findAll({
         where: {
           organizationId: { [Op.in]: allOrganizationIds },
@@ -398,12 +398,12 @@ router.post('/create', requireAuth, async (req, res) => {
       // 提取错误信息
       const errors = error.errors.map(err => {
         const fieldLabels = {
-          name: '大陆名称',
-          key: '大陆标识符',
-          description: '大陆描述',
+          name: '项目名称',
+          key: '项目标识符',
+          description: '项目描述',
           projectType: '项目类型',
           starLevel: '星级',
-          organizationId: '主要公会',
+          organizationId: '主要组织',
           leaderId: '项目负责人',
           startDate: '开始日期',
           endDate: '结束日期',
@@ -441,8 +441,8 @@ router.post('/create', requireAuth, async (req, res) => {
       });
 
       return res.render('error/validation', {
-        title: '大陆创建失败',
-        errorContext: '大陆',
+        title: '项目创建失败',
+        errorContext: '项目',
         errors,
         formData: req.session.formData,
         redirectUrl: '/projects/create',
@@ -615,7 +615,7 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
     delete req.session.formData; // 使用后清除
 
     res.render('projects/edit', {
-      title: '编辑大陆',
+      title: '编辑项目',
       project,
       organizations,
       potentialLeaders,
@@ -714,7 +714,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       });
     }
 
-    // 处理协作公会关联更新
+    // 处理协作组织关联更新
     if (secondaryOrganizations !== undefined) {
       // 先删除现有的协作关联
       await ProjectOrganization.destroy({
@@ -729,7 +729,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
         ? secondaryOrganizations
         : (secondaryOrganizations ? [secondaryOrganizations] : []);
 
-      // 过滤掉与主要公会重复的组织
+      // 过滤掉与主要组织重复的组织
       const filteredSecondaryOrgIds = secondaryOrgIds.filter(orgId => orgId !== organizationId);
 
       for (const orgId of filteredSecondaryOrgIds) {
@@ -750,7 +750,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
         }
       }
 
-      // 自动加入新公会的成员（只添加新成员，不删除现有成员）
+      // 自动加入新组织的成员（只添加新成员，不删除现有成员）
       const allOrganizationIds = [];
       if (organizationId) allOrganizationIds.push(organizationId);
       allOrganizationIds.push(...secondaryOrgIds);
@@ -758,7 +758,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       if (allOrganizationIds.length > 0) {
         const { OrganizationMember } = require('../models');
 
-        // 获取所有公会的活跃成员
+        // 获取所有组织的活跃成员
         const orgMembers = await OrganizationMember.findAll({
           where: {
             organizationId: { [Op.in]: allOrganizationIds },
@@ -852,19 +852,19 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       // 提取错误信息
       const errors = error.errors ? error.errors.map(err => {
         const fieldLabels = {
-          name: '大陆名称',
-          key: '大陆标识符',
-          description: '大陆描述',
+          name: '项目名称',
+          key: '项目标识符',
+          description: '项目描述',
           projectType: '项目类型',
           starLevel: '星级',
-          organizationId: '主要公会',
+          organizationId: '主要组织',
           leaderId: '项目负责人',
           startDate: '开始日期',
           endDate: '结束日期',
           visibility: '可见性',
           status: '项目状态',
           project_id: '项目关联',
-          organization_id: '公会关联'
+          organization_id: '组织关联'
         };
 
         const fieldLabel = fieldLabels[err.path] || err.path;
@@ -893,7 +893,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
           case 'not_unique':
           case 'unique violation':
             if (err.path === 'project_id' || err.path === 'organization_id') {
-              message = '选择的公会组合存在冲突，请检查主要公会和协作公会的设置';
+              message = '选择的组织组合存在冲突，请检查主要组织和协作组织的设置';
             } else {
               message = `${fieldLabel}已存在，请使用其他值`;
             }
@@ -906,8 +906,8 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       }) : [{ field: 'general', message: '更新项目时发生错误，请检查输入信息' }];
 
       return res.render('error/validation', {
-        title: '大陆编辑失败',
-        errorContext: '大陆',
+        title: '项目编辑失败',
+        errorContext: '项目',
         errors,
         formData: req.session.formData,
         redirectUrl: `/projects/${req.params.id}/edit`,
@@ -1103,7 +1103,7 @@ router.delete('/:id', requireAuth, async (req, res) => {
     });
 
     if (!project) {
-      return res.status(404).json({ error: '大陆不存在' });
+      return res.status(404).json({ error: '项目不存在' });
     }
 
     // 权限检查：只有项目所有者或管理员可以删除项目
@@ -1111,7 +1111,7 @@ router.delete('/:id', requireAuth, async (req, res) => {
                          req.session.user.role === 'admin';
 
     if (!hasPermission) {
-      return res.status(403).json({ error: '权限不足，只有大陆所有者或管理员可以删除大陆' });
+      return res.status(403).json({ error: '权限不足，只有项目所有者或管理员可以删除项目' });
     }
 
     // 检查项目是否有活跃的任务
@@ -1124,7 +1124,7 @@ router.delete('/:id', requireAuth, async (req, res) => {
 
     if (activeTasks > 0) {
       return res.status(400).json({
-        error: `无法删除大陆，还有 ${activeTasks} 个活跃任务。请先完成或取消所有任务。`
+        error: `无法删除项目，还有 ${activeTasks} 个活跃任务。请先完成或取消所有任务。`
       });
     }
 
@@ -1150,7 +1150,7 @@ router.delete('/:id', requireAuth, async (req, res) => {
         transaction
       });
 
-      // 4. 删除探险季
+      // 4. 删除迭代
       const { Sprint } = require('../models');
       await Sprint.destroy({
         where: { projectId: projectId },
@@ -1169,7 +1169,7 @@ router.delete('/:id', requireAuth, async (req, res) => {
         projectName: project.name
       });
 
-      res.json({ success: true, message: '大陆删除成功' });
+      res.json({ success: true, message: '项目删除成功' });
 
     } catch (deleteError) {
       // 回滚事务
@@ -1180,7 +1180,7 @@ router.delete('/:id', requireAuth, async (req, res) => {
   } catch (error) {
     logger.error('删除项目失败:', error);
     res.status(500).json({
-      error: '删除大陆失败，请稍后重试',
+      error: '删除项目失败，请稍后重试',
       details: error.message
     });
   }

@@ -17,7 +17,7 @@ const requireAuth = (req, res, next) => {
 // 中间件：检查管理员权限
 const requireAdmin = (req, res, next) => {
   if (!req.session.user || !isAdmin(req.session.user.role)) {
-    req.flash('error', '权限不足，只有公会管理员可以访问此功能');
+    req.flash('error', '权限不足，只有组织员可以访问此功能');
     return res.redirect('/dashboard');
   }
   next();
@@ -76,7 +76,7 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
     const totalPages = Math.ceil(count / limit);
 
     res.render('users/index', {
-      title: '冒险者管理',
+      title: '成员管理',
       users,
       pagination: {
         page,
@@ -98,7 +98,7 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
     logger.error('获取用户列表失败:', error);
     req.flash('error', '获取用户列表失败');
     res.render('users/index', {
-      title: '冒险者管理',
+      title: '成员管理',
       users: [],
       pagination: { page: 1, totalPages: 0, hasNext: false, hasPrev: false, total: 0 },
       filters: { search: '', role: '', status: '', skillLevel: '' },
@@ -110,7 +110,7 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
 // 添加用户页面
 router.get('/create', requireAuth, requireAdmin, (req, res) => {
   res.render('users/edit', {
-    title: '招募冒险者',
+    title: '招募成员',
     editUser: null, // 创建模式时editUser为null
     roles: getAllRoles(),
     isCreateMode: true // 标识这是创建模式
@@ -210,7 +210,7 @@ router.get('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
     }
 
     res.render('users/edit', {
-      title: '编辑冒险者档案',
+      title: '编辑成员档案',
       editUser: user,
       roles: getAllRoles(),
       isCreateMode: false // 标识这是编辑模式

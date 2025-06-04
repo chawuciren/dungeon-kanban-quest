@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %> - 地下城看板探险</title>
+    <title><%= title %> - 任务管理</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/fontawesome.all.min.css" rel="stylesheet">
     <link href="/css/fontawesome-fix.css" rel="stylesheet">
@@ -36,11 +36,11 @@
                     <div>
                         <h2 class="mb-1">
                             <i class="fas fa-users text-primary me-2"></i>
-                            <%= organization.name %> - 公会成员管理
+                            <%= organization.name %> - 组织成员管理
                         </h2>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/organizations">公会管理</a></li>
+                                <li class="breadcrumb-item"><a href="/organizations">组织</a></li>
                                 <li class="breadcrumb-item"><a href="/organizations/<%= organization.id %>"><%= organization.name %></a></li>
                                 <li class="breadcrumb-item active">成员管理</li>
                             </ol>
@@ -51,7 +51,7 @@
                             <i class="fas fa-user-plus me-2"></i>添加成员
                         </button>
                         <a href="/organizations/<%= organization.id %>" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>返回公会
+                            <i class="fas fa-arrow-left me-2"></i>返回组织
                         </a>
                     </div>
                 </div>
@@ -116,7 +116,7 @@
                                         <% if (member.id === organization.ownerId) { %>
                                             <div class="mt-2">
                                                 <span class="badge bg-warning text-dark">
-                                                    <i class="fas fa-crown me-1"></i>公会会长
+                                                    <i class="fas fa-crown me-1"></i>组织会长
                                                 </span>
                                             </div>
                                         <% } %>
@@ -128,8 +128,8 @@
                         <div class="col-12">
                             <div class="text-center py-5">
                                 <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                                <h5 class="text-muted">暂无公会成员</h5>
-                                <p class="text-muted">点击"添加成员"按钮邀请成员加入公会</p>
+                                <h5 class="text-muted">暂无组织成员</h5>
+                                <p class="text-muted">点击"添加成员"按钮邀请成员加入组织</p>
                             </div>
                         </div>
                     <% } %>
@@ -144,7 +144,7 @@
             <div class="modal-content">
                 <form action="/organizations/<%= organization.id %>/members" method="POST">
                     <div class="modal-header">
-                        <h5 class="modal-title">添加公会成员</h5>
+                        <h5 class="modal-title">添加组织成员</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -167,7 +167,7 @@
                                     </option>
                                 <% }); %>
                             </select>
-                            <div class="form-text">用户将以其默认职业身份加入公会，具体项目角色将在项目中单独分配</div>
+                            <div class="form-text">用户将以其默认职业身份加入组织，具体项目角色将在项目中单独分配</div>
                         </div>
 
                     </div>

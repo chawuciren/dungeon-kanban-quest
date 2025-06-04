@@ -21,7 +21,7 @@ const requireAdmin = (req, res, next) => {
   next();
 };
 
-// 公会列表页面
+// 组织列表页面
 router.get('/', requireAuth, requireAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -68,7 +68,7 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
       offset
     });
 
-    // 计算每个公会的项目数量 - 同时设置到dataValues和直接属性
+    // 计算每个组织的项目数量 - 同时设置到dataValues和直接属性
     organizations.forEach(org => {
       const projectCount = org.projects ? org.projects.length : 0;
       org.dataValues.projectCount = projectCount;
@@ -78,7 +78,7 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
     const totalPages = Math.ceil(count / limit);
 
     res.render('organizations/index', {
-      title: '公会管理',
+      title: '组织',
       organizations,
       pagination: {
         page,
@@ -91,10 +91,10 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
     });
 
   } catch (error) {
-    logger.error('获取公会列表失败:', error);
-    req.flash('error', '获取公会列表失败');
+    logger.error('获取组织列表失败:', error);
+    req.flash('error', '获取组织列表失败');
     res.render('organizations/index', {
-      title: '公会管理',
+      title: '组织',
       organizations: [],
       pagination: { page: 1, totalPages: 0, hasNext: false, hasPrev: false, total: 0 },
       filters: { search: '', status: '' }
@@ -102,35 +102,35 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
-// 创建公会页面
+// 创建组织页面
 router.get('/create', requireAuth, requireAdmin, (req, res) => {
   // 使用edit模板，但传入创建模式的参数
   res.render('organizations/edit', {
-    title: '创建公会',
+    title: '创建组织',
     organization: null, // 创建模式时organization为null
     isCreateMode: true // 标识这是创建模式
   });
 });
 
-// 创建公会处理
+// 创建组织处理
 router.post('/create', requireAuth, requireAdmin, async (req, res) => {
   try {
     const { name, slug, description, website, email, phone, address } = req.body;
 
     // 验证必填字段
     if (!name || !slug) {
-      req.flash('error', '公会名称和标识符为必填项');
+      req.flash('error', '组织名称和标识符为必填项');
       return res.redirect('/organizations/create');
     }
 
     // 检查标识符是否已存在
     const existingOrg = await Organization.findOne({ where: { slug } });
     if (existingOrg) {
-      req.flash('error', '公会标识符已存在');
+      req.flash('error', '组织标识符已存在');
       return res.redirect('/organizations/create');
     }
 
-    // 创建公会（将空字符串转换为null以避免验证错误）
+    // 创建组织（将空字符串转换为null以避免验证错误）
     const organization = await Organization.create({
       name,
       slug: slug.toLowerCase(),
@@ -143,22 +143,22 @@ router.post('/create', requireAuth, requireAdmin, async (req, res) => {
       status: 'active'
     });
 
-    logger.info(`公会创建成功: ${organization.name}`, {
+    logger.info(`组织创建成功: ${organization.name}`, {
       userId: req.session.userId,
       organizationId: organization.id
     });
 
-    req.flash('success', '公会创建成功！');
+    req.flash('success', '组织创建成功！');
     res.redirect(`/organizations/${organization.id}`);
 
   } catch (error) {
-    logger.error('创建公会失败:', error);
-    req.flash('error', '创建公会失败，请稍后重试');
+    logger.error('创建组织失败:', error);
+    req.flash('error', '创建组织失败，请稍后重试');
     res.redirect('/organizations/create');
   }
 });
 
-// 公会详情页面
+// 组织详情页面
 router.get('/:id', requireAuth, async (req, res) => {
   try {
     const organizationId = req.params.id;
@@ -200,7 +200,7 @@ router.get('/:id', requireAuth, async (req, res) => {
     });
 
     if (!organization) {
-      req.flash('error', '公会不存在');
+      req.flash('error', '组织不存在');
       return res.redirect('/organizations');
     }
 
@@ -210,13 +210,13 @@ router.get('/:id', requireAuth, async (req, res) => {
     });
 
   } catch (error) {
-    logger.error('获取公会详情失败:', error);
-    req.flash('error', '获取公会详情失败');
+    logger.error('获取组织详情失败:', error);
+    req.flash('error', '获取组织详情失败');
     res.redirect('/organizations');
   }
 });
 
-// 编辑公会页面
+// 编辑组织页面
 router.get('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
   try {
     const organizationId = req.params.id;
@@ -224,24 +224,24 @@ router.get('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
     const organization = await Organization.findByPk(organizationId);
 
     if (!organization) {
-      req.flash('error', '公会不存在');
+      req.flash('error', '组织不存在');
       return res.redirect('/organizations');
     }
 
     res.render('organizations/edit', {
-      title: '编辑公会',
+      title: '编辑组织',
       organization,
       isCreateMode: false // 标识这是编辑模式
     });
 
   } catch (error) {
-    logger.error('获取公会信息失败:', error);
-    req.flash('error', '获取公会信息失败');
+    logger.error('获取组织信息失败:', error);
+    req.flash('error', '获取组织信息失败');
     res.redirect('/organizations');
   }
 });
 
-// 更新公会处理
+// 更新组织处理
 router.post('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
   try {
     const organizationId = req.params.id;
@@ -250,7 +250,7 @@ router.post('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
     const organization = await Organization.findByPk(organizationId);
 
     if (!organization) {
-      req.flash('error', '公会不存在');
+      req.flash('error', '组织不存在');
       return res.redirect('/organizations');
     }
 
@@ -263,12 +263,12 @@ router.post('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
         }
       });
       if (existingOrg) {
-        req.flash('error', '公会标识符已存在');
+        req.flash('error', '组织标识符已存在');
         return res.redirect(`/organizations/${organizationId}/edit`);
       }
     }
 
-    // 更新公会信息（将空字符串转换为null以避免验证错误）
+    // 更新组织信息（将空字符串转换为null以避免验证错误）
     await organization.update({
       name,
       slug: slug.toLowerCase(),
@@ -280,17 +280,17 @@ router.post('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
       status
     });
 
-    logger.info(`公会更新成功: ${organization.name}`, {
+    logger.info(`组织更新成功: ${organization.name}`, {
       userId: req.session.userId,
       organizationId: organization.id
     });
 
-    req.flash('success', '公会信息更新成功！');
+    req.flash('success', '组织信息更新成功！');
     res.redirect(`/organizations/${organization.id}`);
 
   } catch (error) {
-    logger.error('更新公会失败:', error);
-    req.flash('error', '更新公会失败，请稍后重试');
+    logger.error('更新组织失败:', error);
+    req.flash('error', '更新组织失败，请稍后重试');
     res.redirect(`/organizations/${req.params.id}/edit`);
   }
 });
@@ -320,7 +320,7 @@ router.get('/:id/members', requireAuth, async (req, res) => {
     });
 
     if (!organization) {
-      req.flash('error', '公会不存在');
+      req.flash('error', '组织不存在');
       return res.redirect('/organizations');
     }
 
@@ -329,7 +329,7 @@ router.get('/:id/members', requireAuth, async (req, res) => {
                          req.session.user.role === 'admin';
 
     if (!hasPermission) {
-      req.flash('error', '您没有权限管理此公会的成员');
+      req.flash('error', '您没有权限管理此组织的成员');
       return res.redirect(`/organizations/${organizationId}`);
     }
 
@@ -365,7 +365,7 @@ router.post('/:id/members', requireAuth, async (req, res) => {
 
     const organization = await Organization.findByPk(organizationId);
     if (!organization) {
-      req.flash('error', '公会不存在');
+      req.flash('error', '组织不存在');
       return res.redirect('/organizations');
     }
 
@@ -374,7 +374,7 @@ router.post('/:id/members', requireAuth, async (req, res) => {
                          req.session.user.role === 'admin';
 
     if (!hasPermission) {
-      req.flash('error', '您没有权限管理此公会的成员');
+      req.flash('error', '您没有权限管理此组织的成员');
       return res.redirect(`/organizations/${organizationId}`);
     }
 
@@ -384,7 +384,7 @@ router.post('/:id/members', requireAuth, async (req, res) => {
     });
 
     if (existingMember) {
-      req.flash('error', '用户已经是公会成员');
+      req.flash('error', '用户已经是组织成员');
       return res.redirect(`/organizations/${organizationId}/members`);
     }
 
@@ -421,7 +421,7 @@ router.delete('/:id/members/:userId', requireAuth, async (req, res) => {
 
     const organization = await Organization.findByPk(organizationId);
     if (!organization) {
-      return res.status(404).json({ error: '公会不存在' });
+      return res.status(404).json({ error: '组织不存在' });
     }
 
     // 检查权限
@@ -434,7 +434,7 @@ router.delete('/:id/members/:userId', requireAuth, async (req, res) => {
 
     // 不能移除组织所有者
     if (userId === organization.ownerId) {
-      return res.status(400).json({ error: '不能移除公会所有者' });
+      return res.status(400).json({ error: '不能移除组织所有者' });
     }
 
     await OrganizationMember.destroy({
@@ -472,7 +472,7 @@ router.get('/:id/members/api', requireAuth, async (req, res) => {
     });
 
     if (!organization) {
-      return res.status(404).json({ error: '公会不存在' });
+      return res.status(404).json({ error: '组织不存在' });
     }
 
     res.json({

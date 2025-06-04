@@ -13,7 +13,7 @@ const requireAuth = (req, res, next) => {
   next();
 };
 
-// 探险季列表页面
+// 迭代列表页面
 router.get('/', requireAuth, requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -23,7 +23,7 @@ router.get('/', requireAuth, requireProjectSelection, validateProjectAccess, asy
     const status = req.query.status;
 
     let where = {
-      projectId: projectId // 只显示当前选中项目的探险季
+      projectId: projectId // 只显示当前选中项目的迭代
     };
 
     // 状态筛选
@@ -53,7 +53,7 @@ router.get('/', requireAuth, requireProjectSelection, validateProjectAccess, asy
     const totalPages = Math.ceil(count / limit);
 
     res.render('sprints/index', {
-      title: '探险季管理',
+      title: '迭代管理',
       sprints,
       pagination: {
         page,
@@ -68,13 +68,13 @@ router.get('/', requireAuth, requireProjectSelection, validateProjectAccess, asy
     });
 
   } catch (error) {
-    logger.error('获取探险季列表失败:', error);
-    req.flash('error', '获取探险季列表失败');
+    logger.error('获取迭代列表失败:', error);
+    req.flash('error', '获取迭代列表失败');
     res.redirect('/dashboard');
   }
 });
 
-// 创建探险季页面
+// 创建迭代页面
 router.get('/create', requireAuth, requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
     // 获取当前选中的项目信息
@@ -83,23 +83,23 @@ router.get('/create', requireAuth, requireProjectSelection, validateProjectAcces
     });
 
     if (!selectedProject) {
-      req.flash('error', '请先选择要创建探险季的大陆');
+      req.flash('error', '请先选择要创建迭代的大陆');
       return res.redirect('/sprints');
     }
 
     res.render('sprints/create', {
-      title: '创建探险季',
+      title: '创建迭代',
       selectedProject
     });
 
   } catch (error) {
-    logger.error('获取创建探险季页面失败:', error);
+    logger.error('获取创建迭代页面失败:', error);
     req.flash('error', '页面加载失败');
     res.redirect('/sprints');
   }
 });
 
-// 创建探险季处理
+// 创建迭代处理
 router.post('/create', requireAuth, requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
     const {
@@ -143,12 +143,12 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
         }
       });
 
-      // 项目成员如果有创建任务权限，也可以创建探险季
+      // 项目成员如果有创建任务权限，也可以创建迭代
       hasPermission = membership && membership.permissions.canCreateTasks;
     }
 
     if (!hasPermission) {
-      req.flash('error', '您没有权限在此项目中创建探险季');
+      req.flash('error', '您没有权限在此项目中创建迭代');
       return res.redirect('back');
     }
 
@@ -183,11 +183,11 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
     });
 
     if (conflictingSprint) {
-      req.flash('error', '该时间段与其他探险季冲突');
+      req.flash('error', '该时间段与其他迭代冲突');
       return res.redirect('back');
     }
 
-    // 创建探险季
+    // 创建迭代
     const sprint = await Sprint.create({
       name,
       description,
@@ -199,22 +199,22 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       capacity: capacity ? parseFloat(capacity) : 0
     });
 
-    logger.info(`探险季创建成功: ${sprint.name}`, {
+    logger.info(`迭代创建成功: ${sprint.name}`, {
       userId: req.session.userId,
       sprintId: sprint.id
     });
 
-    req.flash('success', '探险季创建成功！');
+    req.flash('success', '迭代创建成功！');
     res.redirect(`/sprints/${sprint.id}`);
 
   } catch (error) {
-    logger.error('创建探险季失败:', error);
-    req.flash('error', '创建探险季失败：' + error.message);
+    logger.error('创建迭代失败:', error);
+    req.flash('error', '创建迭代失败：' + error.message);
     res.redirect('back');
   }
 });
 
-// 编辑探险季页面
+// 编辑迭代页面
 router.get('/:id/edit', requireAuth, async (req, res) => {
   try {
     const sprintId = req.params.id;
@@ -235,11 +235,11 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
     });
 
     if (!sprint) {
-      req.flash('error', '探险季不存在');
+      req.flash('error', '迭代不存在');
       return res.redirect('/sprints');
     }
 
-    // 检查用户权限：管理员、项目owner、项目leader 或探险季创建者
+    // 检查用户权限：管理员、项目owner、项目leader 或迭代创建者
     let hasPermission = req.session.user?.role === 'admin' ||
                        sprint.project.ownerId === req.session.userId ||
                        sprint.project.leaderId === req.session.userId ||
@@ -256,35 +256,35 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
         }
       });
 
-      // 项目成员如果有创建任务权限，也可以编辑探险季
+      // 项目成员如果有创建任务权限，也可以编辑迭代
       hasPermission = membership && membership.permissions.canCreateTasks;
     }
 
     if (!hasPermission) {
-      req.flash('error', '您没有权限编辑此探险季');
+      req.flash('error', '您没有权限编辑此迭代');
       return res.redirect(`/sprints/${sprintId}`);
     }
 
-    // 检查是否可以编辑：只有规划中和进行中的探险季可以编辑基本信息
+    // 检查是否可以编辑：只有规划中和进行中的迭代可以编辑基本信息
     if (!['planning', 'active'].includes(sprint.status)) {
-      req.flash('error', '已完成或已取消的探险季无法编辑');
+      req.flash('error', '已完成或已取消的迭代无法编辑');
       return res.redirect(`/sprints/${sprintId}`);
     }
 
     res.render('sprints/edit', {
-      title: '编辑探险季',
+      title: '编辑迭代',
       sprint,
       isCreateMode: false
     });
 
   } catch (error) {
-    logger.error('获取编辑探险季页面失败:', error);
+    logger.error('获取编辑迭代页面失败:', error);
     req.flash('error', '页面加载失败');
     res.redirect('/sprints');
   }
 });
 
-// 更新探险季处理
+// 更新迭代处理
 router.post('/:id/edit', requireAuth, async (req, res) => {
   try {
     const sprintId = req.params.id;
@@ -307,7 +307,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
     });
 
     if (!sprint) {
-      req.flash('error', '探险季不存在');
+      req.flash('error', '迭代不存在');
       return res.redirect('/sprints');
     }
 
@@ -331,13 +331,13 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
     }
 
     if (!hasPermission) {
-      req.flash('error', '您没有权限编辑此探险季');
+      req.flash('error', '您没有权限编辑此迭代');
       return res.redirect(`/sprints/${sprintId}`);
     }
 
     // 检查是否可以编辑
     if (!['planning', 'active'].includes(sprint.status)) {
-      req.flash('error', '已完成或已取消的探险季无法编辑');
+      req.flash('error', '已完成或已取消的迭代无法编辑');
       return res.redirect(`/sprints/${sprintId}`);
     }
 
@@ -355,11 +355,11 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       return res.redirect('back');
     }
 
-    // 检查时间冲突（排除当前探险季）
+    // 检查时间冲突（排除当前迭代）
     const conflictingSprint = await Sprint.findOne({
       where: {
         projectId: sprint.projectId,
-        id: { [Op.ne]: sprintId }, // 排除当前探险季
+        id: { [Op.ne]: sprintId }, // 排除当前迭代
         status: ['planning', 'active'],
         [Op.or]: [
           {
@@ -379,11 +379,11 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
     });
 
     if (conflictingSprint) {
-      req.flash('error', '该时间段与其他探险季冲突');
+      req.flash('error', '该时间段与其他迭代冲突');
       return res.redirect('back');
     }
 
-    // 更新探险季
+    // 更新迭代
     await sprint.update({
       name,
       description,
@@ -393,22 +393,22 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       capacity: capacity ? parseFloat(capacity) : 0
     });
 
-    logger.info(`探险季更新成功: ${sprint.name}`, {
+    logger.info(`迭代更新成功: ${sprint.name}`, {
       userId: req.session.userId,
       sprintId: sprint.id
     });
 
-    req.flash('success', '探险季更新成功！');
+    req.flash('success', '迭代更新成功！');
     res.redirect(`/sprints/${sprint.id}`);
 
   } catch (error) {
-    logger.error('更新探险季失败:', error);
-    req.flash('error', '更新探险季失败：' + error.message);
+    logger.error('更新迭代失败:', error);
+    req.flash('error', '更新迭代失败：' + error.message);
     res.redirect('back');
   }
 });
 
-// 开始探险季
+// 开始迭代
 router.post('/:id/start', requireAuth, async (req, res) => {
   try {
     const sprintId = req.params.id;
@@ -423,7 +423,7 @@ router.post('/:id/start', requireAuth, async (req, res) => {
     });
 
     if (!sprint) {
-      req.flash('error', '探险季不存在');
+      req.flash('error', '迭代不存在');
       return res.redirect('/sprints');
     }
 
@@ -447,17 +447,17 @@ router.post('/:id/start', requireAuth, async (req, res) => {
     }
 
     if (!hasPermission) {
-      req.flash('error', '您没有权限操作此探险季');
+      req.flash('error', '您没有权限操作此迭代');
       return res.redirect(`/sprints/${sprintId}`);
     }
 
-    // 检查状态：只有规划中的探险季可以开始
+    // 检查状态：只有规划中的迭代可以开始
     if (sprint.status !== 'planning') {
-      req.flash('error', '只有规划中的探险季可以开始');
+      req.flash('error', '只有规划中的迭代可以开始');
       return res.redirect(`/sprints/${sprintId}`);
     }
 
-    // 检查是否有其他进行中的探险季
+    // 检查是否有其他进行中的迭代
     const activeSprint = await Sprint.findOne({
       where: {
         projectId: sprint.projectId,
@@ -467,31 +467,31 @@ router.post('/:id/start', requireAuth, async (req, res) => {
     });
 
     if (activeSprint) {
-      req.flash('error', '项目中已有进行中的探险季，请先完成或取消其他探险季');
+      req.flash('error', '项目中已有进行中的迭代，请先完成或取消其他迭代');
       return res.redirect(`/sprints/${sprintId}`);
     }
 
-    // 开始探险季
+    // 开始迭代
     await sprint.update({
       status: 'active'
     });
 
-    logger.info(`探险季开始: ${sprint.name}`, {
+    logger.info(`迭代开始: ${sprint.name}`, {
       userId: req.session.userId,
       sprintId: sprint.id
     });
 
-    req.flash('success', '探险季已开始！');
+    req.flash('success', '迭代已开始！');
     res.redirect(`/sprints/${sprint.id}`);
 
   } catch (error) {
-    logger.error('开始探险季失败:', error);
-    req.flash('error', '开始探险季失败：' + error.message);
+    logger.error('开始迭代失败:', error);
+    req.flash('error', '开始迭代失败：' + error.message);
     res.redirect('back');
   }
 });
 
-// 完成探险季
+// 完成迭代
 router.post('/:id/complete', requireAuth, async (req, res) => {
   try {
     const sprintId = req.params.id;
@@ -510,7 +510,7 @@ router.post('/:id/complete', requireAuth, async (req, res) => {
     });
 
     if (!sprint) {
-      req.flash('error', '探险季不存在');
+      req.flash('error', '迭代不存在');
       return res.redirect('/sprints');
     }
 
@@ -534,13 +534,13 @@ router.post('/:id/complete', requireAuth, async (req, res) => {
     }
 
     if (!hasPermission) {
-      req.flash('error', '您没有权限操作此探险季');
+      req.flash('error', '您没有权限操作此迭代');
       return res.redirect(`/sprints/${sprintId}`);
     }
 
-    // 检查状态：只有进行中的探险季可以完成
+    // 检查状态：只有进行中的迭代可以完成
     if (sprint.status !== 'active') {
-      req.flash('error', '只有进行中的探险季可以完成');
+      req.flash('error', '只有进行中的迭代可以完成');
       return res.redirect(`/sprints/${sprintId}`);
     }
 
@@ -548,7 +548,7 @@ router.post('/:id/complete', requireAuth, async (req, res) => {
     const completedTasks = sprint.tasks.filter(t => t.status === 'completed').length;
     const totalTasks = sprint.tasks.length;
 
-    // 更新探险季状态和统计
+    // 更新迭代状态和统计
     await sprint.update({
       status: 'completed',
       actualEndDate: new Date(),
@@ -559,24 +559,24 @@ router.post('/:id/complete', requireAuth, async (req, res) => {
       }
     });
 
-    logger.info(`探险季完成: ${sprint.name}`, {
+    logger.info(`迭代完成: ${sprint.name}`, {
       userId: req.session.userId,
       sprintId: sprint.id,
       completedTasks,
       totalTasks
     });
 
-    req.flash('success', `探险季已完成！共完成 ${completedTasks}/${totalTasks} 个任务`);
+    req.flash('success', `迭代已完成！共完成 ${completedTasks}/${totalTasks} 个任务`);
     res.redirect(`/sprints/${sprint.id}`);
 
   } catch (error) {
-    logger.error('完成探险季失败:', error);
-    req.flash('error', '完成探险季失败：' + error.message);
+    logger.error('完成迭代失败:', error);
+    req.flash('error', '完成迭代失败：' + error.message);
     res.redirect('back');
   }
 });
 
-// 取消探险季
+// 取消迭代
 router.post('/:id/cancel', requireAuth, async (req, res) => {
   try {
     const sprintId = req.params.id;
@@ -592,50 +592,50 @@ router.post('/:id/cancel', requireAuth, async (req, res) => {
     });
 
     if (!sprint) {
-      req.flash('error', '探险季不存在');
+      req.flash('error', '迭代不存在');
       return res.redirect('/sprints');
     }
 
-    // 检查用户权限：只有管理员、项目负责人或探险季创建者可以取消
+    // 检查用户权限：只有管理员、项目负责人或迭代创建者可以取消
     const hasPermission = req.session.user?.role === 'admin' ||
                          sprint.project.ownerId === req.session.userId ||
                          sprint.project.leaderId === req.session.userId ||
                          sprint.creatorId === req.session.userId;
 
     if (!hasPermission) {
-      req.flash('error', '您没有权限取消此探险季');
+      req.flash('error', '您没有权限取消此迭代');
       return res.redirect(`/sprints/${sprintId}`);
     }
 
-    // 检查状态：已完成的探险季不能取消
+    // 检查状态：已完成的迭代不能取消
     if (sprint.status === 'completed') {
-      req.flash('error', '已完成的探险季无法取消');
+      req.flash('error', '已完成的迭代无法取消');
       return res.redirect(`/sprints/${sprintId}`);
     }
 
-    // 取消探险季
+    // 取消迭代
     await sprint.update({
       status: 'cancelled',
       description: sprint.description + (reason ? `\n\n取消原因：${reason}` : '')
     });
 
-    logger.info(`探险季取消: ${sprint.name}`, {
+    logger.info(`迭代取消: ${sprint.name}`, {
       userId: req.session.userId,
       sprintId: sprint.id,
       reason: reason || '未提供原因'
     });
 
-    req.flash('success', '探险季已取消');
+    req.flash('success', '迭代已取消');
     res.redirect(`/sprints/${sprint.id}`);
 
   } catch (error) {
-    logger.error('取消探险季失败:', error);
-    req.flash('error', '取消探险季失败：' + error.message);
+    logger.error('取消迭代失败:', error);
+    req.flash('error', '取消迭代失败：' + error.message);
     res.redirect('back');
   }
 });
 
-// 删除探险季
+// 删除迭代
 router.post('/:id/delete', requireAuth, async (req, res) => {
   try {
     const sprintId = req.params.id;
@@ -654,24 +654,24 @@ router.post('/:id/delete', requireAuth, async (req, res) => {
     });
 
     if (!sprint) {
-      req.flash('error', '探险季不存在');
+      req.flash('error', '迭代不存在');
       return res.redirect('/sprints');
     }
 
-    // 检查用户权限：只有管理员、项目负责人或探险季创建者可以删除
+    // 检查用户权限：只有管理员、项目负责人或迭代创建者可以删除
     const hasPermission = req.session.user?.role === 'admin' ||
                          sprint.project.ownerId === req.session.userId ||
                          sprint.project.leaderId === req.session.userId ||
                          sprint.creatorId === req.session.userId;
 
     if (!hasPermission) {
-      req.flash('error', '您没有权限删除此探险季');
+      req.flash('error', '您没有权限删除此迭代');
       return res.redirect(`/sprints/${sprintId}`);
     }
 
-    // 检查是否可以删除：进行中的探险季不能直接删除
+    // 检查是否可以删除：进行中的迭代不能直接删除
     if (sprint.status === 'active') {
-      req.flash('error', '进行中的探险季无法删除，请先完成或取消');
+      req.flash('error', '进行中的迭代无法删除，请先完成或取消');
       return res.redirect(`/sprints/${sprintId}`);
     }
 
@@ -695,26 +695,26 @@ router.post('/:id/delete', requireAuth, async (req, res) => {
       projectId: sprint.projectId
     };
 
-    // 删除探险季
+    // 删除迭代
     await sprint.destroy();
 
-    logger.info(`探险季删除成功: ${sprintInfo.name}`, {
+    logger.info(`迭代删除成功: ${sprintInfo.name}`, {
       userId: req.session.userId,
       sprintInfo,
       taskCount
     });
 
-    req.flash('success', `探险季"${sprintInfo.name}"已删除${taskCount > 0 ? `，${taskCount}个关联任务已移出探险季` : ''}`);
+    req.flash('success', `迭代"${sprintInfo.name}"已删除${taskCount > 0 ? `，${taskCount}个关联任务已移出迭代` : ''}`);
     res.redirect('/sprints');
 
   } catch (error) {
-    logger.error('删除探险季失败:', error);
-    req.flash('error', '删除探险季失败：' + error.message);
+    logger.error('删除迭代失败:', error);
+    req.flash('error', '删除迭代失败：' + error.message);
     res.redirect('back');
   }
 });
 
-// 探险季详情页面 - 放在最后，避免拦截其他路由
+// 迭代详情页面 - 放在最后，避免拦截其他路由
 router.get('/:id', requireAuth, async (req, res) => {
   try {
     const sprintId = req.params.id;
@@ -751,18 +751,18 @@ router.get('/:id', requireAuth, async (req, res) => {
     });
 
     if (!sprint) {
-      req.flash('error', '探险季不存在');
+      req.flash('error', '迭代不存在');
       return res.redirect('/sprints');
     }
 
-    // 检查用户权限：管理员、项目owner、项目leader 或探险季创建者
+    // 检查用户权限：管理员、项目owner、项目leader 或迭代创建者
     const hasPermission = req.session.user?.role === 'admin' ||
                          sprint.project.ownerId === req.session.userId ||
                          sprint.project.leaderId === req.session.userId ||
                          sprint.creatorId === req.session.userId;
 
     if (!hasPermission) {
-      req.flash('error', '您没有权限查看此探险季');
+      req.flash('error', '您没有权限查看此迭代');
       return res.redirect('/sprints');
     }
 
@@ -781,8 +781,8 @@ router.get('/:id', requireAuth, async (req, res) => {
     });
 
   } catch (error) {
-    logger.error('获取探险季详情失败:', error);
-    req.flash('error', '获取探险季详情失败');
+    logger.error('获取迭代详情失败:', error);
+    req.flash('error', '获取迭代详情失败');
     res.redirect('/sprints');
   }
 });

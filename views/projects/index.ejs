@@ -7,13 +7,13 @@
             <div>
                 <h2>
                     <i class="fas fa-map me-2 text-primary"></i>
-                    大陆（项目管理）
+                    项目（项目管理）
                 </h2>
                 <p class="text-muted mb-0">管理您的项目和团队协作</p>
             </div>
             <div>
                 <a href="/projects/create" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>创建大陆
+                    <i class="fas fa-plus me-2"></i>创建项目
                 </a>
             </div>
         </div>
@@ -27,9 +27,9 @@
             <div class="card-body py-3">
                 <form method="GET" class="row g-3 align-items-end">
                     <div class="col-md-4">
-                        <label class="form-label">搜索大陆</label>
+                        <label class="form-label">搜索项目</label>
                         <input type="text" class="form-control" name="search"
-                               value="<%= filters.search %>" placeholder="大陆名称或描述">
+                               value="<%= filters.search %>" placeholder="项目名称或描述">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">状态</label>
@@ -162,7 +162,7 @@
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-user-friends text-purple me-2" style="font-size: 12px;"></i>
                                     <small class="text-muted">
-                                        勇者：<%= project.memberCount || 0 %> 人
+                                        成员：<%= project.memberCount || 0 %> 人
                                     </small>
                                 </div>
                             </div>
@@ -197,7 +197,7 @@
                             <% if (project.organizations && project.organizations.length > 0) { %>
                                 <small class="text-muted">
                                     <i class="fas fa-users me-1"></i>
-                                    <%= project.organizations.length %> 个公会
+                                    <%= project.organizations.length %> 个组织
                                 </small>
                             <% } %>
                         </div>
@@ -230,21 +230,21 @@
                     <div class="mb-4">
                         <i class="fas fa-map fa-4x text-muted opacity-50"></i>
                     </div>
-                    <h4 class="text-muted mb-3">还没有大陆</h4>
+                    <h4 class="text-muted mb-3">还没有项目</h4>
                     <p class="text-muted mb-4">
-                        开始您的冒险之旅吧！创建第一个大陆来管理您的项目和团队。
+                        开始您的冒险之旅吧！创建第一个项目来管理您的项目和团队。
                     </p>
                     <div class="d-flex justify-content-center gap-3">
                         <a href="/projects/create" class="btn btn-primary btn-lg">
-                            <i class="fas fa-plus me-2"></i>创建第一个大陆
+                            <i class="fas fa-plus me-2"></i>创建第一个项目
                         </a>
                         <a href="/organizations" class="btn btn-outline-secondary btn-lg">
-                            <i class="fas fa-users me-2"></i>管理公会
+                            <i class="fas fa-users me-2"></i>管理组织
                         </a>
                     </div>
                     <div class="mt-4">
                         <small class="text-muted">
-                            💡 提示：先创建公会，然后创建大陆并关联公会，团队成员会自动加入项目
+                            💡 提示：先创建组织，然后创建项目并关联组织，团队成员会自动加入项目
                         </small>
                     </div>
                 </div>

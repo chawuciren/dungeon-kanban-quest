@@ -21,13 +21,13 @@ const requireProjectSelection = (req, res, next) => {
     if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
       return res.status(400).json({
         success: false,
-        message: '请先选择要探险的大陆',
+        message: '请先选择要探险的项目',
         requireProjectSelection: true
       });
     }
 
     // 普通请求重定向到项目选择页面
-    req.flash('warning', '请先选择要探险的大陆');
+    req.flash('warning', '请先选择要探险的项目');
     return res.redirect('/select-project');
   }
 
@@ -57,7 +57,7 @@ const validateProjectAccess = async (req, res, next) => {
     if (!project) {
       // 项目不存在，清除选择
       req.session.selectedProjectId = null;
-      req.flash('error', '选中的大陆不存在，请重新选择');
+      req.flash('error', '选中的项目不存在，请重新选择');
       return res.redirect('/dashboard');
     }
 
@@ -79,12 +79,12 @@ const validateProjectAccess = async (req, res, next) => {
       if (!membership) {
         // 用户无权限访问当前选中的项目，清除选择
         req.session.selectedProjectId = null;
-        req.flash('error', '您已失去对当前大陆的访问权限，请重新选择');
+        req.flash('error', '您已失去对当前项目的访问权限，请重新选择');
 
         if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
           return res.status(403).json({
             success: false,
-            message: '您已失去对当前大陆的访问权限',
+            message: '您已失去对当前项目的访问权限',
             requireProjectSelection: true
           });
         }
