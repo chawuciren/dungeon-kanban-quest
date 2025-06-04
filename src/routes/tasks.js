@@ -77,9 +77,7 @@ router.get('/', requireProjectSelection, validateProjectAccess, async (req, res)
     if (req.query.status) {
       where.status = req.query.status;
     }
-    if (req.query.rewardCurrency) {
-      where.rewardCurrency = req.query.rewardCurrency;
-    }
+
     if (req.query.search) {
       where[Op.or] = [
         { title: { [Op.like]: `%${req.query.search}%` } },
@@ -580,9 +578,6 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       urgencyLevel,
       skillRequired,
       parentTaskId,
-      baseReward,
-      bonusReward,
-      rewardCurrency,
       estimatedHours,
       startDate,
       dueDate,
@@ -618,7 +613,7 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       }
     }
 
-    const totalBudget = parseInt(baseReward) + parseInt(bonusReward || 0);
+
 
     // 处理协助人员ID数组
     let processedAssistantIds = [];
@@ -646,10 +641,7 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       reviewerId: reviewerId && reviewerId.trim() !== '' ? reviewerId : null,
       parentTaskId: parentTaskId || null,
       sprintId: sprintId && sprintId.trim() !== '' ? sprintId : null,
-      baseReward: parseInt(baseReward),
-      bonusReward: parseInt(bonusReward || 0),
-      rewardCurrency,
-      totalBudget,
+
       estimatedHours: estimatedHours ? parseFloat(estimatedHours) : null,
       startDate: startDate || null,
       dueDate: dueDate || null,
@@ -770,9 +762,6 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       urgencyLevel,
       skillRequired,
       status,
-      baseReward,
-      bonusReward,
-      rewardCurrency,
       estimatedHours,
       startDate,
       dueDate,
@@ -811,7 +800,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       }
     }
 
-    const totalBudget = parseInt(baseReward) + parseInt(bonusReward || 0);
+
 
     // 处理状态变更的特殊逻辑
     const oldStatus = task.status;
@@ -830,10 +819,6 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       assistantIds: processedAssistantIds,
       reviewerId: reviewerId && reviewerId.trim() !== '' ? reviewerId : null,
       sprintId: sprintId && sprintId.trim() !== '' ? sprintId : null,
-      baseReward: parseInt(baseReward),
-      bonusReward: parseInt(bonusReward || 0),
-      rewardCurrency,
-      totalBudget,
       estimatedHours: estimatedHours ? parseFloat(estimatedHours) : null,
       startDate: startDate || null,
       dueDate: dueDate || null

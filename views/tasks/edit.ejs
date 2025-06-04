@@ -171,40 +171,7 @@
                             <% } %>
                         </div>
 
-                        <!-- 奖励设置 -->
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <label for="baseReward" class="form-label">基础奖励 <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="baseReward" name="baseReward" min="1" value="<%= task ? task.baseReward : '' %>" required>
-                                <div class="invalid-feedback">请输入基础奖励</div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="bonusReward" class="form-label">奖励金</label>
-                                <input type="number" class="form-control" id="bonusReward" name="bonusReward" min="0" value="<%= task ? task.bonusReward : '0' %>">
-                                <div class="form-text">按时完成可获得</div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="rewardCurrency" class="form-label">奖励货币</label>
-                                <select class="form-select" id="rewardCurrency" name="rewardCurrency">
-                                    <option value="gold" <%= (task && task.rewardCurrency === 'gold') || (!task) ? 'selected' : '' %>>
-                                        <i class="fas fa-coins" style="color: #ffd700;"></i> 金币
-                                    </option>
-                                    <option value="silver" <%= task && task.rewardCurrency === 'silver' ? 'selected' : '' %>>
-                                        <i class="fas fa-coins" style="color: #c0c0c0;"></i> 银币
-                                    </option>
-                                    <option value="copper" <%= task && task.rewardCurrency === 'copper' ? 'selected' : '' %>>
-                                        <i class="fas fa-coins" style="color: #2d5016;"></i> 铜币
-                                    </option>
-                                    <option value="diamond" <%= task && task.rewardCurrency === 'diamond' ? 'selected' : '' %>>
-                                        <i class="fas fa-gem" style="color: #00bcd4;"></i> 钻石
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">总预算</label>
-                                <div class="form-control-plaintext fw-bold" id="totalBudget"><%= task ? task.totalBudget : '0' %></div>
-                            </div>
-                        </div>
+
 
                         <!-- 时间设置 -->
                         <div class="row">
@@ -468,38 +435,7 @@
 <!-- 页面特定JavaScript - 必须在jQuery加载之后 -->
 <script>
 $(document).ready(function() {
-    // 计算总预算
-    function updateTotalBudget() {
-        const baseReward = parseInt($('#baseReward').val()) || 0;
-        const bonusReward = parseInt($('#bonusReward').val()) || 0;
-        const total = baseReward + bonusReward;
-        $('#totalBudget').text(total.toLocaleString());
-    }
-
-    // 监听奖励输入变化
-    $('#baseReward, #bonusReward').on('input', updateTotalBudget);
-
     <% if (!task) { %>
-    // 根据星级推荐奖励（仅创建模式）
-    $('#starLevel').change(function() {
-        const starLevel = parseInt($(this).val());
-        const currency = $('#rewardCurrency').val();
-
-        let suggestedReward = 0;
-        switch (starLevel) {
-            case 1: suggestedReward = currency === 'gold' ? 50 : 500; break;
-            case 2: suggestedReward = currency === 'gold' ? 100 : 1000; break;
-            case 3: suggestedReward = currency === 'gold' ? 200 : 2000; break;
-            case 4: suggestedReward = currency === 'gold' ? 500 : 5000; break;
-            case 5: suggestedReward = currency === 'gold' ? 1000 : 10000; break;
-        }
-
-        if (suggestedReward > 0 && !$('#baseReward').val()) {
-            $('#baseReward').val(suggestedReward);
-            $('#bonusReward').val(Math.round(suggestedReward * 0.2));
-            updateTotalBudget();
-        }
-    });
 
     // 根据星级推荐工时（仅创建模式）
     $('#starLevel').change(function() {
@@ -612,8 +548,5 @@ $(document).ready(function() {
     setTimeout(function() {
         updateAssistantSelection();
     }, 100);
-
-    // 初始化总预算显示
-    updateTotalBudget();
 });
 </script>

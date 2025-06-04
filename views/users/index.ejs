@@ -90,7 +90,6 @@
                                         <th>职业角色</th>
                                         <th>技能等级</th>
                                         <th>状态</th>
-                                        <th>钱包余额</th>
                                         <th>入会时间</th>
                                         <th>最后活动</th>
                                         <th>操作</th>
@@ -136,16 +135,7 @@
                                                     <% } else { %>🚫 已禁用<% } %>
                                                 </span>
                                             </td>
-                                            <td>
-                                                <% if (user.wallet) { %>
-                                                    <div class="small">
-                                                        <div>💎 <%= user.wallet.diamondBalance %></div>
-                                                        <div>🥇 <%= user.wallet.goldBalance %></div>
-                                                    </div>
-                                                <% } else { %>
-                                                    <span class="text-muted">-</span>
-                                                <% } %>
-                                            </td>
+
                                             <td>
                                                 <div class="small">
                                                     <%= moment(user.createdAt).format('YYYY-MM-DD') %>

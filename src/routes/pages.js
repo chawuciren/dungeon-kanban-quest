@@ -139,27 +139,7 @@ router.get('/dashboard', async (req, res) => {
       return res.redirect('/login');
     }
 
-    // 获取用户钱包信息
-    let wallet = await UserWallet.findOne({
-      where: { userId: req.session.userId }
-    });
 
-    // 如果钱包不存在，创建一个
-    if (!wallet) {
-      wallet = await UserWallet.create({
-        userId: req.session.userId,
-        diamondBalance: 0,
-        goldBalance: 0,
-        silverBalance: 0,
-        copperBalance: 0,
-        frozenDiamond: 0,
-        frozenGold: 0,
-        frozenSilver: 0,
-        frozenCopper: 0,
-        totalEarned: 0,
-        totalSpent: 0
-      });
-    }
 
     // 构建任务查询条件 - 显示用户的所有任务，不限制项目
     const taskWhere = {
@@ -288,7 +268,6 @@ router.get('/dashboard', async (req, res) => {
     res.render('dashboard/index', {
       title: '仪表板',
       user,
-      wallet,
       taskStats: {
         total: totalTasks,
         completed: completedTasks
@@ -304,7 +283,6 @@ router.get('/dashboard', async (req, res) => {
     res.render('dashboard/index', {
       title: '仪表板',
       user: null,
-      wallet: null,
       taskStats: { total: 0, completed: 0 },
       recentTasks: [],
       userSkill: { icon: '🔰', name: '新手', progress: 20 },
@@ -329,172 +307,7 @@ router.get('/leaderboard', (req, res) => {
   });
 });
 
-// 钱包
-router.get('/wallet', async (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect('/login');
-  }
 
-  try {
-    // 获取用户信息
-    const user = await User.findByPk(req.session.userId, {
-      attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'role']
-    });
-
-    if (!user) {
-      req.session.destroy();
-      return res.redirect('/login');
-    }
-
-    // 获取用户钱包信息
-    let wallet = await UserWallet.findOne({
-      where: { userId: req.session.userId }
-    });
-
-    // 如果钱包不存在，创建一个
-    if (!wallet) {
-      wallet = await UserWallet.create({
-        userId: req.session.userId,
-        diamondBalance: 0,
-        goldBalance: 0,
-        silverBalance: 0,
-        copperBalance: 0,
-        frozenDiamond: 0,
-        frozenGold: 0,
-        frozenSilver: 0,
-        frozenCopper: 0,
-        totalEarned: 0,
-        totalSpent: 0
-      });
-    }
-
-    // 计算总资产（以铜币为单位）
-    const config = require('../config');
-    const rates = config.gamification.currencyRates;
-    const totalAssets =
-      wallet.diamondBalance * rates.diamond * rates.gold * rates.silver +
-      wallet.goldBalance * rates.gold * rates.silver +
-      wallet.silverBalance * rates.silver +
-      wallet.copperBalance;
-
-    // 检查是否可以签到
-    const canCheckin = await CheckinService.canCheckin(req.session.userId);
-
-    // 获取签到奖励预览
-    const rewardPreview = CheckinService.getRewardPreview(user);
-
-
-
-    // 获取分页参数
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = 8;
-
-    // 获取用户的交易记录
-    const transactionData = await TransactionService.getUserTransactions(req.session.userId, {
-      page,
-      limit: pageSize
-    });
-
-    res.render('wallet/index', {
-      title: '我的钱包',
-      user,
-      wallet,
-      canCheckin,
-      rewardPreview,
-      currentPage: page,
-      pageSize,
-      transactions: transactionData.transactions,
-      pagination: transactionData.pagination,
-      successMessage: req.session.successMessage,
-      errorMessage: req.session.errorMessage
-    });
-
-    // 清除消息
-    delete req.session.successMessage;
-    delete req.session.errorMessage;
-
-  } catch (error) {
-    console.error('获取钱包数据失败:', error);
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = 8;
-
-    res.render('wallet/index', {
-      title: '我的钱包',
-      user: null,
-      wallet: null,
-      canCheckin: false,
-      rewardPreview: null,
-      currentPage: page,
-      pageSize,
-      transactions: [],
-      pagination: { page, limit: pageSize, total: 0, totalPages: 0 }
-    });
-  }
-});
-
-// 货币兑换页面
-router.get('/wallet/exchange', async (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect('/login');
-  }
-
-  try {
-    // 获取用户信息
-    const user = await User.findByPk(req.session.userId, {
-      attributes: ['id', 'username', 'email', 'firstName', 'lastName', 'role']
-    });
-
-    if (!user) {
-      req.session.destroy();
-      return res.redirect('/login');
-    }
-
-    // 获取用户钱包信息
-    let wallet = await UserWallet.findOne({
-      where: { userId: req.session.userId }
-    });
-
-    // 如果钱包不存在，创建一个
-    if (!wallet) {
-      wallet = await UserWallet.create({
-        userId: req.session.userId,
-        diamondBalance: 0,
-        goldBalance: 0,
-        silverBalance: 0,
-        copperBalance: 0,
-        frozenDiamond: 0,
-        frozenGold: 0,
-        frozenSilver: 0,
-        frozenCopper: 0,
-        totalEarned: 0,
-        totalSpent: 0
-      });
-    }
-
-    // 获取支持的货币类型
-    const currencies = ExchangeService.getSupportedCurrencies();
-
-    res.render('wallet/exchange', {
-      title: '货币兑换',
-      user,
-      wallet,
-      currencies,
-      errorMessage: req.session.errorMessage
-    });
-
-    // 清除错误消息
-    delete req.session.errorMessage;
-
-  } catch (error) {
-    console.error('获取兑换页面数据失败:', error);
-    res.render('wallet/exchange', {
-      title: '货币兑换',
-      user: null,
-      wallet: null,
-      currencies: []
-    });
-  }
-});
 
 // 个人资料
 router.get('/profile', async (req, res) => {
@@ -503,12 +316,7 @@ router.get('/profile', async (req, res) => {
       return res.redirect('/login');
     }
 
-    const user = await User.findByPk(req.session.userId, {
-      include: [{
-        model: UserWallet,
-        as: 'wallet'
-      }]
-    });
+    const user = await User.findByPk(req.session.userId);
 
     if (!user) {
       req.flash('error', '用户不存在');
@@ -517,8 +325,7 @@ router.get('/profile', async (req, res) => {
 
     res.render('profile/index', {
       title: '个人资料',
-      user,
-      wallet: user.wallet
+      user
     });
 
   } catch (error) {
