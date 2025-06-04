@@ -402,11 +402,43 @@ router.get('/create', requireAuth, requireProjectSelection, validateProjectAcces
       });
     }
 
-    res.render('tasks/create', {
+    // 获取当前项目的任务列表（用于父任务选择）
+    let projectTasks = [];
+    if (req.session.selectedProjectId && !parentTask) {
+      projectTasks = await BountyTask.findAll({
+        where: {
+          projectId: req.session.selectedProjectId,
+          parentTaskId: null // 只显示根任务作为父任务选项
+        },
+        attributes: ['id', 'title', 'taskType'],
+        order: [['createdAt', 'DESC']],
+        limit: 50
+      });
+    }
+
+    // 获取当前项目的迭代列表
+    let sprints = [];
+    if (req.session.selectedProjectId) {
+      const { Sprint } = require('../models');
+      sprints = await Sprint.findAll({
+        where: {
+          projectId: req.session.selectedProjectId,
+          status: ['planning', 'active'] // 只显示计划中和进行中的迭代
+        },
+        attributes: ['id', 'name', 'status', 'startDate', 'endDate'],
+        order: [['startDate', 'DESC']]
+      });
+    }
+
+    // 使用edit模板，但传入创建模式的参数
+    res.render('tasks/edit', {
       title: parentTask ? '创建子任务' : '创建任务',
+      task: null, // 创建模式时task为null
       parentTask,
       projects,
       projectMembers,
+      projectTasks,
+      sprints,
       defaultProjectId: req.session.selectedProjectId
     });
 
@@ -552,7 +584,9 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       bonusReward,
       rewardCurrency,
       estimatedHours,
+      startDate,
       dueDate,
+      sprintId,
       assigneeId,
       assistantIds,
       reviewerId
@@ -611,11 +645,13 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       assistantIds: processedAssistantIds,
       reviewerId: reviewerId && reviewerId.trim() !== '' ? reviewerId : null,
       parentTaskId: parentTaskId || null,
+      sprintId: sprintId && sprintId.trim() !== '' ? sprintId : null,
       baseReward: parseInt(baseReward),
       bonusReward: parseInt(bonusReward || 0),
       rewardCurrency,
       totalBudget,
       estimatedHours: estimatedHours ? parseFloat(estimatedHours) : null,
+      startDate: startDate || null,
       dueDate: dueDate || null,
       level
     });
@@ -695,10 +731,24 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
       });
     }
 
+    // 获取项目的迭代列表
+    let sprints = [];
+    if (task.projectId) {
+      const { Sprint } = require('../models');
+      sprints = await Sprint.findAll({
+        where: {
+          projectId: task.projectId
+        },
+        attributes: ['id', 'name', 'status', 'startDate', 'endDate'],
+        order: [['startDate', 'DESC']]
+      });
+    }
+
     res.render('tasks/edit', {
       title: '编辑任务',
       task,
-      projectMembers
+      projectMembers,
+      sprints
     });
 
   } catch (error) {
@@ -724,7 +774,9 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       bonusReward,
       rewardCurrency,
       estimatedHours,
+      startDate,
       dueDate,
+      sprintId,
       assigneeId,
       assistantIds,
       reviewerId
@@ -777,17 +829,19 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       assigneeId: assigneeId && assigneeId.trim() !== '' ? assigneeId : null,
       assistantIds: processedAssistantIds,
       reviewerId: reviewerId && reviewerId.trim() !== '' ? reviewerId : null,
+      sprintId: sprintId && sprintId.trim() !== '' ? sprintId : null,
       baseReward: parseInt(baseReward),
       bonusReward: parseInt(bonusReward || 0),
       rewardCurrency,
       totalBudget,
       estimatedHours: estimatedHours ? parseFloat(estimatedHours) : null,
+      startDate: startDate || null,
       dueDate: dueDate || null
     };
 
     // 根据状态变更自动设置时间字段
     if (oldStatus !== newStatus) {
-      if (newStatus === 'in_progress' && !task.startDate) {
+      if (newStatus === 'in_progress' && !task.startDate && !startDate) {
         updateData.startDate = new Date();
       } else if (newStatus === 'completed' && !task.completedAt) {
         updateData.completedAt = new Date();
