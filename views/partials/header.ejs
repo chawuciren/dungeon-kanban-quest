@@ -32,6 +32,22 @@
             window.user = null;
         <% } %>
     </script>
+
+    <!-- Bootstrap JS -->
+    <script src="/js/bootstrap.bundle.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="/js/jquery-3.7.0.min.js"></script>
+
+    <!-- 自定义JS -->
+    <script src="/js/main.js"></script>
+
+    <!-- 页面特定JS -->
+    <% if (typeof pageJS !== 'undefined') { %>
+        <% pageJS.forEach(js => { %>
+            <script src="<%= js %>"></script>
+        <% }) %>
+    <% } %>
 </head>
 <body>
     <!-- 导航栏 -->

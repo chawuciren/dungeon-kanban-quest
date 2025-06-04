@@ -153,109 +153,104 @@
         <div id="tasksList">
             <% if (tasks && tasks.length > 0) { %>
                 <% tasks.forEach(function(task) { %>
-                    <div class="card mb-3 task-card">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h5 class="card-title mb-0"><%= task.title %></h5>
-                                        <div class="task-meta">
-                                            <span class="badge bg-warning me-1">
-                                                <% for(let i = 0; i < task.starLevel; i++) { %>⭐<% } %>
-                                            </span>
-                                            <%
-                                            const statusConfig = {
-                                                'draft': { text: '草稿', class: 'secondary', icon: 'fas fa-edit' },
-                                                'published': { text: '已发布', class: 'primary', icon: 'fas fa-bullhorn' },
-                                                'bidding': { text: '竞标中', class: 'info', icon: 'fas fa-gavel' },
-                                                'assigned': { text: '已分配', class: 'warning', icon: 'fas fa-user-check' },
-                                                'in_progress': { text: '进行中', class: 'warning', icon: 'fas fa-play' },
-                                                'review': { text: '待审核', class: 'info', icon: 'fas fa-search' },
-                                                'completed': { text: '已完成', class: 'success', icon: 'fas fa-check' },
-                                                'cancelled': { text: '已取消', class: 'danger', icon: 'fas fa-times' }
-                                            };
-                                            const currentStatus = statusConfig[task.status] || statusConfig['draft'];
-                                            %>
-
-                                        </div>
-                                    </div>
-
-                                    <!-- 可编辑字段区域 -->
-                                    <div class="row mb-2">
-                                        <div class="col-md-4">
-                                            <label class="form-label small text-muted">状态</label>
-                                            <select class="form-select form-select-sm quick-edit-field"
-                                                    data-task-id="<%= task.id %>"
-                                                    data-field="status">
-                                                <option value="draft" <%= task.status === 'draft' ? 'selected' : '' %>>草稿</option>
-                                                <option value="published" <%= task.status === 'published' ? 'selected' : '' %>>已发布</option>
-                                                <option value="bidding" <%= task.status === 'bidding' ? 'selected' : '' %>>竞标中</option>
-                                                <option value="assigned" <%= task.status === 'assigned' ? 'selected' : '' %>>已分配</option>
-                                                <option value="in_progress" <%= task.status === 'in_progress' ? 'selected' : '' %>>进行中</option>
-                                                <option value="review" <%= task.status === 'review' ? 'selected' : '' %>>待审核</option>
-                                                <option value="completed" <%= task.status === 'completed' ? 'selected' : '' %>>已完成</option>
-                                                <option value="cancelled" <%= task.status === 'cancelled' ? 'selected' : '' %>>已取消</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label small text-muted">负责人</label>
-                                            <select class="form-select form-select-sm quick-edit-field"
-                                                    data-task-id="<%= task.id %>"
-                                                    data-field="assigneeId">
-                                                <option value="">未分配</option>
-                                                <% if (task.project && task.project.members) { %>
-                                                    <% task.project.members.forEach(function(member) { %>
-                                                        <option value="<%= member.id %>" <%= task.assigneeId === member.id ? 'selected' : '' %>>
-                                                            <%= (member.firstName + ' ' + member.lastName).trim() || member.username %>
-                                                        </option>
-                                                    <% }); %>
-                                                <% } %>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label small text-muted">优先级</label>
-                                            <select class="form-select form-select-sm quick-edit-field"
-                                                    data-task-id="<%= task.id %>"
-                                                    data-field="urgencyLevel">
-                                                <option value="urgent" <%= task.urgencyLevel === 'urgent' ? 'selected' : '' %>>🔥 紧急</option>
-                                                <option value="important" <%= task.urgencyLevel === 'important' ? 'selected' : '' %>>⚡ 重要</option>
-                                                <option value="normal" <%= task.urgencyLevel === 'normal' ? 'selected' : '' %>>📅 普通</option>
-                                                <option value="delayed" <%= task.urgencyLevel === 'delayed' ? 'selected' : '' %>>🕐 延期</option>
-                                                <option value="frozen" <%= task.urgencyLevel === 'frozen' ? 'selected' : '' %>>❄️ 冻结</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <p class="card-text text-muted"><%= task.description %></p>
-                                    <div class="task-footer">
-                                        <small class="text-muted">
-                                            <i class="fas fa-user me-1"></i>发布者：<%= task.publisher ? (task.publisher.firstName + ' ' + task.publisher.lastName) : '未知' %>
-                                            <% if (task.estimatedHours) { %>
-                                                <i class="fas fa-clock ms-3 me-1"></i>预估：<%= task.estimatedHours %>小时
-                                            <% } %>
-                                            <% if (task.dueDate) { %>
-                                                <i class="fas fa-calendar ms-3 me-1"></i>截止：<%= new Date(task.dueDate).toLocaleDateString('zh-CN') %>
-                                            <% } %>
-                                            <% if (task.project) { %>
-                                                <i class="fas fa-project-diagram ms-3 me-1"></i>项目：<%= task.project.name %>
-                                            <% } %>
-                                        </small>
+                    <div class="card mb-1 task-card">
+                        <div class="card-body py-1 px-2">
+                            <div class="row align-items-center">
+                                <!-- 任务标题和星级 -->
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-center">
+                                        <h6 class="card-title mb-0 me-2 text-truncate" style="max-width: 200px;">
+                                            <a href="/tasks/<%= task.id %>" class="text-decoration-none task-title-link">
+                                                <%= task.title %>
+                                            </a>
+                                        </h6>
+                                        <span class="badge bg-warning">
+                                            <% for(let i = 0; i < task.starLevel; i++) { %>⭐<% } %>
+                                        </span>
                                     </div>
                                 </div>
-                                <div class="col-md-4 text-end">
-                                    <div class="d-grid gap-2">
-                                        <div class="btn-group" role="group">
-                                            <a href="/tasks/<%= task.id %>" class="btn btn-outline-secondary btn-sm">
-                                                <i class="fas fa-eye me-1"></i>查看详情
-                                            </a>
+
+                                <!-- 快速编辑字段 -->
+                                <div class="col-md-2">
+                                    <select class="form-select form-select-sm quick-edit-field"
+                                            data-task-id="<%= task.id %>"
+                                            data-field="status">
+                                        <option value="draft" <%= task.status === 'draft' ? 'selected' : '' %>>草稿</option>
+                                        <option value="published" <%= task.status === 'published' ? 'selected' : '' %>>已发布</option>
+                                        <option value="bidding" <%= task.status === 'bidding' ? 'selected' : '' %>>竞标中</option>
+                                        <option value="assigned" <%= task.status === 'assigned' ? 'selected' : '' %>>已分配</option>
+                                        <option value="in_progress" <%= task.status === 'in_progress' ? 'selected' : '' %>>进行中</option>
+                                        <option value="review" <%= task.status === 'review' ? 'selected' : '' %>>待审核</option>
+                                        <option value="completed" <%= task.status === 'completed' ? 'selected' : '' %>>已完成</option>
+                                        <option value="cancelled" <%= task.status === 'cancelled' ? 'selected' : '' %>>已取消</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select form-select-sm quick-edit-field"
+                                            data-task-id="<%= task.id %>"
+                                            data-field="assigneeId">
+                                        <option value="">未分配</option>
+                                        <% if (task.project && task.project.members) { %>
+                                            <% task.project.members.forEach(function(member) { %>
+                                                <option value="<%= member.id %>" <%= task.assigneeId === member.id ? 'selected' : '' %>>
+                                                    <%= (member.firstName + ' ' + member.lastName).trim() || member.username %>
+                                                </option>
+                                            <% }); %>
+                                        <% } %>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select form-select-sm quick-edit-field"
+                                            data-task-id="<%= task.id %>"
+                                            data-field="urgencyLevel">
+                                        <option value="urgent" <%= task.urgencyLevel === 'urgent' ? 'selected' : '' %>>🔥 紧急</option>
+                                        <option value="important" <%= task.urgencyLevel === 'important' ? 'selected' : '' %>>⚡ 重要</option>
+                                        <option value="normal" <%= task.urgencyLevel === 'normal' ? 'selected' : '' %>>📅 普通</option>
+                                        <option value="delayed" <%= task.urgencyLevel === 'delayed' ? 'selected' : '' %>>🕐 延期</option>
+                                        <option value="frozen" <%= task.urgencyLevel === 'frozen' ? 'selected' : '' %>>❄️ 冻结</option>
+                                    </select>
+                                </div>
+
+                                <!-- 任务信息 -->
+                                <div class="col-md-2">
+                                    <small class="text-muted">
+                                        <div><i class="fas fa-user me-1"></i><%= task.publisher ? (task.publisher.firstName + ' ' + task.publisher.lastName).trim() || task.publisher.username : '未知' %></div>
+                                        <% if (task.estimatedHours || task.dueDate) { %>
+                                            <div>
+                                                <% if (task.estimatedHours) { %>
+                                                    <i class="fas fa-clock me-1"></i><%= task.estimatedHours %>h
+                                                <% } %>
+                                                <% if (task.dueDate) { %>
+                                                    <i class="fas fa-calendar ms-1 me-1"></i><%= new Date(task.dueDate).toLocaleDateString('zh-CN') %>
+                                                <% } %>
+                                            </div>
+                                        <% } %>
+                                    </small>
+                                </div>
+
+                                <!-- 操作按钮 -->
+                                <div class="col-md-1 text-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="/tasks/<%= task.id %>">
+                                                <i class="fas fa-eye me-2"></i>查看详情
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="/tasks/create?parent=<%= task.id %>">
+                                                <i class="fas fa-plus me-2"></i>添加子任务
+                                            </a></li>
                                             <% if (user && (user.role === 'admin' || task.publisherId === user.id)) { %>
-                                                <a href="/tasks/<%= task.id %>/edit" class="btn btn-outline-primary btn-sm">
-                                                    <i class="fas fa-edit me-1"></i>编辑
-                                                </a>
-                                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteTask('<%= task.id %>', '<%= task.title %>')">
-                                                    <i class="fas fa-trash me-1"></i>删除
-                                                </button>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item" href="/tasks/<%= task.id %>/edit">
+                                                    <i class="fas fa-edit me-2"></i>编辑
+                                                </a></li>
+                                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteTask('<%= task.id %>', '<%= task.title %>')">
+                                                    <i class="fas fa-trash me-2"></i>删除
+                                                </a></li>
                                             <% } %>
-                                        </div>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -315,6 +310,93 @@
 
 
 
+
+
+<style>
+.quick-edit-field.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.quick-edit-field.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 16px;
+    height: 16px;
+    margin-top: -8px;
+    border: 2px solid #ccc;
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.task-card {
+    transition: box-shadow 0.2s ease;
+}
+
+.task-card:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.task-card .card-body {
+    padding: 0.75rem 1rem;
+    min-height: 60px;
+}
+
+.task-card .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.task-card .badge {
+    font-size: 0.75em;
+    padding: 0.25em 0.5em;
+}
+
+.task-card small {
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.task-card .form-select-sm {
+    font-size: 0.9rem;
+    padding: 0.375rem 0.75rem;
+    height: auto;
+    min-height: 32px;
+}
+
+.task-card .dropdown-toggle {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.9rem;
+    min-height: 32px;
+}
+
+.task-card .row {
+    min-height: 40px;
+}
+
+.task-title-link {
+    color: #212529 !important;
+    transition: color 0.2s ease;
+}
+
+.task-title-link:hover {
+    color: #0d6efd !important;
+    text-decoration: underline !important;
+}
+</style>
+
 <script>
 $(document).ready(function() {
     // 筛选表单自动提交（当选择框改变时）
@@ -336,6 +418,8 @@ $(document).ready(function() {
         const value = $select.val();
         const originalValue = $select.data('original-value');
 
+        console.log('快速编辑触发:', { taskId, field, value, originalValue });
+
         // 禁用选择框并显示加载状态
         $select.prop('disabled', true);
         $select.addClass('loading');
@@ -344,11 +428,20 @@ $(document).ready(function() {
         $.ajax({
             url: `/tasks/${taskId}/quick-update`,
             method: 'POST',
+            dataType: 'json',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
             data: {
                 field: field,
                 value: value
             },
+            beforeSend: function(xhr) {
+                console.log('发送AJAX请求:', `/tasks/${taskId}/quick-update`);
+            },
             success: function(response) {
+                console.log('AJAX成功响应:', response);
                 if (response.success) {
                     // 显示成功提示
                     showToast('success', response.message);
@@ -360,10 +453,12 @@ $(document).ready(function() {
                     showToast('error', response.message || '更新失败');
                 }
             },
-            error: function(xhr) {
+            error: function(xhr, status, error) {
+                console.error('AJAX错误:', { xhr, status, error });
+                console.error('响应文本:', xhr.responseText);
                 // 恢复原始值
                 $select.val($select.data('original-value'));
-                const errorMsg = xhr.responseJSON?.message || '网络错误，请稍后重试';
+                const errorMsg = xhr.responseJSON?.message || `网络错误：${error}`;
                 showToast('error', errorMsg);
             },
             complete: function() {
@@ -432,40 +527,5 @@ function deleteTask(taskId, taskTitle) {
     }
 }
 </script>
-
-<style>
-.quick-edit-field.loading {
-    opacity: 0.6;
-    pointer-events: none;
-}
-
-.quick-edit-field.loading::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    width: 16px;
-    height: 16px;
-    margin-top: -8px;
-    border: 2px solid #ccc;
-    border-top-color: #007bff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.task-card {
-    transition: box-shadow 0.2s ease;
-}
-
-.task-card:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-</style>
 
 <%- include('../partials/footer') %>

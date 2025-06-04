@@ -1,5 +1,19 @@
 <%- include('../partials/header', { title: title }) %>
 
+<%
+// 处理表单数据恢复
+const formData = locals.formData || {};
+const getValue = (field, defaultValue = '') => {
+    if (formData[field] !== undefined) {
+        return formData[field];
+    }
+    if (task && task[field] !== undefined) {
+        return task[field];
+    }
+    return defaultValue;
+};
+%>
+
 <div class="row justify-content-center">
     <div class="col-lg-8">
             <!-- 页面标题 -->

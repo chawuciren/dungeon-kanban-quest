@@ -669,7 +669,72 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
 
   } catch (error) {
     logger.error('创建任务失败:', error);
-    req.flash('error', '创建任务失败：' + error.message);
+
+    // 处理验证错误
+    if (error.name === 'SequelizeValidationError') {
+      // 保存表单数据到session
+      req.session.formData = {
+        title,
+        description,
+        taskType,
+        starLevel,
+        urgencyLevel,
+        parentTaskId,
+        estimatedHours,
+        startDate,
+        dueDate,
+        sprintId,
+        assigneeId,
+        assistantIds,
+        reviewerId
+      };
+
+      // 处理验证错误信息
+      const errors = error.errors ? error.errors.map(err => {
+        const fieldMap = {
+          'title': '任务标题',
+          'description': '任务描述',
+          'starLevel': '星级难度',
+          'urgencyLevel': '紧急程度',
+          'estimatedHours': '预估工时',
+          'startDate': '开始日期',
+          'dueDate': '截止日期'
+        };
+
+        const fieldLabel = fieldMap[err.path] || err.path;
+        let message;
+
+        switch (err.validatorKey || err.type) {
+          case 'len':
+            message = `${fieldLabel}长度必须在${err.validatorArgs[0]}-${err.validatorArgs[1]}个字符之间`;
+            break;
+          case 'min':
+          case 'max':
+            message = `${fieldLabel}数值超出允许范围`;
+            break;
+          case 'notNull':
+          case 'notEmpty':
+            message = `${fieldLabel}不能为空`;
+            break;
+          default:
+            message = `${fieldLabel}: ${err.message}`;
+        }
+
+        return { field: err.path, message };
+      }) : [{ field: 'general', message: '创建任务时发生错误，请检查输入信息' }];
+
+      return res.render('error/validation', {
+        title: '任务创建失败',
+        errorContext: '任务',
+        errors,
+        formData: req.session.formData,
+        redirectUrl: '/tasks/create' + (req.query.parent ? `?parent=${req.query.parent}` : ''),
+        redirectDelay: 8
+      });
+    }
+
+    // 处理其他错误
+    req.flash('error', '创建任务失败，请稍后重试');
     res.redirect('back');
   }
 });
@@ -855,7 +920,73 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
 
   } catch (error) {
     logger.error('更新任务失败:', error);
-    req.flash('error', '更新任务失败：' + error.message);
+
+    // 处理验证错误
+    if (error.name === 'SequelizeValidationError') {
+      // 保存表单数据到session
+      req.session.formData = {
+        title,
+        description,
+        taskType,
+        starLevel,
+        urgencyLevel,
+        status,
+        estimatedHours,
+        startDate,
+        dueDate,
+        sprintId,
+        assigneeId,
+        assistantIds,
+        reviewerId
+      };
+
+      // 处理验证错误信息
+      const errors = error.errors ? error.errors.map(err => {
+        const fieldMap = {
+          'title': '任务标题',
+          'description': '任务描述',
+          'starLevel': '星级难度',
+          'urgencyLevel': '紧急程度',
+          'status': '任务状态',
+          'estimatedHours': '预估工时',
+          'startDate': '开始日期',
+          'dueDate': '截止日期'
+        };
+
+        const fieldLabel = fieldMap[err.path] || err.path;
+        let message;
+
+        switch (err.validatorKey || err.type) {
+          case 'len':
+            message = `${fieldLabel}长度必须在${err.validatorArgs[0]}-${err.validatorArgs[1]}个字符之间`;
+            break;
+          case 'min':
+          case 'max':
+            message = `${fieldLabel}数值超出允许范围`;
+            break;
+          case 'notNull':
+          case 'notEmpty':
+            message = `${fieldLabel}不能为空`;
+            break;
+          default:
+            message = `${fieldLabel}: ${err.message}`;
+        }
+
+        return { field: err.path, message };
+      }) : [{ field: 'general', message: '更新任务时发生错误，请检查输入信息' }];
+
+      return res.render('error/validation', {
+        title: '任务编辑失败',
+        errorContext: '任务',
+        errors,
+        formData: req.session.formData,
+        redirectUrl: `/tasks/${req.params.id}/edit`,
+        redirectDelay: 8
+      });
+    }
+
+    // 处理其他错误
+    req.flash('error', '更新任务失败，请稍后重试');
     res.redirect('back');
   }
 });
@@ -918,10 +1049,12 @@ router.post('/:id/delete', requireAuth, async (req, res) => {
 });
 
 // 快速字段更新API
-router.post('/:id/quick-update', requireAuth, async (req, res) => {
+router.post('/:id/quick-update', requireAuth, requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
     const taskId = req.params.id;
     const { field, value } = req.body;
+
+    logger.info('快速更新请求:', { taskId, field, value, userId: req.session.userId });
 
     const task = await BountyTask.findByPk(taskId, {
       include: [
@@ -975,7 +1108,8 @@ router.post('/:id/quick-update', requireAuth, async (req, res) => {
     // 如果是分配负责人，验证用户是否为项目成员
     if (field === 'assigneeId' && value) {
       const projectMembers = task.project.members;
-      const isMember = projectMembers.some(member => member.id === value);
+      // 确保ID比较时类型一致
+      const isMember = projectMembers.some(member => member.id.toString() === value.toString());
       if (!isMember) {
         return res.status(400).json({
           success: false,
@@ -987,10 +1121,12 @@ router.post('/:id/quick-update', requireAuth, async (req, res) => {
     // 更新字段
     await task.update({ [field]: value || null });
 
+    logger.info('任务字段更新成功:', { taskId, field, oldValue: task[field], newValue: value });
+
     // 获取更新后的显示值
     let displayValue = value;
     if (field === 'assigneeId' && value) {
-      const assignee = task.project.members.find(member => member.id === value);
+      const assignee = task.project.members.find(member => member.id.toString() === value.toString());
       if (assignee) {
         displayValue = `${assignee.firstName || ''} ${assignee.lastName || ''}`.trim() || assignee.username;
       }

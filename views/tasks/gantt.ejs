@@ -146,55 +146,103 @@
 .task-list-container {
     max-height: 600px;
     overflow-y: auto;
+    overflow-x: auto;
     border-radius: 0 0 0.5rem 0.5rem;
 }
 
-.task-list-item {
+/* 复用列表视图的样式 */
+.quick-edit-field.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.quick-edit-field.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 16px;
+    height: 16px;
+    margin-top: -8px;
+    border: 2px solid #ccc;
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.task-card {
+    transition: box-shadow 0.2s ease;
+    min-width: 800px; /* 确保卡片有最小宽度 */
+}
+
+.task-card:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.task-card .card-body {
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid #e9ecef;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    min-height: 60px;
 }
 
-.task-list-item:hover {
-    background-color: #f8f9fa;
+.task-card .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.task-list-item.active {
-    background-color: #e3f2fd;
-    border-left: 4px solid var(--primary-color);
+.task-card .badge {
+    font-size: 0.75em;
+    padding: 0.25em 0.5em;
 }
 
-.task-list-item:last-child {
-    border-bottom: none;
+.task-card small {
+    font-size: 0.875rem;
+    line-height: 1.4;
 }
 
-.task-name {
-    font-weight: 500;
-    color: var(--dark-color);
-    margin-bottom: 0.25rem;
+.task-card .form-select-sm {
     font-size: 0.9rem;
-    line-height: 1.3;
+    padding: 0.375rem 0.75rem;
+    height: auto;
+    min-height: 32px;
 }
 
-.task-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.8rem;
-    color: var(--secondary-color);
+.task-card .dropdown-toggle {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.9rem;
+    min-height: 32px;
 }
 
-.task-status {
-    padding: 0.2rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    font-weight: 500;
+.task-card .row {
+    min-height: 40px;
 }
 
-.task-assignee {
-    color: var(--info-color);
-    font-weight: 500;
+.task-title-link {
+    color: #212529 !important;
+    transition: color 0.2s ease;
+}
+
+.task-title-link:hover {
+    color: #0d6efd !important;
+    text-decoration: underline !important;
+}
+
+/* 甘特图特有的任务卡片样式 */
+.task-card.gantt-task-item {
+    cursor: pointer;
+}
+
+.task-card.gantt-task-item.active {
+    border-left: 4px solid #0d6efd;
+    background-color: #e3f2fd;
 }
 
 /* 自定义甘特图样式 */
@@ -1277,31 +1325,249 @@ function updateActiveButton(activeBtn) {
 // 渲染任务列表
 function renderTaskList(tasks) {
     const container = document.getElementById('task-list-container');
+
+    if (tasks.length === 0) {
+        container.innerHTML = '<div class="alert alert-info text-center py-5"><i class="fas fa-info-circle me-2"></i>暂无任务数据</div>';
+        return;
+    }
+
     const taskListHtml = tasks.map(task => {
         const taskData = task.task;
-        const statusClass = getStatusClass(taskData.status);
         const assigneeName = taskData.assignee ?
             `${taskData.assignee.firstName || ''} ${taskData.assignee.lastName || ''}`.trim() || taskData.assignee.username :
             '未分配';
 
         return `
-            <div class="task-list-item" data-task-id="${task.id}" onclick="highlightTask('${task.id}')">
-                <div class="task-name">${task.name}</div>
-                <div class="task-meta">
-                    <span class="task-status ${statusClass}">${getStatusText(taskData.status)}</span>
-                    <span class="task-assignee">${assigneeName}</span>
+            <div class="card mb-1 task-card gantt-task-item" data-task-id="${task.id}" onclick="highlightTask('${task.id}')">
+                <div class="card-body py-1 px-2">
+                    <div class="row align-items-center">
+                        <!-- 任务标题和星级 -->
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center">
+                                <h6 class="card-title mb-0 me-2 text-truncate" style="max-width: 200px;">
+                                    <a href="/tasks/${taskData.id}" class="text-decoration-none task-title-link">
+                                        ${task.name}
+                                    </a>
+                                </h6>
+                                <span class="badge bg-warning">
+                                    ${'⭐'.repeat(taskData.starLevel || 0)}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- 快速编辑字段 -->
+                        <div class="col-md-2">
+                            <select class="form-select form-select-sm quick-edit-field"
+                                    data-task-id="${taskData.id}"
+                                    data-field="status">
+                                <option value="draft" ${taskData.status === 'draft' ? 'selected' : ''}>草稿</option>
+                                <option value="published" ${taskData.status === 'published' ? 'selected' : ''}>已发布</option>
+                                <option value="bidding" ${taskData.status === 'bidding' ? 'selected' : ''}>竞标中</option>
+                                <option value="assigned" ${taskData.status === 'assigned' ? 'selected' : ''}>已分配</option>
+                                <option value="in_progress" ${taskData.status === 'in_progress' ? 'selected' : ''}>进行中</option>
+                                <option value="review" ${taskData.status === 'review' ? 'selected' : ''}>待审核</option>
+                                <option value="completed" ${taskData.status === 'completed' ? 'selected' : ''}>已完成</option>
+                                <option value="cancelled" ${taskData.status === 'cancelled' ? 'selected' : ''}>已取消</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select form-select-sm quick-edit-field"
+                                    data-task-id="${taskData.id}"
+                                    data-field="assigneeId">
+                                <option value="">未分配</option>
+                                ${taskData.project && taskData.project.members ?
+                                    taskData.project.members.map(member =>
+                                        `<option value="${member.id}" ${taskData.assigneeId === member.id ? 'selected' : ''}>
+                                            ${(member.firstName + ' ' + member.lastName).trim() || member.username}
+                                        </option>`
+                                    ).join('') : ''
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select form-select-sm quick-edit-field"
+                                    data-task-id="${taskData.id}"
+                                    data-field="urgencyLevel">
+                                <option value="urgent" ${taskData.urgencyLevel === 'urgent' ? 'selected' : ''}>🔥 紧急</option>
+                                <option value="important" ${taskData.urgencyLevel === 'important' ? 'selected' : ''}>⚡ 重要</option>
+                                <option value="normal" ${taskData.urgencyLevel === 'normal' ? 'selected' : ''}>📅 普通</option>
+                                <option value="delayed" ${taskData.urgencyLevel === 'delayed' ? 'selected' : ''}>🕐 延期</option>
+                                <option value="frozen" ${taskData.urgencyLevel === 'frozen' ? 'selected' : ''}>❄️ 冻结</option>
+                            </select>
+                        </div>
+
+                        <!-- 任务信息 -->
+                        <div class="col-md-2">
+                            <small class="text-muted">
+                                <div><i class="fas fa-user me-1"></i>${taskData.publisher ? (taskData.publisher.firstName + ' ' + taskData.publisher.lastName).trim() || taskData.publisher.username : '未知'}</div>
+                                ${taskData.estimatedHours || taskData.dueDate ? `<div>
+                                    ${taskData.estimatedHours ? `<i class="fas fa-clock me-1"></i>${taskData.estimatedHours}h` : ''}
+                                    ${taskData.dueDate ? `<i class="fas fa-calendar ms-1 me-1"></i>${new Date(taskData.dueDate).toLocaleDateString('zh-CN')}` : ''}
+                                </div>` : ''}
+                            </small>
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        <div class="col-md-1 text-end">
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/tasks/${taskData.id}">
+                                        <i class="fas fa-eye me-2"></i>查看详情
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="/tasks/create?parent=${taskData.id}">
+                                        <i class="fas fa-plus me-2"></i>添加子任务
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="/tasks/${taskData.id}/edit">
+                                        <i class="fas fa-edit me-2"></i>编辑
+                                    </a></li>
+                                    <li><a class="dropdown-item text-danger" href="#" onclick="deleteTask('${taskData.id}', '${task.name}')">
+                                        <i class="fas fa-trash me-2"></i>删除
+                                    </a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
     }).join('');
 
     container.innerHTML = taskListHtml;
+
+    // 初始化快速编辑功能
+    initQuickEdit();
+}
+
+// 初始化快速编辑功能
+function initQuickEdit() {
+    // 初始化快速编辑字段，保存原始值
+    $('.quick-edit-field').each(function() {
+        const $select = $(this);
+        $select.data('original-value', $select.val());
+    });
+
+    // 快速编辑字段处理
+    $(document).off('change', '.quick-edit-field').on('change', '.quick-edit-field', function() {
+        const $select = $(this);
+        const taskId = $select.data('task-id');
+        const field = $select.data('field');
+        const value = $select.val();
+        const originalValue = $select.data('original-value');
+
+        console.log('快速编辑触发:', { taskId, field, value, originalValue });
+
+        // 禁用选择框并显示加载状态
+        $select.prop('disabled', true);
+        $select.addClass('loading');
+
+        // 发送AJAX请求
+        $.ajax({
+            url: `/tasks/${taskId}/quick-update`,
+            method: 'POST',
+            dataType: 'json',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: {
+                field: field,
+                value: value
+            },
+            success: function(response) {
+                console.log('AJAX成功响应:', response);
+                if (response.success) {
+                    // 显示成功提示
+                    showToast('success', response.message);
+                    // 更新原始值
+                    $select.data('original-value', value);
+                } else {
+                    // 恢复原始值
+                    $select.val($select.data('original-value'));
+                    showToast('error', response.message || '更新失败');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX错误:', { xhr, status, error });
+                console.error('响应文本:', xhr.responseText);
+                // 恢复原始值
+                $select.val($select.data('original-value'));
+                const errorMsg = xhr.responseJSON?.message || `网络错误：${error}`;
+                showToast('error', errorMsg);
+            },
+            complete: function() {
+                // 恢复选择框状态
+                $select.prop('disabled', false);
+                $select.removeClass('loading');
+            }
+        });
+    });
+}
+
+// 显示提示消息
+function showToast(type, message) {
+    // 创建提示元素
+    const toast = $(`
+        <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-${type === 'success' ? 'check' : 'exclamation-triangle'} me-2"></i>
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `);
+
+    // 添加到页面
+    let toastContainer = $('#toast-container');
+    if (toastContainer.length === 0) {
+        toastContainer = $('<div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>');
+        $('body').append(toastContainer);
+    }
+
+    toastContainer.append(toast);
+
+    // 显示提示
+    const bsToast = new bootstrap.Toast(toast[0]);
+    bsToast.show();
+
+    // 自动移除
+    toast.on('hidden.bs.toast', function() {
+        $(this).remove();
+    });
+}
+
+// 删除任务函数
+function deleteTask(taskId, taskTitle) {
+    if (confirm(`确定要删除任务"${taskTitle}"吗？\n\n此操作不可撤销，任务的所有相关数据都将被删除。`)) {
+        // 创建表单并提交
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/tasks/${taskId}/delete`;
+
+        // 添加CSRF token（如果需要）
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (csrfToken) {
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = csrfToken.getAttribute('content');
+            form.appendChild(csrfInput);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
 }
 
 // 高亮任务
 function highlightTask(taskId) {
     // 清除所有高亮
-    document.querySelectorAll('.task-list-item').forEach(item => {
+    document.querySelectorAll('.gantt-task-item').forEach(item => {
         item.classList.remove('active');
     });
 
