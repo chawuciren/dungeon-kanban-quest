@@ -47,104 +47,31 @@ const config = {
 
   // 游戏化系统配置
   gamification: {
-    // 每日签到奖励配置
-    dailyCheckin: {
-      // 基础奖励（所有用户都获得）
-      baseRewards: {
-        gold: process.env.DAILY_BASE_GOLD !== undefined ? parseInt(process.env.DAILY_BASE_GOLD) : 20,
-        silver: process.env.DAILY_BASE_SILVER !== undefined ? parseInt(process.env.DAILY_BASE_SILVER) : 50,
-        copper: process.env.DAILY_BASE_COPPER !== undefined ? parseInt(process.env.DAILY_BASE_COPPER) : 0,
-        diamond: process.env.DAILY_BASE_DIAMOND !== undefined ? parseInt(process.env.DAILY_BASE_DIAMOND) : 0
-      },
-
-      // 角色额外奖励（在基础奖励之上增加）
-      roleBonus: {
-        // 委托贵族（客户）额外奖励
-        client: {
-          gold: process.env.DAILY_CLIENT_BONUS_GOLD !== undefined ? parseInt(process.env.DAILY_CLIENT_BONUS_GOLD) : 80,      // 额外80金币，总计100金币
-          silver: process.env.DAILY_CLIENT_BONUS_SILVER !== undefined ? parseInt(process.env.DAILY_CLIENT_BONUS_SILVER) : 200, // 额外200银币，总计250银币
-          copper: process.env.DAILY_CLIENT_BONUS_COPPER !== undefined ? parseInt(process.env.DAILY_CLIENT_BONUS_COPPER) : 0,
-          diamond: process.env.DAILY_CLIENT_BONUS_DIAMOND !== undefined ? parseInt(process.env.DAILY_CLIENT_BONUS_DIAMOND) : 1  // 额外1钻石
-        },
-
-        // 管理员额外奖励
-        admin: {
-          gold: process.env.DAILY_ADMIN_BONUS_GOLD !== undefined ? parseInt(process.env.DAILY_ADMIN_BONUS_GOLD) : 50,       // 额外50金币，总计70金币
-          silver: process.env.DAILY_ADMIN_BONUS_SILVER !== undefined ? parseInt(process.env.DAILY_ADMIN_BONUS_SILVER) : -50,  // 减少50银币，总计0银币
-          copper: process.env.DAILY_ADMIN_BONUS_COPPER !== undefined ? parseInt(process.env.DAILY_ADMIN_BONUS_COPPER) : 0,
-          diamond: process.env.DAILY_ADMIN_BONUS_DIAMOND !== undefined ? parseInt(process.env.DAILY_ADMIN_BONUS_DIAMOND) : 2   // 额外2钻石
-        },
-
-        // 普通用户（开发者、测试等）无额外奖励
-        developer: {
-          gold: 0,
-          silver: 0,
-          copper: 0,
-          diamond: 0
-        },
-
-        // 其他角色也可以在这里配置
-        tester: {
-          gold: 0,
-          silver: 0,
-          copper: 0,
-          diamond: 0
-        },
-
-        ui_designer: {
-          gold: 0,
-          silver: 0,
-          copper: 0,
-          diamond: 0
-        }
-      }
+    // 保留技能等级配置，用于用户技能评级
+    skillLevels: {
+      novice: { name: '新手', icon: '🔰', multiplier: 1.0 },
+      bronze: { name: '青铜', icon: '🥉', multiplier: 1.1 },
+      silver: { name: '白银', icon: '🥈', multiplier: 1.15 },
+      gold: { name: '黄金', icon: '🥇', multiplier: 1.2 },
+      diamond: { name: '钻石', icon: '💎', multiplier: 1.3 }
     },
 
-    // 货币汇率
-    currencyRates: {
-      diamond: parseInt(process.env.CURRENCY_RATE_DIAMOND) || 1000, // 1钻石 = 1000金币
-      gold: parseInt(process.env.CURRENCY_RATE_GOLD) || 100,        // 1金币 = 100银币
-      silver: parseInt(process.env.CURRENCY_RATE_SILVER) || 100     // 1银币 = 100铜币
+    // 星级配置，用于任务难度评级
+    starLevels: {
+      1: { name: '简单', multiplier: 1.0 },
+      2: { name: '普通', multiplier: 1.2 },
+      3: { name: '中等', multiplier: 1.5 },
+      4: { name: '困难', multiplier: 2.0 },
+      5: { name: '极难', multiplier: 3.0 }
     },
 
-    // 货币兑换比例配置
-    exchangeRates: {
-      // 高级货币换低级货币
-      diamond_to_gold: parseInt(process.env.EXCHANGE_RATE_DIAMOND_TO_GOLD) || 1000,
-      gold_to_silver: parseInt(process.env.EXCHANGE_RATE_GOLD_TO_SILVER) || 1000,
-      silver_to_copper: parseInt(process.env.EXCHANGE_RATE_SILVER_TO_COPPER) || 1000,
-
-      // 低级货币换高级货币
-      gold_to_diamond: parseInt(process.env.EXCHANGE_RATE_GOLD_TO_DIAMOND) || 1000,
-      silver_to_gold: parseInt(process.env.EXCHANGE_RATE_SILVER_TO_GOLD) || 1000,
-      copper_to_silver: parseInt(process.env.EXCHANGE_RATE_COPPER_TO_SILVER) || 1000
-    },
-
-    // 星级奖励倍数
-    starMultipliers: {
-      1: parseFloat(process.env.STAR_MULTIPLIER_1) || 1.0,
-      2: parseFloat(process.env.STAR_MULTIPLIER_2) || 1.2,
-      3: parseFloat(process.env.STAR_MULTIPLIER_3) || 1.5,
-      4: parseFloat(process.env.STAR_MULTIPLIER_4) || 2.0,
-      5: parseFloat(process.env.STAR_MULTIPLIER_5) || 3.0
-    },
-
-    // 紧急程度奖励
-    urgencyMultipliers: {
-      urgent: parseFloat(process.env.URGENCY_MULTIPLIER_URGENT) || 1.5,    // 🔥 紧急
-      important: parseFloat(process.env.URGENCY_MULTIPLIER_IMPORTANT) || 1.2, // ⚡ 重要
-      normal: parseFloat(process.env.URGENCY_MULTIPLIER_NORMAL) || 1.0,    // 📅 普通
-      delayed: parseFloat(process.env.URGENCY_MULTIPLIER_DELAYED) || 0.9,   // 🕐 延后
-      frozen: parseFloat(process.env.URGENCY_MULTIPLIER_FROZEN) || 0.0     // ❄️ 冻结
-    },
-
-    // 技能等级奖励
-    skillMultipliers: {
-      novice: parseFloat(process.env.SKILL_MULTIPLIER_NOVICE) || 1.1,   // 🔰 新手
-      bronze: parseFloat(process.env.SKILL_MULTIPLIER_BRONZE) || 1.1,   // 🥉 铜牌
-      silver: parseFloat(process.env.SKILL_MULTIPLIER_SILVER) || 1.15,  // 🥈 银牌
-      gold: parseFloat(process.env.SKILL_MULTIPLIER_GOLD) || 1.2,       // 🥇 金牌
-      diamond: parseFloat(process.env.SKILL_MULTIPLIER_DIAMOND) || 1.3  // 💎 钻石
+    // 紧急程度配置
+    urgencyLevels: {
+      urgent: { name: '紧急', icon: '🔥', multiplier: 1.5 },
+      important: { name: '重要', icon: '⚡', multiplier: 1.2 },
+      normal: { name: '普通', icon: '📅', multiplier: 1.0 },
+      delayed: { name: '延后', icon: '🕐', multiplier: 0.9 },
+      frozen: { name: '冻结', icon: '❄️', multiplier: 0.0 }
     }
   },
 

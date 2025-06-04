@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, UserWallet } = require('../models');
+const { User } = require('../models');
 const { Op } = require('sequelize');
 const logger = require('../config/logger');
 const { getAllRoles, isAdmin } = require('../config/roles');
@@ -61,13 +61,6 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
     // 获取用户列表
     const { count, rows: users } = await User.findAndCountAll({
       where: whereClause,
-      include: [
-        {
-          model: UserWallet,
-          as: 'wallet',
-          attributes: ['diamondBalance', 'goldBalance', 'silverBalance', 'copperBalance']
-        }
-      ],
       order: [['createdAt', 'DESC']],
       limit,
       offset
@@ -195,14 +188,7 @@ router.get('/:id/edit', requireAuth, requireAdmin, async (req, res) => {
   try {
     const userId = req.params.id;
 
-    const user = await User.findByPk(userId, {
-      include: [
-        {
-          model: UserWallet,
-          as: 'wallet'
-        }
-      ]
-    });
+    const user = await User.findByPk(userId);
 
     if (!user) {
       req.flash('error', '用户不存在');

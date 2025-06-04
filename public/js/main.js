@@ -117,26 +117,9 @@ function getAlertIcon(type) {
     return icons[type] || 'info-circle';
 }
 
-// 加载用户钱包信息
-function loadWalletInfo() {
-    $.get('/api/wallet/balance')
-        .done(function(response) {
-            if (response.success && response.data) {
-                updateWalletDisplay(response.data);
-            }
-        })
-        .fail(function() {
-            console.warn('无法加载钱包信息');
-        });
-}
 
-// 更新钱包显示
-function updateWalletDisplay(walletData) {
-    $('#diamond-balance').text(walletData.diamondBalance || 0);
-    $('#gold-balance').text(walletData.goldBalance || 0);
-    $('#silver-balance').text(walletData.silverBalance || 0);
-    $('#copper-balance').text(walletData.copperBalance || 0);
-}
+
+
 
 // 星级评价组件
 function renderStarRating(level, maxLevel = 5, size = 'md') {
@@ -154,27 +137,7 @@ function renderStarRating(level, maxLevel = 5, size = 'md') {
     return html;
 }
 
-// 货币显示组件
-function renderCurrencyDisplay(amount, currency, showIcon = true) {
-    const currencyConfig = {
-        diamond: { icon: '<i class="fas fa-gem" style="color: #00bcd4;"></i>', class: 'diamond', name: '钻石' },
-        gold: { icon: '<i class="fas fa-coins" style="color: #ffd700;"></i>', class: 'gold', name: '金币' },
-        silver: { icon: '<i class="fas fa-coins" style="color: #c0c0c0;"></i>', class: 'silver', name: '银币' },
-        copper: { icon: '<i class="fas fa-coins" style="color: #2d5016;"></i>', class: 'copper', name: '铜币' }
-    };
 
-    const config = currencyConfig[currency] || currencyConfig.gold;
-
-    let html = '<div class="currency-display">';
-    if (showIcon) {
-        html += `<span class="currency-icon ${config.class}">${config.icon}</span>`;
-    }
-    html += `<span class="currency-amount">${amount.toLocaleString()}</span>`;
-    html += `<span class="currency-name">${config.name}</span>`;
-    html += '</div>';
-
-    return html;
-}
 
 // 技能等级徽章
 function renderSkillBadge(skillLevel) {
@@ -319,7 +282,6 @@ window.addEventListener('error', function(e) {
 window.KanbanApp = {
     showAlert,
     renderStarRating,
-    renderCurrencyDisplay,
     renderSkillBadge,
     renderUrgencyBadge,
     formatTime,
@@ -327,6 +289,5 @@ window.KanbanApp = {
     confirmAction,
     copyToClipboard,
     debounce,
-    throttle,
-    updateWalletDisplay
+    throttle
 };
