@@ -87,10 +87,10 @@ router.get('/', requireProjectSelection, validateProjectAccess, async (req, res)
 
     // 排序
     let order = [['createdAt', 'DESC']];
-    if (req.query.sort === 'reward') {
-      order = [['totalBudget', 'DESC']];
-    } else if (req.query.sort === 'deadline') {
+    if (req.query.sort === 'deadline') {
       order = [['dueDate', 'ASC']];
+    } else if (req.query.sort === 'priority') {
+      order = [['urgencyLevel', 'DESC'], ['starLevel', 'DESC']];
     }
 
     const { count, rows: tasks } = await BountyTask.findAndCountAll({

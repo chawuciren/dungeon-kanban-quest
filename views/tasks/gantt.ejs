@@ -649,11 +649,11 @@
         flex-wrap: wrap;
         gap: 0.5rem;
     }
-    
+
     .legend-item {
         font-size: 0.75rem;
     }
-    
+
     .btn-group {
         flex-wrap: wrap;
     }
@@ -1719,31 +1719,38 @@ function showTaskDetail(task) {
             </div>
             <div class="col-lg-4 col-md-5">
                 <div class="card bg-light h-100">
-                    <div class="card-header bg-primary text-white">
-                        <h6 class="mb-0"><i class="fas fa-coins me-2"></i>奖励信息</h6>
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0"><i class="fas fa-clock me-2"></i>工时信息</h6>
                     </div>
                     <div class="card-body">
-                        <div class="reward-item mb-3">
+                        <div class="time-item mb-3">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-muted">基础奖励</span>
-                                <span class="fw-bold text-primary">${task.baseReward} ${getCurrencyText(task.rewardCurrency)}</span>
+                                <span class="text-muted">预估工时</span>
+                                <span class="fw-bold text-primary">${task.estimatedHours || 0} 小时</span>
                             </div>
                         </div>
-                        ${task.bonusReward > 0 ? `
-                        <div class="reward-item mb-3">
+                        ${task.actualHours ? `
+                        <div class="time-item mb-3">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-muted">奖励金</span>
-                                <span class="fw-bold text-warning">${task.bonusReward} ${getCurrencyText(task.rewardCurrency)}</span>
+                                <span class="text-muted">实际工时</span>
+                                <span class="fw-bold text-warning">${task.actualHours} 小时</span>
                             </div>
                         </div>
-                        ` : ''}
                         <hr>
-                        <div class="reward-item">
+                        <div class="time-item">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="fw-medium">总预算</span>
-                                <span class="fw-bold text-success fs-5">${task.totalBudget} ${getCurrencyText(task.rewardCurrency)}</span>
+                                <span class="fw-medium">工时效率</span>
+                                <span class="fw-bold ${task.actualHours <= task.estimatedHours ? 'text-success' : 'text-danger'} fs-5">
+                                    ${task.estimatedHours > 0 ? Math.round((task.estimatedHours / task.actualHours) * 100) : 0}%
+                                </span>
                             </div>
                         </div>
+                        ` : `
+                        <div class="text-center text-muted">
+                            <i class="fas fa-hourglass-start fa-2x mb-2"></i>
+                            <p class="mb-0">任务进行中</p>
+                        </div>
+                        `}
                     </div>
                 </div>
             </div>
@@ -1779,15 +1786,7 @@ function getSkillText(skill) {
     return skillMap[skill] || skill;
 }
 
-function getCurrencyText(currency) {
-    const currencyMap = {
-        'diamond': '💎',
-        'gold': '🪙',
-        'silver': '🥈',
-        'copper': '🥉'
-    };
-    return currencyMap[currency] || currency;
-}
+
 </script>
 
 <%- include('../partials/footer') %>
