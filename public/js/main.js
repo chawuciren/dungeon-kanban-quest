@@ -19,10 +19,7 @@ function initializeApp() {
     // 初始化AJAX设置
     initializeAjax();
 
-    // 加载用户钱包信息
-    if (window.user) {
-        loadWalletInfo();
-    }
+
 
     console.log('🎮 游戏化项目管理系统已初始化');
 }

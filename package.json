@@ -1,7 +1,7 @@
 {
   "name": "kanban-project-management",
   "version": "1.0.0",
-  "description": "一个功能完整的看板型项目管理工具，支持敏捷开发和传统瀑布模型，包含游戏化赏金系统",
+  "description": "一个功能完整的看板型项目管理工具，支持敏捷开发和传统瀑布模型，专注于工时管理和效率统计",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
@@ -23,8 +23,8 @@
     "agile",
     "scrum",
     "task-management",
-    "gamification",
-    "bounty-system"
+    "time-tracking",
+    "efficiency-analysis"
   ],
   "author": "Kanban Team",
   "license": "MIT",

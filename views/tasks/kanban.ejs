@@ -95,14 +95,11 @@
                                             </p>
                                         <% } %>
 
-                                        <!-- 奖励信息 -->
-                                        <div class="reward-info mb-2">
+                                        <!-- 工时信息 -->
+                                        <div class="time-info mb-2">
                                             <small class="text-muted">
-                                                <% if (task.rewardCurrency === 'diamond') { %>💎
-                                                <% } else if (task.rewardCurrency === 'gold') { %>🥇
-                                                <% } else if (task.rewardCurrency === 'silver') { %>🥈
-                                                <% } else if (task.rewardCurrency === 'copper') { %>🥉<% } %>
-                                                <%= (task.baseReward || 0) + (task.bonusReward || 0) %>
+                                                <i class="fas fa-clock"></i>
+                                                <%= task.estimatedHours || 0 %>h
                                             </small>
                                         </div>
 

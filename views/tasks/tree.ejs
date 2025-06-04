@@ -139,13 +139,10 @@
                                   <span class="badge bg-secondary"><%= task.status %></span>
                                 <% } %>
 
-                                <!-- 奖励信息 -->
-                                <span class="badge bg-warning text-dark">
-                                  <% if (task.rewardCurrency === 'diamond') { %><i class="fas fa-gem text-info"></i>
-                                  <% } else if (task.rewardCurrency === 'gold') { %><i class="fas fa-coins text-warning"></i>
-                                  <% } else if (task.rewardCurrency === 'silver') { %><i class="fas fa-circle text-secondary"></i>
-                                  <% } else { %><i class="fas fa-circle text-dark"></i><% } %>
-                                  <%= task.totalBudget %>
+                                <!-- 工时信息 -->
+                                <span class="badge bg-info text-white">
+                                  <i class="fas fa-clock"></i>
+                                  <%= task.estimatedHours || 0 %>h
                                 </span>
                               </span>
 

@@ -159,14 +159,7 @@ router.post('/create', requireAuth, requireAdmin, async (req, res) => {
       status: status || 'active'
     });
 
-    // 创建用户钱包
-    await UserWallet.create({
-      userId: user.id,
-      diamondBalance: 0,
-      copperBalance: 100, // 新用户赠送100铜币
-      silverBalance: 0,
-      copperBalance: 0
-    });
+
 
     logger.info(`用户创建成功: ${username}`, {
       userId: user.id,

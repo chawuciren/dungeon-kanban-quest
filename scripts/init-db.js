@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 /**
- * 项目看板探险 - 数据库初始化脚本
+ * 地下城看板探险 - 数据库初始化脚本
  * 用于创建数据库表和初始数据
+ * 专注于工时管理和效率统计的项目管理系统
  *
  * 使用方法：
  * - 初始化数据库：node scripts/init-db.js
@@ -23,7 +24,7 @@ const isHelp = args.includes('--help') || args.includes('-h');
 // 显示帮助信息
 function showHelp() {
   console.log(`
-🎮 项目看板 - 数据库初始化工具
+🎮 地下城看板探险 - 数据库初始化工具
 
 使用方法：
   node scripts/init-db.js [选项]
@@ -62,7 +63,7 @@ async function initDatabase() {
       process.exit(0);
     }
 
-    console.log('🎮 项目看板探险 - 数据库初始化');
+    console.log('🎮 地下城看板探险 - 数据库初始化');
     console.log('=====================================');
 
     // 检查数据库连接
@@ -121,25 +122,27 @@ async function initDatabase() {
       console.log('   🔮 艾丽丝产品 (alice_pm) - 预言师 (产品经理)');
       console.log('   ⚔️  鲍勃开发 (bob_dev) - 剑士 (开发者)');
       console.log('   🏹 查理测试 (charlie_test) - 弓箭手 (测试员)');
-      console.log('   🔮 戴安娜设计 (diana_ui) - 魔法师 (UI设计师)');
+      console.log('   ✨ 戴安娜设计 (diana_ui) - 附魔师 (UI设计师)');
       console.log('   密码均为: [用户名]123 (如 alice123)');
       console.log('');
-      console.log('🏰 默认组织：');
-      console.log('   名称: 默认组织');
+      console.log('🏰 默认公会（组织）：');
+      console.log('   名称: 默认公会');
       console.log('   标识: default');
-      console.log('   成员: 5人 (管理员 + 4个示例用户)');
+      console.log('   成员: 5人 (管理员 + 4个示例勇者)');
       console.log('');
-      console.log('🗺️  示例项目（项目）：');
-      console.log('   名称: 示例项目');
+      console.log('🗺️  示例大陆（项目）：');
+      console.log('   名称: 示例大陆');
       console.log('   标识: SAMPLE');
       console.log('   类型: 🏗️ 据点建设');
-      console.log('   成员: 4人 (管理员 + 3个示例用户)');
+      console.log('   成员: 4人 (管理员 + 3个示例勇者)');
       console.log('');
       console.log('💡 重要说明：');
-      console.log('   • 用户的职业仅作参考，实际角色在项目中单独管理');
-      console.log('   • 组织级别不设置角色，只管理成员关系');
-      console.log('   • 一个用户可以在不同项目中担任不同角色');
-      console.log('   • 项目可以关联多个组织，支持跨组织协作');
+      console.log('   • 系统专注于工时管理和效率统计，不再使用虚拟货币');
+      console.log('   • 勇者的职业仅作参考，实际角色在大陆中单独管理');
+      console.log('   • 公会级别不设置角色，只管理成员关系');
+      console.log('   • 一个勇者可以在不同大陆中担任不同角色');
+      console.log('   • 大陆可以关联多个公会，支持跨公会协作');
+      console.log('   • 任务完成度和排行榜基于工时贡献计算');
     }
 
     console.log('');

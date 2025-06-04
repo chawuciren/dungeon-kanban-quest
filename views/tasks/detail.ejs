@@ -170,48 +170,49 @@
 
         <!-- 侧边栏 -->
         <div class="col-lg-4">
-            <!-- 奖励信息 -->
+            <!-- 工时信息 -->
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-coins me-2"></i>奖励信息
+                        <i class="fas fa-clock me-2"></i>工时信息
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        <div class="display-6 fw-bold text-primary">
-                            <% if (task.rewardCurrency === 'diamond') { %>
-                                <i class="fas fa-gem me-2" style="color: #00bcd4;"></i>
-                            <% } else if (task.rewardCurrency === 'gold') { %>
-                                <i class="fas fa-coins me-2" style="color: #ffd700;"></i>
-                            <% } else if (task.rewardCurrency === 'silver') { %>
-                                <i class="fas fa-coins me-2" style="color: #c0c0c0;"></i>
-                            <% } else { %>
-                                <i class="fas fa-coins me-2" style="color: #2d5016;"></i>
-                            <% } %>
-                            <%= task.totalBudget.toLocaleString() %>
+                        <div class="display-6 fw-bold text-info">
+                            <i class="fas fa-clock me-2"></i>
+                            <%= task.estimatedHours || 0 %>
                         </div>
-                        <small class="text-muted">总奖励</small>
+                        <small class="text-muted">预估工时（小时）</small>
                     </div>
 
+                    <% if (task.actualHours) { %>
                     <div class="row text-center">
                         <div class="col-6">
                             <div class="border-end">
-                                <div class="fw-bold"><%= task.baseReward.toLocaleString() %></div>
-                                <small class="text-muted">基础奖励</small>
+                                <div class="fw-bold text-success"><%= task.actualHours %></div>
+                                <small class="text-muted">实际工时</small>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="fw-bold"><%= task.bonusReward.toLocaleString() %></div>
-                            <small class="text-muted">奖励金</small>
+                            <div class="fw-bold <%= task.actualHours <= task.estimatedHours ? 'text-success' : 'text-warning' %>">
+                                <%= task.estimatedHours > 0 ? Math.round((task.estimatedHours / task.actualHours) * 100) : 0 %>%
+                            </div>
+                            <small class="text-muted">工时效率</small>
                         </div>
                     </div>
 
                     <hr>
                     <small class="text-muted">
                         <i class="fas fa-info-circle me-1"></i>
-                        按时完成可获得全额奖励，超时将按比例扣除奖励金
+                        工时效率 = 预估工时 / 实际工时 × 100%
                     </small>
+                    <% } else { %>
+                    <div class="text-center text-muted">
+                        <i class="fas fa-hourglass-start fa-2x mb-2"></i>
+                        <p class="mb-0">任务进行中，暂无实际工时数据</p>
+                    </div>
+                    <% } %>
                 </div>
             </div>
 
