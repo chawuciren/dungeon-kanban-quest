@@ -69,11 +69,11 @@
                             <div class="col-md-6 mb-3">
                                 <label for="taskType" class="form-label">任务类型</label>
                                 <select class="form-select" id="taskType" name="taskType">
-                                    <option value="task" <%= (task && task.taskType === 'task') || (!task) ? 'selected' : '' %>>探险行动（任务）</option>
-                                    <option value="requirement" <%= task && task.taskType === 'requirement' ? 'selected' : '' %>>探险计划（需求）</option>
-                                    <option value="bug" <%= task && task.taskType === 'bug' ? 'selected' : '' %>>魔物讨伐（Bug）</option>
-                                    <option value="epic" <%= task && task.taskType === 'epic' ? 'selected' : '' %>>史诗委托（史诗）</option>
-                                    <option value="story" <%= task && task.taskType === 'story' ? 'selected' : '' %>>探险委托（故事）</option>
+                                    <option value="task" <%= (task && task.taskType === 'task') || (!task) ? 'selected' : '' %>>任务</option>
+                                    <option value="requirement" <%= task && task.taskType === 'requirement' ? 'selected' : '' %>>需求</option>
+                                    <option value="bug" <%= task && task.taskType === 'bug' ? 'selected' : '' %>>Bug</option>
+                                    <option value="epic" <%= task && task.taskType === 'epic' ? 'selected' : '' %>>史诗</option>
+                                    <option value="story" <%= task && task.taskType === 'story' ? 'selected' : '' %>>故事</option>
                                 </select>
                             </div>
                         </div>
@@ -178,7 +178,7 @@
                             <div class="col-md-4 mb-3">
                                 <label for="estimatedHours" class="form-label">预估工时（小时）</label>
                                 <input type="number" class="form-control" id="estimatedHours" name="estimatedHours" min="0.5" step="0.5" value="<%= task ? (task.estimatedHours || '') : '' %>">
-                                <div class="form-text">用于工时管理和奖励计算</div>
+                                <div class="form-text">用于工时管理</div>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label for="startDate" class="form-label">起始日期</label>

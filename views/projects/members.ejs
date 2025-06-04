@@ -90,13 +90,13 @@
                                                 <% member.membership.roles.forEach(role => { %>
                                                     <%
                                                         const roleConfig = {
-                                                            'admin': { name: '神域守护者', color: 'danger' },
-                                                            'product_manager': { name: '预言师', color: 'warning' },
-                                                            'developer': { name: '剑士', color: 'primary' },
-                                                            'tester': { name: '弓箭手', color: 'info' },
-                                                            'ui_designer': { name: '魔法师', color: 'success' },
-                                                            'devops': { name: '牧师', color: 'dark' },
-                                                            'client': { name: '委托贵族', color: 'secondary' }
+                                                            'admin': { name: '管理员', color: 'danger' },
+                                                            'product_manager': { name: '产品经理', color: 'warning' },
+                                                            'developer': { name: '开发工程师', color: 'primary' },
+                                                            'tester': { name: '测试工程师', color: 'info' },
+                                                            'ui_designer': { name: 'UI工程师', color: 'success' },
+                                                            'devops': { name: '运维工程师', color: 'dark' },
+                                                            'client': { name: '客户', color: 'secondary' }
                                                         };
                                                         const config = roleConfig[role] || { name: role, color: 'secondary' };
                                                     %>
@@ -165,13 +165,13 @@
                                     <option value="<%= user.id %>" data-default-role="<%= user.role || 'developer' %>">
                                         <%= user.firstName %> <%= user.lastName %> (@<%= user.username %>)
                                         - 职业：<%=
-                                            user.role === 'admin' ? '⚡ 神域守护者' :
-                                            user.role === 'product_manager' ? '🔮 预言师' :
-                                            user.role === 'developer' ? '⚔️ 剑士' :
-                                            user.role === 'tester' ? '🏹 弓箭手' :
-                                            user.role === 'ui_designer' ? '🔮 魔法师' :
-                                            user.role === 'devops' ? '✨ 牧师' :
-                                            user.role === 'client' ? '💎 委托贵族' : '⚔️ 剑士'
+                                            user.role === 'admin' ? '⚡ 管理员' :
+                                            user.role === 'product_manager' ? '🔮 产品经理' :
+                                            user.role === 'developer' ? '⚔️ 开发工程师' :
+                                            user.role === 'tester' ? '🏹 测试工程师' :
+                                            user.role === 'ui_designer' ? '🔮 UI工程师' :
+                                            user.role === 'devops' ? '✨ 运维工程师' :
+                                            user.role === 'client' ? '💎 客户' : '⚔️ 开发工程师'
                                         %>
                                     </option>
                                 <% }); %>
@@ -184,29 +184,29 @@
                                 <div class="col-6">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="roles" value="developer" id="role-developer" checked>
-                                        <label class="form-check-label" for="role-developer">剑士 (开发者)</label>
+                                        <label class="form-check-label" for="role-developer">开发工程师</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="roles" value="tester" id="role-tester">
-                                        <label class="form-check-label" for="role-tester">弓箭手 (测试员)</label>
+                                        <label class="form-check-label" for="role-tester">测试工程师</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="roles" value="ui_designer" id="role-ui">
-                                        <label class="form-check-label" for="role-ui">魔法师 (UI设计师)</label>
+                                        <label class="form-check-label" for="role-ui">UI工程师</label>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="roles" value="product_manager" id="role-pm">
-                                        <label class="form-check-label" for="role-pm">预言师 (产品经理)</label>
+                                        <label class="form-check-label" for="role-pm">产品经理</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="roles" value="devops" id="role-devops">
-                                        <label class="form-check-label" for="role-devops">牧师 (运维)</label>
+                                        <label class="form-check-label" for="role-devops">运维工程师</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="roles" value="client" id="role-client">
-                                        <label class="form-check-label" for="role-client">委托贵族 (客户)</label>
+                                        <label class="form-check-label" for="role-client">客户</label>
                                     </div>
                                 </div>
                             </div>

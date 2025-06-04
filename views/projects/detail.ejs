@@ -63,7 +63,7 @@
                     <!-- 项目描述 -->
                     <% if (project.description) { %>
                         <div class="mb-4">
-                            <h5>探险描述</h5>
+                            <h5>项目描述</h5>
                             <div class="border rounded p-3 bg-light">
                                 <%= project.description %>
                             </div>
@@ -219,7 +219,7 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-info-circle me-2"></i>探险信息
+                        <i class="fas fa-info-circle me-2"></i>项目信息
                     </h5>
                 </div>
                 <div class="card-body">
@@ -232,21 +232,21 @@
                             <strong>项目类型：</strong>
                             <span class="ms-2">
                                 <%
-                                if (project.projectType === 'construction') { %>🏗️ 开拓远征项目（建设项目）<%
-                                } else if (project.projectType === 'maintenance') { %>🔧 守备巡逻项目（维护项目）<%
-                                } else if (project.projectType === 'research') { %>🔬 秘境调查项目（研发项目）<%
-                                } else if (project.projectType === 'operation') { %>⚙️ 商队贸易项目（运营项目）<%
+                                if (project.projectType === 'construction') { %>🏗️ 建设项目<%
+                                } else if (project.projectType === 'maintenance') { %>🔧 维护项目<%
+                                } else if (project.projectType === 'research') { %>🔬 研发项目<%
+                                } else if (project.projectType === 'operation') { %>⚙️ 运营项目<%
                                 } else { %>📋 其他项目<% } %>
                             </span>
                         </div>
                         <div class="col-12">
-                            <strong>探险负责人：</strong>
+                            <strong>负责人：</strong>
                             <span class="ms-2">
                                 <%= project.leader ? (project.leader.firstName + ' ' + project.leader.lastName) : '未指定' %>
                             </span>
                         </div>
                         <div class="col-12">
-                            <strong>探险发起人：</strong>
+                            <strong>发起人：</strong>
                             <span class="ms-2">
                                 <%= project.owner ? (project.owner.firstName + ' ' + project.owner.lastName) : '未知' %>
                             </span>
@@ -343,13 +343,13 @@
                                             <% member.membership.roles.slice(0, 2).forEach(role => { %>
                                                 <%
                                                     const roleNames = {
-                                                        'admin': '神域守护者',
-                                                        'product_manager': '预言师',
-                                                        'developer': '剑士',
-                                                        'tester': '弓箭手',
-                                                        'ui_designer': '魔法师',
-                                                        'devops': '牧师',
-                                                        'client': '委托贵族'
+                                                        'admin': '管理员',
+                                                        'product_manager': '产品经理',
+                                                        'developer': '开发工程师',
+                                                        'tester': '测试工程师',
+                                                        'ui_designer': 'UI工程师',
+                                                        'devops': '运维工程师',
+                                                        'client': '客户'
                                                     };
                                                 %>
                                                 <span class="badge bg-light text-dark me-1" style="font-size: 0.7rem;">

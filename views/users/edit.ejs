@@ -161,13 +161,13 @@
                                         <% if (isCreateMode) { %>
                                             <option value="">请选择默认职业</option>
                                         <% } %>
-                                        <option value="admin" <% if (!isCreateMode && editUser && editUser.role === 'admin') { %>selected<% } %>>⚡ 神域守护者 (管理员)</option>
-                                        <option value="product_manager" <% if (!isCreateMode && editUser && editUser.role === 'product_manager') { %>selected<% } %>>🔮 预言师 (产品经理)</option>
-                                        <option value="developer" <% if (isCreateMode || (!isCreateMode && editUser && editUser.role === 'developer')) { %>selected<% } %>>⚔️ 剑士 (开发者)</option>
-                                        <option value="tester" <% if (!isCreateMode && editUser && editUser.role === 'tester') { %>selected<% } %>>🏹 弓箭手 (测试员)</option>
-                                        <option value="client" <% if (!isCreateMode && editUser && editUser.role === 'client') { %>selected<% } %>>💎 委托贵族 (客户)</option>
-                                        <option value="ui_designer" <% if (!isCreateMode && editUser && editUser.role === 'ui_designer') { %>selected<% } %>>🔮 魔法师 (UI设计师)</option>
-                                        <option value="devops" <% if (!isCreateMode && editUser && editUser.role === 'devops') { %>selected<% } %>>✨ 牧师 (运维工程师)</option>
+                                        <option value="admin" <% if (!isCreateMode && editUser && editUser.role === 'admin') { %>selected<% } %>>⚡  管理员</option>
+                                        <option value="product_manager" <% if (!isCreateMode && editUser && editUser.role === 'product_manager') { %>selected<% } %>>🔮 产品经理</option>
+                                        <option value="developer" <% if (isCreateMode || (!isCreateMode && editUser && editUser.role === 'developer')) { %>selected<% } %>>⚔️ 开发工程师</option>
+                                        <option value="tester" <% if (!isCreateMode && editUser && editUser.role === 'tester') { %>selected<% } %>>🏹 测试工程师</option>
+                                        <option value="client" <% if (!isCreateMode && editUser && editUser.role === 'client') { %>selected<% } %>>💎 客户</option>
+                                        <option value="ui_designer" <% if (!isCreateMode && editUser && editUser.role === 'ui_designer') { %>selected<% } %>>🔮 UI设计师</option>
+                                        <option value="devops" <% if (!isCreateMode && editUser && editUser.role === 'devops') { %>selected<% } %>>✨ 运维工程师</option>
                                     </select>
                                     <div class="form-text">
                                         <div class="alert alert-info py-2 px-3 mb-2">
@@ -178,13 +178,13 @@
                                         <% if (isCreateMode) { %>
                                             <small>
                                                 <strong>职业说明：</strong><br>
-                                                • ⚡ 神域守护者：系统管理员，拥有最高权限<br>
-                                                • 🔮 预言师：产品规划和项目管理专家<br>
-                                                • ⚔️ 剑士：开发实现的核心战力<br>
-                                                • 🏹 弓箭手：质量保证和测试专家<br>
-                                                • 💎 委托贵族：需求提出方和客户代表<br>
-                                                • 🔮 魔法师：界面设计和用户体验专家<br>
-                                                • ✨ 牧师：系统运维和部署专家
+                                                • ⚡ 管理员：系统管理员，拥有最高权限<br>
+                                                • 🔮 产品经理：产品规划和项目管理专家<br>
+                                                • ⚔️ 开发工程师：开发实现的核心战力<br>
+                                                • 🏹 测试工程师：质量保证和测试专家<br>
+                                                • 💎 客户：需求提出方和客户代表<br>
+                                                • 🔮 UI工程师：界面设计和用户体验专家<br>
+                                                • ✨ 运维工程师：系统运维和部署专家
                                             </small>
                                         <% } %>
                                     </div>
@@ -220,8 +220,6 @@
                                         </h6>
                                         <p class="mb-0">新用户将自动获得：</p>
                                         <ul class="mb-0 mt-2">
-                                            <li>🥇 100金币 新手奖励</li>
-                                            <li>🎯 完整的虚拟钱包</li>
                                             <li>📊 个人数据统计</li>
                                         </ul>
                                     </div>

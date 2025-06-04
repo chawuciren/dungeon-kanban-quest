@@ -84,7 +84,7 @@
                                                     <% if (member.id === organization.ownerId) { %>
                                                         <div class="mt-1">
                                                             <span class="badge bg-warning text-dark">
-                                                                <i class="fas fa-crown me-1"></i>组织会长
+                                                                <i class="fas fa-crown me-1"></i>组织管理者
                                                             </span>
                                                         </div>
                                                     <% } %>
@@ -146,7 +146,7 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-12">
-                            <strong>会长：</strong>
+                            <strong>管理者：</strong>
                             <span class="ms-2">
                                 <% if (organization.owner) { %>
                                     <%= organization.owner.firstName %> <%= organization.owner.lastName %>

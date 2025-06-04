@@ -79,16 +79,16 @@
                                             const selectedProjectType = (formData && formData.projectType) || (isCreateMode ? 'construction' : project.projectType);
                                         %>
                                         <option value="construction" <%= selectedProjectType === 'construction' ? 'selected' : '' %>>
-                                            🏗️ 开拓远征项目（建设项目）
+                                            🏗️ 建设项目
                                         </option>
                                         <option value="maintenance" <%= selectedProjectType === 'maintenance' ? 'selected' : '' %>>
-                                            🔧 守备巡逻项目（维护项目）
+                                            🔧 维护项目
                                         </option>
                                         <option value="research" <%= selectedProjectType === 'research' ? 'selected' : '' %>>
-                                            🔬 秘境调查项目（研发项目）
+                                            🔬 研发项目
                                         </option>
                                         <option value="operation" <%= selectedProjectType === 'operation' ? 'selected' : '' %>>
-                                            ⚙️ 商队贸易项目（运营项目）
+                                            ⚙️ 运营项目
                                         </option>
                                     </select>
                                 </div>
@@ -140,7 +140,7 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="leaderId" class="form-label">探险负责人</label>
+                                    <label for="leaderId" class="form-label">项目负责人</label>
                                     <select class="form-select" id="leaderId" name="leaderId">
                                         <option value="">请选择负责人</option>
                                         <% potentialLeaders.forEach(user => { %>

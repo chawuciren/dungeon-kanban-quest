@@ -102,24 +102,6 @@
                                 <option value="cancelled" <%= filters.status == 'cancelled' ? 'selected' : '' %>>已取消</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label">奖励货币</label>
-                            <select class="form-select" name="rewardCurrency">
-                                <option value="">全部货币</option>
-                                <option value="diamond" <%= filters.rewardCurrency == 'diamond' ? 'selected' : '' %>>
-                                    <i class="fas fa-gem" style="color: #00bcd4;"></i> 钻石
-                                </option>
-                                <option value="gold" <%= filters.rewardCurrency == 'gold' ? 'selected' : '' %>>
-                                    <i class="fas fa-coins" style="color: #ffd700;"></i> 金币
-                                </option>
-                                <option value="silver" <%= filters.rewardCurrency == 'silver' ? 'selected' : '' %>>
-                                    <i class="fas fa-coins" style="color: #c0c0c0;"></i> 银币
-                                </option>
-                                <option value="copper" <%= filters.rewardCurrency == 'copper' ? 'selected' : '' %>>
-                                    <i class="fas fa-coins" style="color: #2d5016;"></i> 铜币
-                                </option>
-                            </select>
-                        </div>
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-6">
@@ -151,10 +133,7 @@
                                    class="btn btn-outline-primary <%= !filters.sort || filters.sort === '' ? 'active' : '' %>">
                                     <i class="fas fa-clock me-1"></i>最新
                                 </a>
-                                <a href="?<%= buildQueryString({...sortParams, sort: 'reward'}) %>"
-                                   class="btn btn-outline-primary <%= filters.sort === 'reward' ? 'active' : '' %>">
-                                    <i class="fas fa-coins me-1"></i>奖励
-                                </a>
+
                                 <a href="?<%= buildQueryString({...sortParams, sort: 'deadline'}) %>"
                                    class="btn btn-outline-primary <%= filters.sort === 'deadline' ? 'active' : '' %>">
                                     <i class="fas fa-calendar me-1"></i>截止
@@ -243,23 +222,6 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4 text-end">
-                                    <div class="reward-info mb-3">
-                                        <div class="h4 mb-1">
-                                            <% if (task.rewardCurrency === 'diamond') { %>
-                                                <i class="fas fa-gem me-1" style="color: #00bcd4;"></i>
-                                            <% } else if (task.rewardCurrency === 'gold') { %>
-                                                <i class="fas fa-coins me-1" style="color: #ffd700;"></i>
-                                            <% } else if (task.rewardCurrency === 'silver') { %>
-                                                <i class="fas fa-coins me-1" style="color: #c0c0c0;"></i>
-                                            <% } else if (task.rewardCurrency === 'copper') { %>
-                                                <i class="fas fa-coins me-1" style="color: #2d5016;"></i>
-                                            <% } %>
-                                            <%= (task.baseReward || 0) + (task.bonusReward || 0) %>
-                                        </div>
-                                        <small class="text-muted">
-                                            基础 <%= task.baseReward || 0 %> + 奖励 <%= task.bonusReward || 0 %>
-                                        </small>
-                                    </div>
                                     <div class="d-grid gap-2">
                                         <% if (task.status === 'published' && (!user || task.publisherId !== user.id) && !task.assigneeId) { %>
                                             <a href="/tasks/<%= task.id %>/bid" class="btn btn-primary">

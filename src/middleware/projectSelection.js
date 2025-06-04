@@ -21,13 +21,13 @@ const requireProjectSelection = (req, res, next) => {
     if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
       return res.status(400).json({
         success: false,
-        message: '请先选择要探险的项目',
+        message: '请先选择项目',
         requireProjectSelection: true
       });
     }
 
     // 普通请求重定向到项目选择页面
-    req.flash('warning', '请先选择要探险的项目');
+    req.flash('warning', '请先选择项目');
     return res.redirect('/select-project');
   }
 

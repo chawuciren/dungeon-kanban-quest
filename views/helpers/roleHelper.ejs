@@ -3,43 +3,43 @@
 global.roleConfig = {
   admin: {
     name: '管理员',
-    alias: '神域守护者',
+    alias: '管理员',
     icon: '⚡',
     color: 'danger'
   },
   product_manager: {
     name: '产品经理',
-    alias: '预言师',
+    alias: '产品经理',
     icon: '🔮',
     color: 'warning'
   },
   developer: {
     name: '开发者',
-    alias: '剑士',
+    alias: '开发者',
     icon: '⚔️',
     color: 'primary'
   },
   tester: {
     name: '测试员',
-    alias: '弓箭手',
+    alias: '测试员',
     icon: '🏹',
     color: 'info'
   },
   client: {
     name: '客户',
-    alias: '委托贵族',
+    alias: '客户',
     icon: '💎',
     color: 'secondary'
   },
   ui_designer: {
     name: 'UI设计师',
-    alias: '魔法师',
+    alias: 'UI设计师',
     icon: '🔮',
     color: 'success'
   },
   devops: {
     name: '运维工程师',
-    alias: '牧师',
+    alias: '运维工程师',
     icon: '✨',
     color: 'dark'
   }
@@ -49,7 +49,7 @@ global.roleConfig = {
 global.getRoleConfig = function(role) {
   return global.roleConfig[role] || {
     name: '未知角色',
-    alias: '流浪者',
+    alias: '未知角色',
     icon: '❓',
     color: 'secondary'
   };

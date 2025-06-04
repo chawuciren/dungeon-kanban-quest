@@ -55,7 +55,7 @@
                             <a class="nav-link dropdown-toggle <%= !selectedProject && user.role !== 'admin' ? 'text-warning' : '' %>"
                                href="#" id="projectSelector" role="button" data-bs-toggle="dropdown"
                                data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="<%= selectedProject ? '当前项目: ' + selectedProject.name : '选择要探险的项目' %>">
+                               title="<%= selectedProject ? '当前项目: ' + selectedProject.name : '选择项目' %>">
                                 <i class="fas fa-globe me-1"></i>
                                 <%= selectedProject ? selectedProject.name : '选择项目' %>
                                 <% if (!selectedProject && user.role !== 'admin') { %>
