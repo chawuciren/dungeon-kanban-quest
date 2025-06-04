@@ -1674,12 +1674,7 @@ function showTaskDetail(task) {
                             <div class="fw-medium">${'⭐'.repeat(task.starLevel)}</div>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-4">
-                        <div class="info-item">
-                            <label class="form-label text-muted mb-1">技能要求</label>
-                            <div class="fw-medium">${getSkillText(task.skillRequired)}</div>
-                        </div>
-                    </div>
+
                     ${task.estimatedHours ? `
                     <div class="col-sm-6 col-md-4">
                         <div class="info-item">
@@ -1775,16 +1770,7 @@ function getTaskTypeText(type) {
     return typeMap[type] || type;
 }
 
-function getSkillText(skill) {
-    const skillMap = {
-        'novice': '🔰 新手',
-        'bronze': '🥉 青铜',
-        'silver': '🥈 白银',
-        'gold': '🥇 黄金',
-        'diamond': '💎 钻石'
-    };
-    return skillMap[skill] || skill;
-}
+
 
 
 </script>

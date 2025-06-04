@@ -320,7 +320,6 @@ const createDefaultData = async () => {
       taskType: 'task',
       starLevel: 2,
       urgencyLevel: 'normal',
-      skillRequired: 'bronze',
       status: 'published',
       projectId: sampleProject.id,
       publisherId: adminUser.id,

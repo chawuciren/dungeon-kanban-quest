@@ -108,15 +108,7 @@
                                   <% } %>
                                 </span>
 
-                                <!-- 技能要求 -->
-                                <span class="badge bg-secondary">
-                                  <% if (task.skillRequired === 'novice') { %><i class="fas fa-seedling text-success"></i>
-                                  <% } else if (task.skillRequired === 'bronze') { %><i class="fas fa-medal text-warning"></i>
-                                  <% } else if (task.skillRequired === 'silver') { %><i class="fas fa-medal text-light"></i>
-                                  <% } else if (task.skillRequired === 'gold') { %><i class="fas fa-crown text-warning"></i>
-                                  <% } else if (task.skillRequired === 'diamond') { %><i class="fas fa-gem text-info"></i>
-                                  <% } else { %><i class="fas fa-seedling text-success"></i><% } %>
-                                </span>
+
 
                                 <!-- 紧急程度 -->
                                 <span class="badge bg-info">
@@ -494,13 +486,7 @@ function generateSubtasksHtml(subtasks, level) {
     let html = '';
     subtasks.forEach(task => {
         const stars = '<i class="fas fa-star"></i>'.repeat(task.starLevel);
-        const skillIcons = {
-            novice: '<i class="fas fa-seedling text-success"></i>',
-            bronze: '<i class="fas fa-medal text-warning"></i>',
-            silver: '<i class="fas fa-medal text-light"></i>',
-            gold: '<i class="fas fa-crown text-warning"></i>',
-            diamond: '<i class="fas fa-gem text-info"></i>'
-        };
+
         const urgencyIcons = {
             normal: '<i class="fas fa-calendar text-primary"></i>',
             important: '<i class="fas fa-bolt text-warning"></i>',
@@ -527,7 +513,6 @@ function generateSubtasksHtml(subtasks, level) {
                     </span>
                     <span class="task-meta">
                         <span class="badge bg-warning">${stars}</span>
-                        <span class="badge bg-secondary">${skillIcons[task.skillRequired] || skillIcons.novice}</span>
                         <span class="badge bg-info">${urgencyIcons[task.urgencyLevel] || urgencyIcons.normal}</span>
                     </span>
                     <span class="task-actions">
