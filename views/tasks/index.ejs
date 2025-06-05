@@ -1,151 +1,12 @@
 <%- include('../partials/header', { title: title }) %>
 
-<!-- 页面标题 -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h2>
-                    <i class="fas fa-beer me-2 text-primary"></i>
-                    任务
-                </h2>
-                <p class="text-muted mb-0">
-                    <% if (selectedProject) { %>
-                        当前项目：[<%= selectedProject.key %>] <%= selectedProject.name %> 的任务委托
-                    <% } else { %>
-                        发现适合您技能等级的赏金任务
-                    <% } %>
-                </p>
-            </div>
-            <div class="btn-group">
-                <%
-                    const currentQuery = new URLSearchParams();
-                    Object.keys(filters).forEach(key => {
-                        if (filters[key] && filters[key] !== '') {
-                            currentQuery.set(key, filters[key]);
-                        }
-                    });
-                    const queryString = currentQuery.toString();
-                    const queryPrefix = queryString ? '?' + queryString : '';
-                %>
-                <a href="/tasks<%= queryPrefix %>" class="btn btn-primary active">
-                    <i class="fas fa-list me-1"></i>列表视图
-                </a>
-                <a href="/tasks/tree<%= queryPrefix %>" class="btn btn-outline-secondary">
-                    <i class="fas fa-sitemap me-1"></i>树形视图
-                </a>
-                <a href="/tasks/kanban<%= queryPrefix %>" class="btn btn-outline-secondary">
-                    <i class="fas fa-columns me-1"></i>看板视图
-                </a>
-                <a href="/tasks/gantt<%= queryPrefix %>" class="btn btn-outline-secondary">
-                    <i class="fas fa-chart-gantt me-1"></i>甘特视图
-                </a>
-            </div>
-            <a href="/tasks/create<%= queryPrefix ? queryPrefix + '&' : '?' %>view=list" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>
-                发布任务
-            </a>
-        </div>
-    </div>
-</div>
-
-<!-- 筛选器 -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <form method="GET" action="/tasks" id="filterForm">
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <label class="form-label">星级难度</label>
-                            <select class="form-select" name="starLevel">
-                                <option value="">全部星级</option>
-                                <option value="1" <%= filters.starLevel == '1' ? 'selected' : '' %>>⭐ 一星任务</option>
-                                <option value="2" <%= filters.starLevel == '2' ? 'selected' : '' %>>⭐⭐ 二星任务</option>
-                                <option value="3" <%= filters.starLevel == '3' ? 'selected' : '' %>>⭐⭐⭐ 三星任务</option>
-                                <option value="4" <%= filters.starLevel == '4' ? 'selected' : '' %>>⭐⭐⭐⭐ 四星任务</option>
-                                <option value="5" <%= filters.starLevel == '5' ? 'selected' : '' %>>⭐⭐⭐⭐⭐ 五星任务</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">紧急程度</label>
-                            <select class="form-select" name="urgencyLevel">
-                                <option value="">全部程度</option>
-                                <option value="urgent" <%= filters.urgencyLevel == 'urgent' ? 'selected' : '' %>>🔥 紧急</option>
-                                <option value="important" <%= filters.urgencyLevel == 'important' ? 'selected' : '' %>>⚡ 重要</option>
-                                <option value="normal" <%= filters.urgencyLevel == 'normal' ? 'selected' : '' %>>📅 普通</option>
-                                <option value="delayed" <%= filters.urgencyLevel == 'delayed' ? 'selected' : '' %>>🕐 延后</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">任务状态</label>
-                            <select class="form-select" name="status">
-                                <option value="">全部状态</option>
-                                <option value="draft" <%= filters.status == 'draft' ? 'selected' : '' %>>草稿</option>
-                                <option value="published" <%= filters.status == 'published' ? 'selected' : '' %>>已发布</option>
-                                <option value="bidding" <%= filters.status == 'bidding' ? 'selected' : '' %>>竞标中</option>
-                                <option value="assigned" <%= filters.status == 'assigned' ? 'selected' : '' %>>已分配</option>
-                                <option value="in_progress" <%= filters.status == 'in_progress' ? 'selected' : '' %>>进行中</option>
-                                <option value="review" <%= filters.status == 'review' ? 'selected' : '' %>>待审核</option>
-                                <option value="completed" <%= filters.status == 'completed' ? 'selected' : '' %>>已完成</option>
-                                <option value="cancelled" <%= filters.status == 'cancelled' ? 'selected' : '' %>>已取消</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <label class="form-label">搜索关键词</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" name="search" value="<%= filters.search || '' %>" placeholder="搜索任务标题或描述...">
-                                <button class="btn btn-outline-secondary" type="submit">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-md-6 d-flex align-items-end">
-                            <div class="btn-group" role="group">
-                                <%
-                                    function buildQueryString(params) {
-                                        const queryParts = [];
-                                        Object.keys(params).forEach(key => {
-                                            if (params[key] && params[key] !== '') {
-                                                queryParts.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
-                                            }
-                                        });
-                                        return queryParts.join('&');
-                                    }
-
-                                    const sortParams = {...filters};
-                                    delete sortParams.sort;
-                                %>
-                                <a href="?<%= buildQueryString(sortParams) %>"
-                                   class="btn btn-outline-primary <%= !filters.sort || filters.sort === '' ? 'active' : '' %>">
-                                    <i class="fas fa-clock me-1"></i>最新
-                                </a>
-
-                                <a href="?<%= buildQueryString({...sortParams, sort: 'deadline'}) %>"
-                                   class="btn btn-outline-primary <%= filters.sort === 'deadline' ? 'active' : '' %>">
-                                    <i class="fas fa-calendar me-1"></i>截止
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary me-2">
-                                <i class="fas fa-filter me-1"></i>应用筛选
-                            </button>
-                            <a href="/tasks" class="btn btn-outline-secondary">
-                                <i class="fas fa-times me-1"></i>清除筛选
-                            </a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+<%- include('../partials/task-header', {
+    pageTitle: '任务列表',
+    currentView: 'list',
+    currentPath: '/tasks',
+    filters: filters,
+    projectMembers: projectMembers
+}) %>
 
 <!-- 任务列表 -->
 <div class="row">
@@ -290,6 +151,18 @@
 
         <!-- 分页 -->
         <% if (pagination && pagination.totalPages > 1) { %>
+            <%
+                // 构建查询字符串的辅助函数
+                function buildQueryString(params) {
+                    const queryParts = [];
+                    Object.keys(params).forEach(key => {
+                        if (params[key] && params[key] !== '') {
+                            queryParts.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+                        }
+                    });
+                    return queryParts.join('&');
+                }
+            %>
             <nav aria-label="任务分页" class="mt-4">
                 <ul class="pagination justify-content-center">
                     <% if (pagination.hasPrev) { %>

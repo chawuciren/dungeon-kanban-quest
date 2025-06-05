@@ -1,70 +1,12 @@
 <%- include('../partials/header', { title: title }) %>
 
-<!-- 页面标题和控制栏 -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h2>
-                    <i class="fas fa-sitemap me-2 text-primary"></i>
-                    任务树形视图
-                </h2>
-                <p class="text-muted mb-0">层级化展示任务的从属关系</p>
-            </div>
-            <div class="btn-group">
-                <%
-                    const currentQuery = new URLSearchParams();
-                    if (projectId) currentQuery.set('projectId', projectId);
-                    const queryString = currentQuery.toString();
-                    const queryPrefix = queryString ? '?' + queryString : '';
-                %>
-                <a href="/tasks<%= queryPrefix %>" class="btn btn-outline-secondary">
-                    <i class="fas fa-list me-1"></i>列表视图
-                </a>
-                <a href="/tasks/tree<%= queryPrefix %>" class="btn btn-primary active">
-                    <i class="fas fa-sitemap me-1"></i>树形视图
-                </a>
-                <a href="/tasks/kanban<%= queryPrefix %>" class="btn btn-outline-secondary">
-                    <i class="fas fa-columns me-1"></i>看板视图
-                </a>
-                <a href="/tasks/gantt<%= queryPrefix %>" class="btn btn-outline-secondary">
-                    <i class="fas fa-chart-gantt me-1"></i>甘特视图
-                </a>
-            </div>
-            <a href="/tasks/create<%= queryPrefix ? queryPrefix + '&' : '?' %>view=tree" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>
-                发布任务
-            </a>
-        </div>
-    </div>
-</div>
-
-<!-- 工具栏 -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body py-3">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <div class="btn-group btn-group-sm" role="group">
-                            <button type="button" class="btn btn-outline-primary" id="expandAll">
-                                <i class="fas fa-expand-arrows-alt me-1"></i>全部展开
-                            </button>
-                            <button type="button" class="btn btn-outline-primary" id="collapseAll">
-                                <i class="fas fa-compress-arrows-alt me-1"></i>全部折叠
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-md-6 text-end">
-                        <div class="d-flex justify-content-end align-items-center gap-2">
-                            <small class="text-muted">点击展开按钮查看子任务</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<%- include('../partials/task-header', {
+    pageTitle: '任务树形视图',
+    currentView: 'tree',
+    currentPath: '/tasks/tree',
+    filters: filters,
+    projectMembers: projectMembers
+}) %>
 
 <!-- 任务树容器 -->
 <div class="row">
@@ -222,26 +164,50 @@
 
         <!-- 分页 -->
         <% if (pagination && pagination.totalPages > 1) { %>
+            <%
+                // 构建查询字符串的辅助函数
+                function buildQueryString(params) {
+                    const queryParts = [];
+                    Object.keys(params).forEach(key => {
+                        if (params[key] && params[key] !== '') {
+                            queryParts.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+                        }
+                    });
+                    return queryParts.join('&');
+                }
+            %>
             <nav aria-label="任务分页" class="mt-4">
                 <ul class="pagination justify-content-center">
                     <% if (pagination.hasPrev) { %>
                         <li class="page-item">
-                            <a class="page-link" href="?page=<%= pagination.page - 1 %>">上一页</a>
+                            <a class="page-link" href="?<%= buildQueryString({...filters, page: pagination.page - 1}) %>">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
                         </li>
                     <% } %>
 
                     <% for (let i = Math.max(1, pagination.page - 2); i <= Math.min(pagination.totalPages, pagination.page + 2); i++) { %>
                         <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
-                            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                            <a class="page-link" href="?<%= buildQueryString({...filters, page: i}) %>">
+                                <%= i %>
+                            </a>
                         </li>
                     <% } %>
 
                     <% if (pagination.hasNext) { %>
                         <li class="page-item">
-                            <a class="page-link" href="?page=<%= pagination.page + 1 %>">下一页</a>
+                            <a class="page-link" href="?<%= buildQueryString({...filters, page: pagination.page + 1}) %>">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
                         </li>
                     <% } %>
                 </ul>
+
+                <div class="text-center mt-2">
+                    <small class="text-muted">
+                        第 <%= pagination.page %> 页，共 <%= pagination.totalPages %> 页，总计 <%= pagination.total %> 个任务
+                    </small>
+                </div>
             </nav>
         <% } %>
     </div>

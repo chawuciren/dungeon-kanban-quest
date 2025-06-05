@@ -1,0 +1,225 @@
+<!-- 任务管理头部 -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">
+            <i class="fas fa-tasks me-2 text-primary"></i>
+            <%= pageTitle || '任务管理' %>
+        </h2>
+        <p class="text-muted mb-0">管理和跟踪项目任务进度</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/tasks/create" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>创建任务
+        </a>
+        <div class="btn-group" role="group">
+            <a href="/tasks" class="btn btn-outline-secondary <%= (typeof currentView !== 'undefined' && currentView === 'list') ? 'active' : '' %>">
+                <i class="fas fa-list me-1"></i>列表
+            </a>
+            <a href="/tasks/tree" class="btn btn-outline-secondary <%= (typeof currentView !== 'undefined' && currentView === 'tree') ? 'active' : '' %>">
+                <i class="fas fa-sitemap me-1"></i>树形
+            </a>
+            <a href="/tasks/kanban" class="btn btn-outline-secondary <%= (typeof currentView !== 'undefined' && currentView === 'kanban') ? 'active' : '' %>">
+                <i class="fas fa-columns me-1"></i>看板
+            </a>
+            <a href="/tasks/gantt" class="btn btn-outline-secondary <%= (typeof currentView !== 'undefined' && currentView === 'gantt') ? 'active' : '' %>">
+                <i class="fas fa-chart-gantt me-1"></i>甘特图
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- 统一筛选器 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" action="<%= (typeof currentPath !== 'undefined') ? currentPath : '/tasks' %>" id="filterForm">
+                    <!-- 第一行筛选器 -->
+                    <div class="row g-3">
+                        <div class="col-md-2">
+                            <label class="form-label">星级难度</label>
+                            <select class="form-select" name="starLevel">
+                                <option value="">全部星级</option>
+                                <option value="1" <%= (filters && filters.starLevel == '1') ? 'selected' : '' %>>⭐ 一星</option>
+                                <option value="2" <%= (filters && filters.starLevel == '2') ? 'selected' : '' %>>⭐⭐ 二星</option>
+                                <option value="3" <%= (filters && filters.starLevel == '3') ? 'selected' : '' %>>⭐⭐⭐ 三星</option>
+                                <option value="4" <%= (filters && filters.starLevel == '4') ? 'selected' : '' %>>⭐⭐⭐⭐ 四星</option>
+                                <option value="5" <%= (filters && filters.starLevel == '5') ? 'selected' : '' %>>⭐⭐⭐⭐⭐ 五星</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">紧急程度</label>
+                            <select class="form-select" name="urgencyLevel">
+                                <option value="">全部程度</option>
+                                <option value="urgent" <%= (filters && filters.urgencyLevel == 'urgent') ? 'selected' : '' %>>🔥 紧急</option>
+                                <option value="important" <%= (filters && filters.urgencyLevel == 'important') ? 'selected' : '' %>>⚡ 重要</option>
+                                <option value="normal" <%= (filters && filters.urgencyLevel == 'normal') ? 'selected' : '' %>>📅 普通</option>
+                                <option value="delayed" <%= (filters && filters.urgencyLevel == 'delayed') ? 'selected' : '' %>>🕐 延后</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">任务状态</label>
+                            <select class="form-select" name="status">
+                                <option value="">全部状态</option>
+                                <option value="draft" <%= (filters && filters.status == 'draft') ? 'selected' : '' %>>草稿</option>
+                                <option value="published" <%= (filters && filters.status == 'published') ? 'selected' : '' %>>已发布</option>
+                                <option value="bidding" <%= (filters && filters.status == 'bidding') ? 'selected' : '' %>>竞标中</option>
+                                <option value="assigned" <%= (filters && filters.status == 'assigned') ? 'selected' : '' %>>已分配</option>
+                                <option value="in_progress" <%= (filters && filters.status == 'in_progress') ? 'selected' : '' %>>进行中</option>
+                                <option value="review" <%= (filters && filters.status == 'review') ? 'selected' : '' %>>待审核</option>
+                                <option value="completed" <%= (filters && filters.status == 'completed') ? 'selected' : '' %>>已完成</option>
+                                <option value="cancelled" <%= (filters && filters.status == 'cancelled') ? 'selected' : '' %>>已取消</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">任务类型</label>
+                            <select class="form-select" name="taskType">
+                                <option value="">全部类型</option>
+                                <option value="epic" <%= (filters && filters.taskType == 'epic') ? 'selected' : '' %>>🏰 史诗</option>
+                                <option value="story" <%= (filters && filters.taskType == 'story') ? 'selected' : '' %>>📖 故事</option>
+                                <option value="requirement" <%= (filters && filters.taskType == 'requirement') ? 'selected' : '' %>>📋 需求</option>
+                                <option value="dev_task" <%= (filters && filters.taskType == 'dev_task') ? 'selected' : '' %>>⚔️ 开发</option>
+                                <option value="design_task" <%= (filters && filters.taskType == 'design_task') ? 'selected' : '' %>>🎨 设计</option>
+                                <option value="test_task" <%= (filters && filters.taskType == 'test_task') ? 'selected' : '' %>>🏹 测试</option>
+                                <option value="devops_task" <%= (filters && filters.taskType == 'devops_task') ? 'selected' : '' %>>⚙️ 运维</option>
+                                <option value="task" <%= (filters && filters.taskType == 'task') ? 'selected' : '' %>>📝 任务</option>
+                                <option value="bug" <%= (filters && filters.taskType == 'bug') ? 'selected' : '' %>>🐛 缺陷</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">我的任务</label>
+                            <select class="form-select" name="myTasks">
+                                <option value="">全部任务</option>
+                                <option value="assigned" <%= (filters && filters.myTasks == 'assigned') ? 'selected' : '' %>>我负责的</option>
+                                <option value="created" <%= (filters && filters.myTasks == 'created') ? 'selected' : '' %>>我创建的</option>
+                                <option value="participated" <%= (filters && filters.myTasks == 'participated') ? 'selected' : '' %>>我参与的</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">负责人</label>
+                            <select class="form-select" name="assigneeId">
+                                <option value="">全部负责人</option>
+                                <% if (typeof projectMembers !== 'undefined' && projectMembers && projectMembers.length > 0) { %>
+                                    <% projectMembers.forEach(function(member) { %>
+                                        <option value="<%= member.id %>" <%= (filters && filters.assigneeId == member.id) ? 'selected' : '' %>>
+                                            <%= (member.firstName + ' ' + member.lastName).trim() || member.username %>
+                                        </option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 第二行筛选器 -->
+                    <div class="row mt-3 g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">搜索关键词</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="search" value="<%= (filters && filters.search) || '' %>" placeholder="搜索任务标题或描述...">
+                                <button class="btn btn-outline-secondary" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">排序方式</label>
+                            <div class="btn-group w-100" role="group">
+                                <%
+                                    function buildQueryString(params) {
+                                        const queryParts = [];
+                                        Object.keys(params).forEach(key => {
+                                            if (params[key] && params[key] !== '') {
+                                                queryParts.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+                                            }
+                                        });
+                                        return queryParts.join('&');
+                                    }
+
+                                    const sortParams = filters ? {...filters} : {};
+                                    delete sortParams.sort;
+                                %>
+                                <a href="?<%= buildQueryString(sortParams) %>"
+                                   class="btn btn-outline-primary <%= (!filters || !filters.sort || filters.sort === '') ? 'active' : '' %>">
+                                    <i class="fas fa-clock me-1"></i>最新
+                                </a>
+                                <a href="?<%= buildQueryString({...sortParams, sort: 'deadline'}) %>"
+                                   class="btn btn-outline-primary <%= (filters && filters.sort === 'deadline') ? 'active' : '' %>">
+                                    <i class="fas fa-calendar me-1"></i>截止
+                                </a>
+                                <a href="?<%= buildQueryString({...sortParams, sort: 'priority'}) %>"
+                                   class="btn btn-outline-primary <%= (filters && filters.sort === 'priority') ? 'active' : '' %>">
+                                    <i class="fas fa-star me-1"></i>优先级
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 d-flex align-items-end">
+                            <div class="btn-group w-100" role="group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-filter me-1"></i>应用筛选
+                                </button>
+                                <a href="<%= (typeof currentPath !== 'undefined') ? currentPath : '/tasks' %>" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times me-1"></i>清除筛选
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 树形视图特有的展开/折叠按钮 -->
+                    <% if (typeof currentView !== 'undefined' && currentView === 'tree') { %>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-outline-info btn-sm" id="expandAll">
+                                        <i class="fas fa-expand-arrows-alt me-1"></i>全部展开
+                                    </button>
+                                    <button type="button" class="btn btn-outline-info btn-sm" id="collapseAll">
+                                        <i class="fas fa-compress-arrows-alt me-1"></i>全部折叠
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* 筛选器样式 */
+.form-label {
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.form-select {
+    font-size: 0.875rem;
+}
+
+.btn-group .btn {
+    font-size: 0.875rem;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+</style>
+
+<script>
+// 筛选器自动提交功能
+$(document).ready(function() {
+    // 筛选表单自动提交（当选择框改变时）
+    $('#filterForm select').change(function() {
+        $('#filterForm').submit();
+    });
+});
+</script>

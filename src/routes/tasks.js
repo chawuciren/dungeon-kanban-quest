@@ -52,6 +52,73 @@ async function getSubtasks(parentId, maxLevel = 3) {
   return subtasks;
 }
 
+// 构建通用筛选条件的函数
+function buildTaskFilters(query, projectId, userId) {
+  const where = {
+    projectId: projectId // 只显示当前选中项目的任务
+  };
+
+  // 基础筛选条件
+  if (query.starLevel) {
+    where.starLevel = query.starLevel;
+  }
+  if (query.urgencyLevel) {
+    where.urgencyLevel = query.urgencyLevel;
+  }
+  if (query.status) {
+    where.status = query.status;
+  }
+  if (query.taskType) {
+    where.taskType = query.taskType;
+  }
+
+  // 我的任务筛选
+  if (query.myTasks && userId) {
+    switch (query.myTasks) {
+      case 'assigned':
+        where.assigneeId = userId;
+        break;
+      case 'created':
+        where.publisherId = userId;
+        break;
+      case 'participated':
+        // 参与的任务：负责人、创建人或协助人员
+        where[Op.or] = [
+          { assigneeId: userId },
+          { publisherId: userId },
+          { assistantIds: { [Op.contains]: [userId] } }
+        ];
+        break;
+    }
+  }
+
+  // 负责人筛选
+  if (query.assigneeId) {
+    where.assigneeId = query.assigneeId;
+  }
+
+  // 搜索关键词
+  if (query.search) {
+    where[Op.or] = [
+      { title: { [Op.like]: `%${query.search}%` } },
+      { description: { [Op.like]: `%${query.search}%` } }
+    ];
+  }
+
+  return where;
+}
+
+// 构建排序条件的函数
+function buildTaskOrder(sortType) {
+  let order = [['createdAt', 'DESC']];
+  if (sortType === 'deadline') {
+    order = [['dueDate', 'ASC']];
+  } else if (sortType === 'priority') {
+    order = [['urgencyLevel', 'DESC'], ['starLevel', 'DESC']];
+  }
+  return order;
+}
+
 // 任务市场（列表视图）
 router.get('/', requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
@@ -60,35 +127,10 @@ router.get('/', requireProjectSelection, validateProjectAccess, async (req, res)
     const offset = (page - 1) * limit;
 
     // 构建查询条件
-    const where = {
-      projectId: req.session.selectedProjectId // 只显示当前选中项目的任务
-    };
-
-    // 其他筛选条件
-    if (req.query.starLevel) {
-      where.starLevel = req.query.starLevel;
-    }
-    if (req.query.urgencyLevel) {
-      where.urgencyLevel = req.query.urgencyLevel;
-    }
-    if (req.query.status) {
-      where.status = req.query.status;
-    }
-
-    if (req.query.search) {
-      where[Op.or] = [
-        { title: { [Op.like]: `%${req.query.search}%` } },
-        { description: { [Op.like]: `%${req.query.search}%` } }
-      ];
-    }
+    const where = buildTaskFilters(req.query, req.session.selectedProjectId, req.session.userId);
 
     // 排序
-    let order = [['createdAt', 'DESC']];
-    if (req.query.sort === 'deadline') {
-      order = [['dueDate', 'ASC']];
-    } else if (req.query.sort === 'priority') {
-      order = [['urgencyLevel', 'DESC'], ['starLevel', 'DESC']];
-    }
+    const order = buildTaskOrder(req.query.sort);
 
     const { count, rows: tasks } = await BountyTask.findAndCountAll({
       where,
@@ -125,11 +167,31 @@ router.get('/', requireProjectSelection, validateProjectAccess, async (req, res)
       offset
     });
 
+    // 获取项目成员列表用于筛选器
+    const { ProjectMember } = require('../models');
+    const projectMembers = await ProjectMember.findAll({
+      where: {
+        projectId: req.session.selectedProjectId,
+        status: 'active'
+      },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'firstName', 'lastName']
+        }
+      ]
+    });
+
+    // 转换为简单的用户列表
+    const membersList = projectMembers.map(pm => pm.user);
+
     const totalPages = Math.ceil(count / limit);
 
     res.render('tasks/index', {
       title: '任务市场',
       tasks,
+      projectMembers: membersList,
       pagination: {
         page,
         totalPages,
@@ -154,16 +216,20 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
     const page = parseInt(req.query.page) || 1;
     const limit = 50; // 树形视图每页显示更多
 
-    let where = {
-      projectId: projectId // 只显示当前选中项目的任务
-    };
+    // 构建查询条件（包含筛选）
+    const baseWhere = buildTaskFilters(req.query, projectId, req.session.userId);
 
     // 只获取根任务（level 0）进行分页
+    const where = {
+      ...baseWhere,
+      parentTaskId: null // 根任务
+    };
+
+    // 排序
+    const order = buildTaskOrder(req.query.sort);
+
     const { count, rows: rootTasks } = await BountyTask.findAndCountAll({
-      where: {
-        ...where,
-        parentTaskId: null // 根任务
-      },
+      where,
       include: [
         {
           model: User,
@@ -171,12 +237,28 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
           attributes: ['id', 'username', 'firstName', 'lastName']
         },
         {
+          model: User,
+          as: 'assignee',
+          attributes: ['id', 'username', 'firstName', 'lastName']
+        },
+        {
           model: Project,
           as: 'project',
-          attributes: ['id', 'name', 'key']
+          attributes: ['id', 'name', 'key'],
+          include: [
+            {
+              model: User,
+              as: 'members',
+              attributes: ['id', 'firstName', 'lastName', 'username'],
+              through: {
+                attributes: ['roles', 'status'],
+                as: 'membership'
+              }
+            }
+          ]
         }
       ],
-      order: [['createdAt', 'DESC']],
+      order,
       limit,
       offset: (page - 1) * limit
     });
@@ -188,8 +270,26 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
       });
       task.dataValues.hasChildren = hasChildren > 0;
       task.hasChildren = hasChildren > 0; // 同时设置在实例上
-
     }
+
+    // 获取项目成员列表用于筛选器
+    const { ProjectMember } = require('../models');
+    const projectMembers = await ProjectMember.findAll({
+      where: {
+        projectId: projectId,
+        status: 'active'
+      },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'firstName', 'lastName']
+        }
+      ]
+    });
+
+    // 转换为简单的用户列表
+    const membersList = projectMembers.map(pm => pm.user);
 
     const totalPages = Math.ceil(count / limit);
 
@@ -197,13 +297,15 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
       title: '任务树形视图',
       rootTasks,
       projectId,
+      projectMembers: membersList,
       pagination: {
         page,
         totalPages,
         total: count,
         hasNext: page < totalPages,
         hasPrev: page > 1
-      }
+      },
+      filters: req.query
     });
 
   } catch (error) {
@@ -218,9 +320,11 @@ router.get('/kanban', requireProjectSelection, validateProjectAccess, async (req
   try {
     const projectId = req.session.selectedProjectId;
 
-    let where = {
-      projectId: projectId // 只显示当前选中项目的任务
-    };
+    // 构建查询条件（包含筛选）
+    const where = buildTaskFilters(req.query, projectId, req.session.userId);
+
+    // 排序
+    const order = buildTaskOrder(req.query.sort);
 
     // 获取所有任务并按状态分组
     const tasks = await BountyTask.findAll({
@@ -242,7 +346,7 @@ router.get('/kanban', requireProjectSelection, validateProjectAccess, async (req
           attributes: ['id', 'name', 'key']
         }
       ],
-      order: [['createdAt', 'DESC']]
+      order
     });
 
     // 按状态分组任务
@@ -259,10 +363,31 @@ router.get('/kanban', requireProjectSelection, validateProjectAccess, async (req
       }
     });
 
+    // 获取项目成员列表用于筛选器
+    const { ProjectMember } = require('../models');
+    const projectMembers = await ProjectMember.findAll({
+      where: {
+        projectId: projectId,
+        status: 'active'
+      },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'firstName', 'lastName']
+        }
+      ]
+    });
+
+    // 转换为简单的用户列表
+    const membersList = projectMembers.map(pm => pm.user);
+
     res.render('tasks/kanban', {
       title: '任务看板',
       kanbanColumns,
-      projectId
+      projectId,
+      projectMembers: membersList,
+      filters: req.query
     });
 
   } catch (error) {
@@ -277,9 +402,11 @@ router.get('/gantt', requireProjectSelection, validateProjectAccess, async (req,
   try {
     const projectId = req.session.selectedProjectId;
 
-    let where = {
-      projectId: projectId // 只显示当前选中项目的任务
-    };
+    // 构建查询条件（包含筛选）
+    const where = buildTaskFilters(req.query, projectId, req.session.userId);
+
+    // 排序（甘特图默认按创建时间排序）
+    const order = req.query.sort ? buildTaskOrder(req.query.sort) : [['createdAt', 'ASC']];
 
     // 获取所有任务
     const tasks = await BountyTask.findAll({
@@ -301,7 +428,7 @@ router.get('/gantt', requireProjectSelection, validateProjectAccess, async (req,
           attributes: ['id', 'name', 'key']
         }
       ],
-      order: [['createdAt', 'ASC']]
+      order
     });
 
     // 格式化任务数据为甘特图格式
@@ -375,10 +502,31 @@ router.get('/gantt', requireProjectSelection, validateProjectAccess, async (req,
       };
     });
 
+    // 获取项目成员列表用于筛选器
+    const { ProjectMember } = require('../models');
+    const projectMembers = await ProjectMember.findAll({
+      where: {
+        projectId: projectId,
+        status: 'active'
+      },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'firstName', 'lastName']
+        }
+      ]
+    });
+
+    // 转换为简单的用户列表
+    const membersList = projectMembers.map(pm => pm.user);
+
     res.render('tasks/gantt', {
       title: '任务甘特图',
       ganttTasks,
-      projectId
+      projectId,
+      projectMembers: membersList,
+      filters: req.query
     });
 
   } catch (error) {
