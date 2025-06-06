@@ -41,7 +41,8 @@
                                 迭代名称 <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control" id="name" name="name"
-                                   value="<%= sprint.name %>" placeholder="例如：迭代 - 用户系统建设" required>
+                                   value="<%= formData && formData.name ? formData.name : sprint.name %>"
+                                   placeholder="例如：迭代 - 用户系统建设" required>
                             <div class="form-text">建议包含季节和主要目标</div>
                         </div>
                         <div class="col-md-6">
@@ -64,7 +65,7 @@
                             迭代目标 <span class="text-danger">*</span>
                         </label>
                         <textarea class="form-control" id="goal" name="goal" rows="3"
-                                  placeholder="描述这个迭代要达成的主要目标..." required><%= sprint.goal %></textarea>
+                                  placeholder="描述这个迭代要达成的主要目标..." required><%= formData && formData.goal ? formData.goal : sprint.goal %></textarea>
                         <div class="form-text">明确的目标有助于团队聚焦重点</div>
                     </div>
 
@@ -75,7 +76,7 @@
                             详细描述
                         </label>
                         <textarea class="form-control" id="description" name="description" rows="4"
-                                  placeholder="详细描述迭代的背景、范围和期望..."><%= sprint.description || '' %></textarea>
+                                  placeholder="详细描述迭代的背景、范围和期望..."><%= formData && formData.description ? formData.description : (sprint.description || '') %></textarea>
                     </div>
 
                     <!-- 时间安排 -->
@@ -85,8 +86,8 @@
                                 <i class="fas fa-play me-1"></i>
                                 开始时间 <span class="text-danger">*</span>
                             </label>
-                            <input type="date" class="form-control" id="startDate" name="startDate" 
-                                   value="<%= moment(sprint.startDate).format('YYYY-MM-DD') %>" required>
+                            <input type="date" class="form-control" id="startDate" name="startDate"
+                                   value="<%= formData && formData.startDate ? formData.startDate : moment(sprint.startDate).format('YYYY-MM-DD') %>" required>
                             <% if (sprint.status === 'active') { %>
                                 <div class="form-text text-warning">
                                     <i class="fas fa-exclamation-triangle me-1"></i>
@@ -99,8 +100,8 @@
                                 <i class="fas fa-stop me-1"></i>
                                 结束时间 <span class="text-danger">*</span>
                             </label>
-                            <input type="date" class="form-control" id="endDate" name="endDate" 
-                                   value="<%= moment(sprint.endDate).format('YYYY-MM-DD') %>" required>
+                            <input type="date" class="form-control" id="endDate" name="endDate"
+                                   value="<%= formData && formData.endDate ? formData.endDate : moment(sprint.endDate).format('YYYY-MM-DD') %>" required>
                         </div>
                     </div>
 
@@ -108,11 +109,13 @@
                     <div class="mb-3">
                         <label for="capacity" class="form-label">
                             <i class="fas fa-hourglass-half me-1"></i>
-                            团队容量（工时）
+                            团队工时容量 <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="capacity" name="capacity"
-                                   min="0" step="0.5" value="<%= sprint.capacity || '' %>" placeholder="例如：80">
+                                   min="0" step="0.5"
+                                   value="<%= formData && formData.capacity !== undefined ? formData.capacity : (sprint.capacity || '0') %>"
+                                   placeholder="例如：80" required>
                             <span class="input-group-text">小时</span>
                         </div>
                         <div class="form-text">团队在此迭代期间可投入的总工时</div>

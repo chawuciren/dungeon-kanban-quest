@@ -78,10 +78,13 @@ const Sprint = sequelize.define('Sprint', {
   // 迭代容量（计划工时）
   capacity: {
     type: DataTypes.DECIMAL(8, 2),
-    allowNull: true,
+    allowNull: false,
     defaultValue: 0,
     validate: {
-      min: 0
+      min: 0,
+      notNull: {
+        msg: '团队工时容量不能为空'
+      }
     }
   },
   // 已分配工时

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { BountyTask, Project, User } = require('../models');
+const { BountyTask, Project, User, Sprint } = require('../models');
 const { Op } = require('sequelize');
 const logger = require('../config/logger');
 const { requireProjectSelection, validateProjectAccess } = require('../middleware/projectSelection');
@@ -105,6 +105,15 @@ function buildTaskFilters(query, projectId, userId) {
     where.assigneeId = query.assigneeId;
   }
 
+  // 迭代筛选
+  if (query.sprintId) {
+    if (query.sprintId === 'none') {
+      where.sprintId = null; // 未分配迭代的任务
+    } else {
+      where.sprintId = query.sprintId;
+    }
+  }
+
   // 搜索关键词
   if (query.search) {
     where[Op.or] = [
@@ -172,6 +181,12 @@ router.get('/', requireProjectSelection, validateProjectAccess, async (req, res)
               }
             }
           ]
+        },
+        {
+          model: Sprint,
+          as: 'sprint',
+          attributes: ['id', 'name', 'status'],
+          required: false
         }
       ],
       order,
@@ -198,12 +213,22 @@ router.get('/', requireProjectSelection, validateProjectAccess, async (req, res)
     // 转换为简单的用户列表
     const membersList = projectMembers.map(pm => pm.user);
 
+    // 获取项目的迭代列表用于筛选器
+    const sprints = await Sprint.findAll({
+      where: {
+        projectId: req.session.selectedProjectId
+      },
+      attributes: ['id', 'name', 'status', 'startDate', 'endDate'],
+      order: [['startDate', 'DESC']]
+    });
+
     const totalPages = Math.ceil(count / limit);
 
     res.render('tasks/index', {
       title: '任务市场',
       tasks,
       projectMembers: membersList,
+      sprints,
       pagination: {
         page,
         totalPages,
@@ -272,6 +297,12 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
               }
             }
           ]
+        },
+        {
+          model: Sprint,
+          as: 'sprint',
+          attributes: ['id', 'name', 'status'],
+          required: false
         }
       ],
       order,
@@ -307,6 +338,15 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
     // 转换为简单的用户列表
     const membersList = projectMembers.map(pm => pm.user);
 
+    // 获取项目的迭代列表用于筛选器
+    const sprints = await Sprint.findAll({
+      where: {
+        projectId: projectId
+      },
+      attributes: ['id', 'name', 'status', 'startDate', 'endDate'],
+      order: [['startDate', 'DESC']]
+    });
+
     const totalPages = Math.ceil(count / limit);
 
     res.render('tasks/tree', {
@@ -314,6 +354,7 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
       rootTasks,
       projectId,
       projectMembers: membersList,
+      sprints,
       pagination: {
         page,
         totalPages,
@@ -367,10 +408,12 @@ router.get('/kanban', requireProjectSelection, validateProjectAccess, async (req
 
     // 按状态分组任务
     const kanbanColumns = {
-      published: { title: '待接单', tasks: [], color: 'primary' },
-      assigned: { title: '进行中', tasks: [], color: 'warning' },
+      draft: { title: '草稿', tasks: [], color: 'secondary' },
+      assigned: { title: '已分配', tasks: [], color: 'warning' },
+      in_progress: { title: '进行中', tasks: [], color: 'primary' },
       review: { title: '待审核', tasks: [], color: 'info' },
-      completed: { title: '已完成', tasks: [], color: 'success' }
+      completed: { title: '已完成', tasks: [], color: 'success' },
+      cancelled: { title: '已取消', tasks: [], color: 'danger' }
     };
 
     tasks.forEach(task => {
@@ -441,7 +484,24 @@ router.get('/gantt', requireProjectSelection, validateProjectAccess, async (req,
         {
           model: Project,
           as: 'project',
-          attributes: ['id', 'name', 'key']
+          attributes: ['id', 'name', 'key'],
+          include: [
+            {
+              model: User,
+              as: 'members',
+              attributes: ['id', 'firstName', 'lastName', 'username'],
+              through: {
+                attributes: ['roles', 'status'],
+                as: 'membership'
+              }
+            }
+          ]
+        },
+        {
+          model: Sprint,
+          as: 'sprint',
+          attributes: ['id', 'name', 'status'],
+          required: false
         }
       ],
       order
@@ -537,11 +597,21 @@ router.get('/gantt', requireProjectSelection, validateProjectAccess, async (req,
     // 转换为简单的用户列表
     const membersList = projectMembers.map(pm => pm.user);
 
+    // 获取项目的迭代列表用于筛选器
+    const sprints = await Sprint.findAll({
+      where: {
+        projectId: projectId
+      },
+      attributes: ['id', 'name', 'status', 'startDate', 'endDate'],
+      order: [['startDate', 'DESC']]
+    });
+
     res.render('tasks/gantt', {
       title: '任务甘特图',
       ganttTasks,
       projectId,
       projectMembers: membersList,
+      sprints,
       filters: req.query
     });
 
@@ -622,7 +692,6 @@ router.get('/create', requireAuth, requireProjectSelection, validateProjectAcces
     // 获取当前项目的迭代列表
     let sprints = [];
     if (req.session.selectedProjectId) {
-      const { Sprint } = require('../models');
       sprints = await Sprint.findAll({
         where: {
           projectId: req.session.selectedProjectId,
@@ -750,6 +819,28 @@ router.get('/:id/subtasks', async (req, res) => {
           model: User,
           as: 'assignee',
           attributes: ['id', 'username', 'firstName', 'lastName']
+        },
+        {
+          model: Project,
+          as: 'project',
+          attributes: ['id', 'name', 'key'],
+          include: [
+            {
+              model: User,
+              as: 'members',
+              attributes: ['id', 'firstName', 'lastName', 'username'],
+              through: {
+                attributes: ['roles', 'status'],
+                as: 'membership'
+              }
+            }
+          ]
+        },
+        {
+          model: Sprint,
+          as: 'sprint',
+          attributes: ['id', 'name', 'status'],
+          required: false
         }
       ],
       order: [['createdAt', 'ASC']]
@@ -764,9 +855,23 @@ router.get('/:id/subtasks', async (req, res) => {
       subtask.hasChildren = hasChildren > 0; // 同时设置在实例上
     }
 
+    // 获取项目的迭代列表
+    let sprints = [];
+    if (subtasks.length > 0) {
+      const projectId = subtasks[0].projectId;
+      sprints = await Sprint.findAll({
+        where: {
+          projectId: projectId
+        },
+        attributes: ['id', 'name', 'status', 'startDate', 'endDate'],
+        order: [['startDate', 'DESC']]
+      });
+    }
+
     res.json({
       success: true,
-      data: subtasks
+      data: subtasks,
+      sprints: sprints
     });
 
   } catch (error) {
@@ -1032,7 +1137,6 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
     // 获取项目的迭代列表
     let sprints = [];
     if (task.projectId) {
-      const { Sprint } = require('../models');
       sprints = await Sprint.findAll({
         where: {
           projectId: task.projectId
@@ -1355,7 +1459,7 @@ router.post('/:id/quick-update', requireAuth, requireProjectSelection, validateP
     }
 
     // 验证字段和值
-    const allowedFields = ['status', 'assigneeId', 'urgencyLevel'];
+    const allowedFields = ['status', 'assigneeId', 'urgencyLevel', 'sprintId'];
     if (!allowedFields.includes(field)) {
       return res.status(400).json({
         success: false,
@@ -1376,6 +1480,22 @@ router.post('/:id/quick-update', requireAuth, requireProjectSelection, validateP
       }
     }
 
+    // 如果是分配迭代，验证迭代是否属于当前项目
+    if (field === 'sprintId' && value) {
+      const sprint = await Sprint.findOne({
+        where: {
+          id: value,
+          projectId: task.projectId
+        }
+      });
+      if (!sprint) {
+        return res.status(400).json({
+          success: false,
+          message: '只能分配给当前项目的迭代'
+        });
+      }
+    }
+
     // 更新字段
     await task.update({ [field]: value || null });
 
@@ -1391,8 +1511,6 @@ router.post('/:id/quick-update', requireAuth, requireProjectSelection, validateP
     } else if (field === 'status') {
       const statusConfig = {
         'draft': '草稿',
-        'published': '已发布',
-        'bidding': '竞标中',
         'assigned': '已分配',
         'in_progress': '进行中',
         'review': '待审核',
@@ -1400,6 +1518,13 @@ router.post('/:id/quick-update', requireAuth, requireProjectSelection, validateP
         'cancelled': '已取消'
       };
       displayValue = statusConfig[value] || value;
+    } else if (field === 'sprintId' && value) {
+      const sprint = await Sprint.findByPk(value, {
+        attributes: ['name']
+      });
+      if (sprint) {
+        displayValue = sprint.name;
+      }
     } else if (field === 'urgencyLevel') {
       const urgencyConfig = {
         'urgent': '紧急',
@@ -1468,7 +1593,7 @@ router.post('/:id/status', requireAuth, async (req, res) => {
     }
 
     // 验证状态值
-    const validStatuses = ['draft', 'published', 'bidding', 'assigned', 'in_progress', 'review', 'completed', 'cancelled'];
+    const validStatuses = ['draft', 'assigned', 'in_progress', 'review', 'completed', 'cancelled'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
         success: false,

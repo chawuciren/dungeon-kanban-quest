@@ -18,7 +18,7 @@
                         <div class="card-body py-1 px-2">
                             <div class="row align-items-center">
                                 <!-- 任务标题和星级 -->
-                                <div class="col-md-6">
+                                <div class="col-md-5">
                                     <div class="d-flex align-items-center">
                                         <span class="badge bg-<%=
                                             task.taskType === 'requirement' ? 'info' :
@@ -56,8 +56,6 @@
                                             data-task-id="<%= task.id %>"
                                             data-field="status">
                                         <option value="draft" <%= task.status === 'draft' ? 'selected' : '' %>>草稿</option>
-                                        <option value="published" <%= task.status === 'published' ? 'selected' : '' %>>已发布</option>
-                                        <option value="bidding" <%= task.status === 'bidding' ? 'selected' : '' %>>竞标中</option>
                                         <option value="assigned" <%= task.status === 'assigned' ? 'selected' : '' %>>已分配</option>
                                         <option value="in_progress" <%= task.status === 'in_progress' ? 'selected' : '' %>>进行中</option>
                                         <option value="review" <%= task.status === 'review' ? 'selected' : '' %>>待审核</option>
@@ -88,6 +86,20 @@
                                         <option value="normal" <%= task.urgencyLevel === 'normal' ? 'selected' : '' %>>📅 普通</option>
                                         <option value="delayed" <%= task.urgencyLevel === 'delayed' ? 'selected' : '' %>>🕐 延期</option>
                                         <option value="frozen" <%= task.urgencyLevel === 'frozen' ? 'selected' : '' %>>❄️ 冻结</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-1">
+                                    <select class="form-select form-select-sm quick-edit-field"
+                                            data-task-id="<%= task.id %>"
+                                            data-field="sprintId">
+                                        <option value="">未分配</option>
+                                        <% if (typeof sprints !== 'undefined' && sprints && sprints.length > 0) { %>
+                                            <% sprints.forEach(function(sprint) { %>
+                                                <option value="<%= sprint.id %>" <%= task.sprintId === sprint.id ? 'selected' : '' %>>
+                                                    <%= sprint.name %>
+                                                </option>
+                                            <% }); %>
+                                        <% } %>
                                     </select>
                                 </div>
 

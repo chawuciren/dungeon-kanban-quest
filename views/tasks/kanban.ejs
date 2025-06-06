@@ -11,7 +11,7 @@
 <!-- 看板列 -->
 <div class="row kanban-board">
     <% Object.keys(kanbanColumns).forEach(status => { %>
-        <div class="col-lg-3 col-md-6 mb-4">
+        <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
             <div class="kanban-column">
                 <div class="kanban-header bg-<%= kanbanColumns[status].color %> text-white">
                     <h5 class="mb-0">
@@ -135,6 +135,8 @@
 <style>
 .kanban-board {
     min-height: 600px;
+    overflow-x: auto;
+    padding-bottom: 20px;
 }
 
 .kanban-column {
@@ -143,6 +145,15 @@
     overflow: hidden;
     height: fit-content;
     min-height: 500px;
+    min-width: 280px;
+}
+
+/* 在小屏幕上确保看板列不会太窄 */
+@media (max-width: 1200px) {
+    .kanban-board .col-lg-2 {
+        flex: 0 0 280px;
+        max-width: 280px;
+    }
 }
 
 .kanban-header {

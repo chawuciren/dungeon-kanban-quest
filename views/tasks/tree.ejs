@@ -19,7 +19,7 @@
                         <div class="card-body py-1 px-2">
                             <div class="row align-items-center">
                                 <!-- 展开按钮和任务标题 -->
-                                <div class="col-md-6">
+                                <div class="col-md-5">
                                     <div class="d-flex align-items-center">
                                         <!-- 展开/折叠按钮 -->
                                         <span class="node-toggle me-2 <%= task.hasChildren ? '' : 'no-children' %>" title="hasChildren: <%= task.hasChildren %>">
@@ -101,6 +101,20 @@
                                         <option value="frozen" <%= task.urgencyLevel === 'frozen' ? 'selected' : '' %>>❄️ 冻结</option>
                                     </select>
                                 </div>
+                                <div class="col-md-1">
+                                    <select class="form-select form-select-sm quick-edit-field"
+                                            data-task-id="<%= task.id %>"
+                                            data-field="sprintId">
+                                        <option value="">未分配</option>
+                                        <% if (typeof sprints !== 'undefined' && sprints && sprints.length > 0) { %>
+                                            <% sprints.forEach(function(sprint) { %>
+                                                <option value="<%= sprint.id %>" <%= task.sprintId === sprint.id ? 'selected' : '' %>>
+                                                    <%= sprint.name %>
+                                                </option>
+                                            <% }); %>
+                                        <% } %>
+                                    </select>
+                                </div>
 
                                 <!-- 任务信息 -->
                                 <div class="col-md-2">
@@ -116,6 +130,30 @@
                                                 <% } %>
                                             </div>
                                         <% } %>
+                                        <!-- 进度条 -->
+                                        <% const progress = task.progress || 0; %>
+                                        <div class="mt-1">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-chart-line me-1"></i>
+                                                <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                    <div class="progress-bar
+                                                        <% if (progress === 0) { %>bg-secondary
+                                                        <% } else if (progress < 25) { %>bg-info
+                                                        <% } else if (progress < 50) { %>bg-primary
+                                                        <% } else if (progress < 75) { %>bg-warning
+                                                        <% } else if (progress < 100) { %>bg-success
+                                                        <% } else { %>bg-success
+                                                        <% } %>"
+                                                        role="progressbar"
+                                                        style="width: <%= progress %>%;"
+                                                        aria-valuenow="<%= progress %>"
+                                                        aria-valuemin="0"
+                                                        aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                                <span class="text-nowrap" style="font-size: 0.75rem;"><%= progress %>%</span>
+                                            </div>
+                                        </div>
                                     </small>
                                 </div>
 
@@ -437,6 +475,9 @@
         $(document).ready(function() {
             let currentTaskId = null;
 
+            // 设置迭代数据
+            window.subtaskSprints = <%-JSON.stringify(sprints || [])%>;
+
             // 初始化快速编辑字段，保存原始值
             $('.quick-edit-field').each(function() {
                 const $select = $(this);
@@ -593,9 +634,20 @@ function loadSubtasks(taskId, $parentNode) {
     $.get(`/tasks/${taskId}/subtasks?level=1`)
         .done(function(response) {
             if (response.success && response.data.length > 0) {
+                // 保存迭代数据到全局变量
+                if (response.sprints) {
+                    window.subtaskSprints = response.sprints;
+                }
+
                 const subtasksHtml = generateSubtasksHtml(response.data, level);
                 $parentNode.find('.loading-subtasks').remove();
                 $parentNode.append(`<div class="node-children">${subtasksHtml}</div>`);
+
+                // 为新加载的快速编辑字段设置原始值
+                $parentNode.find('.node-children .quick-edit-field').each(function() {
+                    const $select = $(this);
+                    $select.data('original-value', $select.val());
+                });
 
                 // 更新切换图标
                 const $toggle = $parentNode.find('> .node-content .node-toggle');
@@ -671,8 +723,6 @@ function generateSubtasksHtml(subtasks, level) {
         // 状态选项
         const statusOptions = [
             { value: 'draft', text: '草稿', selected: task.status === 'draft' },
-            { value: 'published', text: '已发布', selected: task.status === 'published' },
-            { value: 'bidding', text: '竞标中', selected: task.status === 'bidding' },
             { value: 'assigned', text: '已分配', selected: task.status === 'assigned' },
             { value: 'in_progress', text: '进行中', selected: task.status === 'in_progress' },
             { value: 'review', text: '待审核', selected: task.status === 'review' },
@@ -686,13 +736,13 @@ function generateSubtasksHtml(subtasks, level) {
                     <div class="card-body py-1 px-2">
                         <div class="row align-items-center">
                             <!-- 展开按钮和任务标题 -->
-                            <div class="col-md-3">
+                            <div class="col-md-5">
                                 <div class="d-flex align-items-center">
                                     <span class="node-toggle me-2 ${toggleClass}">${toggleIcon}</span>
                                     <span class="badge bg-${getTaskTypeBadgeColor(task.taskType)} me-2 task-type-badge">
                                         ${getTaskTypeDisplayName(task.taskType)}
                                     </span>
-                                    <h6 class="card-title mb-0 me-2 text-truncate" style="max-width: 100px;">
+                                    <h6 class="card-title mb-0 me-2 text-truncate" style="max-width: 120px;">
                                         <a href="/tasks/${task.id}" class="text-decoration-none task-title-link">
                                             ${task.title}
                                         </a>
@@ -702,36 +752,70 @@ function generateSubtasksHtml(subtasks, level) {
                             </div>
 
                             <!-- 快速编辑字段 -->
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <select class="form-select form-select-sm quick-edit-field" data-task-id="${task.id}" data-field="status">
                                     ${statusOptions.map(opt => `<option value="${opt.value}" ${opt.selected ? 'selected' : ''}>${opt.text}</option>`).join('')}
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <select class="form-select form-select-sm quick-edit-field" data-task-id="${task.id}" data-field="assigneeId">
                                     <option value="">未分配</option>
-                                    <!-- 项目成员选项需要从服务器获取 -->
+                                    ${task.project && task.project.members ?
+                                        task.project.members.map(member =>
+                                            `<option value="${member.id}" ${task.assigneeId === member.id ? 'selected' : ''}>
+                                                ${(member.firstName + ' ' + member.lastName).trim() || member.username}
+                                            </option>`
+                                        ).join('') : ''
+                                    }
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <select class="form-select form-select-sm quick-edit-field" data-task-id="${task.id}" data-field="urgencyLevel">
                                     ${urgencyOptions.map(opt => `<option value="${opt.value}" ${opt.selected ? 'selected' : ''}>${opt.text}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <select class="form-select form-select-sm quick-edit-field" data-task-id="${task.id}" data-field="sprintId">
+                                    <option value="">未分配</option>
+                                    ${window.subtaskSprints && window.subtaskSprints.length > 0 ?
+                                        window.subtaskSprints.map(sprint =>
+                                            `<option value="${sprint.id}" ${task.sprintId === sprint.id ? 'selected' : ''}>
+                                                ${sprint.name}
+                                            </option>`
+                                        ).join('') : ''
+                                    }
                                 </select>
                             </div>
 
                             <!-- 任务信息 -->
                             <div class="col-md-2">
                                 <small class="text-muted">
-                                    <div>
-                                        <span class="badge bg-${getTaskTypeBadgeColor(task.taskType)} me-1" style="font-size: 0.7em;">
-                                            ${getTaskTypeDisplayName(task.taskType)}
-                                        </span>
-                                        <i class="fas fa-user me-1"></i>${task.publisher ? (task.publisher.firstName + ' ' + task.publisher.lastName).trim() || task.publisher.username : '未知'}
-                                    </div>
+                                    <div><i class="fas fa-user me-1"></i>${task.publisher ? (task.publisher.firstName + ' ' + task.publisher.lastName).trim() || task.publisher.username : '未知'}</div>
                                     ${task.estimatedHours || task.dueDate ? `<div>
                                         ${task.estimatedHours ? `<i class="fas fa-clock me-1"></i>${task.estimatedHours}h` : ''}
                                         ${task.dueDate ? `<i class="fas fa-calendar ms-1 me-1"></i>${new Date(task.dueDate).toLocaleDateString('zh-CN')}` : ''}
                                     </div>` : ''}
+                                    <!-- 进度条 -->
+                                    <div class="mt-1">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-chart-line me-1"></i>
+                                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                <div class="progress-bar
+                                                    ${task.progress === 0 ? 'bg-secondary' :
+                                                      task.progress < 25 ? 'bg-info' :
+                                                      task.progress < 50 ? 'bg-primary' :
+                                                      task.progress < 75 ? 'bg-warning' :
+                                                      task.progress < 100 ? 'bg-success' : 'bg-success'}"
+                                                    role="progressbar"
+                                                    style="width: ${task.progress || 0}%;"
+                                                    aria-valuenow="${task.progress || 0}"
+                                                    aria-valuemin="0"
+                                                    aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                            <span class="text-nowrap" style="font-size: 0.75rem;">${task.progress || 0}%</span>
+                                        </div>
+                                    </div>
                                 </small>
                             </div>
 

@@ -64,8 +64,6 @@
                             <select class="form-select" name="status">
                                 <option value="">全部状态</option>
                                 <option value="draft" <%= (filters && filters.status == 'draft') ? 'selected' : '' %>>草稿</option>
-                                <option value="published" <%= (filters && filters.status == 'published') ? 'selected' : '' %>>已发布</option>
-                                <option value="bidding" <%= (filters && filters.status == 'bidding') ? 'selected' : '' %>>竞标中</option>
                                 <option value="assigned" <%= (filters && filters.status == 'assigned') ? 'selected' : '' %>>已分配</option>
                                 <option value="in_progress" <%= (filters && filters.status == 'in_progress') ? 'selected' : '' %>>进行中</option>
                                 <option value="review" <%= (filters && filters.status == 'review') ? 'selected' : '' %>>待审核</option>
@@ -117,6 +115,28 @@
                                     <% projectMembers.forEach(function(member) { %>
                                         <option value="<%= member.id %>" <%= (filters && filters.assigneeId == member.id) ? 'selected' : '' %>>
                                             <%= (member.firstName + ' ' + member.lastName).trim() || member.username %>
+                                        </option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">所属迭代</label>
+                            <select class="form-select" name="sprintId">
+                                <option value="">全部迭代</option>
+                                <option value="none" <%= (filters && filters.sprintId == 'none') ? 'selected' : '' %>>未分配迭代</option>
+                                <% if (typeof sprints !== 'undefined' && sprints && sprints.length > 0) { %>
+                                    <% sprints.forEach(function(sprint) { %>
+                                        <option value="<%= sprint.id %>" <%= (filters && filters.sprintId == sprint.id) ? 'selected' : '' %>>
+                                            <%= sprint.name %>
+                                            <% if (sprint.status === 'active') { %>
+                                                (进行中)
+                                            <% } else if (sprint.status === 'planning') { %>
+                                                (计划中)
+                                            <% } else if (sprint.status === 'completed') { %>
+                                                (已完成)
+                                            <% } %>
                                         </option>
                                     <% }); %>
                                 <% } %>

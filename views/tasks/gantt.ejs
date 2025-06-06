@@ -5,7 +5,8 @@
     currentView: 'gantt',
     currentPath: '/tasks/gantt',
     filters: filters,
-    projectMembers: projectMembers
+    projectMembers: projectMembers,
+    sprints: sprints
 }) %>
 
 <!-- 甘特图控制面板 -->
@@ -911,6 +912,10 @@ function initGanttChart() {
     // 甘特图数据
     const tasks = <%- JSON.stringify(ganttTasks) %>;
 
+    // 获取迭代数据
+    window.sprints = <%- JSON.stringify(sprints || []) %>;
+    console.log('迭代数据:', window.sprints);
+
     if (tasks.length === 0) {
         document.getElementById('gantt-container').innerHTML = '<div class="alert alert-info text-center py-5"><i class="fas fa-info-circle me-2"></i>暂无任务数据，请先创建一些任务</div>';
         document.getElementById('task-list-container').innerHTML = '<div class="alert alert-info text-center py-5"><i class="fas fa-info-circle me-2"></i>暂无任务数据</div>';
@@ -1750,7 +1755,7 @@ function renderTaskTreeNodes(nodes, level) {
                         </div>
 
                         <!-- 快速编辑字段 -->
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <select class="form-select form-select-sm quick-edit-field"
                                     data-task-id="${taskData.id}"
                                     data-field="status">
@@ -1764,7 +1769,7 @@ function renderTaskTreeNodes(nodes, level) {
                                 <option value="cancelled" ${taskData.status === 'cancelled' ? 'selected' : ''}>已取消</option>
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <select class="form-select form-select-sm quick-edit-field"
                                     data-task-id="${taskData.id}"
                                     data-field="assigneeId">
@@ -1778,7 +1783,7 @@ function renderTaskTreeNodes(nodes, level) {
                                 }
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <select class="form-select form-select-sm quick-edit-field"
                                     data-task-id="${taskData.id}"
                                     data-field="urgencyLevel">
@@ -1787,6 +1792,20 @@ function renderTaskTreeNodes(nodes, level) {
                                 <option value="normal" ${taskData.urgencyLevel === 'normal' ? 'selected' : ''}>📅 普通</option>
                                 <option value="delayed" ${taskData.urgencyLevel === 'delayed' ? 'selected' : ''}>🕐 延期</option>
                                 <option value="frozen" ${taskData.urgencyLevel === 'frozen' ? 'selected' : ''}>❄️ 冻结</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1">
+                            <select class="form-select form-select-sm quick-edit-field"
+                                    data-task-id="${taskData.id}"
+                                    data-field="sprintId">
+                                <option value="">未分配</option>
+                                ${window.sprints && window.sprints.length > 0 ?
+                                    window.sprints.map(sprint =>
+                                        `<option value="${sprint.id}" ${taskData.sprintId === sprint.id ? 'selected' : ''}>
+                                            ${sprint.name}
+                                        </option>`
+                                    ).join('') : ''
+                                }
                             </select>
                         </div>
 
@@ -1798,6 +1817,27 @@ function renderTaskTreeNodes(nodes, level) {
                                     ${taskData.estimatedHours ? `<i class="fas fa-clock me-1"></i>${taskData.estimatedHours}h` : ''}
                                     ${taskData.dueDate ? `<i class="fas fa-calendar ms-1 me-1"></i>${new Date(taskData.dueDate).toLocaleDateString('zh-CN')}` : ''}
                                 </div>` : ''}
+                                <!-- 进度条 -->
+                                <div class="mt-1">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-chart-line me-1"></i>
+                                        <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                            <div class="progress-bar
+                                                ${taskData.progress === 0 ? 'bg-secondary' :
+                                                  taskData.progress < 25 ? 'bg-info' :
+                                                  taskData.progress < 50 ? 'bg-primary' :
+                                                  taskData.progress < 75 ? 'bg-warning' :
+                                                  taskData.progress < 100 ? 'bg-success' : 'bg-success'}"
+                                                role="progressbar"
+                                                style="width: ${taskData.progress || 0}%;"
+                                                aria-valuenow="${taskData.progress || 0}"
+                                                aria-valuemin="0"
+                                                aria-valuemax="100">
+                                            </div>
+                                        </div>
+                                        <span class="text-nowrap" style="font-size: 0.75rem;">${taskData.progress || 0}%</span>
+                                    </div>
+                                </div>
                             </small>
                         </div>
 
@@ -2352,11 +2392,12 @@ function setupGanttObserver() {
 // 获取状态样式类
 function getStatusClass(status) {
     const classMap = {
-        'published': 'bg-primary text-white',
+        'draft': 'bg-secondary text-white',
         'assigned': 'bg-warning text-dark',
-        'in_progress': 'bg-warning text-dark',
+        'in_progress': 'bg-primary text-white',
         'review': 'bg-info text-white',
-        'completed': 'bg-success text-white'
+        'completed': 'bg-success text-white',
+        'cancelled': 'bg-danger text-white'
     };
     return classMap[status] || 'bg-secondary text-white';
 }
@@ -2364,11 +2405,12 @@ function getStatusClass(status) {
 // 获取状态文本
 function getStatusText(status) {
     const statusMap = {
-        'published': '待接单',
-        'assigned': '进行中',
+        'draft': '草稿',
+        'assigned': '已分配',
         'in_progress': '进行中',
         'review': '待审核',
-        'completed': '已完成'
+        'completed': '已完成',
+        'cancelled': '已取消'
     };
     return statusMap[status] || status;
 }

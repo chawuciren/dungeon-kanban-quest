@@ -87,9 +87,14 @@ router.get('/create', requireAuth, requireProjectSelection, validateProjectAcces
       return res.redirect('/sprints');
     }
 
+    // 获取保存的表单数据（如果有）
+    const formData = req.session.formData;
+    delete req.session.formData; // 使用后删除
+
     res.render('sprints/create', {
       title: '创建迭代',
-      selectedProject
+      selectedProject,
+      formData // 传递表单数据用于恢复
     });
 
   } catch (error) {
@@ -115,7 +120,7 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
     const projectId = req.session.selectedProjectId;
 
     // 验证必填字段
-    if (!name || !goal || !projectId || !startDate || !endDate) {
+    if (!name || !goal || !projectId || !startDate || !endDate || capacity === undefined || capacity === null || capacity === '') {
       req.flash('error', '请填写所有必填字段');
       return res.redirect('back');
     }
@@ -196,7 +201,7 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       creatorId: req.session.userId,
       startDate: start,
       endDate: end,
-      capacity: capacity ? parseFloat(capacity) : 0
+      capacity: parseFloat(capacity) || 0
     });
 
     logger.info(`迭代创建成功: ${sprint.name}`, {
@@ -209,7 +214,78 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
 
   } catch (error) {
     logger.error('创建迭代失败:', error);
-    req.flash('error', '创建迭代失败：' + error.message);
+
+    // 处理验证错误
+    if (error.name === 'SequelizeValidationError') {
+      // 从req.body中重新获取数据，确保变量在作用域内
+      const {
+        name: formName,
+        description: formDescription,
+        goal: formGoal,
+        startDate: formStartDate,
+        endDate: formEndDate,
+        capacity: formCapacity
+      } = req.body;
+
+      // 保存表单数据到session
+      req.session.formData = {
+        name: formName,
+        description: formDescription,
+        goal: formGoal,
+        startDate: formStartDate,
+        endDate: formEndDate,
+        capacity: formCapacity
+      };
+
+      // 处理验证错误信息
+      const errors = error.errors ? error.errors.map(err => {
+        const fieldMap = {
+          'name': '迭代名称',
+          'description': '迭代描述',
+          'goal': '迭代目标',
+          'startDate': '开始日期',
+          'endDate': '结束日期',
+          'capacity': '团队工时容量'
+        };
+
+        const fieldLabel = fieldMap[err.path] || err.path;
+        let message;
+
+        switch (err.validatorKey || err.type) {
+          case 'len':
+            message = `${fieldLabel}长度必须在${err.validatorArgs[0]}-${err.validatorArgs[1]}个字符之间`;
+            break;
+          case 'min':
+          case 'max':
+            message = `${fieldLabel}数值超出允许范围`;
+            break;
+          case 'notNull':
+          case 'notEmpty':
+            message = `${fieldLabel}不能为空`;
+            break;
+          case 'isAfterStart':
+            message = '结束时间必须晚于开始时间';
+            break;
+          default:
+            message = `${fieldLabel}: ${err.message}`;
+        }
+
+        return { field: err.path, message };
+      }) : [{ field: 'general', message: '创建迭代时发生错误，请检查输入信息' }];
+
+      return res.render('error', {
+        title: '迭代创建失败',
+        errorContext: '迭代',
+        errors,
+        formData: req.session.formData,
+        redirectUrl: '/sprints/create',
+        redirectDelay: 8,
+        error: { status: 400, message: '请修正表单中的错误信息' }
+      });
+    }
+
+    // 处理其他错误
+    req.flash('error', '创建迭代失败，请稍后重试');
     res.redirect('back');
   }
 });
@@ -271,10 +347,15 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
       return res.redirect(`/sprints/${sprintId}`);
     }
 
+    // 获取保存的表单数据（如果有）
+    const formData = req.session.formData;
+    delete req.session.formData; // 使用后删除
+
     res.render('sprints/edit', {
       title: '编辑迭代',
       sprint,
-      isCreateMode: false
+      isCreateMode: false,
+      formData // 传递表单数据用于恢复
     });
 
   } catch (error) {
@@ -342,7 +423,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
     }
 
     // 验证必填字段
-    if (!name || !goal || !startDate || !endDate) {
+    if (!name || !goal || !startDate || !endDate || capacity === undefined || capacity === null || capacity === '') {
       req.flash('error', '请填写所有必填字段');
       return res.redirect('back');
     }
@@ -390,7 +471,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       goal,
       startDate: start,
       endDate: end,
-      capacity: capacity ? parseFloat(capacity) : 0
+      capacity: parseFloat(capacity) || 0
     });
 
     logger.info(`迭代更新成功: ${sprint.name}`, {
@@ -403,7 +484,78 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
 
   } catch (error) {
     logger.error('更新迭代失败:', error);
-    req.flash('error', '更新迭代失败：' + error.message);
+
+    // 处理验证错误
+    if (error.name === 'SequelizeValidationError') {
+      // 从req.body中重新获取数据，确保变量在作用域内
+      const {
+        name: formName,
+        description: formDescription,
+        goal: formGoal,
+        startDate: formStartDate,
+        endDate: formEndDate,
+        capacity: formCapacity
+      } = req.body;
+
+      // 保存表单数据到session
+      req.session.formData = {
+        name: formName,
+        description: formDescription,
+        goal: formGoal,
+        startDate: formStartDate,
+        endDate: formEndDate,
+        capacity: formCapacity
+      };
+
+      // 处理验证错误信息
+      const errors = error.errors ? error.errors.map(err => {
+        const fieldMap = {
+          'name': '迭代名称',
+          'description': '迭代描述',
+          'goal': '迭代目标',
+          'startDate': '开始日期',
+          'endDate': '结束日期',
+          'capacity': '团队工时容量'
+        };
+
+        const fieldLabel = fieldMap[err.path] || err.path;
+        let message;
+
+        switch (err.validatorKey || err.type) {
+          case 'len':
+            message = `${fieldLabel}长度必须在${err.validatorArgs[0]}-${err.validatorArgs[1]}个字符之间`;
+            break;
+          case 'min':
+          case 'max':
+            message = `${fieldLabel}数值超出允许范围`;
+            break;
+          case 'notNull':
+          case 'notEmpty':
+            message = `${fieldLabel}不能为空`;
+            break;
+          case 'isAfterStart':
+            message = '结束时间必须晚于开始时间';
+            break;
+          default:
+            message = `${fieldLabel}: ${err.message}`;
+        }
+
+        return { field: err.path, message };
+      }) : [{ field: 'general', message: '更新迭代时发生错误，请检查输入信息' }];
+
+      return res.render('error', {
+        title: '迭代编辑失败',
+        errorContext: '迭代',
+        errors,
+        formData: req.session.formData,
+        redirectUrl: `/sprints/${req.params.id}/edit`,
+        redirectDelay: 8,
+        error: { status: 400, message: '请修正表单中的错误信息' }
+      });
+    }
+
+    // 处理其他错误
+    req.flash('error', '更新迭代失败，请稍后重试');
     res.redirect('back');
   }
 });

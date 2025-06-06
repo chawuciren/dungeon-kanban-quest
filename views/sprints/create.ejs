@@ -41,6 +41,7 @@
                                 迭代名称 <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control" id="name" name="name"
+                                   value="<%= formData && formData.name ? formData.name : '' %>"
                                    placeholder="例如：迭代 - 用户系统建设" required>
                             <div class="form-text">建议包含季节和主要目标</div>
                         </div>
@@ -64,7 +65,7 @@
                             迭代目标 <span class="text-danger">*</span>
                         </label>
                         <textarea class="form-control" id="goal" name="goal" rows="3"
-                                  placeholder="描述这个迭代要达成的主要目标..." required></textarea>
+                                  placeholder="描述这个迭代要达成的主要目标..." required><%= formData && formData.goal ? formData.goal : '' %></textarea>
                         <div class="form-text">明确的目标有助于团队聚焦重点</div>
                     </div>
 
@@ -75,7 +76,7 @@
                             详细描述
                         </label>
                         <textarea class="form-control" id="description" name="description" rows="4"
-                                  placeholder="详细描述迭代的背景、范围和期望..."></textarea>
+                                  placeholder="详细描述迭代的背景、范围和期望..."><%= formData && formData.description ? formData.description : '' %></textarea>
                     </div>
 
                     <!-- 时间安排 -->
@@ -85,14 +86,16 @@
                                 <i class="fas fa-play me-1"></i>
                                 开始时间 <span class="text-danger">*</span>
                             </label>
-                            <input type="date" class="form-control" id="startDate" name="startDate" required>
+                            <input type="date" class="form-control" id="startDate" name="startDate"
+                                   value="<%= formData && formData.startDate ? formData.startDate : '' %>" required>
                         </div>
                         <div class="col-md-6">
                             <label for="endDate" class="form-label">
                                 <i class="fas fa-stop me-1"></i>
                                 结束时间 <span class="text-danger">*</span>
                             </label>
-                            <input type="date" class="form-control" id="endDate" name="endDate" required>
+                            <input type="date" class="form-control" id="endDate" name="endDate"
+                                   value="<%= formData && formData.endDate ? formData.endDate : '' %>" required>
                         </div>
                     </div>
 
@@ -100,11 +103,12 @@
                     <div class="mb-3">
                         <label for="capacity" class="form-label">
                             <i class="fas fa-hourglass-half me-1"></i>
-                            团队容量（工时）
+                            团队工时容量 <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="capacity" name="capacity"
-                                   min="0" step="0.5" placeholder="例如：80">
+                                   min="0" step="0.5" value="<%= formData && formData.capacity !== undefined ? formData.capacity : '0' %>"
+                                   placeholder="例如：80" required>
                             <span class="input-group-text">小时</span>
                         </div>
                         <div class="form-text">团队在此迭代期间可投入的总工时</div>
@@ -142,15 +146,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const durationInfo = document.getElementById('durationInfo');
     const durationText = document.getElementById('durationText');
 
-    // 设置默认开始时间为明天
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    startDateInput.value = tomorrow.toISOString().split('T')[0];
+    // 只在没有表单数据时设置默认日期
+    if (!startDateInput.value) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        startDateInput.value = tomorrow.toISOString().split('T')[0];
+    }
 
-    // 设置默认结束时间为两周后
-    const twoWeeksLater = new Date();
-    twoWeeksLater.setDate(twoWeeksLater.getDate() + 15);
-    endDateInput.value = twoWeeksLater.toISOString().split('T')[0];
+    if (!endDateInput.value) {
+        const twoWeeksLater = new Date();
+        twoWeeksLater.setDate(twoWeeksLater.getDate() + 15);
+        endDateInput.value = twoWeeksLater.toISOString().split('T')[0];
+    }
 
     // 计算并显示持续时间
     function updateDuration() {
