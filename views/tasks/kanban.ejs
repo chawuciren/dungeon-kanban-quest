@@ -371,7 +371,7 @@ function initDragAndDrop() {
 
         // 检查是否真的需要移动（状态是否改变）
         if (currentStatus === newStatus) {
-            KanbanApp.showAlert('任务已在此状态列中', 'info', 2000);
+            showToast('info', '任务已在此状态列中');
             return;
         }
 
@@ -390,7 +390,7 @@ function updateTaskStatus(taskId, newStatus) {
 
     // 显示加载状态
     $taskCard.addClass('updating');
-    KanbanApp.showAlert('正在更新任务状态...', 'info', 2000);
+    showToast('info', '正在更新任务状态...');
 
     // 调用API更新任务状态
     $.ajax({
@@ -399,7 +399,7 @@ function updateTaskStatus(taskId, newStatus) {
         data: { status: newStatus },
         success: function(response) {
             if (response.success) {
-                KanbanApp.showAlert('任务状态更新成功！', 'success', 3000);
+                showToast('success', '任务状态更新成功！');
 
                 // 更新任务计数
                 updateTaskCounts();
@@ -417,7 +417,7 @@ function updateTaskStatus(taskId, newStatus) {
             } else {
                 // 更新失败，回滚任务卡片位置
                 rollbackTaskPosition($taskCard, originalColumn);
-                KanbanApp.showAlert(response.message || '更新任务状态失败', 'danger');
+                showToast('error', response.message || '更新任务状态失败');
             }
         },
         error: function(xhr) {
@@ -437,7 +437,7 @@ function updateTaskStatus(taskId, newStatus) {
                 errorMessage = '无效的状态值';
             }
 
-            KanbanApp.showAlert(errorMessage, 'danger');
+            showToast('error', errorMessage);
             console.error('更新任务状态失败:', xhr);
         },
         complete: function() {
@@ -449,7 +449,7 @@ function updateTaskStatus(taskId, newStatus) {
 // 回滚任务卡片位置
 function rollbackTaskPosition($taskCard, originalColumn) {
     $taskCard.appendTo(originalColumn);
-    KanbanApp.showAlert('任务位置已恢复', 'info', 2000);
+    showToast('info', '任务位置已恢复');
 }
 
 // 更新任务计数
@@ -475,6 +475,40 @@ function updateTaskCounts() {
         } else {
             $body.find('.empty-column').remove();
         }
+    });
+}
+
+// 显示提示消息
+function showToast(type, message) {
+    // 创建提示元素
+    const toast = $(`
+        <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'info' ? 'info' : 'danger'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-${type === 'success' ? 'check' : type === 'info' ? 'info-circle' : 'exclamation-triangle'} me-2"></i>
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `);
+
+    // 添加到页面
+    let toastContainer = $('#toast-container');
+    if (toastContainer.length === 0) {
+        toastContainer = $('<div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>');
+        $('body').append(toastContainer);
+    }
+
+    toastContainer.append(toast);
+
+    // 显示提示
+    const bsToast = new bootstrap.Toast(toast[0]);
+    bsToast.show();
+
+    // 自动移除
+    toast.on('hidden.bs.toast', function() {
+        $(this).remove();
     });
 }
 </script>

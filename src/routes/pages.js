@@ -87,6 +87,10 @@ router.post('/login', async (req, res) => {
     const logger = require('../config/logger');
     logger.info(`用户登录成功: ${user.username}`, { userId: user.id });
 
+    // 记录登录活动
+    const ActivityLogger = require('../utils/activityLogger');
+    await ActivityLogger.logUserLogin(user.id, req);
+
     req.flash('success', '登录成功！');
     res.redirect('/dashboard');
 
@@ -177,6 +181,59 @@ router.get('/dashboard', async (req, res) => {
       limit: 5
     });
 
+    // 获取用户最近的活动记录（最多10个）
+    const { ActivityLog } = require('../models');
+    let recentActivities = [];
+
+    try {
+      const { Op } = require('sequelize');
+
+      if (req.session.selectedProjectId) {
+        // 如果选择了项目，获取该项目的活动记录 + 用户的非项目相关活动
+        recentActivities = await ActivityLog.findAll({
+          where: {
+            [Op.or]: [
+              // 该项目的活动
+              { projectId: req.session.selectedProjectId },
+              // 用户的非项目相关活动（如登录、登出等）
+              {
+                userId: req.session.userId,
+                projectId: null,
+                actionType: {
+                  [Op.in]: ['user_login', 'user_logout', 'other']
+                }
+              }
+            ]
+          },
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['id', 'username', 'firstName', 'lastName']
+            }
+          ],
+          order: [['createdAt', 'DESC']],
+          limit: 10
+        });
+      } else {
+        // 否则获取用户的活动记录
+        recentActivities = await ActivityLog.findAll({
+          where: { userId: req.session.userId },
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['id', 'username', 'firstName', 'lastName']
+            }
+          ],
+          order: [['createdAt', 'DESC']],
+          limit: 10
+        });
+      }
+    } catch (error) {
+      console.error('获取活动记录失败:', error);
+    }
+
     // 项目信息已经通过中间件加载到 res.locals.userProjects
     const userProjects = res.locals.userProjects || [];
 
@@ -188,6 +245,7 @@ router.get('/dashboard', async (req, res) => {
         completed: completedTasks
       },
       recentTasks,
+      recentActivities,
       userProjects,
       selectedProject: res.locals.selectedProject
     });
@@ -199,6 +257,7 @@ router.get('/dashboard', async (req, res) => {
       user: null,
       taskStats: { total: 0, completed: 0 },
       recentTasks: [],
+      recentActivities: [],
       userProjects: [],
       selectedProject: null
     });

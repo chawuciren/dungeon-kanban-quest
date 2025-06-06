@@ -173,17 +173,17 @@
                                     <h6 class="mb-1"><%= task.title %></h6>
                                     <small class="text-muted">
                                         <%
-                                        const stars = '⭐'.repeat(task.starRating || 1);
+                                        const stars = '⭐'.repeat(task.starLevel || 1);
                                         const urgencyIcons = {
                                             'urgent': '🔥',
-                                            'high': '⚡',
+                                            'important': '⚡',
                                             'normal': '📅',
-                                            'low': '🕐',
-                                            'very_low': '❄️'
+                                            'delayed': '🕐',
+                                            'frozen': '❄️'
                                         };
-                                        const urgencyIcon = urgencyIcons[task.urgency] || '📅';
+                                        const urgencyIcon = urgencyIcons[task.urgencyLevel] || '📅';
                                         %>
-                                        <%= stars %> <%= task.starRating || 1 %>星任务 • <%= urgencyIcon %> <%= task.urgency === 'urgent' ? '紧急' : task.urgency === 'high' ? '高' : task.urgency === 'low' ? '低' : task.urgency === 'very_low' ? '很低' : '普通' %>
+                                        <%= stars %> <%= task.starLevel || 1 %>星任务 • <%= urgencyIcon %> <%= task.urgencyLevel === 'urgent' ? '紧急' : task.urgencyLevel === 'important' ? '重要' : task.urgencyLevel === 'delayed' ? '延后' : task.urgencyLevel === 'frozen' ? '冻结' : '普通' %>
                                         <% if (task.project) { %>
                                             • <%= task.project.name %>
                                         <% } %>
@@ -191,13 +191,14 @@
                                 </div>
                                 <%
                                 const statusBadges = {
-                                    'pending': { class: 'bg-secondary', text: '待分配' },
+                                    'draft': { class: 'bg-secondary', text: '草稿' },
+                                    'published': { class: 'bg-primary', text: '已发布' },
                                     'in_progress': { class: 'bg-warning', text: '进行中' },
-                                    'pending_review': { class: 'bg-info', text: '待审核' },
+                                    'review': { class: 'bg-info', text: '待审核' },
                                     'completed': { class: 'bg-success', text: '已完成' },
                                     'cancelled': { class: 'bg-danger', text: '已取消' }
                                 };
-                                const statusBadge = statusBadges[task.status] || statusBadges.pending;
+                                const statusBadge = statusBadges[task.status] || statusBadges.draft;
                                 %>
                                 <span class="badge <%= statusBadge.class %>"><%= statusBadge.text %></span>
                             </div>
@@ -222,10 +223,42 @@
             </div>
             <div class="card-body">
                 <div id="recentActivities">
-                    <div class="text-center py-4">
-                        <i class="fas fa-history fa-2x text-muted mb-2"></i>
-                        <p class="text-muted mb-0">暂无活动记录</p>
-                    </div>
+                    <% if (recentActivities && recentActivities.length > 0) { %>
+                        <div class="list-group list-group-flush">
+                            <% recentActivities.forEach(activity => { %>
+                                <div class="list-group-item d-flex align-items-start">
+                                    <div class="me-3 mt-1">
+                                        <i class="<%= activity.getActionIcon() %>"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <p class="mb-1">
+                                                    <strong><%= activity.user ? (activity.user.firstName + ' ' + activity.user.lastName).trim() || activity.user.username : '未知用户' %></strong>
+                                                    <%= activity.description %>
+                                                </p>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    <%= new Date(activity.createdAt).toLocaleString('zh-CN', {
+                                                        year: 'numeric',
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                    }) %>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-4">
+                            <i class="fas fa-history fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-0">暂无活动记录</p>
+                        </div>
+                    <% } %>
                 </div>
             </div>
         </div>

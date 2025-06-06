@@ -9,6 +9,7 @@ const ProjectOrganization = require('./ProjectOrganization');
 const ProjectMember = require('./ProjectMember');
 const BountyTask = require('./BountyTask');
 const Sprint = require('./Sprint');
+const ActivityLog = require('./ActivityLog');
 
 // 定义模型关联关系
 
@@ -209,6 +210,28 @@ Sprint.hasMany(BountyTask, {
 BountyTask.belongsTo(Sprint, {
   foreignKey: 'sprintId',
   as: 'sprint'
+});
+
+// ActivityLog 和 User 的关联 (N:1) - 活动记录属于用户
+ActivityLog.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user'
+});
+User.hasMany(ActivityLog, {
+  foreignKey: 'userId',
+  as: 'activities',
+  onDelete: 'CASCADE'
+});
+
+// ActivityLog 和 Project 的关联 (N:1) - 活动记录可能关联项目
+ActivityLog.belongsTo(Project, {
+  foreignKey: 'projectId',
+  as: 'project'
+});
+Project.hasMany(ActivityLog, {
+  foreignKey: 'projectId',
+  as: 'activities',
+  onDelete: 'CASCADE'
 });
 
 // 同步数据库
@@ -609,6 +632,7 @@ module.exports = {
   ProjectMember,
   BountyTask,
   Sprint,
+  ActivityLog,
   syncDatabase,
   createDefaultData
 };

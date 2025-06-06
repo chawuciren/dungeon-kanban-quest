@@ -973,6 +973,10 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       level
     });
 
+    // 记录活动
+    const ActivityLogger = require('../utils/activityLogger');
+    await ActivityLogger.logTaskCreated(req.session.userId, task, projectId, req);
+
     logger.info(`任务创建成功: ${title}`, {
       taskId: task.id,
       userId: req.session.userId
@@ -1263,8 +1267,37 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       }
     }
 
+    // 保存更新前的数据用于活动记录
+    const oldData = {
+      title: task.title,
+      description: task.description,
+      taskType: task.taskType,
+      starLevel: task.starLevel,
+      urgencyLevel: task.urgencyLevel,
+      status: task.status,
+      assigneeId: task.assigneeId,
+      reviewerId: task.reviewerId,
+      sprintId: task.sprintId,
+      estimatedHours: task.estimatedHours,
+      actualHours: task.actualHours,
+      progress: task.progress,
+      startDate: task.startDate,
+      dueDate: task.dueDate
+    };
+
     // 更新任务
     await task.update(updateData);
+
+    // 记录活动
+    const ActivityLogger = require('../utils/activityLogger');
+
+    // 如果状态发生变化，记录状态变更活动
+    if (oldStatus !== newStatus) {
+      await ActivityLogger.logTaskStatusChanged(req.session.userId, task, oldStatus, newStatus, req);
+    }
+
+    // 记录任务更新活动
+    await ActivityLogger.logTaskUpdated(req.session.userId, task, oldData, updateData, req);
 
     logger.info(`任务更新成功: ${title}`, {
       taskId: task.id,
@@ -1496,10 +1529,19 @@ router.post('/:id/quick-update', requireAuth, requireProjectSelection, validateP
       }
     }
 
+    // 保存旧值用于活动记录
+    const oldValue = task[field];
+
     // 更新字段
     await task.update({ [field]: value || null });
 
-    logger.info('任务字段更新成功:', { taskId, field, oldValue: task[field], newValue: value });
+    // 记录活动
+    const ActivityLogger = require('../utils/activityLogger');
+    const oldData = { [field]: oldValue };
+    const newData = { [field]: value || null };
+    await ActivityLogger.logTaskUpdated(req.session.userId, task, oldData, newData, req);
+
+    logger.info('任务字段更新成功:', { taskId, field, oldValue, newValue: value });
 
     // 获取更新后的显示值
     let displayValue = value;
@@ -1614,6 +1656,10 @@ router.post('/:id/status', requireAuth, async (req, res) => {
     }
 
     await task.update(updateData);
+
+    // 记录活动
+    const ActivityLogger = require('../utils/activityLogger');
+    await ActivityLogger.logTaskStatusChanged(req.session.userId, task, oldStatus, status, req);
 
     logger.info(`任务状态更新: ${task.title} (${oldStatus} -> ${status})`, {
       taskId: task.id,
