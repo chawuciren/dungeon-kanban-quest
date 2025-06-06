@@ -221,11 +221,56 @@
 .kanban-card.dragging {
     opacity: 0.5;
     transform: rotate(5deg);
+    z-index: 1000;
 }
 
 .kanban-body.drag-over {
     background-color: #e3f2fd;
     border: 2px dashed #2196f3;
+    border-radius: 8px;
+}
+
+/* 更新中的任务卡片样式 */
+.kanban-card.updating {
+    opacity: 0.7;
+    pointer-events: none;
+    position: relative;
+}
+
+.kanban-card.updating::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 123, 255, 0.1);
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+    100% { opacity: 0.3; }
+}
+
+/* 拖拽时的列高亮 */
+.kanban-body.drag-over::before {
+    content: '放置任务到此列';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(33, 150, 243, 0.9);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10;
+    pointer-events: none;
 }
 </style>
 
@@ -250,25 +295,68 @@ function initDragAndDrop() {
 
     // 拖拽开始
     $(document).on('dragstart', '.kanban-card', function(e) {
-        $(this).addClass('dragging');
-        e.originalEvent.dataTransfer.setData('text/plain', $(this).data('task-id'));
+        const $card = $(this);
+        $card.addClass('dragging');
+
+        // 设置拖拽数据
+        const taskId = $card.data('task-id');
+        const taskTitle = $card.find('.card-title a').text().trim();
+
+        e.originalEvent.dataTransfer.setData('text/plain', taskId);
+        e.originalEvent.dataTransfer.effectAllowed = 'move';
+
+        // 设置拖拽图像（可选）
+        const dragImage = $card.clone().css({
+            'transform': 'rotate(5deg)',
+            'opacity': '0.8'
+        })[0];
+
+        // 存储原始位置信息，用于可能的回滚
+        $card.data('original-column', $card.parent());
+
+        console.log(`开始拖拽任务: ${taskTitle} (ID: ${taskId})`);
     });
 
     // 拖拽结束
     $(document).on('dragend', '.kanban-card', function(e) {
-        $(this).removeClass('dragging');
+        const $card = $(this);
+        $card.removeClass('dragging');
         $('.kanban-body').removeClass('drag-over');
+
+        // 清理拖拽状态
+        setTimeout(() => {
+            $card.removeData('original-column');
+        }, 1000);
     });
 
     // 拖拽进入列
     $(document).on('dragover', '.kanban-body', function(e) {
         e.preventDefault();
-        $(this).addClass('drag-over');
+        e.originalEvent.dataTransfer.dropEffect = 'move';
+
+        const $body = $(this);
+        if (!$body.hasClass('drag-over')) {
+            $body.addClass('drag-over');
+
+            // 获取状态信息显示提示
+            const status = $body.data('status');
+            const statusTitle = $body.parent().find('.kanban-header h5').text().trim();
+            console.log(`拖拽悬停在: ${statusTitle}`);
+        }
     });
 
     // 拖拽离开列
     $(document).on('dragleave', '.kanban-body', function(e) {
-        $(this).removeClass('drag-over');
+        const $body = $(this);
+
+        // 检查是否真的离开了列（而不是进入子元素）
+        const rect = this.getBoundingClientRect();
+        const x = e.originalEvent.clientX;
+        const y = e.originalEvent.clientY;
+
+        if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+            $body.removeClass('drag-over');
+        }
     });
 
     // 放置任务
@@ -279,24 +367,115 @@ function initDragAndDrop() {
         const taskId = e.originalEvent.dataTransfer.getData('text/plain');
         const newStatus = $(this).data('status');
         const $taskCard = $(`.kanban-card[data-task-id="${taskId}"]`);
+        const currentStatus = $taskCard.parent().data('status');
+
+        // 检查是否真的需要移动（状态是否改变）
+        if (currentStatus === newStatus) {
+            KanbanApp.showAlert('任务已在此状态列中', 'info', 2000);
+            return;
+        }
 
         // 移动卡片到新列
         $taskCard.appendTo(this);
 
-        // 这里应该调用API更新任务状态
+        // 调用API更新任务状态
         updateTaskStatus(taskId, newStatus);
     });
 }
 
 // 更新任务状态
 function updateTaskStatus(taskId, newStatus) {
-    // 显示加载状态
-    KanbanApp.showAlert('正在更新任务状态...', 'info');
+    const $taskCard = $(`.kanban-card[data-task-id="${taskId}"]`);
+    const originalColumn = $taskCard.parent();
 
-    // 这里应该调用实际的API
-    setTimeout(() => {
-        KanbanApp.showAlert('任务状态更新功能正在开发中...', 'warning');
-    }, 1000);
+    // 显示加载状态
+    $taskCard.addClass('updating');
+    KanbanApp.showAlert('正在更新任务状态...', 'info', 2000);
+
+    // 调用API更新任务状态
+    $.ajax({
+        url: `/tasks/${taskId}/status`,
+        method: 'POST',
+        data: { status: newStatus },
+        success: function(response) {
+            if (response.success) {
+                KanbanApp.showAlert('任务状态更新成功！', 'success', 3000);
+
+                // 更新任务计数
+                updateTaskCounts();
+
+                // 移除加载状态
+                $taskCard.removeClass('updating');
+
+                // 如果有状态变更的特殊处理
+                if (response.data && response.data.startDate) {
+                    console.log('任务已开始:', response.data.startDate);
+                }
+                if (response.data && response.data.completedAt) {
+                    console.log('任务已完成:', response.data.completedAt);
+                }
+            } else {
+                // 更新失败，回滚任务卡片位置
+                rollbackTaskPosition($taskCard, originalColumn);
+                KanbanApp.showAlert(response.message || '更新任务状态失败', 'danger');
+            }
+        },
+        error: function(xhr) {
+            // 更新失败，回滚任务卡片位置
+            rollbackTaskPosition($taskCard, originalColumn);
+
+            const response = xhr.responseJSON;
+            let errorMessage = '更新任务状态失败';
+
+            if (response && response.message) {
+                errorMessage = response.message;
+            } else if (xhr.status === 403) {
+                errorMessage = '您没有权限更改此任务状态';
+            } else if (xhr.status === 404) {
+                errorMessage = '任务不存在';
+            } else if (xhr.status === 400) {
+                errorMessage = '无效的状态值';
+            }
+
+            KanbanApp.showAlert(errorMessage, 'danger');
+            console.error('更新任务状态失败:', xhr);
+        },
+        complete: function() {
+            $taskCard.removeClass('updating');
+        }
+    });
+}
+
+// 回滚任务卡片位置
+function rollbackTaskPosition($taskCard, originalColumn) {
+    $taskCard.appendTo(originalColumn);
+    KanbanApp.showAlert('任务位置已恢复', 'info', 2000);
+}
+
+// 更新任务计数
+function updateTaskCounts() {
+    $('.kanban-column').each(function() {
+        const $column = $(this);
+        const $body = $column.find('.kanban-body');
+        const $badge = $column.find('.kanban-header .badge');
+        const taskCount = $body.find('.kanban-card').length;
+
+        $badge.text(taskCount);
+
+        // 如果列为空，显示空状态
+        if (taskCount === 0) {
+            if ($body.find('.empty-column').length === 0) {
+                $body.append(`
+                    <div class="empty-column text-center py-4">
+                        <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">暂无任务</p>
+                    </div>
+                `);
+            }
+        } else {
+            $body.find('.empty-column').remove();
+        }
+    });
 }
 </script>
 
