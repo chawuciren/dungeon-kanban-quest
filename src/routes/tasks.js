@@ -58,6 +58,14 @@ function buildTaskFilters(query, projectId, userId) {
     projectId: projectId // 只显示当前选中项目的任务
   };
 
+  // 归档状态筛选 - 默认只显示未归档的任务
+  if (query.archived === 'true') {
+    where.isArchived = true;
+  } else if (query.archived === 'false' || !query.archived) {
+    where.isArchived = false;
+  }
+  // 如果 query.archived === 'all'，则不添加归档筛选条件
+
   // 基础筛选条件
   if (query.starLevel) {
     where.starLevel = query.starLevel;
@@ -132,7 +140,11 @@ router.get('/', requireProjectSelection, validateProjectAccess, async (req, res)
     // 排序
     const order = buildTaskOrder(req.query.sort);
 
-    const { count, rows: tasks } = await BountyTask.findAndCountAll({
+    // 先单独统计总数，避免include影响count结果
+    const count = await BountyTask.count({ where });
+
+    // 再查询具体数据
+    const tasks = await BountyTask.findAll({
       where,
       include: [
         {
@@ -228,7 +240,11 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
     // 排序
     const order = buildTaskOrder(req.query.sort);
 
-    const { count, rows: rootTasks } = await BountyTask.findAndCountAll({
+    // 先单独统计根任务总数，避免include影响count结果
+    const count = await BountyTask.count({ where });
+
+    // 再查询具体的根任务数据
+    const rootTasks = await BountyTask.findAll({
       where,
       include: [
         {
@@ -848,6 +864,7 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       estimatedHours: estimatedHours ? parseFloat(estimatedHours) : null,
       startDate: startDate || null,
       dueDate: dueDate || null,
+      progress: 0, // 新创建的任务进度默认为0
       level
     });
 
@@ -864,21 +881,38 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
 
     // 处理验证错误
     if (error.name === 'SequelizeValidationError') {
+      // 从req.body中重新获取数据，确保变量在作用域内
+      const {
+        title: formTitle,
+        description: formDescription,
+        taskType: formTaskType,
+        starLevel: formStarLevel,
+        urgencyLevel: formUrgencyLevel,
+        parentTaskId: formParentTaskId,
+        estimatedHours: formEstimatedHours,
+        startDate: formStartDate,
+        dueDate: formDueDate,
+        sprintId: formSprintId,
+        assigneeId: formAssigneeId,
+        assistantIds: formAssistantIds,
+        reviewerId: formReviewerId
+      } = req.body;
+
       // 保存表单数据到session
       req.session.formData = {
-        title,
-        description,
-        taskType,
-        starLevel,
-        urgencyLevel,
-        parentTaskId,
-        estimatedHours,
-        startDate,
-        dueDate,
-        sprintId,
-        assigneeId,
-        assistantIds,
-        reviewerId
+        title: formTitle,
+        description: formDescription,
+        taskType: formTaskType,
+        starLevel: formStarLevel,
+        urgencyLevel: formUrgencyLevel,
+        parentTaskId: formParentTaskId,
+        estimatedHours: formEstimatedHours,
+        startDate: formStartDate,
+        dueDate: formDueDate,
+        sprintId: formSprintId,
+        assigneeId: formAssigneeId,
+        assistantIds: formAssistantIds,
+        reviewerId: formReviewerId
       };
 
       // 处理验证错误信息
@@ -918,13 +952,14 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
         return { field: err.path, message };
       }) : [{ field: 'general', message: '创建任务时发生错误，请检查输入信息' }];
 
-      return res.render('error/validation', {
+      return res.render('error', {
         title: '任务创建失败',
         errorContext: '任务',
         errors,
         formData: req.session.formData,
         redirectUrl: '/tasks/create' + (req.query.parent ? `?parent=${req.query.parent}` : ''),
-        redirectDelay: 8
+        redirectDelay: 8,
+        error: { status: 400, message: '请修正表单中的错误信息' }
       });
     }
 
@@ -1040,6 +1075,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       status,
       estimatedHours,
       actualHours,
+      progress,
       startDate,
       dueDate,
       sprintId,
@@ -1109,6 +1145,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       sprintId: sprintId && sprintId.trim() !== '' ? sprintId : null,
       estimatedHours: estimatedHours ? parseFloat(estimatedHours) : null,
       actualHours: actualHours ? parseFloat(actualHours) : null,
+      progress: progress !== undefined ? parseInt(progress) : task.progress,
       startDate: startDate || null,
       dueDate: dueDate || null
     };
@@ -1148,6 +1185,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
         status,
         estimatedHours,
         actualHours,
+        progress,
         startDate,
         dueDate,
         sprintId,
@@ -1194,13 +1232,14 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
         return { field: err.path, message };
       }) : [{ field: 'general', message: '更新任务时发生错误，请检查输入信息' }];
 
-      return res.render('error/validation', {
+      return res.render('error', {
         title: '任务编辑失败',
         errorContext: '任务',
         errors,
         formData: req.session.formData,
         redirectUrl: `/tasks/${req.params.id}/edit`,
-        redirectDelay: 8
+        redirectDelay: 8,
+        error: { status: 400, message: '请修正表单中的错误信息' }
       });
     }
 

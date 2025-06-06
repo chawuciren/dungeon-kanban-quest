@@ -19,7 +19,7 @@
                         <div class="card-body py-1 px-2">
                             <div class="row align-items-center">
                                 <!-- 展开按钮和任务标题 -->
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <div class="d-flex align-items-center">
                                         <!-- 展开/折叠按钮 -->
                                         <span class="node-toggle me-2 <%= task.hasChildren ? '' : 'no-children' %>" title="hasChildren: <%= task.hasChildren %>">
@@ -50,7 +50,7 @@
                                                 task.taskType === 'bug' ? '🐛 缺陷' : '📝 任务' %>
                                         </span>
 
-                                        <h6 class="card-title mb-0 me-2 text-truncate" style="max-width: 120px;">
+                                        <h6 class="card-title mb-0 me-2 text-truncate" style="max-width: 520px;">
                                             <a href="/tasks/<%= task.id %>" class="text-decoration-none task-title-link">
                                                 <%= task.title %>
                                             </a>
@@ -62,7 +62,7 @@
                                 </div>
 
                                 <!-- 快速编辑字段 -->
-                                <div class="col-md-2">
+                                <div class="col-md-1">
                                     <select class="form-select form-select-sm quick-edit-field"
                                             data-task-id="<%= task.id %>"
                                             data-field="status">
@@ -76,7 +76,7 @@
                                         <option value="cancelled" <%= task.status === 'cancelled' ? 'selected' : '' %>>已取消</option>
                                     </select>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-1">
                                     <select class="form-select form-select-sm quick-edit-field"
                                             data-task-id="<%= task.id %>"
                                             data-field="assigneeId">
@@ -90,7 +90,7 @@
                                         <% } %>
                                     </select>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-1">
                                     <select class="form-select form-select-sm quick-edit-field"
                                             data-task-id="<%= task.id %>"
                                             data-field="urgencyLevel">

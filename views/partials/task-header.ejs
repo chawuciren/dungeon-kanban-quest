@@ -101,6 +101,15 @@
                         </div>
 
                         <div class="col-md-2">
+                            <label class="form-label">归档状态</label>
+                            <select class="form-select" name="archived">
+                                <option value="false" <%= (!filters || !filters.archived || filters.archived == 'false') ? 'selected' : '' %>>未归档</option>
+                                <option value="true" <%= (filters && filters.archived == 'true') ? 'selected' : '' %>>已归档</option>
+                                <option value="all" <%= (filters && filters.archived == 'all') ? 'selected' : '' %>>全部</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
                             <label class="form-label">负责人</label>
                             <select class="form-select" name="assigneeId">
                                 <option value="">全部负责人</option>

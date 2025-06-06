@@ -18,7 +18,7 @@
                         <div class="card-body py-1 px-2">
                             <div class="row align-items-center">
                                 <!-- 任务标题和星级 -->
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <div class="d-flex align-items-center">
                                         <span class="badge bg-<%=
                                             task.taskType === 'requirement' ? 'info' :
@@ -39,7 +39,7 @@
                                                 task.taskType === 'devops_task' ? '⚙️ 运维' :
                                                 task.taskType === 'bug' ? '🐛 缺陷' : '📝 任务' %>
                                         </span>
-                                        <h6 class="card-title mb-0 me-2 text-truncate" style="max-width: 140px;">
+                                        <h6 class="card-title mb-0 me-2 text-truncate" style="max-width: 520px;">
                                             <a href="/tasks/<%= task.id %>" class="text-decoration-none task-title-link">
                                                 <%= task.title %>
                                             </a>
@@ -51,7 +51,7 @@
                                 </div>
 
                                 <!-- 快速编辑字段 -->
-                                <div class="col-md-2">
+                                <div class="col-md-1">
                                     <select class="form-select form-select-sm quick-edit-field"
                                             data-task-id="<%= task.id %>"
                                             data-field="status">
@@ -65,7 +65,7 @@
                                         <option value="cancelled" <%= task.status === 'cancelled' ? 'selected' : '' %>>已取消</option>
                                     </select>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-1">
                                     <select class="form-select form-select-sm quick-edit-field"
                                             data-task-id="<%= task.id %>"
                                             data-field="assigneeId">
@@ -79,7 +79,7 @@
                                         <% } %>
                                     </select>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-1">
                                     <select class="form-select form-select-sm quick-edit-field"
                                             data-task-id="<%= task.id %>"
                                             data-field="urgencyLevel">
@@ -105,6 +105,30 @@
                                                 <% } %>
                                             </div>
                                         <% } %>
+                                        <!-- 进度条 -->
+                                        <% const progress = task.progress || 0; %>
+                                        <div class="mt-1">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-chart-line me-1"></i>
+                                                <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                    <div class="progress-bar
+                                                        <% if (progress === 0) { %>bg-secondary
+                                                        <% } else if (progress < 25) { %>bg-info
+                                                        <% } else if (progress < 50) { %>bg-primary
+                                                        <% } else if (progress < 75) { %>bg-warning
+                                                        <% } else if (progress < 100) { %>bg-success
+                                                        <% } else { %>bg-success
+                                                        <% } %>"
+                                                        role="progressbar"
+                                                        style="width: <%= progress %>%;"
+                                                        aria-valuenow="<%= progress %>"
+                                                        aria-valuemin="0"
+                                                        aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                                <span class="text-nowrap" style="font-size: 0.75rem;"><%= progress %>%</span>
+                                            </div>
+                                        </div>
                                     </small>
                                 </div>
 

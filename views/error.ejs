@@ -2,80 +2,167 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
+        <div class="col-lg-8 col-md-10">
             <div class="text-center">
                 <!-- 错误图标 -->
                 <div class="error-icon mb-4">
-                    <% if (error.status === 404) { %>
+                    <% if (typeof errors !== 'undefined' && errors && errors.length > 0) { %>
+                        <!-- 验证错误 -->
+                        <i class="fas fa-exclamation-triangle fa-5x text-warning"></i>
+                    <% } else if (error && error.status === 404) { %>
                         <i class="fas fa-search fa-5x text-muted"></i>
-                    <% } else if (error.status === 403) { %>
+                    <% } else if (error && error.status === 403) { %>
                         <i class="fas fa-lock fa-5x text-warning"></i>
-                    <% } else if (error.status === 500) { %>
+                    <% } else if (error && error.status === 500) { %>
                         <i class="fas fa-exclamation-triangle fa-5x text-danger"></i>
                     <% } else { %>
                         <i class="fas fa-question-circle fa-5x text-muted"></i>
                     <% } %>
                 </div>
-                
-                <!-- 错误状态码 -->
-                <h1 class="display-1 fw-bold text-primary mb-3">
-                    <%= error.status %>
-                </h1>
-                
-                <!-- 错误标题 -->
-                <h2 class="h3 mb-3">
-                    <% if (error.status === 404) { %>
-                        页面未找到
-                    <% } else if (error.status === 403) { %>
-                        访问被拒绝
-                    <% } else if (error.status === 500) { %>
-                        服务器内部错误
-                    <% } else { %>
-                        出现了一些问题
-                    <% } %>
-                </h2>
-                
+
+                <!-- 错误状态码或标题 -->
+                <% if (typeof errors !== 'undefined' && errors && errors.length > 0) { %>
+                    <!-- 验证错误标题 -->
+                    <h1 class="display-4 fw-bold text-warning mb-3">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </h1>
+                    <h2 class="h3 mb-3">
+                        <%= errorContext || '数据' %>验证失败
+                    </h2>
+                <% } else { %>
+                    <!-- 普通错误状态码 -->
+                    <h1 class="display-1 fw-bold text-primary mb-3">
+                        <%= error.status %>
+                    </h1>
+                    <!-- 错误标题 -->
+                    <h2 class="h3 mb-3">
+                        <% if (error.status === 404) { %>
+                            页面未找到
+                        <% } else if (error.status === 403) { %>
+                            访问被拒绝
+                        <% } else if (error.status === 500) { %>
+                            服务器内部错误
+                        <% } else { %>
+                            出现了一些问题
+                        <% } %>
+                    </h2>
+                <% } %>
+
                 <!-- 错误描述 -->
-                <p class="lead text-muted mb-4">
-                    <%= error.message %>
-                </p>
-                
+                <% if (typeof errors !== 'undefined' && errors && errors.length > 0) { %>
+                    <p class="lead text-muted mb-4">
+                        请修正以下问题后重新提交
+                    </p>
+                <% } else { %>
+                    <p class="lead text-muted mb-4">
+                        <%= error.message %>
+                    </p>
+                <% } %>
+
+                <!-- 验证错误列表 -->
+                <% if (typeof errors !== 'undefined' && errors && errors.length > 0) { %>
+                <div class="alert alert-warning text-start mb-4">
+                    <h6 class="alert-heading">
+                        <i class="fas fa-list-ul me-2"></i>
+                        需要修正的问题：
+                    </h6>
+                    <ul class="mb-0">
+                        <% errors.forEach(error => { %>
+                        <li class="mb-1">
+                            <%= error.message || error %>
+                        </li>
+                        <% }) %>
+                    </ul>
+                </div>
+
+                <!-- 自动跳转倒计时 -->
+                <% if (typeof redirectUrl !== 'undefined' && redirectUrl) { %>
+                <div class="alert alert-info mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="fas fa-clock me-2"></i>
+                        <span id="countdown"><%= redirectDelay || 5 %></span> 秒后自动返回修改页面
+                    </div>
+                    <div class="progress mt-2" style="height: 4px;">
+                        <div class="progress-bar bg-info" id="progressBar" style="width: 100%; transition: width 1s linear;"></div>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- 保留的表单数据 -->
+                <% if (typeof formData !== 'undefined' && formData && Object.keys(formData).length > 0) { %>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-save me-2"></i>
+                            已保留您填写的信息
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <% Object.entries(formData).forEach(([key, value]) => { %>
+                                <% if (value && value.toString().trim()) { %>
+                                <div class="col-md-6 mb-2">
+                                    <small class="text-muted d-block"><%= getFieldLabel(key) %>：</small>
+                                    <span class="text-dark"><%= value %></span>
+                                </div>
+                                <% } %>
+                            <% }) %>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+                <% } else { %>
                 <!-- 建议操作 -->
                 <div class="mb-4">
-                    <% if (error.status === 404) { %>
+                    <% if (error && error.status === 404) { %>
                         <p class="text-muted">
                             您访问的页面可能已被删除、重命名或暂时不可用。
                         </p>
-                    <% } else if (error.status === 403) { %>
+                    <% } else if (error && error.status === 403) { %>
                         <p class="text-muted">
                             您没有权限访问此页面，请联系管理员或检查您的登录状态。
                         </p>
-                    <% } else if (error.status === 500) { %>
+                    <% } else if (error && error.status === 500) { %>
                         <p class="text-muted">
                             服务器遇到了一个错误，我们正在努力修复。请稍后再试。
                         </p>
                     <% } %>
                 </div>
-                
+                <% } %>
+
                 <!-- 操作按钮 -->
-                <div class="d-flex justify-content-center gap-3 mb-4">
-                    <a href="/" class="btn btn-primary">
-                        <i class="fas fa-home me-2"></i>
-                        返回首页
-                    </a>
-                    <button onclick="history.back()" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>
-                        返回上页
-                    </button>
-                    <% if (error.status === 500) { %>
-                        <a href="/support" class="btn btn-outline-info">
-                            <i class="fas fa-life-ring me-2"></i>
-                            联系支持
+                <div class="d-flex justify-content-center gap-3 mb-4 flex-wrap">
+                    <% if (typeof errors !== 'undefined' && errors && errors.length > 0) { %>
+                        <!-- 验证错误的按钮 -->
+                        <button type="button" class="btn btn-primary" onclick="goBack()">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            立即返回修改
+                        </button>
+                        <a href="/dashboard" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-2"></i>
+                            返回首页
                         </a>
+                    <% } else { %>
+                        <!-- 普通错误的按钮 -->
+                        <a href="/" class="btn btn-primary">
+                            <i class="fas fa-home me-2"></i>
+                            返回首页
+                        </a>
+                        <button onclick="history.back()" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            返回上页
+                        </button>
+                        <% if (error && error.status === 500) { %>
+                            <a href="/support" class="btn btn-outline-info">
+                                <i class="fas fa-life-ring me-2"></i>
+                                联系支持
+                            </a>
+                        <% } %>
                     <% } %>
                 </div>
-                
-                <!-- 快速链接 -->
+
+                <!-- 快速链接 (仅非验证错误时显示) -->
+                <% if (typeof errors === 'undefined' || !errors || errors.length === 0) { %>
                 <div class="quick-links">
                     <h6 class="text-muted mb-3">您可能想要：</h6>
                     <div class="row g-2">
@@ -105,9 +192,10 @@
                         </div>
                     </div>
                 </div>
-                
+                <% } %>
+
                 <!-- 开发环境显示错误详情 -->
-                <% if (error.stack && config.app.env === 'development') { %>
+                <% if (error && error.stack && config.app.env === 'development') { %>
                     <div class="mt-5">
                         <div class="card">
                             <div class="card-header">
@@ -126,6 +214,60 @@
         </div>
     </div>
 </div>
+
+<!-- 验证错误的JavaScript -->
+<% if (typeof errors !== 'undefined' && errors && errors.length > 0) { %>
+<script>
+    // 自动跳转倒计时
+    <% if (typeof redirectUrl !== 'undefined' && redirectUrl) { %>
+    let countdown = <%= redirectDelay || 5 %>;
+    const countdownElement = document.getElementById('countdown');
+    const progressBar = document.getElementById('progressBar');
+    const redirectUrl = '<%= redirectUrl %>';
+
+    const timer = setInterval(() => {
+        countdown--;
+        if (countdownElement) {
+            countdownElement.textContent = countdown;
+        }
+
+        // 更新进度条
+        if (progressBar) {
+            const progress = (countdown / <%= redirectDelay || 5 %>) * 100;
+            progressBar.style.width = progress + '%';
+        }
+
+        if (countdown <= 0) {
+            clearInterval(timer);
+            goBack();
+        }
+    }, 1000);
+
+    // 页面可见性变化时暂停/恢复倒计时
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            clearInterval(timer);
+        } else {
+            // 页面重新可见时重新开始倒计时
+            location.reload();
+        }
+    });
+    <% } %>
+
+    // 返回修改页面
+    function goBack() {
+        <% if (typeof redirectUrl !== 'undefined' && redirectUrl) { %>
+        if ('<%= redirectUrl %>' === 'javascript:history.back()') {
+            history.back();
+        } else {
+            window.location.href = '<%= redirectUrl %>';
+        }
+        <% } else { %>
+        history.back();
+        <% } %>
+    }
+</script>
+<% } %>
 
 <!-- 自定义样式 -->
 <style>
@@ -153,6 +295,60 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
+
+/* 验证错误特殊样式 */
+.alert ul {
+    padding-left: 1.2rem;
+}
+
+.alert li {
+    color: inherit;
+}
 </style>
+
+<%
+// 辅助函数：获取字段标签
+function getFieldLabel(key) {
+    const labels = {
+        // 任务字段
+        title: '任务标题',
+        description: '任务描述',
+        taskType: '任务类型',
+        starLevel: '星级难度',
+        urgencyLevel: '紧急程度',
+        estimatedHours: '预估工时',
+        actualHours: '实际工时',
+        startDate: '开始日期',
+        dueDate: '截止日期',
+        assigneeId: '负责人',
+        reviewerId: '审核人',
+        assistantIds: '协助人员',
+        parentTaskId: '父任务',
+        sprintId: '所属迭代',
+        progress: '完成进度',
+
+        // 项目字段
+        name: '项目名称',
+        key: '项目标识符',
+        projectType: '项目类型',
+        organizationId: '主要组织',
+        leaderId: '项目负责人',
+        endDate: '结束日期',
+        visibility: '可见性',
+        secondaryOrganizations: '协作组织',
+
+        // 用户字段
+        username: '用户名',
+        email: '邮箱',
+        firstName: '名',
+        lastName: '姓',
+        role: '角色',
+
+        // 组织字段
+        ownerId: '组织负责人'
+    };
+    return labels[key] || key;
+}
+%>
 
 <%- include('partials/footer') %>

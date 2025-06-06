@@ -180,6 +180,24 @@ const BountyTask = sequelize.define('BountyTask', {
       attachments: [],
       comments: []
     }
+  },
+  // 任务进度百分比
+  progress: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+    validate: {
+      min: 0,
+      max: 100
+    },
+    comment: '任务完成进度百分比 (0-100)'
+  },
+  // 归档状态
+  isArchived: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    field: 'is_archived',
+    comment: '是否已归档'
   }
 }, {
   tableName: 'bounty_tasks',
@@ -233,6 +251,45 @@ BountyTask.prototype.getHoursOverrunPercentage = function() {
   }
   const overrun = this.getHoursOverrun();
   return (overrun / this.estimatedHours) * 100;
+};
+
+// 根据实际工时自动计算进度百分比
+BountyTask.prototype.calculateProgressFromHours = function() {
+  if (!this.estimatedHours || this.estimatedHours === 0) {
+    return this.progress || 0;
+  }
+  if (!this.actualHours) {
+    return 0;
+  }
+  // 根据实际工时占预估工时的比例计算进度，但不超过100%
+  const calculatedProgress = Math.min(100, Math.round((this.actualHours / this.estimatedHours) * 100));
+  return calculatedProgress;
+};
+
+// 根据任务状态自动设置进度
+BountyTask.prototype.getProgressByStatus = function() {
+  const statusProgressMap = {
+    'draft': 0,
+    'published': 0,
+    'bidding': 0,
+    'assigned': 10,
+    'in_progress': this.progress || 50, // 使用当前进度或默认50%
+    'review': 90,
+    'completed': 100,
+    'cancelled': this.progress || 0 // 保持当前进度或0%
+  };
+  return statusProgressMap[this.status] || this.progress || 0;
+};
+
+// 获取进度状态的显示文本
+BountyTask.prototype.getProgressText = function() {
+  const progress = this.progress || 0;
+  if (progress === 0) return '未开始';
+  if (progress < 25) return '刚开始';
+  if (progress < 50) return '进行中';
+  if (progress < 75) return '大部分完成';
+  if (progress < 100) return '即将完成';
+  return '已完成';
 };
 
 
