@@ -44,7 +44,7 @@ const BountyTask = sequelize.define('BountyTask', {
 
   // 任务状态
   status: {
-    type: DataTypes.ENUM('draft', 'assigned', 'in_progress', 'review', 'completed', 'cancelled'),
+    type: DataTypes.ENUM('draft', 'published', 'in_progress', 'review', 'completed', 'cancelled'),
     defaultValue: 'draft'
   },
   projectId: {
@@ -271,8 +271,6 @@ BountyTask.prototype.getProgressByStatus = function() {
   const statusProgressMap = {
     'draft': 0,
     'published': 0,
-    'bidding': 0,
-    'assigned': 10,
     'in_progress': this.progress || 50, // 使用当前进度或默认50%
     'review': 90,
     'completed': 100,
@@ -295,14 +293,14 @@ BountyTask.prototype.getProgressText = function() {
 
 
 BountyTask.prototype.canBeAssignedTo = function(userId) {
-  return this.status === 'draft' && !this.assigneeId;
+  return this.status === 'published' && !this.assigneeId;
 };
 
 // 类方法
 BountyTask.findAvailableForUser = function(userId) {
   return this.findAll({
     where: {
-      status: 'draft',
+      status: 'published',
       assigneeId: null
     },
     order: [['createdAt', 'DESC']]

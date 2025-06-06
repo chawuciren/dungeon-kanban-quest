@@ -68,8 +68,6 @@
                                             data-field="status">
                                         <option value="draft" <%= task.status === 'draft' ? 'selected' : '' %>>草稿</option>
                                         <option value="published" <%= task.status === 'published' ? 'selected' : '' %>>已发布</option>
-                                        <option value="bidding" <%= task.status === 'bidding' ? 'selected' : '' %>>竞标中</option>
-                                        <option value="assigned" <%= task.status === 'assigned' ? 'selected' : '' %>>已分配</option>
                                         <option value="in_progress" <%= task.status === 'in_progress' ? 'selected' : '' %>>进行中</option>
                                         <option value="review" <%= task.status === 'review' ? 'selected' : '' %>>待审核</option>
                                         <option value="completed" <%= task.status === 'completed' ? 'selected' : '' %>>已完成</option>
@@ -723,7 +721,7 @@ function generateSubtasksHtml(subtasks, level) {
         // 状态选项
         const statusOptions = [
             { value: 'draft', text: '草稿', selected: task.status === 'draft' },
-            { value: 'assigned', text: '已分配', selected: task.status === 'assigned' },
+            { value: 'published', text: '已发布', selected: task.status === 'published' },
             { value: 'in_progress', text: '进行中', selected: task.status === 'in_progress' },
             { value: 'review', text: '待审核', selected: task.status === 'review' },
             { value: 'completed', text: '已完成', selected: task.status === 'completed' },

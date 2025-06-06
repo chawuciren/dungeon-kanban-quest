@@ -64,7 +64,7 @@
                             <select class="form-select" name="status">
                                 <option value="">全部状态</option>
                                 <option value="draft" <%= (filters && filters.status == 'draft') ? 'selected' : '' %>>草稿</option>
-                                <option value="assigned" <%= (filters && filters.status == 'assigned') ? 'selected' : '' %>>已分配</option>
+                                <option value="published" <%= (filters && filters.status == 'published') ? 'selected' : '' %>>已发布</option>
                                 <option value="in_progress" <%= (filters && filters.status == 'in_progress') ? 'selected' : '' %>>进行中</option>
                                 <option value="review" <%= (filters && filters.status == 'review') ? 'selected' : '' %>>待审核</option>
                                 <option value="completed" <%= (filters && filters.status == 'completed') ? 'selected' : '' %>>已完成</option>

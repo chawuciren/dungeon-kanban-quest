@@ -409,8 +409,8 @@ router.get('/kanban', requireProjectSelection, validateProjectAccess, async (req
     // 按状态分组任务
     const kanbanColumns = {
       draft: { title: '草稿', tasks: [], color: 'secondary' },
-      assigned: { title: '已分配', tasks: [], color: 'warning' },
-      in_progress: { title: '进行中', tasks: [], color: 'primary' },
+      published: { title: '已发布', tasks: [], color: 'primary' },
+      in_progress: { title: '进行中', tasks: [], color: 'warning' },
       review: { title: '待审核', tasks: [], color: 'info' },
       completed: { title: '已完成', tasks: [], color: 'success' },
       cancelled: { title: '已取消', tasks: [], color: 'danger' }
@@ -957,7 +957,7 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       taskType: taskType || 'task',
       starLevel: parseInt(starLevel),
       urgencyLevel,
-      status: 'published',
+      status: 'draft',
       projectId,
       publisherId: req.session.userId,
       assigneeId: assigneeId && assigneeId.trim() !== '' ? assigneeId : null,
@@ -1511,7 +1511,7 @@ router.post('/:id/quick-update', requireAuth, requireProjectSelection, validateP
     } else if (field === 'status') {
       const statusConfig = {
         'draft': '草稿',
-        'assigned': '已分配',
+        'published': '已发布',
         'in_progress': '进行中',
         'review': '待审核',
         'completed': '已完成',
@@ -1593,7 +1593,7 @@ router.post('/:id/status', requireAuth, async (req, res) => {
     }
 
     // 验证状态值
-    const validStatuses = ['draft', 'assigned', 'in_progress', 'review', 'completed', 'cancelled'];
+    const validStatuses = ['draft', 'published', 'in_progress', 'review', 'completed', 'cancelled'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
         success: false,

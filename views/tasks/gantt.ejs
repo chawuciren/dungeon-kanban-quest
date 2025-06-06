@@ -1393,8 +1393,6 @@ function renderTaskBarNodes(nodes, dateRange, container, level) {
                 const statusColors = {
                     'draft': '#6c757d',        // 灰色 - 草稿
                     'published': '#0d6efd',    // 亮蓝色 - 已发布
-                    'bidding': '#20c997',      // 青绿色 - 竞标中
-                    'assigned': '#ffc107',     // 黄色 - 已分配
                     'in_progress': '#f39c12',  // 金黄色 - 进行中
                     'review': '#6f42c1',       // 紫色 - 待审核
                     'completed': '#198754',    // 深绿色 - 已完成
@@ -1761,8 +1759,6 @@ function renderTaskTreeNodes(nodes, level) {
                                     data-field="status">
                                 <option value="draft" ${taskData.status === 'draft' ? 'selected' : ''}>草稿</option>
                                 <option value="published" ${taskData.status === 'published' ? 'selected' : ''}>已发布</option>
-                                <option value="bidding" ${taskData.status === 'bidding' ? 'selected' : ''}>竞标中</option>
-                                <option value="assigned" ${taskData.status === 'assigned' ? 'selected' : ''}>已分配</option>
                                 <option value="in_progress" ${taskData.status === 'in_progress' ? 'selected' : ''}>进行中</option>
                                 <option value="review" ${taskData.status === 'review' ? 'selected' : ''}>待审核</option>
                                 <option value="completed" ${taskData.status === 'completed' ? 'selected' : ''}>已完成</option>
@@ -2393,8 +2389,8 @@ function setupGanttObserver() {
 function getStatusClass(status) {
     const classMap = {
         'draft': 'bg-secondary text-white',
-        'assigned': 'bg-warning text-dark',
-        'in_progress': 'bg-primary text-white',
+        'published': 'bg-primary text-white',
+        'in_progress': 'bg-warning text-dark',
         'review': 'bg-info text-white',
         'completed': 'bg-success text-white',
         'cancelled': 'bg-danger text-white'
@@ -2406,7 +2402,7 @@ function getStatusClass(status) {
 function getStatusText(status) {
     const statusMap = {
         'draft': '草稿',
-        'assigned': '已分配',
+        'published': '已发布',
         'in_progress': '进行中',
         'review': '待审核',
         'completed': '已完成',

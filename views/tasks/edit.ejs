@@ -198,7 +198,7 @@ const getValue = (field, defaultValue = '') => {
                                     <label for="status" class="form-label">任务状态</label>
                                     <select class="form-select" id="status" name="status">
                                         <option value="draft" <%= task.status === 'draft' ? 'selected' : '' %>>草稿</option>
-                                        <option value="assigned" <%= task.status === 'assigned' ? 'selected' : '' %>>已分配</option>
+                                        <option value="published" <%= task.status === 'published' ? 'selected' : '' %>>已发布</option>
                                         <option value="in_progress" <%= task.status === 'in_progress' ? 'selected' : '' %>>进行中</option>
                                         <option value="review" <%= task.status === 'review' ? 'selected' : '' %>>待审核</option>
                                         <option value="completed" <%= task.status === 'completed' ? 'selected' : '' %>>已完成</option>
