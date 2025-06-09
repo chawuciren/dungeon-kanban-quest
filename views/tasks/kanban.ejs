@@ -51,12 +51,39 @@
                                             </span>
                                         </div>
 
-                                        <!-- 任务标题 -->
-                                        <h6 class="card-title mb-2">
-                                            <a href="/tasks/<%= task.id %>" class="text-decoration-none">
-                                                <%= task.title %>
-                                            </a>
-                                        </h6>
+                                        <!-- 任务标题和操作按钮 -->
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="card-title mb-0 flex-grow-1">
+                                                <a href="/tasks/<%= task.id %>" class="text-decoration-none">
+                                                    <%= task.title %>
+                                                </a>
+                                            </h6>
+                                            <% if (user && (user.role === 'admin' || task.publisherId === user.id)) { %>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                        <li><a class="dropdown-item" href="/tasks/<%= task.id %>">
+                                                            <i class="fas fa-eye me-2"></i>查看详情
+                                                        </a></li>
+                                                        <li><a class="dropdown-item" href="/tasks/<%= task.id %>/edit">
+                                                            <i class="fas fa-edit me-2"></i>编辑
+                                                        </a></li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <% if (task.isArchived) { %>
+                                                            <li><a class="dropdown-item text-info" href="#" onclick="event.stopPropagation(); toggleArchiveTask('<%= task.id %>', false)">
+                                                                <i class="fas fa-box-open me-2"></i>取消归档
+                                                            </a></li>
+                                                        <% } else { %>
+                                                            <li><a class="dropdown-item text-warning" href="#" onclick="event.stopPropagation(); toggleArchiveTask('<%= task.id %>', true)">
+                                                                <i class="fas fa-archive me-2"></i>归档
+                                                            </a></li>
+                                                        <% } %>
+                                                    </ul>
+                                                </div>
+                                            <% } %>
+                                        </div>
 
                                         <!-- 任务元信息 -->
                                         <div class="task-meta mb-2">
@@ -271,6 +298,30 @@
     font-weight: 500;
     z-index: 10;
     pointer-events: none;
+}
+
+/* 看板卡片操作按钮样式 */
+.kanban-card .dropdown-toggle {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border: none;
+    background: transparent;
+    color: #6c757d;
+}
+
+.kanban-card .dropdown-toggle:hover {
+    background: #f8f9fa;
+    color: #495057;
+}
+
+.kanban-card .dropdown-menu {
+    z-index: 1050;
+    font-size: 0.875rem;
+}
+
+.kanban-card .card-title {
+    line-height: 1.3;
+    margin-right: 0.5rem;
 }
 </style>
 
@@ -510,6 +561,45 @@ function showToast(type, message) {
     toast.on('hidden.bs.toast', function() {
         $(this).remove();
     });
+}
+
+// 归档/取消归档任务函数
+function toggleArchiveTask(taskId, isArchive) {
+    const action = isArchive ? '归档' : '取消归档';
+    const confirmMessage = isArchive
+        ? '确定要归档此任务吗？\n\n归档后的任务将从常规视图中隐藏，需要在筛选器中选择"已归档"才能查看。'
+        : '确定要取消归档此任务吗？\n\n取消归档后的任务将重新显示在常规视图中。';
+
+    if (confirm(confirmMessage)) {
+        const url = isArchive ? `/tasks/${taskId}/archive` : `/tasks/${taskId}/unarchive`;
+
+        // 发送AJAX请求
+        $.ajax({
+            url: url,
+            method: 'POST',
+            dataType: 'json',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', response.message);
+                    // 刷新页面以更新任务列表
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showToast('error', response.message || `${action}失败`);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('归档操作错误:', { xhr, status, error });
+                const errorMsg = xhr.responseJSON?.message || `${action}失败：${error}`;
+                showToast('error', errorMsg);
+            }
+        });
+    }
 }
 </script>
 

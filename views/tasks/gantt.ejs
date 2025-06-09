@@ -16,9 +16,9 @@
             <div class="card-body py-2">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-outline-secondary active" id="viewModeDay">日</button>
-                        <button type="button" class="btn btn-outline-secondary" id="viewModeWeek">周</button>
-                        <button type="button" class="btn btn-outline-secondary" id="viewModeMonth">月</button>
+                        <button type="button" class="btn btn-outline-secondary <%= (ganttParams && ganttParams.granularity === 'day') ? 'active' : '' %>" id="viewModeDay">日</button>
+                        <button type="button" class="btn btn-outline-secondary <%= (ganttParams && ganttParams.granularity === 'week') ? 'active' : '' %>" id="viewModeWeek">周</button>
+                        <button type="button" class="btn btn-outline-secondary <%= (ganttParams && ganttParams.granularity === 'month') ? 'active' : '' %>" id="viewModeMonth">月</button>
                     </div>
                     <div class="d-flex align-items-center gap-3">
                         <div class="gantt-legend">
@@ -1032,8 +1032,17 @@ function initGanttChart() {
     try {
         console.log('开始渲染统一甘特图，任务数量:', tasks.length);
 
-        // 渲染统一甘特图 - 默认使用天视图
-        renderUnifiedGanttChart(tasks, 'Day');
+        // 获取用户设置的默认时间粒度
+        const userGranularity = '<%= ganttParams && ganttParams.granularity ? ganttParams.granularity : "day" %>';
+        const viewModeMap = {
+            'day': 'Day',
+            'week': 'Week',
+            'month': 'Month'
+        };
+        const defaultViewMode = viewModeMap[userGranularity] || 'Day';
+
+        // 渲染统一甘特图 - 使用用户设置的默认视图
+        renderUnifiedGanttChart(tasks, defaultViewMode);
 
         // 绑定事件监听器
         bindEventListeners();
@@ -2130,6 +2139,14 @@ function renderTaskTreeNodes(nodes, level) {
                                     <li><a class="dropdown-item" href="/tasks/${taskData.id}/edit">
                                         <i class="fas fa-edit me-2"></i>编辑
                                     </a></li>
+                                    ${taskData.isArchived ?
+                                        `<li><a class="dropdown-item text-info" href="#" onclick="toggleArchiveTask('${taskData.id}', false)">
+                                            <i class="fas fa-box-open me-2"></i>取消归档
+                                        </a></li>` :
+                                        `<li><a class="dropdown-item text-warning" href="#" onclick="toggleArchiveTask('${taskData.id}', true)">
+                                            <i class="fas fa-archive me-2"></i>归档
+                                        </a></li>`
+                                    }
                                     <li><a class="dropdown-item text-danger" href="#" onclick="deleteTask('${taskData.id}', '${task.name}')">
                                         <i class="fas fa-trash me-2"></i>删除
                                     </a></li>
@@ -2338,6 +2355,45 @@ function showToast(type, message) {
     toast.on('hidden.bs.toast', function() {
         $(this).remove();
     });
+}
+
+// 归档/取消归档任务函数
+function toggleArchiveTask(taskId, isArchive) {
+    const action = isArchive ? '归档' : '取消归档';
+    const confirmMessage = isArchive
+        ? '确定要归档此任务吗？\n\n归档后的任务将从常规视图中隐藏，需要在筛选器中选择"已归档"才能查看。'
+        : '确定要取消归档此任务吗？\n\n取消归档后的任务将重新显示在常规视图中。';
+
+    if (confirm(confirmMessage)) {
+        const url = isArchive ? `/tasks/${taskId}/archive` : `/tasks/${taskId}/unarchive`;
+
+        // 发送AJAX请求
+        $.ajax({
+            url: url,
+            method: 'POST',
+            dataType: 'json',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', response.message);
+                    // 刷新页面以更新任务列表
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showToast('error', response.message || `${action}失败`);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('归档操作错误:', { xhr, status, error });
+                const errorMsg = xhr.responseJSON?.message || `${action}失败：${error}`;
+                showToast('error', errorMsg);
+            }
+        });
+    }
 }
 
 // 删除任务函数

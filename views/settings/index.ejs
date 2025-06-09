@@ -1,0 +1,212 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- 页面标题 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-cog me-2"></i>
+                    用户设置
+                </h1>
+                <a href="/profile" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    返回个人资料
+                </a>
+            </div>
+
+            <!-- 设置表单 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-sliders-h me-2"></i>
+                        个人偏好设置
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/settings">
+                        <div class="row">
+                            <!-- 任务视图配置 -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3">
+                                    <i class="fas fa-eye me-1"></i>
+                                    任务视图配置
+                                </h6>
+
+                                <!-- 默认任务视图 -->
+                                <div class="mb-3">
+                                    <label for="defaultTaskView" class="form-label">
+                                        默认任务视图 <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" id="defaultTaskView" name="defaultTaskView" required>
+                                        <option value="list" <%= userSettings.defaultTaskView === 'list' ? 'selected' : '' %>>
+                                            📋 列表视图
+                                        </option>
+                                        <option value="kanban" <%= userSettings.defaultTaskView === 'kanban' ? 'selected' : '' %>>
+                                            📊 看板视图
+                                        </option>
+                                        <option value="gantt" <%= userSettings.defaultTaskView === 'gantt' ? 'selected' : '' %>>
+                                            📈 甘特图视图
+                                        </option>
+                                        <option value="tree" <%= userSettings.defaultTaskView === 'tree' ? 'selected' : '' %>>
+                                            🌳 树形视图
+                                        </option>
+                                    </select>
+                                    <div class="form-text">
+                                        访问任务页面时默认显示的视图模式
+                                    </div>
+                                </div>
+
+                                <!-- 每页显示任务数量 -->
+                                <div class="mb-3">
+                                    <label for="tasksPerPage" class="form-label">
+                                        每页显示任务数量 <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" id="tasksPerPage" name="tasksPerPage" required>
+                                        <option value="10" <%= userSettings.tasksPerPage === 10 ? 'selected' : '' %>>10 个任务</option>
+                                        <option value="20" <%= userSettings.tasksPerPage === 20 ? 'selected' : '' %>>20 个任务</option>
+                                        <option value="50" <%= userSettings.tasksPerPage === 50 ? 'selected' : '' %>>50 个任务</option>
+                                        <option value="100" <%= userSettings.tasksPerPage === 100 ? 'selected' : '' %>>100 个任务</option>
+                                    </select>
+                                    <div class="form-text">
+                                        在列表和树形视图中每页显示的任务数量
+                                    </div>
+                                </div>
+
+                                <!-- 默认排序方式 -->
+                                <div class="mb-3">
+                                    <label for="defaultTaskSort" class="form-label">
+                                        默认排序方式 <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" id="defaultTaskSort" name="defaultTaskSort" required>
+                                        <option value="created" <%= userSettings.defaultTaskSort === 'created' ? 'selected' : '' %>>
+                                            🕒 按创建时间排序
+                                        </option>
+                                        <option value="deadline" <%= userSettings.defaultTaskSort === 'deadline' ? 'selected' : '' %>>
+                                            ⏰ 按截止日期排序
+                                        </option>
+                                        <option value="priority" <%= userSettings.defaultTaskSort === 'priority' ? 'selected' : '' %>>
+                                            🔥 按优先级排序
+                                        </option>
+                                    </select>
+                                    <div class="form-text">
+                                        任务列表的默认排序方式
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 甘特图和任务创建配置 -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3">
+                                    <i class="fas fa-chart-gantt me-1"></i>
+                                    甘特图与任务配置
+                                </h6>
+
+                                <!-- 甘特图默认时间粒度 -->
+                                <div class="mb-3">
+                                    <label for="ganttDefaultGranularity" class="form-label">
+                                        甘特图默认时间粒度 <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" id="ganttDefaultGranularity" name="ganttDefaultGranularity" required>
+                                        <option value="day" <%= userSettings.ganttDefaultGranularity === 'day' ? 'selected' : '' %>>
+                                            📅 日视图
+                                        </option>
+                                        <option value="week" <%= userSettings.ganttDefaultGranularity === 'week' ? 'selected' : '' %>>
+                                            📆 周视图
+                                        </option>
+                                        <option value="month" <%= userSettings.ganttDefaultGranularity === 'month' ? 'selected' : '' %>>
+                                            🗓️ 月视图
+                                        </option>
+                                    </select>
+                                    <div class="form-text">
+                                        打开甘特图时默认的时间显示粒度
+                                    </div>
+                                </div>
+
+                                <!-- 默认任务类型 -->
+                                <div class="mb-3">
+                                    <label for="defaultTaskType" class="form-label">
+                                        创建任务时默认类型 <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" id="defaultTaskType" name="defaultTaskType" required>
+                                        <% taskTypes.forEach(taskType => { %>
+                                            <option value="<%= taskType.value %>" <%= userSettings.defaultTaskType === taskType.value ? 'selected' : '' %>>
+                                                <%= taskType.icon %> <%= taskType.name %>
+                                            </option>
+                                        <% }) %>
+                                    </select>
+                                    <div class="form-text">
+                                        创建新任务时默认选择的任务类型
+                                    </div>
+                                </div>
+
+                                <!-- 设置说明 -->
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        设置说明
+                                    </h6>
+                                    <ul class="mb-0 small">
+                                        <li>这些设置只影响您个人的使用体验</li>
+                                        <li>设置会立即生效，无需重新登录</li>
+                                        <li>您可以随时修改这些配置</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 提交按钮 -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <hr>
+                                <div class="d-flex justify-content-end">
+                                    <a href="/profile" class="btn btn-secondary me-2">
+                                        <i class="fas fa-times me-1"></i>
+                                        取消
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-1"></i>
+                                        保存设置
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 表单验证
+    const form = document.querySelector('form');
+    const tasksPerPageInput = document.getElementById('tasksPerPage');
+
+    // 任务数量验证
+    tasksPerPageInput.addEventListener('change', function() {
+        const value = parseInt(this.value);
+        if (isNaN(value) || value < 10 || value > 100) {
+            this.classList.add('is-invalid');
+            this.setCustomValidity('每页显示任务数量必须在10-100之间');
+        } else {
+            this.classList.remove('is-invalid');
+            this.setCustomValidity('');
+        }
+    });
+
+    // 表单提交前验证
+    form.addEventListener('submit', function(e) {
+        const tasksPerPage = parseInt(tasksPerPageInput.value);
+        if (isNaN(tasksPerPage) || tasksPerPage < 10 || tasksPerPage > 100) {
+            e.preventDefault();
+            tasksPerPageInput.focus();
+            alert('每页显示任务数量必须在10-100之间');
+            return false;
+        }
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

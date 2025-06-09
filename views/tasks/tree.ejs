@@ -173,6 +173,15 @@
                                                 <li><a class="dropdown-item" href="/tasks/<%= task.id %>/edit">
                                                     <i class="fas fa-edit me-2"></i>编辑
                                                 </a></li>
+                                                <% if (task.isArchived) { %>
+                                                    <li><a class="dropdown-item text-info" href="#" onclick="toggleArchiveTask('<%= task.id %>', false)">
+                                                        <i class="fas fa-box-open me-2"></i>取消归档
+                                                    </a></li>
+                                                <% } else { %>
+                                                    <li><a class="dropdown-item text-warning" href="#" onclick="toggleArchiveTask('<%= task.id %>', true)">
+                                                        <i class="fas fa-archive me-2"></i>归档
+                                                    </a></li>
+                                                <% } %>
                                                 <li><a class="dropdown-item text-danger" href="#" onclick="deleteTask('<%= task.id %>', '<%= task.title %>')">
                                                     <i class="fas fa-trash me-2"></i>删除
                                                 </a></li>
@@ -911,6 +920,45 @@ function initDropdownFix() {
     });
 }
 
+// 归档/取消归档任务函数
+function toggleArchiveTask(taskId, isArchive) {
+    const action = isArchive ? '归档' : '取消归档';
+    const confirmMessage = isArchive
+        ? '确定要归档此任务吗？\n\n归档后的任务将从常规视图中隐藏，需要在筛选器中选择"已归档"才能查看。'
+        : '确定要取消归档此任务吗？\n\n取消归档后的任务将重新显示在常规视图中。';
+
+    if (confirm(confirmMessage)) {
+        const url = isArchive ? `/tasks/${taskId}/archive` : `/tasks/${taskId}/unarchive`;
+
+        // 发送AJAX请求
+        $.ajax({
+            url: url,
+            method: 'POST',
+            dataType: 'json',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', response.message);
+                    // 刷新页面以更新任务列表
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showToast('error', response.message || `${action}失败`);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('归档操作错误:', { xhr, status, error });
+                const errorMsg = xhr.responseJSON?.message || `${action}失败：${error}`;
+                showToast('error', errorMsg);
+            }
+        });
+    }
+}
+
 // 删除任务函数
 function deleteTask(taskId, taskTitle) {
     if (confirm(`确定要删除任务"${taskTitle}"吗？\n\n此操作不可撤销，任务的所有相关数据都将被删除。`)) {
@@ -932,6 +980,40 @@ function deleteTask(taskId, taskTitle) {
         document.body.appendChild(form);
         form.submit();
     }
+}
+
+// 显示提示消息
+function showToast(type, message) {
+    // 创建提示元素
+    const toast = $(`
+        <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-${type === 'success' ? 'check' : 'exclamation-triangle'} me-2"></i>
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `);
+
+    // 添加到页面
+    let toastContainer = $('#toast-container');
+    if (toastContainer.length === 0) {
+        toastContainer = $('<div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>');
+        $('body').append(toastContainer);
+    }
+
+    toastContainer.append(toast);
+
+    // 显示提示
+    const bsToast = new bootstrap.Toast(toast[0]);
+    bsToast.show();
+
+    // 自动移除
+    toast.on('hidden.bs.toast', function() {
+        $(this).remove();
+    });
 }
 
 </script>

@@ -126,6 +126,14 @@ const getTaskTypeConfig = (taskType) => {
   };
 };
 
+// 获取所有任务类型
+const getAllTaskTypes = () => {
+  return Object.keys(taskTypeConfig).map(key => ({
+    value: key,
+    ...taskTypeConfig[key]
+  }));
+};
+
 // 检查用户是否可以创建指定类型的任务
 const canCreateTaskType = (userRoles, taskType) => {
   const config = getTaskTypeConfig(taskType);
@@ -194,6 +202,7 @@ const getTaskTypeColor = (taskType) => {
 module.exports = {
   taskTypeConfig,
   getTaskTypeConfig,
+  getAllTaskTypes,
   canCreateTaskType,
   canBeChildTask,
   getAvailableTaskTypes,

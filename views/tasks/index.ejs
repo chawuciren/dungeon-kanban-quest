@@ -3,7 +3,7 @@
 <%- include('../partials/task-header', {
     pageTitle: '任务列表',
     currentView: 'list',
-    currentPath: '/tasks',
+    currentPath: '/tasks/list',
     filters: filters,
     projectMembers: projectMembers
 }) %>
@@ -162,6 +162,15 @@
                                                 <li><a class="dropdown-item" href="/tasks/<%= task.id %>/edit">
                                                     <i class="fas fa-edit me-2"></i>编辑
                                                 </a></li>
+                                                <% if (task.isArchived) { %>
+                                                    <li><a class="dropdown-item text-info" href="#" onclick="toggleArchiveTask('<%= task.id %>', false)">
+                                                        <i class="fas fa-box-open me-2"></i>取消归档
+                                                    </a></li>
+                                                <% } else { %>
+                                                    <li><a class="dropdown-item text-warning" href="#" onclick="toggleArchiveTask('<%= task.id %>', true)">
+                                                        <i class="fas fa-archive me-2"></i>归档
+                                                    </a></li>
+                                                <% } %>
                                                 <li><a class="dropdown-item text-danger" href="#" onclick="deleteTask('<%= task.id %>', '<%= task.title %>')">
                                                     <i class="fas fa-trash me-2"></i>删除
                                                 </a></li>
@@ -178,7 +187,7 @@
                     <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
                     <h5 class="text-muted">暂无任务</h5>
                     <p class="text-muted mb-3">当前筛选条件下没有找到任务</p>
-                    <a href="/tasks" class="btn btn-outline-primary">
+                    <a href="/tasks/list" class="btn btn-outline-primary">
                         <i class="fas fa-refresh me-2"></i>查看所有任务
                     </a>
                 </div>
@@ -493,6 +502,45 @@ function initDropdownFix() {
         // 移除任务卡片的活动状态
         $dropdown.closest('.task-card').removeClass('dropdown-active');
     });
+}
+
+// 归档/取消归档任务函数
+function toggleArchiveTask(taskId, isArchive) {
+    const action = isArchive ? '归档' : '取消归档';
+    const confirmMessage = isArchive
+        ? '确定要归档此任务吗？\n\n归档后的任务将从常规视图中隐藏，需要在筛选器中选择"已归档"才能查看。'
+        : '确定要取消归档此任务吗？\n\n取消归档后的任务将重新显示在常规视图中。';
+
+    if (confirm(confirmMessage)) {
+        const url = isArchive ? `/tasks/${taskId}/archive` : `/tasks/${taskId}/unarchive`;
+
+        // 发送AJAX请求
+        $.ajax({
+            url: url,
+            method: 'POST',
+            dataType: 'json',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', response.message);
+                    // 刷新页面以更新任务列表
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showToast('error', response.message || `${action}失败`);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('归档操作错误:', { xhr, status, error });
+                const errorMsg = xhr.responseJSON?.message || `${action}失败：${error}`;
+                showToast('error', errorMsg);
+            }
+        });
+    }
 }
 
 // 删除任务函数

@@ -2,6 +2,7 @@ const { sequelize } = require('../config/database');
 
 // 导入所有模型
 const User = require('./User');
+const UserSettings = require('./UserSettings');
 const Organization = require('./Organization');
 const OrganizationMember = require('./OrganizationMember');
 const Project = require('./Project');
@@ -12,6 +13,17 @@ const Sprint = require('./Sprint');
 const ActivityLog = require('./ActivityLog');
 
 // 定义模型关联关系
+
+// User 和 UserSettings 的关联
+User.hasOne(UserSettings, {
+  foreignKey: 'userId',
+  as: 'settings',
+  onDelete: 'CASCADE'
+});
+UserSettings.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user'
+});
 
 // User 和 Organization 的关联
 User.hasMany(Organization, {
@@ -625,6 +637,7 @@ const createDefaultData = async () => {
 module.exports = {
   sequelize,
   User,
+  UserSettings,
   Organization,
   OrganizationMember,
   Project,

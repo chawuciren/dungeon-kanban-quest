@@ -572,4 +572,120 @@ router.get('/select-project', (req, res) => {
   });
 });
 
+// 用户设置页面
+router.get('/settings', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/login');
+    }
+
+    const { User, UserSettings } = require('../models');
+    const { getAllTaskTypes } = require('../config/taskTypes');
+
+    const user = await User.findByPk(req.session.userId, {
+      include: [
+        {
+          model: UserSettings,
+          as: 'settings',
+          required: false
+        }
+      ]
+    });
+
+    if (!user) {
+      req.flash('error', '用户不存在');
+      return res.redirect('/login');
+    }
+
+    // 如果用户没有设置记录，创建默认设置
+    let userSettings = user.settings;
+    if (!userSettings) {
+      userSettings = await UserSettings.create({
+        userId: user.id
+      });
+    }
+
+    res.render('settings/index', {
+      title: '用户设置',
+      user,
+      userSettings,
+      taskTypes: getAllTaskTypes(),
+      errorMessage: req.session.errorMessage,
+      successMessage: req.session.successMessage
+    });
+
+    // 清除消息
+    delete req.session.errorMessage;
+    delete req.session.successMessage;
+
+  } catch (error) {
+    console.error('获取用户设置失败:', error);
+    req.flash('error', '获取用户设置失败');
+    res.redirect('/profile');
+  }
+});
+
+// 用户设置更新处理
+router.post('/settings', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/login');
+    }
+
+    const { UserSettings } = require('../models');
+    const {
+      defaultTaskView,
+      tasksPerPage,
+      defaultTaskSort,
+      ganttDefaultGranularity,
+      defaultTaskType
+    } = req.body;
+
+    // 验证必填字段
+    if (!defaultTaskView || !tasksPerPage || !defaultTaskSort || !ganttDefaultGranularity || !defaultTaskType) {
+      req.session.errorMessage = '请填写所有必填字段';
+      return res.redirect('/settings');
+    }
+
+    // 验证数值范围
+    const tasksPerPageNum = parseInt(tasksPerPage);
+    if (isNaN(tasksPerPageNum) || tasksPerPageNum < 10 || tasksPerPageNum > 100) {
+      req.session.errorMessage = '每页显示任务数量必须在10-100之间';
+      return res.redirect('/settings');
+    }
+
+    // 查找或创建用户设置
+    let userSettings = await UserSettings.findOne({
+      where: { userId: req.session.userId }
+    });
+
+    const updateData = {
+      defaultTaskView,
+      tasksPerPage: tasksPerPageNum,
+      defaultTaskSort,
+      ganttDefaultGranularity,
+      defaultTaskType
+    };
+
+    if (userSettings) {
+      // 更新现有设置
+      await userSettings.update(updateData);
+    } else {
+      // 创建新设置
+      await UserSettings.create({
+        userId: req.session.userId,
+        ...updateData
+      });
+    }
+
+    req.session.successMessage = '设置保存成功';
+    res.redirect('/settings');
+
+  } catch (error) {
+    console.error('更新用户设置失败:', error);
+    req.session.errorMessage = '更新设置失败，请稍后重试';
+    res.redirect('/settings');
+  }
+});
+
 module.exports = router;

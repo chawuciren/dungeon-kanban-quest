@@ -85,47 +85,52 @@ const getValue = (field, defaultValue = '') => {
                                 <select class="form-select" id="taskType" name="taskType" required>
                                     <option value="">选择任务类型</option>
 
+                                    <%
+                                    // 获取用户设置的默认任务类型，如果没有设置则使用 'task'
+                                    const defaultTaskType = !task && userSettings && userSettings.defaultTaskType ? userSettings.defaultTaskType : 'task';
+                                    %>
+
                                     <!-- 史诗 - 管理员、产品经理、客户可创建 -->
                                     <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'client')) { %>
-                                        <option value="epic" <%= getValue('taskType') === 'epic' ? 'selected' : '' %>>🏰 史诗</option>
+                                        <option value="epic" <%= getValue('taskType', !task ? defaultTaskType : '') === 'epic' ? 'selected' : '' %>>🏰 史诗</option>
                                     <% } %>
 
                                     <!-- 用户故事 - 管理员、产品经理、客户可创建 -->
                                     <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'client')) { %>
-                                        <option value="story" <%= getValue('taskType') === 'story' ? 'selected' : '' %>>📖 用户故事</option>
+                                        <option value="story" <%= getValue('taskType', !task ? defaultTaskType : '') === 'story' ? 'selected' : '' %>>📖 用户故事</option>
                                     <% } %>
 
                                     <!-- 需求 - 管理员、产品经理可创建 -->
                                     <% if (user && (user.role === 'admin' || user.role === 'product_manager')) { %>
-                                        <option value="requirement" <%= getValue('taskType') === 'requirement' ? 'selected' : '' %>>📋 需求</option>
+                                        <option value="requirement" <%= getValue('taskType', !task ? defaultTaskType : '') === 'requirement' ? 'selected' : '' %>>📋 需求</option>
                                     <% } %>
 
                                     <!-- 开发任务 - 管理员、产品经理、开发者可创建 -->
                                     <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'developer')) { %>
-                                        <option value="dev_task" <%= getValue('taskType') === 'dev_task' ? 'selected' : '' %>>⚔️ 开发任务</option>
+                                        <option value="dev_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'dev_task' ? 'selected' : '' %>>⚔️ 开发任务</option>
                                     <% } %>
 
                                     <!-- 设计任务 - 管理员、产品经理、UI设计师可创建 -->
                                     <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'ui_designer')) { %>
-                                        <option value="design_task" <%= getValue('taskType') === 'design_task' ? 'selected' : '' %>>🎨 设计任务</option>
+                                        <option value="design_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'design_task' ? 'selected' : '' %>>🎨 设计任务</option>
                                     <% } %>
 
                                     <!-- 测试任务 - 管理员、产品经理、测试员可创建 -->
                                     <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'tester')) { %>
-                                        <option value="test_task" <%= getValue('taskType') === 'test_task' ? 'selected' : '' %>>🏹 测试任务</option>
+                                        <option value="test_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'test_task' ? 'selected' : '' %>>🏹 测试任务</option>
                                     <% } %>
 
                                     <!-- 运维任务 - 管理员、产品经理、运维工程师可创建 -->
                                     <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'devops')) { %>
-                                        <option value="devops_task" <%= getValue('taskType') === 'devops_task' ? 'selected' : '' %>>⚙️ 运维任务</option>
+                                        <option value="devops_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'devops_task' ? 'selected' : '' %>>⚙️ 运维任务</option>
                                     <% } %>
 
                                     <!-- 通用任务 - 所有角色都可创建 -->
-                                    <option value="task" <%= getValue('taskType', !task ? 'task' : '') === 'task' ? 'selected' : '' %>>📝 通用任务</option>
+                                    <option value="task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'task' ? 'selected' : '' %>>📝 通用任务</option>
 
                                     <!-- Bug - 管理员、产品经理、测试员可创建 -->
                                     <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'tester')) { %>
-                                        <option value="bug" <%= getValue('taskType') === 'bug' ? 'selected' : '' %>>🐛 缺陷</option>
+                                        <option value="bug" <%= getValue('taskType', !task ? defaultTaskType : '') === 'bug' ? 'selected' : '' %>>🐛 缺陷</option>
                                     <% } %>
                                 </select>
                                 <div class="invalid-feedback">请选择任务类型</div>
@@ -133,15 +138,15 @@ const getValue = (field, defaultValue = '') => {
                             </div>
                         </div>
 
-                        <!-- 父任务选择（仅创建模式且非子任务创建时显示） -->
-                        <% if (!task && !parentTask && projectTasks && projectTasks.length > 0) { %>
+                        <!-- 父任务选择 -->
+                        <% if ((!task && !parentTask && projectTasks && projectTasks.length > 0) || (task && projectTasks && projectTasks.length > 0)) { %>
                             <div class="row">
                                 <div class="col-12 mb-3">
                                     <label for="parentTaskId" class="form-label">父任务（可选）</label>
                                     <select class="form-select" id="parentTaskId" name="parentTaskId">
                                         <option value="">无父任务（根任务）</option>
                                         <% projectTasks.forEach(projectTask => { %>
-                                            <option value="<%= projectTask.id %>">
+                                            <option value="<%= projectTask.id %>" <%= getValue('parentTaskId', task ? task.parentTaskId : '') === projectTask.id ? 'selected' : '' %>>
                                                 <%= projectTask.title %>
                                                 <% if (projectTask.taskType !== 'task') { %>
                                                     （<%= projectTask.taskType === 'requirement' ? '📋 需求' :
@@ -401,6 +406,29 @@ const getValue = (field, defaultValue = '') => {
                                     </select>
                                     <div class="invalid-feedback">请选择审核人</div>
                                     <div class="form-text">负责审核任务完成情况的人员</div>
+                                </div>
+                            </div>
+                        <% } %>
+
+                        <!-- 归档状态 -->
+                        <% if (task) { %>
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <h6 class="text-primary">
+                                        <i class="fas fa-archive me-2"></i>归档设置
+                                    </h6>
+                                    <div class="form-text mb-3">归档的任务将从常规视图中隐藏</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="isArchived" name="isArchived" value="true" <%= task && task.isArchived ? 'checked' : '' %>>
+                                        <label class="form-check-label" for="isArchived">
+                                            <i class="fas fa-archive me-2"></i>归档此任务
+                                        </label>
+                                    </div>
+                                    <div class="form-text">归档后的任务将在筛选器中选择"已归档"才能查看</div>
                                 </div>
                             </div>
                         <% } %>

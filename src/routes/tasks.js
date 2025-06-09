@@ -4,6 +4,7 @@ const { BountyTask, Project, User, Sprint } = require('../models');
 const { Op } = require('sequelize');
 const logger = require('../config/logger');
 const { requireProjectSelection, validateProjectAccess } = require('../middleware/projectSelection');
+const { getUserSettings, applyUserSettingsToQuery, getPaginationParams, getGanttParams } = require('../utils/userSettings');
 
 // 认证中间件
 const requireAuth = (req, res, next) => {
@@ -136,18 +137,47 @@ function buildTaskOrder(sortType) {
   return order;
 }
 
-// 任务市场（列表视图）
+// 任务首页 - 根据用户设置重定向到对应视图
 router.get('/', requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 20;
-    const offset = (page - 1) * limit;
+    // 获取用户设置
+    const userSettings = await getUserSettings(req.session.userId);
+
+    // 根据用户默认视图设置重定向
+    const defaultView = userSettings.defaultTaskView || 'list';
+
+    // 构建重定向URL，保留查询参数
+    const queryString = new URLSearchParams(req.query).toString();
+    const redirectUrl = `/tasks/${defaultView}${queryString ? '?' + queryString : ''}`;
+
+    res.redirect(redirectUrl);
+
+  } catch (error) {
+    logger.error('获取用户设置失败:', error);
+    // 如果获取设置失败，默认重定向到列表视图
+    const queryString = new URLSearchParams(req.query).toString();
+    const redirectUrl = `/tasks/list${queryString ? '?' + queryString : ''}`;
+    res.redirect(redirectUrl);
+  }
+});
+
+// 任务市场（列表视图）
+router.get('/list', requireProjectSelection, validateProjectAccess, async (req, res) => {
+  try {
+    // 获取用户设置
+    const userSettings = await getUserSettings(req.session.userId);
+
+    // 应用用户设置到查询参数
+    const appliedQuery = applyUserSettingsToQuery(req.query, userSettings);
+
+    // 获取分页参数
+    const { page, limit, offset } = getPaginationParams(req.query, userSettings);
 
     // 构建查询条件
-    const where = buildTaskFilters(req.query, req.session.selectedProjectId, req.session.userId);
+    const where = buildTaskFilters(appliedQuery, req.session.selectedProjectId, req.session.userId);
 
     // 排序
-    const order = buildTaskOrder(req.query.sort);
+    const order = buildTaskOrder(appliedQuery.sort);
 
     // 先单独统计总数，避免include影响count结果
     const count = await BountyTask.count({ where });
@@ -229,6 +259,7 @@ router.get('/', requireProjectSelection, validateProjectAccess, async (req, res)
       tasks,
       projectMembers: membersList,
       sprints,
+      userSettings,
       pagination: {
         page,
         totalPages,
@@ -236,7 +267,7 @@ router.get('/', requireProjectSelection, validateProjectAccess, async (req, res)
         hasNext: page < totalPages,
         hasPrev: page > 1
       },
-      filters: req.query
+      filters: appliedQuery
     });
 
   } catch (error) {
@@ -250,11 +281,19 @@ router.get('/', requireProjectSelection, validateProjectAccess, async (req, res)
 router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
     const projectId = req.session.selectedProjectId;
-    const page = parseInt(req.query.page) || 1;
-    const limit = 50; // 树形视图每页显示更多
+
+    // 获取用户设置
+    const userSettings = await getUserSettings(req.session.userId);
+
+    // 应用用户设置到查询参数
+    const appliedQuery = applyUserSettingsToQuery(req.query, userSettings);
+
+    // 获取分页参数（树形视图使用更大的默认值）
+    const { page, limit: userLimit } = getPaginationParams(req.query, userSettings);
+    const limit = Math.max(userLimit, 50); // 树形视图至少显示50个
 
     // 构建查询条件（包含筛选）
-    const baseWhere = buildTaskFilters(req.query, projectId, req.session.userId);
+    const baseWhere = buildTaskFilters(appliedQuery, projectId, req.session.userId);
 
     // 只获取根任务（level 0）进行分页
     const where = {
@@ -263,7 +302,7 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
     };
 
     // 排序
-    const order = buildTaskOrder(req.query.sort);
+    const order = buildTaskOrder(appliedQuery.sort);
 
     // 先单独统计根任务总数，避免include影响count结果
     const count = await BountyTask.count({ where });
@@ -355,6 +394,7 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
       projectId,
       projectMembers: membersList,
       sprints,
+      userSettings,
       pagination: {
         page,
         totalPages,
@@ -362,7 +402,7 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
         hasNext: page < totalPages,
         hasPrev: page > 1
       },
-      filters: req.query
+      filters: appliedQuery
     });
 
   } catch (error) {
@@ -377,11 +417,17 @@ router.get('/kanban', requireProjectSelection, validateProjectAccess, async (req
   try {
     const projectId = req.session.selectedProjectId;
 
+    // 获取用户设置
+    const userSettings = await getUserSettings(req.session.userId);
+
+    // 应用用户设置到查询参数
+    const appliedQuery = applyUserSettingsToQuery(req.query, userSettings);
+
     // 构建查询条件（包含筛选）
-    const where = buildTaskFilters(req.query, projectId, req.session.userId);
+    const where = buildTaskFilters(appliedQuery, projectId, req.session.userId);
 
     // 排序
-    const order = buildTaskOrder(req.query.sort);
+    const order = buildTaskOrder(appliedQuery.sort);
 
     // 获取所有任务并按状态分组
     const tasks = await BountyTask.findAll({
@@ -446,7 +492,8 @@ router.get('/kanban', requireProjectSelection, validateProjectAccess, async (req
       kanbanColumns,
       projectId,
       projectMembers: membersList,
-      filters: req.query
+      userSettings,
+      filters: appliedQuery
     });
 
   } catch (error) {
@@ -461,11 +508,20 @@ router.get('/gantt', requireProjectSelection, validateProjectAccess, async (req,
   try {
     const projectId = req.session.selectedProjectId;
 
+    // 获取用户设置
+    const userSettings = await getUserSettings(req.session.userId);
+
+    // 应用用户设置到查询参数
+    const appliedQuery = applyUserSettingsToQuery(req.query, userSettings);
+
+    // 获取甘特图参数
+    const ganttParams = getGanttParams(req.query, userSettings);
+
     // 构建查询条件（包含筛选）
-    const where = buildTaskFilters(req.query, projectId, req.session.userId);
+    const where = buildTaskFilters(appliedQuery, projectId, req.session.userId);
 
     // 排序（甘特图默认按创建时间排序）
-    const order = req.query.sort ? buildTaskOrder(req.query.sort) : [['createdAt', 'ASC']];
+    const order = appliedQuery.sort ? buildTaskOrder(appliedQuery.sort) : [['createdAt', 'ASC']];
 
     // 获取所有任务
     const tasks = await BountyTask.findAll({
@@ -612,7 +668,9 @@ router.get('/gantt', requireProjectSelection, validateProjectAccess, async (req,
       projectId,
       projectMembers: membersList,
       sprints,
-      filters: req.query
+      userSettings,
+      ganttParams,
+      filters: appliedQuery
     });
 
   } catch (error) {
@@ -627,6 +685,9 @@ router.get('/create', requireAuth, requireProjectSelection, validateProjectAcces
   try {
     const parentId = req.query.parent;
     let parentTask = null;
+
+    // 获取用户设置
+    const userSettings = await getUserSettings(req.session.userId);
 
     if (parentId) {
       parentTask = await BountyTask.findByPk(parentId, {
@@ -715,6 +776,7 @@ router.get('/create', requireAuth, requireProjectSelection, validateProjectAcces
       projectMembers,
       projectTasks,
       sprints,
+      userSettings,
       defaultProjectId: req.session.selectedProjectId,
       user: req.session.user, // 传递用户信息用于权限检查
       formData // 传递表单数据用于恢复
@@ -1150,6 +1212,21 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
       });
     }
 
+    // 获取当前项目的任务列表（用于父任务选择）
+    let projectTasks = [];
+    if (task.projectId) {
+      projectTasks = await BountyTask.findAll({
+        where: {
+          projectId: task.projectId,
+          parentTaskId: null, // 只显示根任务作为父任务选项
+          id: { [Op.ne]: task.id } // 排除当前任务本身
+        },
+        attributes: ['id', 'title', 'taskType'],
+        order: [['createdAt', 'DESC']],
+        limit: 50
+      });
+    }
+
     // 获取保存的表单数据（如果有）
     const formData = req.session.formData;
     delete req.session.formData; // 使用后删除
@@ -1158,6 +1235,7 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
       title: '编辑任务',
       task,
       projectMembers,
+      projectTasks,
       sprints,
       user: req.session.user, // 传递用户信息用于权限检查
       formData // 传递表单数据用于恢复
@@ -1181,6 +1259,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       starLevel,
       urgencyLevel,
       status,
+      parentTaskId,
       estimatedHours,
       actualHours,
       progress,
@@ -1189,7 +1268,8 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       sprintId,
       assigneeId,
       assistantIds,
-      reviewerId
+      reviewerId,
+      isArchived
     } = req.body;
 
     const task = await BountyTask.findByPk(taskId);
@@ -1247,6 +1327,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       starLevel: parseInt(starLevel),
       urgencyLevel,
       status: newStatus,
+      parentTaskId: parentTaskId && parentTaskId.trim() !== '' ? parentTaskId : null,
       assigneeId: assigneeId && assigneeId.trim() !== '' ? assigneeId : null,
       assistantIds: processedAssistantIds,
       reviewerId: reviewerId && reviewerId.trim() !== '' ? reviewerId : null,
@@ -1255,7 +1336,8 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       actualHours: actualHours ? parseFloat(actualHours) : null,
       progress: progress !== undefined ? parseInt(progress) : task.progress,
       startDate: startDate || null,
-      dueDate: dueDate || null
+      dueDate: dueDate || null,
+      isArchived: isArchived === 'true' || isArchived === true
     };
 
     // 根据状态变更自动设置时间字段
@@ -1275,6 +1357,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       starLevel: task.starLevel,
       urgencyLevel: task.urgencyLevel,
       status: task.status,
+      parentTaskId: task.parentTaskId,
       assigneeId: task.assigneeId,
       reviewerId: task.reviewerId,
       sprintId: task.sprintId,
@@ -1320,6 +1403,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
         starLevel,
         urgencyLevel,
         status,
+        parentTaskId,
         estimatedHours,
         actualHours,
         progress,
@@ -1827,6 +1911,110 @@ router.post('/:id/complete', requireAuth, async (req, res) => {
     logger.error('完成任务失败:', error);
     req.flash('error', '完成任务失败：' + error.message);
     res.redirect('back');
+  }
+});
+
+// 归档任务
+router.post('/:id/archive', requireAuth, async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const task = await BountyTask.findByPk(taskId);
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: '任务不存在'
+      });
+    }
+
+    // 检查权限：只有管理员、任务发布者可以归档
+    const hasPermission = req.session.user?.role === 'admin' ||
+                         task.publisherId === req.session.userId;
+
+    if (!hasPermission) {
+      return res.status(403).json({
+        success: false,
+        message: '您没有权限归档此任务'
+      });
+    }
+
+    await task.update({ isArchived: true });
+
+    // 如果是AJAX请求，返回JSON
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      return res.json({
+        success: true,
+        message: '任务已归档'
+      });
+    }
+
+    req.flash('success', '任务已归档');
+    res.redirect(`/tasks/${taskId}`);
+
+  } catch (error) {
+    logger.error('归档任务失败:', error);
+
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      return res.status(500).json({
+        success: false,
+        message: '归档任务失败'
+      });
+    }
+
+    req.flash('error', '归档任务失败');
+    res.redirect('/tasks');
+  }
+});
+
+// 取消归档任务
+router.post('/:id/unarchive', requireAuth, async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const task = await BountyTask.findByPk(taskId);
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: '任务不存在'
+      });
+    }
+
+    // 检查权限：只有管理员、任务发布者可以取消归档
+    const hasPermission = req.session.user?.role === 'admin' ||
+                         task.publisherId === req.session.userId;
+
+    if (!hasPermission) {
+      return res.status(403).json({
+        success: false,
+        message: '您没有权限取消归档此任务'
+      });
+    }
+
+    await task.update({ isArchived: false });
+
+    // 如果是AJAX请求，返回JSON
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      return res.json({
+        success: true,
+        message: '任务已取消归档'
+      });
+    }
+
+    req.flash('success', '任务已取消归档');
+    res.redirect(`/tasks/${taskId}`);
+
+  } catch (error) {
+    logger.error('取消归档任务失败:', error);
+
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      return res.status(500).json({
+        success: false,
+        message: '取消归档任务失败'
+      });
+    }
+
+    req.flash('error', '取消归档任务失败');
+    res.redirect('/tasks');
   }
 });
 
