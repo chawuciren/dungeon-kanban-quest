@@ -249,6 +249,22 @@ Project.hasMany(ActivityLog, {
 // 同步数据库
 const syncDatabase = async (force = false) => {
   try {
+    console.log('🔄 开始数据库同步...');
+    console.log(`🔧 强制重建表: ${force ? '是' : '否'}`);
+
+    // 检查模型是否正确加载
+    console.log('📋 已加载的模型:');
+    console.log('  - User:', !!User);
+    console.log('  - UserSettings:', !!UserSettings);
+    console.log('  - Organization:', !!Organization);
+    console.log('  - OrganizationMember:', !!OrganizationMember);
+    console.log('  - Project:', !!Project);
+    console.log('  - ProjectOrganization:', !!ProjectOrganization);
+    console.log('  - ProjectMember:', !!ProjectMember);
+    console.log('  - BountyTask:', !!BountyTask);
+    console.log('  - Sprint:', !!Sprint);
+    console.log('  - ActivityLog:', !!ActivityLog);
+
     await sequelize.sync({ force });
     console.log('✅ 数据库同步成功');
 
@@ -258,6 +274,8 @@ const syncDatabase = async (force = false) => {
     }
   } catch (error) {
     console.error('❌ 数据库同步失败:', error);
+    console.error('错误详情:', error.message);
+    console.error('错误堆栈:', error.stack);
     throw error;
   }
 };

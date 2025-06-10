@@ -223,6 +223,7 @@ app.use('/projects', require('./routes/projects'));
 app.use('/sprints', require('./routes/sprints'));
 app.use('/organizations', require('./routes/organizations'));
 app.use('/users', require('./routes/users'));
+app.use('/leaderboard', require('./routes/leaderboard'));
 
 // API路由
 app.use('/api/auth', require('./routes/auth'));
@@ -263,23 +264,38 @@ app.use((err, req, res, next) => {
 // 启动服务器
 const startServer = async () => {
   try {
+    console.log('🚀 开始启动服务器...');
+    console.log(`🌍 运行环境: ${config.app.env}`);
+    console.log(`📍 监听端口: ${config.app.port}`);
+
     // 测试数据库连接
+    console.log('📊 步骤 1/4: 测试数据库连接');
     await testConnection();
 
     // 同步数据库（开发环境）
+    console.log('📊 步骤 2/4: 同步数据库模型');
     if (config.app.env === 'development') {
       await syncDatabase(false); // 不强制重建表
+    } else {
+      console.log('⏭️  生产环境跳过数据库同步');
     }
 
     // 创建会话表
+    console.log('📊 步骤 3/4: 创建会话表');
     await sessionStore.sync();
+    console.log('✅ 会话表创建成功');
 
     // 启动HTTP服务器
+    console.log('📊 步骤 4/4: 启动HTTP服务器');
     const server = app.listen(config.app.port, () => {
+      console.log('');
+      console.log('🎉 服务器启动完成!');
+      console.log('=====================================');
       logger.info(`🚀 服务器启动成功`);
       logger.info(`📍 地址: http://localhost:${config.app.port}`);
       logger.info(`🌍 环境: ${config.app.env}`);
       logger.info(`📊 数据库: ${config.database.path}`);
+      console.log('=====================================');
     });
 
     // 优雅关闭
@@ -315,6 +331,12 @@ const startServer = async () => {
     });
 
   } catch (error) {
+    console.error('');
+    console.error('❌ 服务器启动失败!');
+    console.error('=====================================');
+    console.error('错误信息:', error.message);
+    console.error('错误堆栈:', error.stack);
+    console.error('=====================================');
     logger.error('启动服务器失败:', error);
     process.exit(1);
   }

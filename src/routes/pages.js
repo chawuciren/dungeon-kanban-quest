@@ -268,16 +268,7 @@ router.get('/dashboard', async (req, res) => {
 
 // 任务市场路由已移到 /routes/tasks.js
 
-// 排行榜
-router.get('/leaderboard', (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect('/login');
-  }
-
-  res.render('leaderboard/index', {
-    title: '排行榜'
-  });
-});
+// 排行榜路由已移到 /routes/leaderboard.js
 
 
 

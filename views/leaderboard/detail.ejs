@@ -1,0 +1,224 @@
+<%- include('../partials/header', { title: title }) %>
+
+<!-- 页面标题 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2>
+                    <i class="fas fa-trophy me-2 text-warning"></i>
+                    <%= title %>
+                </h2>
+                <p class="text-muted mb-0"><%= leaderboardName %>统计排行榜</p>
+            </div>
+            <div>
+                <a href="/leaderboard" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>返回概览
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 筛选条件 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="period" class="form-label">统计周期</label>
+                        <select class="form-select" id="period" name="period">
+                            <option value="all_time" <%= currentPeriod === 'all_time' ? 'selected' : '' %>>全部时间</option>
+                            <option value="this_week" <%= currentPeriod === 'this_week' ? 'selected' : '' %>>本周</option>
+                            <option value="this_month" <%= currentPeriod === 'this_month' ? 'selected' : '' %>>本月</option>
+                            <option value="this_quarter" <%= currentPeriod === 'this_quarter' ? 'selected' : '' %>>本季度</option>
+                            <option value="this_year" <%= currentPeriod === 'this_year' ? 'selected' : '' %>>今年</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="project" class="form-label">项目筛选</label>
+                        <select class="form-select" id="project" name="project">
+                            <option value="">全部项目</option>
+                            <!-- 这里需要传入项目列表，暂时简化 -->
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="limit" class="form-label">显示数量</label>
+                        <select class="form-select" id="limit" name="limit">
+                            <option value="20">前20名</option>
+                            <option value="50" selected>前50名</option>
+                            <option value="100">前100名</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter me-1"></i>筛选
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 榜单内容 -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-list-ol me-2"></i>
+                    <%= leaderboardName %>排行榜
+                </h5>
+            </div>
+            <div class="card-body">
+                <% if (leaderboard && leaderboard.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="80">排名</th>
+                                    <th>用户</th>
+                                    <th><%= scoreLabel %></th>
+                                    <th>详细信息</th>
+                                    <th width="100">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% leaderboard.forEach((item, index) => { %>
+                                    <tr>
+                                        <td>
+                                            <% if (item.rank === 1) { %>
+                                                <i class="fas fa-trophy text-warning fs-4"></i>
+                                                <span class="ms-1 fw-bold">1</span>
+                                            <% } else if (item.rank === 2) { %>
+                                                <i class="fas fa-medal text-secondary fs-4"></i>
+                                                <span class="ms-1 fw-bold">2</span>
+                                            <% } else if (item.rank === 3) { %>
+                                                <i class="fas fa-award text-warning fs-4"></i>
+                                                <span class="ms-1 fw-bold">3</span>
+                                            <% } else { %>
+                                                <span class="badge bg-light text-dark fs-6"><%= item.rank %></span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <% if (item.avatar) { %>
+                                                    <img src="<%= item.avatar %>" alt="<%= item.fullName %>" 
+                                                         class="rounded-circle me-3" width="40" height="40">
+                                                <% } else { %>
+                                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                         style="width: 40px; height: 40px;">
+                                                        <i class="fas fa-user text-white"></i>
+                                                    </div>
+                                                <% } %>
+                                                <div>
+                                                    <div class="fw-bold"><%= item.fullName %></div>
+                                                    <small class="text-muted">@<%= item.username %></small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="fs-5 fw-bold text-primary"><%= item.score %></span>
+                                            <% if (leaderboardType === 'hours-contribution') { %>
+                                                <small class="text-muted">小时</small>
+                                            <% } else if (leaderboardType === 'on-time-delivery') { %>
+                                                <small class="text-muted">%</small>
+                                            <% } else { %>
+                                                <small class="text-muted">个</small>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (leaderboardType === 'task-completion') { %>
+                                                <div class="small">
+                                                    <div>完成任务: <span class="fw-bold"><%= item.details.completedTasks %></span> 个</div>
+                                                    <div>按时完成: <span class="fw-bold"><%= item.details.onTimeTasks %></span> 个</div>
+                                                    <div>按时率: <span class="fw-bold text-success"><%= item.details.onTimeRate %>%</span></div>
+                                                    <div>平均难度: <span class="fw-bold"><%= item.details.avgDifficulty.toFixed(1) %></span> 星</div>
+                                                </div>
+                                            <% } else if (leaderboardType === 'hours-contribution') { %>
+                                                <div class="small">
+                                                    <div>总工时: <span class="fw-bold"><%= item.details.totalHours.toFixed(1) %></span> 小时</div>
+                                                    <div>任务数: <span class="fw-bold"><%= item.details.totalTasks %></span> 个</div>
+                                                    <div>预估工时: <span class="fw-bold"><%= item.details.totalEstimatedHours.toFixed(1) %></span> 小时</div>
+                                                    <div>工时准确度: <span class="fw-bold text-info"><%= item.details.hoursAccuracy %>%</span></div>
+                                                </div>
+                                            <% } else if (leaderboardType === 'on-time-delivery') { %>
+                                                <div class="small">
+                                                    <div>总任务: <span class="fw-bold"><%= item.details.totalTasks %></span> 个</div>
+                                                    <div>按时完成: <span class="fw-bold text-success"><%= item.details.onTimeTasks %></span> 个</div>
+                                                    <div>延期完成: <span class="fw-bold text-danger"><%= item.details.overdueTasks %></span> 个</div>
+                                                    <div>平均难度: <span class="fw-bold"><%= item.details.avgDifficulty.toFixed(1) %></span> 星</div>
+                                                </div>
+                                            <% } else if (leaderboardType === 'difficulty-challenge') { %>
+                                                <div class="small">
+                                                    <div>高难度任务: <span class="fw-bold"><%= item.details.highDiffTasks %></span> 个</div>
+                                                    <div>4星任务: <span class="fw-bold text-warning"><%= item.details.star4Tasks %></span> 个</div>
+                                                    <div>5星任务: <span class="fw-bold text-danger"><%= item.details.star5Tasks %></span> 个</div>
+                                                    <div>平均难度: <span class="fw-bold"><%= item.details.avgDifficulty.toFixed(1) %></span> 星</div>
+                                                </div>
+                                            <% } else if (leaderboardType.startsWith('specialty-')) { %>
+                                                <div class="small">
+                                                    <div>专业任务: <span class="fw-bold"><%= item.details.specialtyTasks %></span> 个</div>
+                                                    <div>总工时: <span class="fw-bold"><%= item.details.totalHours.toFixed(1) %></span> 小时</div>
+                                                    <div>按时率: <span class="fw-bold text-success"><%= item.details.onTimeRate %>%</span></div>
+                                                    <div>平均难度: <span class="fw-bold"><%= item.details.avgDifficulty.toFixed(1) %></span> 星</div>
+                                                </div>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                        onclick="viewUserProfile('<%= item.userId %>')">
+                                                    <i class="fas fa-user"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-info" 
+                                                        onclick="viewUserTasks('<%= item.userId %>')">
+                                                    <i class="fas fa-tasks"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">暂无排行数据</h5>
+                        <p class="text-muted">当前筛选条件下没有找到相关数据</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 自动提交筛选表单
+document.getElementById('period').addEventListener('change', function() {
+    this.form.submit();
+});
+
+document.getElementById('project').addEventListener('change', function() {
+    this.form.submit();
+});
+
+document.getElementById('limit').addEventListener('change', function() {
+    this.form.submit();
+});
+
+// 查看用户资料
+function viewUserProfile(userId) {
+    window.open(`/users/${userId}`, '_blank');
+}
+
+// 查看用户任务
+function viewUserTasks(userId) {
+    window.open(`/tasks/list?assignee=${userId}`, '_blank');
+}
+</script>
+
+<%- include('../partials/footer') %>

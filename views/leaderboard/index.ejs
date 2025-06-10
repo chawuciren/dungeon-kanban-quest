@@ -1,31 +1,359 @@
 <%- include('../partials/header', { title: title }) %>
 
-<!-- 页面标题 -->
+<!-- 页面标题和筛选 -->
 <div class="row mb-4">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h2>
-                    <i class="fas fa-trophy me-2 text-warning"></i>
-                    排行榜
+                    <i class="fas fa-chart-line me-2 text-primary"></i>
+                    团队表现统计
                 </h2>
-                <p class="text-muted mb-0">查看各项排名和统计数据</p>
+                <p class="text-muted mb-0">查看团队成员的工作表现和贡献统计</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 排行榜内容 -->
-<div class="row">
+<!-- 筛选条件 -->
+<div class="row mb-4">
     <div class="col-12">
         <div class="card">
-            <div class="card-body text-center py-5">
-                <i class="fas fa-trophy fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">排行榜功能正在开发中</h5>
-                <p class="text-muted">敬请期待...</p>
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="period" class="form-label">统计周期</label>
+                        <select class="form-select" id="period" name="period">
+                            <% periodOptions.forEach(option => { %>
+                                <option value="<%= option.value %>" <%= currentPeriod === option.value ? 'selected' : '' %>>
+                                    <%= option.label %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="project" class="form-label">项目筛选</label>
+                        <select class="form-select" id="project" name="project">
+                            <option value="">全部项目</option>
+                            <% projects.forEach(project => { %>
+                                <option value="<%= project.id %>" <%= currentProject === project.id ? 'selected' : '' %>>
+                                    <%= project.name %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter me-1"></i>筛选
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+<!-- 榜单概览 -->
+<div class="row">
+    <!-- 任务完成榜 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-tasks me-2 text-success"></i>
+                    任务完成排行
+                </h5>
+                <a href="/leaderboard/task-completion?period=<%= currentPeriod %><%= currentProject ? '&project=' + currentProject : '' %>"
+                   class="btn btn-sm btn-outline-primary">查看更多</a>
+            </div>
+            <div class="card-body">
+                <% if (leaderboards.taskCompletion && leaderboards.taskCompletion.length > 0) { %>
+                    <% leaderboards.taskCompletion.slice(0, 5).forEach((item, index) => { %>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <% if (index === 0) { %>
+                                    <i class="fas fa-trophy text-warning fs-5"></i>
+                                <% } else if (index === 1) { %>
+                                    <i class="fas fa-medal text-secondary fs-5"></i>
+                                <% } else if (index === 2) { %>
+                                    <i class="fas fa-award text-warning fs-5"></i>
+                                <% } else { %>
+                                    <span class="badge bg-light text-dark"><%= item.rank %></span>
+                                <% } %>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold"><%= item.fullName %></div>
+                                <small class="text-muted">@<%= item.username %></small>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold text-primary"><%= item.score %> 个</div>
+                                <small class="text-muted">按时率: <%= item.details.onTimeRate %>%</small>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p>暂无数据</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- 工时贡献榜 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock me-2 text-info"></i>
+                    工时贡献排行
+                </h5>
+                <a href="/leaderboard/hours-contribution?period=<%= currentPeriod %><%= currentProject ? '&project=' + currentProject : '' %>"
+                   class="btn btn-sm btn-outline-primary">查看更多</a>
+            </div>
+            <div class="card-body">
+                <% if (leaderboards.hoursContribution && leaderboards.hoursContribution.length > 0) { %>
+                    <% leaderboards.hoursContribution.slice(0, 5).forEach((item, index) => { %>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <% if (index === 0) { %>
+                                    <i class="fas fa-trophy text-warning fs-5"></i>
+                                <% } else if (index === 1) { %>
+                                    <i class="fas fa-medal text-secondary fs-5"></i>
+                                <% } else if (index === 2) { %>
+                                    <i class="fas fa-award text-warning fs-5"></i>
+                                <% } else { %>
+                                    <span class="badge bg-light text-dark"><%= item.rank %></span>
+                                <% } %>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold"><%= item.fullName %></div>
+                                <small class="text-muted">@<%= item.username %></small>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold text-info"><%= item.score %> 小时</div>
+                                <small class="text-muted">任务: <%= item.details.totalTasks %> 个</small>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p>暂无数据</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 按时交付率榜 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar-check me-2 text-success"></i>
+                    按时交付排行
+                </h5>
+                <a href="/leaderboard/on-time-delivery?period=<%= currentPeriod %><%= currentProject ? '&project=' + currentProject : '' %>"
+                   class="btn btn-sm btn-outline-primary">查看更多</a>
+            </div>
+            <div class="card-body">
+                <% if (leaderboards.onTimeDelivery && leaderboards.onTimeDelivery.length > 0) { %>
+                    <% leaderboards.onTimeDelivery.slice(0, 5).forEach((item, index) => { %>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <% if (index === 0) { %>
+                                    <i class="fas fa-trophy text-warning fs-5"></i>
+                                <% } else if (index === 1) { %>
+                                    <i class="fas fa-medal text-secondary fs-5"></i>
+                                <% } else if (index === 2) { %>
+                                    <i class="fas fa-award text-warning fs-5"></i>
+                                <% } else { %>
+                                    <span class="badge bg-light text-dark"><%= item.rank %></span>
+                                <% } %>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold"><%= item.fullName %></div>
+                                <small class="text-muted">@<%= item.username %></small>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold text-success"><%= item.score %>%</div>
+                                <small class="text-muted">完成: <%= item.details.totalTasks %> 个</small>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p>暂无数据</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- 高难度挑战榜 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-star me-2 text-warning"></i>
+                    高难度挑战排行
+                </h5>
+                <a href="/leaderboard/difficulty-challenge?period=<%= currentPeriod %><%= currentProject ? '&project=' + currentProject : '' %>"
+                   class="btn btn-sm btn-outline-primary">查看更多</a>
+            </div>
+            <div class="card-body">
+                <% if (leaderboards.difficultyChallenge && leaderboards.difficultyChallenge.length > 0) { %>
+                    <% leaderboards.difficultyChallenge.slice(0, 5).forEach((item, index) => { %>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <% if (index === 0) { %>
+                                    <i class="fas fa-trophy text-warning fs-5"></i>
+                                <% } else if (index === 1) { %>
+                                    <i class="fas fa-medal text-secondary fs-5"></i>
+                                <% } else if (index === 2) { %>
+                                    <i class="fas fa-award text-warning fs-5"></i>
+                                <% } else { %>
+                                    <span class="badge bg-light text-dark"><%= item.rank %></span>
+                                <% } %>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold"><%= item.fullName %></div>
+                                <small class="text-muted">@<%= item.username %></small>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold text-warning"><%= item.score %> 个</div>
+                                <small class="text-muted">
+                                    4星: <%= item.details.star4Tasks %> | 5星: <%= item.details.star5Tasks %>
+                                </small>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p>暂无数据</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 专业能力榜单 -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2 text-primary"></i>
+                    专业能力排行
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- 开发能力 -->
+                    <div class="col-md-4 mb-3">
+                        <div class="border rounded p-3">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-code me-1"></i>开发能力
+                            </h6>
+                            <% if (leaderboards.specialties && leaderboards.specialties.development && leaderboards.specialties.development.length > 0) { %>
+                                <% leaderboards.specialties.development.slice(0, 3).forEach((item, index) => { %>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <span class="badge bg-light text-dark me-2"><%= item.rank %></span>
+                                            <small><%= item.fullName %></small>
+                                        </div>
+                                        <small class="text-primary fw-bold"><%= item.score %></small>
+                                    </div>
+                                <% }) %>
+                                <div class="text-center mt-2">
+                                    <a href="/leaderboard/specialty/dev_task?period=<%= currentPeriod %><%= currentProject ? '&project=' + currentProject : '' %>"
+                                       class="btn btn-sm btn-outline-primary">查看更多</a>
+                                </div>
+                            <% } else { %>
+                                <div class="text-center text-muted">
+                                    <small>暂无数据</small>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- 测试能力 -->
+                    <div class="col-md-4 mb-3">
+                        <div class="border rounded p-3">
+                            <h6 class="text-success mb-3">
+                                <i class="fas fa-bug me-1"></i>测试能力
+                            </h6>
+                            <% if (leaderboards.specialties && leaderboards.specialties.testing && leaderboards.specialties.testing.length > 0) { %>
+                                <% leaderboards.specialties.testing.slice(0, 3).forEach((item, index) => { %>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <span class="badge bg-light text-dark me-2"><%= item.rank %></span>
+                                            <small><%= item.fullName %></small>
+                                        </div>
+                                        <small class="text-success fw-bold"><%= item.score %></small>
+                                    </div>
+                                <% }) %>
+                                <div class="text-center mt-2">
+                                    <a href="/leaderboard/specialty/test_task?period=<%= currentPeriod %><%= currentProject ? '&project=' + currentProject : '' %>"
+                                       class="btn btn-sm btn-outline-success">查看更多</a>
+                                </div>
+                            <% } else { %>
+                                <div class="text-center text-muted">
+                                    <small>暂无数据</small>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Bug处理能力 -->
+                    <div class="col-md-4 mb-3">
+                        <div class="border rounded p-3">
+                            <h6 class="text-danger mb-3">
+                                <i class="fas fa-tools me-1"></i>Bug处理
+                            </h6>
+                            <% if (leaderboards.specialties && leaderboards.specialties.bugFix && leaderboards.specialties.bugFix.length > 0) { %>
+                                <% leaderboards.specialties.bugFix.slice(0, 3).forEach((item, index) => { %>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <span class="badge bg-light text-dark me-2"><%= item.rank %></span>
+                                            <small><%= item.fullName %></small>
+                                        </div>
+                                        <small class="text-danger fw-bold"><%= item.score %></small>
+                                    </div>
+                                <% }) %>
+                                <div class="text-center mt-2">
+                                    <a href="/leaderboard/specialty/bug?period=<%= currentPeriod %><%= currentProject ? '&project=' + currentProject : '' %>"
+                                       class="btn btn-sm btn-outline-danger">查看更多</a>
+                                </div>
+                            <% } else { %>
+                                <div class="text-center text-muted">
+                                    <small>暂无数据</small>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 自动提交筛选表单
+document.getElementById('period').addEventListener('change', function() {
+    this.form.submit();
+});
+
+document.getElementById('project').addEventListener('change', function() {
+    this.form.submit();
+});
+</script>
 
 <%- include('../partials/footer') %>
