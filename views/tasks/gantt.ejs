@@ -283,8 +283,25 @@
 }
 
 .task-card small {
-    font-size: 0.875rem;
-    line-height: 1.4;
+    font-size: 0.75rem;
+    line-height: 1.2;
+}
+
+.task-info .info-row {
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.task-info .info-row:last-child {
+    margin-bottom: 0;
+}
+
+.task-info .progress-text {
+    font-size: 0.7rem;
+    min-width: 28px;
+    text-align: right;
 }
 
 .task-card .form-select-sm {
@@ -2092,17 +2109,30 @@ function renderTaskTreeNodes(nodes, level) {
 
                         <!-- 任务信息 -->
                         <div class="col-md-2">
-                            <small class="text-muted">
-                                <div><i class="fas fa-user me-1"></i>${taskData.publisher ? (taskData.publisher.firstName + ' ' + taskData.publisher.lastName).trim() || taskData.publisher.username : '未知'}</div>
-                                ${taskData.estimatedHours || taskData.dueDate ? `<div>
-                                    ${taskData.estimatedHours ? `<i class="fas fa-clock me-1"></i>${taskData.estimatedHours}h` : ''}
-                                    ${taskData.dueDate ? `<i class="fas fa-calendar ms-1 me-1"></i>${new Date(taskData.dueDate).toLocaleDateString('zh-CN')}` : ''}
-                                </div>` : ''}
-                                <!-- 进度条 -->
-                                <div class="mt-1">
-                                    <div class="d-flex align-items-center">
+                            <small class="text-muted task-info">
+                                <!-- 第一行：创建人 -->
+                                <div class="info-row">
+                                    <i class="fas fa-user me-1"></i>
+                                    <span>${taskData.publisher ? (taskData.publisher.firstName + ' ' + taskData.publisher.lastName).trim() || taskData.publisher.username : '未知'}</span>
+                                </div>
+
+                                <!-- 第二行：工时信息 -->
+                                <div class="info-row">
+                                    ${taskData.estimatedHours ? `<i class="fas fa-clock me-1"></i><span>预计 ${taskData.estimatedHours}h</span>` : ''}
+                                    ${taskData.actualHours ? `<span class="ms-2"><i class="fas fa-stopwatch me-1"></i>实际 ${taskData.actualHours}h</span>` : ''}
+                                </div>
+
+                                <!-- 第三行：时间信息 -->
+                                <div class="info-row">
+                                    ${taskData.startDate ? `<i class="fas fa-play me-1"></i><span>${new Date(taskData.startDate).toLocaleDateString('zh-CN')}</span>` : ''}
+                                    ${taskData.dueDate ? `<span class="${taskData.startDate ? 'ms-2' : ''}"><i class="fas fa-flag me-1"></i>${new Date(taskData.dueDate).toLocaleDateString('zh-CN')}</span>` : ''}
+                                </div>
+
+                                <!-- 第四行：进度条 -->
+                                <div class="info-row mt-1">
+                                    <div class="d-flex align-items-center w-100">
                                         <i class="fas fa-chart-line me-1"></i>
-                                        <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                        <div class="progress flex-grow-1 me-2" style="height: 6px;">
                                             <div class="progress-bar
                                                 ${taskData.progress === 0 ? 'bg-secondary' :
                                                   taskData.progress < 25 ? 'bg-info' :
@@ -2116,7 +2146,7 @@ function renderTaskTreeNodes(nodes, level) {
                                                 aria-valuemax="100">
                                             </div>
                                         </div>
-                                        <span class="text-nowrap" style="font-size: 0.75rem;">${taskData.progress || 0}%</span>
+                                        <span class="text-nowrap progress-text">${taskData.progress || 0}%</span>
                                     </div>
                                 </div>
                             </small>

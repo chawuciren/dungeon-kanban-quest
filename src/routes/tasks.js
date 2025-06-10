@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { BountyTask, Project, User, Sprint } = require('../models');
+const { BountyTask, Project, User, Sprint, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const logger = require('../config/logger');
 const { requireProjectSelection, validateProjectAccess } = require('../middleware/projectSelection');
@@ -127,12 +127,38 @@ function buildTaskFilters(query, projectId, userId) {
 }
 
 // 构建排序条件的函数
-function buildTaskOrder(sortType) {
+function buildTaskOrder(sortType, useSimpleOrder = false) {
   let order = [['createdAt', 'DESC']];
   if (sortType === 'deadline') {
     order = [['dueDate', 'ASC']];
   } else if (sortType === 'priority') {
-    order = [['urgencyLevel', 'DESC'], ['starLevel', 'DESC']];
+    if (useSimpleOrder) {
+      // 简单排序，用于复杂查询
+      order = [
+        ['urgencyLevel', 'ASC'],
+        ['starLevel', 'DESC']
+      ];
+    } else {
+      // 使用 CASE WHEN 来正确排序 urgencyLevel 枚举值
+      order = [
+        [
+          sequelize.literal(`
+            CASE urgency_level
+              WHEN 'urgent' THEN 1
+              WHEN 'important' THEN 2
+              WHEN 'normal' THEN 3
+              WHEN 'delayed' THEN 4
+              WHEN 'frozen' THEN 5
+              ELSE 6
+            END
+          `),
+          'ASC'
+        ],
+        ['starLevel', 'DESC']
+      ];
+    }
+  } else if (sortType === 'created') {
+    order = [['createdAt', 'DESC']];
   }
   return order;
 }
@@ -176,53 +202,111 @@ router.get('/list', requireProjectSelection, validateProjectAccess, async (req, 
     // 构建查询条件
     const where = buildTaskFilters(appliedQuery, req.session.selectedProjectId, req.session.userId);
 
-    // 排序
-    const order = buildTaskOrder(appliedQuery.sort);
-
     // 先单独统计总数，避免include影响count结果
     const count = await BountyTask.count({ where });
 
-    // 再查询具体数据
-    const tasks = await BountyTask.findAll({
-      where,
-      include: [
-        {
-          model: User,
-          as: 'publisher',
-          attributes: ['id', 'username', 'firstName', 'lastName']
-        },
-        {
-          model: User,
-          as: 'assignee',
-          attributes: ['id', 'username', 'firstName', 'lastName']
-        },
-        {
-          model: Project,
-          as: 'project',
-          attributes: ['id', 'name', 'key'],
-          include: [
-            {
-              model: User,
-              as: 'members',
-              attributes: ['id', 'firstName', 'lastName', 'username'],
-              through: {
-                attributes: ['roles', 'status'],
-                as: 'membership'
+    // 对于优先级排序，我们需要特殊处理
+    let tasks;
+    if (appliedQuery.sort === 'priority') {
+      // 先获取所有数据，然后在 JavaScript 中排序
+      tasks = await BountyTask.findAll({
+        where,
+        include: [
+          {
+            model: User,
+            as: 'publisher',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: User,
+            as: 'assignee',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: Project,
+            as: 'project',
+            attributes: ['id', 'name', 'key'],
+            include: [
+              {
+                model: User,
+                as: 'members',
+                attributes: ['id', 'firstName', 'lastName', 'username'],
+                through: {
+                  attributes: ['roles', 'status'],
+                  as: 'membership'
+                }
               }
-            }
-          ]
-        },
-        {
-          model: Sprint,
-          as: 'sprint',
-          attributes: ['id', 'name', 'status'],
-          required: false
+            ]
+          },
+          {
+            model: Sprint,
+            as: 'sprint',
+            attributes: ['id', 'name', 'status'],
+            required: false
+          }
+        ]
+      });
+
+      // 在 JavaScript 中进行优先级排序
+      const urgencyOrder = { 'urgent': 1, 'important': 2, 'normal': 3, 'delayed': 4, 'frozen': 5 };
+      tasks.sort((a, b) => {
+        const urgencyA = urgencyOrder[a.urgencyLevel] || 6;
+        const urgencyB = urgencyOrder[b.urgencyLevel] || 6;
+
+        if (urgencyA !== urgencyB) {
+          return urgencyA - urgencyB;
         }
-      ],
-      order,
-      limit,
-      offset
-    });
+
+        // 如果紧急程度相同，按星级降序排序
+        return b.starLevel - a.starLevel;
+      });
+
+      // 应用分页
+      tasks = tasks.slice(offset, offset + limit);
+    } else {
+      // 其他排序方式使用数据库排序
+      const order = buildTaskOrder(appliedQuery.sort);
+      tasks = await BountyTask.findAll({
+        where,
+        include: [
+          {
+            model: User,
+            as: 'publisher',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: User,
+            as: 'assignee',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: Project,
+            as: 'project',
+            attributes: ['id', 'name', 'key'],
+            include: [
+              {
+                model: User,
+                as: 'members',
+                attributes: ['id', 'firstName', 'lastName', 'username'],
+                through: {
+                  attributes: ['roles', 'status'],
+                  as: 'membership'
+                }
+              }
+            ]
+          },
+          {
+            model: Sprint,
+            as: 'sprint',
+            attributes: ['id', 'name', 'status'],
+            required: false
+          }
+        ],
+        order,
+        limit,
+        offset
+      });
+    }
 
     // 获取项目成员列表用于筛选器
     const { ProjectMember } = require('../models');
@@ -301,53 +385,111 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
       parentTaskId: null // 根任务
     };
 
-    // 排序
-    const order = buildTaskOrder(appliedQuery.sort);
-
     // 先单独统计根任务总数，避免include影响count结果
     const count = await BountyTask.count({ where });
 
-    // 再查询具体的根任务数据
-    const rootTasks = await BountyTask.findAll({
-      where,
-      include: [
-        {
-          model: User,
-          as: 'publisher',
-          attributes: ['id', 'username', 'firstName', 'lastName']
-        },
-        {
-          model: User,
-          as: 'assignee',
-          attributes: ['id', 'username', 'firstName', 'lastName']
-        },
-        {
-          model: Project,
-          as: 'project',
-          attributes: ['id', 'name', 'key'],
-          include: [
-            {
-              model: User,
-              as: 'members',
-              attributes: ['id', 'firstName', 'lastName', 'username'],
-              through: {
-                attributes: ['roles', 'status'],
-                as: 'membership'
+    // 对于优先级排序，我们需要特殊处理
+    let rootTasks;
+    if (appliedQuery.sort === 'priority') {
+      // 先获取所有根任务数据，然后在 JavaScript 中排序
+      rootTasks = await BountyTask.findAll({
+        where,
+        include: [
+          {
+            model: User,
+            as: 'publisher',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: User,
+            as: 'assignee',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: Project,
+            as: 'project',
+            attributes: ['id', 'name', 'key'],
+            include: [
+              {
+                model: User,
+                as: 'members',
+                attributes: ['id', 'firstName', 'lastName', 'username'],
+                through: {
+                  attributes: ['roles', 'status'],
+                  as: 'membership'
+                }
               }
-            }
-          ]
-        },
-        {
-          model: Sprint,
-          as: 'sprint',
-          attributes: ['id', 'name', 'status'],
-          required: false
+            ]
+          },
+          {
+            model: Sprint,
+            as: 'sprint',
+            attributes: ['id', 'name', 'status'],
+            required: false
+          }
+        ]
+      });
+
+      // 在 JavaScript 中进行优先级排序
+      const urgencyOrder = { 'urgent': 1, 'important': 2, 'normal': 3, 'delayed': 4, 'frozen': 5 };
+      rootTasks.sort((a, b) => {
+        const urgencyA = urgencyOrder[a.urgencyLevel] || 6;
+        const urgencyB = urgencyOrder[b.urgencyLevel] || 6;
+
+        if (urgencyA !== urgencyB) {
+          return urgencyA - urgencyB;
         }
-      ],
-      order,
-      limit,
-      offset: (page - 1) * limit
-    });
+
+        // 如果紧急程度相同，按星级降序排序
+        return b.starLevel - a.starLevel;
+      });
+
+      // 应用分页
+      rootTasks = rootTasks.slice((page - 1) * limit, page * limit);
+    } else {
+      // 其他排序方式使用数据库排序
+      const order = buildTaskOrder(appliedQuery.sort);
+      rootTasks = await BountyTask.findAll({
+        where,
+        include: [
+          {
+            model: User,
+            as: 'publisher',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: User,
+            as: 'assignee',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: Project,
+            as: 'project',
+            attributes: ['id', 'name', 'key'],
+            include: [
+              {
+                model: User,
+                as: 'members',
+                attributes: ['id', 'firstName', 'lastName', 'username'],
+                through: {
+                  attributes: ['roles', 'status'],
+                  as: 'membership'
+                }
+              }
+            ]
+          },
+          {
+            model: Sprint,
+            as: 'sprint',
+            attributes: ['id', 'name', 'status'],
+            required: false
+          }
+        ],
+        order,
+        limit,
+        offset: (page - 1) * limit
+      });
+    }
 
     // 检查每个根任务是否有子任务（不预加载子任务）
     for (let task of rootTasks) {
@@ -426,31 +568,69 @@ router.get('/kanban', requireProjectSelection, validateProjectAccess, async (req
     // 构建查询条件（包含筛选）
     const where = buildTaskFilters(appliedQuery, projectId, req.session.userId);
 
-    // 排序
-    const order = buildTaskOrder(appliedQuery.sort);
-
     // 获取所有任务并按状态分组
-    const tasks = await BountyTask.findAll({
-      where,
-      include: [
-        {
-          model: User,
-          as: 'publisher',
-          attributes: ['id', 'username', 'firstName', 'lastName']
-        },
-        {
-          model: User,
-          as: 'assignee',
-          attributes: ['id', 'username', 'firstName', 'lastName']
-        },
-        {
-          model: Project,
-          as: 'project',
-          attributes: ['id', 'name', 'key']
+    let tasks;
+    if (appliedQuery.sort === 'priority') {
+      // 对于优先级排序，先获取数据然后在 JavaScript 中排序
+      tasks = await BountyTask.findAll({
+        where,
+        include: [
+          {
+            model: User,
+            as: 'publisher',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: User,
+            as: 'assignee',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: Project,
+            as: 'project',
+            attributes: ['id', 'name', 'key']
+          }
+        ]
+      });
+
+      // 在 JavaScript 中进行优先级排序
+      const urgencyOrder = { 'urgent': 1, 'important': 2, 'normal': 3, 'delayed': 4, 'frozen': 5 };
+      tasks.sort((a, b) => {
+        const urgencyA = urgencyOrder[a.urgencyLevel] || 6;
+        const urgencyB = urgencyOrder[b.urgencyLevel] || 6;
+
+        if (urgencyA !== urgencyB) {
+          return urgencyA - urgencyB;
         }
-      ],
-      order
-    });
+
+        // 如果紧急程度相同，按星级降序排序
+        return b.starLevel - a.starLevel;
+      });
+    } else {
+      // 其他排序方式使用数据库排序
+      const order = buildTaskOrder(appliedQuery.sort);
+      tasks = await BountyTask.findAll({
+        where,
+        include: [
+          {
+            model: User,
+            as: 'publisher',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: User,
+            as: 'assignee',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: Project,
+            as: 'project',
+            attributes: ['id', 'name', 'key']
+          }
+        ],
+        order
+      });
+    }
 
     // 按状态分组任务
     const kanbanColumns = {
@@ -520,48 +700,103 @@ router.get('/gantt', requireProjectSelection, validateProjectAccess, async (req,
     // 构建查询条件（包含筛选）
     const where = buildTaskFilters(appliedQuery, projectId, req.session.userId);
 
-    // 排序（甘特图默认按创建时间排序）
-    const order = appliedQuery.sort ? buildTaskOrder(appliedQuery.sort) : [['createdAt', 'ASC']];
-
     // 获取所有任务
-    const tasks = await BountyTask.findAll({
-      where,
-      include: [
-        {
-          model: User,
-          as: 'publisher',
-          attributes: ['id', 'username', 'firstName', 'lastName']
-        },
-        {
-          model: User,
-          as: 'assignee',
-          attributes: ['id', 'username', 'firstName', 'lastName']
-        },
-        {
-          model: Project,
-          as: 'project',
-          attributes: ['id', 'name', 'key'],
-          include: [
-            {
-              model: User,
-              as: 'members',
-              attributes: ['id', 'firstName', 'lastName', 'username'],
-              through: {
-                attributes: ['roles', 'status'],
-                as: 'membership'
+    let tasks;
+    if (appliedQuery.sort === 'priority') {
+      // 对于优先级排序，先获取数据然后在 JavaScript 中排序
+      tasks = await BountyTask.findAll({
+        where,
+        include: [
+          {
+            model: User,
+            as: 'publisher',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: User,
+            as: 'assignee',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: Project,
+            as: 'project',
+            attributes: ['id', 'name', 'key'],
+            include: [
+              {
+                model: User,
+                as: 'members',
+                attributes: ['id', 'firstName', 'lastName', 'username'],
+                through: {
+                  attributes: ['roles', 'status'],
+                  as: 'membership'
+                }
               }
-            }
-          ]
-        },
-        {
-          model: Sprint,
-          as: 'sprint',
-          attributes: ['id', 'name', 'status'],
-          required: false
+            ]
+          },
+          {
+            model: Sprint,
+            as: 'sprint',
+            attributes: ['id', 'name', 'status'],
+            required: false
+          }
+        ]
+      });
+
+      // 在 JavaScript 中进行优先级排序
+      const urgencyOrder = { 'urgent': 1, 'important': 2, 'normal': 3, 'delayed': 4, 'frozen': 5 };
+      tasks.sort((a, b) => {
+        const urgencyA = urgencyOrder[a.urgencyLevel] || 6;
+        const urgencyB = urgencyOrder[b.urgencyLevel] || 6;
+
+        if (urgencyA !== urgencyB) {
+          return urgencyA - urgencyB;
         }
-      ],
-      order
-    });
+
+        // 如果紧急程度相同，按星级降序排序
+        return b.starLevel - a.starLevel;
+      });
+    } else {
+      // 其他排序方式使用数据库排序（甘特图默认按创建时间排序）
+      const order = appliedQuery.sort ? buildTaskOrder(appliedQuery.sort) : [['createdAt', 'ASC']];
+      tasks = await BountyTask.findAll({
+        where,
+        include: [
+          {
+            model: User,
+            as: 'publisher',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: User,
+            as: 'assignee',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          },
+          {
+            model: Project,
+            as: 'project',
+            attributes: ['id', 'name', 'key'],
+            include: [
+              {
+                model: User,
+                as: 'members',
+                attributes: ['id', 'firstName', 'lastName', 'username'],
+                through: {
+                  attributes: ['roles', 'status'],
+                  as: 'membership'
+                }
+              }
+            ]
+          },
+          {
+            model: Sprint,
+            as: 'sprint',
+            attributes: ['id', 'name', 'status'],
+            required: false
+          }
+        ],
+        order
+      });
+    }
 
     // 格式化任务数据为甘特图格式
     const ganttTasks = tasks.map((task, index) => {

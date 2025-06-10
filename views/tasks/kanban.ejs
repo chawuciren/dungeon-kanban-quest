@@ -108,40 +108,68 @@
                                             </p>
                                         <% } %>
 
-                                        <!-- 工时信息 -->
-                                        <div class="time-info mb-2">
-                                            <small class="text-muted">
-                                                <i class="fas fa-clock"></i>
-                                                <%= task.estimatedHours || 0 %>h
-                                            </small>
-                                        </div>
-
                                         <!-- 任务信息 -->
                                         <div class="task-info">
-                                            <% if (task.assignee) { %>
-                                                <div class="d-flex align-items-center mb-1">
-                                                    <i class="fas fa-user text-muted me-1" style="font-size: 12px;"></i>
-                                                    <small class="text-muted">
-                                                        <%= task.assignee.firstName + ' ' + task.assignee.lastName %>
-                                                    </small>
+                                            <!-- 第一行：创建人 -->
+                                            <div class="info-row mb-1">
+                                                <i class="fas fa-user text-muted me-1" style="font-size: 12px;"></i>
+                                                <small class="text-muted">
+                                                    <%= task.publisher ? (task.publisher.firstName + ' ' + task.publisher.lastName).trim() || task.publisher.username : '未知' %>
+                                                </small>
+                                            </div>
+
+                                            <!-- 第二行：工时信息 -->
+                                            <div class="info-row mb-1">
+                                                <% if (task.estimatedHours) { %>
+                                                    <i class="fas fa-clock text-muted me-1" style="font-size: 12px;"></i>
+                                                    <small class="text-muted">预计 <%= task.estimatedHours %>h</small>
+                                                <% } %>
+                                                <% if (task.actualHours) { %>
+                                                    <span class="ms-2">
+                                                        <i class="fas fa-stopwatch text-muted me-1" style="font-size: 12px;"></i>
+                                                        <small class="text-muted">实际 <%= task.actualHours %>h</small>
+                                                    </span>
+                                                <% } %>
+                                            </div>
+
+                                            <!-- 第三行：时间信息 -->
+                                            <div class="info-row mb-1">
+                                                <% if (task.startDate) { %>
+                                                    <i class="fas fa-play text-muted me-1" style="font-size: 12px;"></i>
+                                                    <small class="text-muted"><%= new Date(task.startDate).toLocaleDateString('zh-CN') %></small>
+                                                <% } %>
+                                                <% if (task.dueDate) { %>
+                                                    <span class="<%= task.startDate ? 'ms-2' : '' %>">
+                                                        <i class="fas fa-flag text-muted me-1" style="font-size: 12px;"></i>
+                                                        <small class="text-muted"><%= new Date(task.dueDate).toLocaleDateString('zh-CN') %></small>
+                                                    </span>
+                                                <% } %>
+                                            </div>
+
+                                            <!-- 第四行：进度条 -->
+                                            <% const progress = task.progress || 0; %>
+                                            <div class="info-row">
+                                                <div class="d-flex align-items-center w-100">
+                                                    <i class="fas fa-chart-line text-muted me-1" style="font-size: 12px;"></i>
+                                                    <div class="progress flex-grow-1 me-2" style="height: 4px;">
+                                                        <div class="progress-bar
+                                                            <% if (progress === 0) { %>bg-secondary
+                                                            <% } else if (progress < 25) { %>bg-info
+                                                            <% } else if (progress < 50) { %>bg-primary
+                                                            <% } else if (progress < 75) { %>bg-warning
+                                                            <% } else if (progress < 100) { %>bg-success
+                                                            <% } else { %>bg-success
+                                                            <% } %>"
+                                                            role="progressbar"
+                                                            style="width: <%= progress %>%;"
+                                                            aria-valuenow="<%= progress %>"
+                                                            aria-valuemin="0"
+                                                            aria-valuemax="100">
+                                                        </div>
+                                                    </div>
+                                                    <small class="text-muted progress-text"><%= progress %>%</small>
                                                 </div>
-                                            <% } %>
-                                            <% if (task.dueDate) { %>
-                                                <div class="d-flex align-items-center mb-1">
-                                                    <i class="fas fa-calendar text-muted me-1" style="font-size: 12px;"></i>
-                                                    <small class="text-muted">
-                                                        <%= new Date(task.dueDate).toLocaleDateString('zh-CN') %>
-                                                    </small>
-                                                </div>
-                                            <% } %>
-                                            <% if (task.project) { %>
-                                                <div class="d-flex align-items-center">
-                                                    <i class="fas fa-project-diagram text-muted me-1" style="font-size: 12px;"></i>
-                                                    <small class="text-muted">
-                                                        <%= task.project.name %>
-                                                    </small>
-                                                </div>
-                                            <% } %>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -228,6 +256,18 @@
 
 .task-info {
     font-size: 0.8em;
+}
+
+.task-info .info-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.task-info .progress-text {
+    font-size: 0.7rem;
+    min-width: 24px;
+    text-align: right;
 }
 
 .task-type-badge-kanban {

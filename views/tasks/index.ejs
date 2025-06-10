@@ -105,24 +105,47 @@
 
                                 <!-- 任务信息 -->
                                 <div class="col-md-2">
-                                    <small class="text-muted">
-                                        <div><i class="fas fa-user me-1"></i><%= task.publisher ? (task.publisher.firstName + ' ' + task.publisher.lastName).trim() || task.publisher.username : '未知' %></div>
-                                        <% if (task.estimatedHours || task.dueDate) { %>
-                                            <div>
-                                                <% if (task.estimatedHours) { %>
-                                                    <i class="fas fa-clock me-1"></i><%= task.estimatedHours %>h
-                                                <% } %>
-                                                <% if (task.dueDate) { %>
-                                                    <i class="fas fa-calendar ms-1 me-1"></i><%= new Date(task.dueDate).toLocaleDateString('zh-CN') %>
-                                                <% } %>
-                                            </div>
-                                        <% } %>
-                                        <!-- 进度条 -->
+                                    <small class="text-muted task-info">
+                                        <!-- 第一行：创建人 -->
+                                        <div class="info-row">
+                                            <i class="fas fa-user me-1"></i>
+                                            <span><%= task.publisher ? (task.publisher.firstName + ' ' + task.publisher.lastName).trim() || task.publisher.username : '未知' %></span>
+                                        </div>
+
+                                        <!-- 第二行：工时信息 -->
+                                        <div class="info-row">
+                                            <% if (task.estimatedHours) { %>
+                                                <i class="fas fa-clock me-1"></i>
+                                                <span>预计 <%= task.estimatedHours %>h</span>
+                                            <% } %>
+                                            <% if (task.actualHours) { %>
+                                                <span class="ms-2">
+                                                    <i class="fas fa-stopwatch me-1"></i>
+                                                    实际 <%= task.actualHours %>h
+                                                </span>
+                                            <% } %>
+                                        </div>
+
+                                        <!-- 第三行：时间信息 -->
+                                        <div class="info-row">
+                                            <% if (task.startDate) { %>
+                                                <i class="fas fa-play me-1"></i>
+                                                <span><%= new Date(task.startDate).toLocaleDateString('zh-CN') %></span>
+                                            <% } %>
+                                            <% if (task.dueDate) { %>
+                                                <span class="<%= task.startDate ? 'ms-2' : '' %>">
+                                                    <i class="fas fa-flag me-1"></i>
+                                                    <%= new Date(task.dueDate).toLocaleDateString('zh-CN') %>
+                                                </span>
+                                            <% } %>
+                                        </div>
+
+                                        <!-- 第四行：进度条 -->
                                         <% const progress = task.progress || 0; %>
-                                        <div class="mt-1">
-                                            <div class="d-flex align-items-center">
+                                        <div class="info-row mt-1">
+                                            <div class="d-flex align-items-center w-100">
                                                 <i class="fas fa-chart-line me-1"></i>
-                                                <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                <div class="progress flex-grow-1 me-2" style="height: 6px;">
                                                     <div class="progress-bar
                                                         <% if (progress === 0) { %>bg-secondary
                                                         <% } else if (progress < 25) { %>bg-info
@@ -138,7 +161,7 @@
                                                         aria-valuemax="100">
                                                     </div>
                                                 </div>
-                                                <span class="text-nowrap" style="font-size: 0.75rem;"><%= progress %>%</span>
+                                                <span class="text-nowrap progress-text"><%= progress %>%</span>
                                             </div>
                                         </div>
                                     </small>
@@ -316,8 +339,25 @@
 }
 
 .task-card small {
-    font-size: 0.875rem;
-    line-height: 1.4;
+    font-size: 0.75rem;
+    line-height: 1.2;
+}
+
+.task-info .info-row {
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.task-info .info-row:last-child {
+    margin-bottom: 0;
+}
+
+.task-info .progress-text {
+    font-size: 0.7rem;
+    min-width: 28px;
+    text-align: right;
 }
 
 .task-card .form-select-sm {
