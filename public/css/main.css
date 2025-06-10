@@ -60,26 +60,59 @@ body {
   transform: scale(1.1);
 }
 
-/* 特定游戏化图标的颜色 */
-.navbar-nav .nav-link:hover .fa-home {
-  color: #ffc107;
+/* 导航图标悬停颜色统一设置 */
+/* 方案1：所有图标统一使用金色悬停效果 */
+.navbar-dark .navbar-nav .nav-link:hover i {
+  color: #ffc107 !important; /* 统一金色悬停效果 */
+  text-shadow: 0 0 8px rgba(255, 193, 7, 0.5) !important; /* 添加发光效果 */
 }
 
-.navbar-nav .nav-link:hover .fa-map {
-  color: #28a745;
+/* 方案2：如果需要不同颜色，可以启用下面的特定设置 */
+/*
+.navbar-dark .navbar-nav .nav-link:hover .fa-gamepad {
+  color: #ffc107 !important;
 }
 
-.navbar-nav .nav-link:hover .fa-beer {
-  color: #fd7e14;
+.navbar-dark .navbar-nav .nav-link:hover .fa-globe {
+  color: #17a2b8 !important;
 }
 
-.navbar-nav .nav-link:hover .fa-crown {
-  color: #ffc107;
+.navbar-dark .navbar-nav .nav-link:hover .fa-home {
+  color: #ffc107 !important;
 }
 
-.navbar-nav .nav-link:hover .fa-users {
-  color: #17a2b8;
+.navbar-dark .navbar-nav .nav-link:hover .fa-map {
+  color: #28a745 !important;
 }
+
+.navbar-dark .navbar-nav .nav-link:hover .fa-beer {
+  color: #fd7e14 !important;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover .fa-calendar-alt {
+  color: #6f42c1 !important;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover .fa-crown {
+  color: #ffc107 !important;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover .fa-shield-alt {
+  color: #dc3545 !important;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover .fa-users {
+  color: #17a2b8 !important;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover .fa-user {
+  color: #ffffff !important;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover .fa-cog {
+  color: #ffffff !important;
+}
+*/
 
 /* 英雄区域 */
 .hero-section {
