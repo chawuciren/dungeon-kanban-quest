@@ -7,15 +7,27 @@
             <div>
                 <h2>
                     <i class="fas fa-map me-2 text-primary"></i>
-                    项目（项目管理）
+                    <% if (user.role === 'admin') { %>
+                        项目管理
+                    <% } else { %>
+                        我的项目
+                    <% } %>
                 </h2>
-                <p class="text-muted mb-0">管理您的项目和团队协作</p>
+                <p class="text-muted mb-0">
+                    <% if (user.role === 'admin') { %>
+                        管理所有项目和团队协作
+                    <% } else { %>
+                        查看您参与的项目
+                    <% } %>
+                </p>
             </div>
-            <div>
-                <a href="/projects/create" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>创建项目
-                </a>
-            </div>
+            <% if (user.role === 'admin') { %>
+                <div>
+                    <a href="/projects/create" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>创建项目
+                    </a>
+                </div>
+            <% } %>
         </div>
     </div>
 </div>
@@ -209,14 +221,22 @@
                                     <i class="fas fa-eye me-1"></i>
                                     查看详情
                                 </a>
-                                <a href="/tasks?projectId=<%= project.id %>" class="btn btn-outline-info btn-sm">
+                                <a href="/select-project/<%= project.id %>/tasks" class="btn btn-outline-info btn-sm">
                                     <i class="fas fa-tasks me-1"></i>
                                     任务列表
                                 </a>
-                                <a href="/projects/<%= project.id %>/edit" class="btn btn-outline-warning btn-sm">
-                                    <i class="fas fa-edit me-1"></i>
-                                    编辑
-                                </a>
+                                <%
+                                // 检查用户是否有编辑权限：管理员、项目所有者、项目负责人
+                                const canEdit = user.role === 'admin' ||
+                                               project.ownerId === user.id ||
+                                               project.leaderId === user.id;
+                                %>
+                                <% if (canEdit) { %>
+                                    <a href="/projects/<%= project.id %>/edit" class="btn btn-outline-warning btn-sm">
+                                        <i class="fas fa-edit me-1"></i>
+                                        编辑
+                                    </a>
+                                <% } %>
                             </div>
                         </div>
                     </div>
@@ -230,23 +250,40 @@
                     <div class="mb-4">
                         <i class="fas fa-map fa-4x text-muted opacity-50"></i>
                     </div>
-                    <h4 class="text-muted mb-3">还没有项目</h4>
-                    <p class="text-muted mb-4">
-                        开始您的冒险之旅吧！创建第一个项目来管理您的项目和团队。
-                    </p>
-                    <div class="d-flex justify-content-center gap-3">
-                        <a href="/projects/create" class="btn btn-primary btn-lg">
-                            <i class="fas fa-plus me-2"></i>创建第一个项目
-                        </a>
-                        <a href="/organizations" class="btn btn-outline-secondary btn-lg">
-                            <i class="fas fa-users me-2"></i>管理组织
-                        </a>
-                    </div>
-                    <div class="mt-4">
-                        <small class="text-muted">
-                            💡 提示：先创建组织，然后创建项目并关联组织，团队成员会自动加入项目
-                        </small>
-                    </div>
+                    <% if (user.role === 'admin') { %>
+                        <h4 class="text-muted mb-3">还没有项目</h4>
+                        <p class="text-muted mb-4">
+                            开始您的冒险之旅吧！创建第一个项目来管理您的项目和团队。
+                        </p>
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="/projects/create" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus me-2"></i>创建第一个项目
+                            </a>
+                            <a href="/organizations" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-users me-2"></i>管理组织
+                            </a>
+                        </div>
+                        <div class="mt-4">
+                            <small class="text-muted">
+                                💡 提示：先创建组织，然后创建项目并关联组织，团队成员会自动加入项目
+                            </small>
+                        </div>
+                    <% } else { %>
+                        <h4 class="text-muted mb-3">您还没有参与任何项目</h4>
+                        <p class="text-muted mb-4">
+                            您目前还没有参与任何项目。请联系管理员将您加入到相关项目中。
+                        </p>
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="/dashboard" class="btn btn-primary btn-lg">
+                                <i class="fas fa-home me-2"></i>返回仪表盘
+                            </a>
+                        </div>
+                        <div class="mt-4">
+                            <small class="text-muted">
+                                💡 提示：如需创建项目或加入项目，请联系系统管理员
+                            </small>
+                        </div>
+                    <% } %>
                 </div>
             </div>
         </div>

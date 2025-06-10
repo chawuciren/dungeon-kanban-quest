@@ -41,8 +41,7 @@ router.get('/', requireAuth, async (req, res) => {
       whereClause.projectType = type;
     }
 
-    // 获取项目列表
-    const { count, rows: projects } = await Project.findAndCountAll({
+    let projectQuery = {
       where: whereClause,
       include: [
         {
@@ -65,7 +64,57 @@ router.get('/', requireAuth, async (req, res) => {
       order: [['createdAt', 'DESC']],
       limit,
       offset
-    });
+    };
+
+    let projects = [];
+    let count = 0;
+
+    // 如果不是管理员，只显示用户有权限的项目
+    if (req.session.user?.role !== 'admin') {
+      // 使用子查询来获取用户有权限的项目ID
+      const userProjectIds = await sequelize.query(`
+        SELECT DISTINCT p.id
+        FROM projects p
+        LEFT JOIN project_members pm ON p.id = pm.project_id AND pm.user_id = :userId AND pm.status = 'active'
+        WHERE p.owner_id = :userId
+           OR p.leader_id = :userId
+           OR pm.user_id IS NOT NULL
+      `, {
+        replacements: { userId: req.session.userId },
+        type: QueryTypes.SELECT
+      });
+
+      const projectIds = userProjectIds.map(row => row.id);
+
+      if (projectIds.length === 0) {
+        // 用户没有任何项目权限，返回空结果
+        projects = [];
+        count = 0;
+      } else {
+        // 添加项目ID过滤
+        projectQuery.where = {
+          ...whereClause,
+          id: { [Op.in]: projectIds }
+        };
+
+        // 分别查询count和rows，避免include导致的count错误
+        const countQuery = {
+          where: projectQuery.where
+        };
+
+        count = await Project.count(countQuery);
+        projects = await Project.findAll(projectQuery);
+      }
+    } else {
+      // 管理员可以看到所有项目
+      // 分别查询count和rows，避免include导致的count错误
+      const countQuery = {
+        where: whereClause
+      };
+
+      count = await Project.count(countQuery);
+      projects = await Project.findAll(projectQuery);
+    }
 
     // 为每个项目获取任务统计和成员数量
     for (let project of projects) {
@@ -163,6 +212,12 @@ router.get('/', requireAuth, async (req, res) => {
 // 项目创建页面
 router.get('/create', requireAuth, async (req, res) => {
   try {
+    // 检查权限：只有管理员可以创建项目
+    if (req.session.user?.role !== 'admin') {
+      req.flash('error', '您没有权限创建项目');
+      return res.redirect('/projects');
+    }
+
     // 获取用户所属的组织
     const organizations = await Organization.findAll({
       where: {
@@ -204,6 +259,12 @@ router.get('/create', requireAuth, async (req, res) => {
 // 项目创建处理
 router.post('/create', requireAuth, async (req, res) => {
   try {
+    // 检查权限：只有管理员可以创建项目
+    if (req.session.user?.role !== 'admin') {
+      req.flash('error', '您没有权限创建项目');
+      return res.redirect('/projects');
+    }
+
     const {
       name,
       key,

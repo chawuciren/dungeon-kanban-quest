@@ -123,6 +123,17 @@
                         </li>
                     <% } %>
 
+                    <!-- 项目功能 - 所有用户都可以看到 -->
+                    <% if (user) { %>
+                        <li class="nav-item">
+                            <a class="nav-link <%= currentUrl.startsWith('/projects') ? 'active' : '' %>" href="/projects"
+                            data-bs-toggle="tooltip" data-bs-placement="bottom" title="项目管理">
+                                <i class="fas fa-map me-1"></i>
+                                项目
+                            </a>
+                        </li>
+                    <% } %>
+
                     <!-- 项目相关功能 - 只有选择了项目才显示 -->
                     <% if (user && selectedProject) { %>
                         <li class="nav-item">
@@ -150,13 +161,6 @@
 
                     <!-- 管理员专用功能 - 始终显示 -->
                     <% if (user && user.role === 'admin') { %>
-                        <li class="nav-item">
-                            <a class="nav-link <%= currentUrl.startsWith('/projects') ? 'active' : '' %>" href="/projects"
-                            data-bs-toggle="tooltip" data-bs-placement="bottom" title="项目管理">
-                                <i class="fas fa-map me-1"></i>
-                                项目
-                            </a>
-                        </li>
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/organizations') ? 'active' : '' %>" href="/organizations"
                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="组织 - 组织管理">

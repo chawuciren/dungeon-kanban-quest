@@ -468,6 +468,76 @@ router.post('/profile/edit', handleAvatarUpload, async (req, res) => {
   }
 });
 
+// 选择项目并跳转到任务列表
+router.get('/select-project/:id/tasks', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/login');
+    }
+
+    const projectId = req.params.id;
+    const { Project, User } = require('../models');
+
+    // 验证项目是否存在且用户有权限访问
+    let hasAccess = false;
+
+    if (req.session.user?.role === 'admin') {
+      // 管理员可以访问所有项目
+      const project = await Project.findByPk(projectId);
+      hasAccess = !!project;
+    } else {
+      // 普通用户只能访问自己参与的项目（owner、leader或member）
+      const { Op } = require('sequelize');
+
+      // 检查是否为owner或leader
+      const ownedProject = await Project.findOne({
+        where: {
+          id: projectId,
+          [Op.or]: [
+            { ownerId: req.session.userId },
+            { leaderId: req.session.userId }
+          ]
+        }
+      });
+
+      if (ownedProject) {
+        hasAccess = true;
+      } else {
+        // 检查是否为成员
+        const memberProject = await Project.findOne({
+          where: { id: projectId },
+          include: [{
+            model: User,
+            as: 'members',
+            where: { id: req.session.userId },
+            attributes: [],
+            through: {
+              where: { status: 'active' },
+              attributes: []
+            }
+          }]
+        });
+        hasAccess = !!memberProject;
+      }
+    }
+
+    if (hasAccess) {
+      req.session.selectedProjectId = projectId;
+      req.flash('success', '项目选择成功');
+      // 直接跳转到任务列表
+      res.redirect('/tasks');
+    } else {
+      req.flash('error', '您没有权限访问此项目');
+      res.redirect('/projects');
+    }
+
+  } catch (error) {
+    console.error('选择项目失败:', error);
+    req.flash('error', '选择项目失败');
+    res.redirect('/projects');
+  }
+});
+
 // 选择项目
 router.get('/select-project/:id', async (req, res) => {
   try {
