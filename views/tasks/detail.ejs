@@ -712,6 +712,7 @@ function initCommentEditor($editor) {
     $imageUpload.on('change', function(e) {
         const file = e.target.files[0];
         if (file) {
+            console.log('图片文件选择:', file.name, file.size);
             uploadImage(file, $richEditor);
             $(this).val(''); // 清空文件输入
         }
@@ -817,6 +818,9 @@ function showReplyEditor(parentCommentId, replyToUserId, replyToUsername) {
                                     <i class="fas fa-underline"></i>
                                 </button>
                                 <span class="rich-editor-separator"></span>
+                                <button type="button" class="rich-editor-btn insert-image-btn" title="插入图片">
+                                    <i class="fas fa-image"></i>
+                                </button>
                                 <button type="button" class="rich-editor-btn mention-btn" title="@提醒">
                                     <i class="fas fa-at"></i>
                                 </button>
@@ -930,6 +934,9 @@ function editComment(commentId) {
                         <i class="fas fa-underline"></i>
                     </button>
                     <span class="rich-editor-separator"></span>
+                    <button type="button" class="rich-editor-btn insert-image-btn" title="插入图片">
+                        <i class="fas fa-image"></i>
+                    </button>
                     <button type="button" class="rich-editor-btn" data-command="removeFormat" title="清除格式">
                         <i class="fas fa-remove-format"></i>
                     </button>
@@ -937,6 +944,7 @@ function editComment(commentId) {
                 <div class="rich-editor-content" contenteditable="true">${originalContent}</div>
             </div>
             <textarea class="form-control d-none edit-content" required></textarea>
+            <input type="file" class="image-upload" accept="image/*" style="display: none;">
             <div class="d-flex justify-content-end">
                 <button type="button" class="btn btn-outline-secondary btn-sm cancel-edit me-2">
                     <i class="fas fa-times me-1"></i>取消
@@ -955,6 +963,8 @@ function editComment(commentId) {
     const $editForm = $commentItem.find('.edit-comment-form');
     const $richEditor = $editForm.find('.rich-editor-content');
     const $textarea = $editForm.find('.edit-content');
+    const $toolbar = $editForm.find('.rich-editor-toolbar');
+    const $imageUpload = $editForm.find('.image-upload');
 
     // 同步内容
     function syncEditContent() {
@@ -963,6 +973,32 @@ function editComment(commentId) {
 
     $richEditor.on('input', syncEditContent);
     syncEditContent();
+
+    // 工具栏按钮事件
+    $toolbar.on('click', '.rich-editor-btn', function(e) {
+        e.preventDefault();
+        const command = $(this).data('command');
+
+        if (command) {
+            document.execCommand(command, false, null);
+            syncEditContent();
+        }
+    });
+
+    // 插入图片按钮
+    $toolbar.on('click', '.insert-image-btn', function(e) {
+        e.preventDefault();
+        $imageUpload.click();
+    });
+
+    // 图片上传处理
+    $imageUpload.on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            uploadImage(file, $richEditor);
+            $(this).val(''); // 清空文件输入
+        }
+    });
 
     // 取消编辑
     $editForm.on('click', '.cancel-edit', function() {
@@ -1286,6 +1322,7 @@ function updateCommentCount() {
 
 // 上传图片
 function uploadImage(file, $richEditor) {
+    console.log('开始上传图片:', file.name, '编辑器:', $richEditor.length);
     const formData = new FormData();
     formData.append('taskImage', file);
 
@@ -1296,6 +1333,7 @@ function uploadImage(file, $richEditor) {
         processData: false,
         contentType: false,
         success: function(response) {
+            console.log('图片上传响应:', response);
             if (response.success) {
                 // 插入图片到编辑器
                 const img = document.createElement('img');
@@ -1312,6 +1350,22 @@ function uploadImage(file, $richEditor) {
                 } else {
                     $richEditor[0].appendChild(img);
                 }
+
+                // 重要：同步内容到隐藏的textarea
+                const $editor = $richEditor.closest('.comment-editor');
+                const $editForm = $richEditor.closest('.edit-comment-form');
+
+                if ($editor.length > 0) {
+                    // 普通评论编辑器
+                    const $textarea = $editor.find('.comment-content');
+                    $textarea.val($richEditor.html());
+                } else if ($editForm.length > 0) {
+                    // 编辑评论表单
+                    const $textarea = $editForm.find('.edit-content');
+                    $textarea.val($richEditor.html());
+                }
+
+                KanbanApp.showAlert('图片上传成功', 'success');
             } else {
                 KanbanApp.showAlert('图片上传失败: ' + (response.error || '未知错误'), 'danger');
             }
