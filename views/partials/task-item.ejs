@@ -1,0 +1,69 @@
+<div class="list-group-item">
+    <div class="d-flex justify-content-between align-items-start">
+        <div class="flex-grow-1">
+            <h6 class="mb-1">
+                <a href="/tasks/<%= task.id %>" class="text-decoration-none text-dark task-title-link">
+                    <%= task.title %>
+                </a>
+            </h6>
+            <small class="text-muted">
+                <%
+                const stars = '⭐'.repeat(task.starLevel || 1);
+                const urgencyIcons = {
+                    'urgent': '🔥',
+                    'important': '⚡',
+                    'normal': '📅',
+                    'delayed': '🕐',
+                    'frozen': '❄️'
+                };
+                const urgencyIcon = urgencyIcons[task.urgencyLevel] || '📅';
+                %>
+                <%= stars %> <%= task.starLevel || 1 %>星任务 • <%= urgencyIcon %> <%= task.urgencyLevel === 'urgent' ? '紧急' : task.urgencyLevel === 'important' ? '重要' : task.urgencyLevel === 'delayed' ? '延后' : task.urgencyLevel === 'frozen' ? '冻结' : '普通' %>
+                <% if (task.project) { %>
+                    • <%= task.project.name %>
+                <% } %>
+            </small>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <%
+            const statusBadges = {
+                'draft': { class: 'bg-secondary', text: '草稿' },
+                'published': { class: 'bg-primary', text: '已发布' },
+                'in_progress': { class: 'bg-warning', text: '进行中' },
+                'review': { class: 'bg-info', text: '待审核' },
+                'completed': { class: 'bg-success', text: '已完成' },
+                'cancelled': { class: 'bg-danger', text: '已取消' }
+            };
+            const statusBadge = statusBadges[task.status] || statusBadges.draft;
+            %>
+            <span class="badge <%= statusBadge.class %>"><%= statusBadge.text %></span>
+            <%
+                // 检查当前用户是否有编辑权限
+                let canEdit = false;
+                if (user) {
+                    // 管理员始终有权限
+                    if (user.role === 'admin') {
+                        canEdit = true;
+                    }
+                    // 我创建的任务
+                    else if (task.publisherId === user.id) {
+                        canEdit = true;
+                    }
+                    // 我负责的任务
+                    else if (task.assigneeId === user.id) {
+                        canEdit = true;
+                    }
+                    // 我审核的任务
+                    else if (task.reviewerId === user.id) {
+                        canEdit = true;
+                    }
+                }
+            %>
+            <% if (canEdit) { %>
+                <a href="/tasks/<%= task.id %>/edit" class="btn btn-outline-secondary btn-sm" title="编辑任务">
+                    <i class="fas fa-edit"></i>
+                </a>
+            <% } %>
+        </div>
+    </div>
+</div>

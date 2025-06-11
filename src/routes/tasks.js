@@ -92,11 +92,16 @@ function buildTaskFilters(query, projectId, userId) {
         break;
       case 'participated':
         // 参与的任务：负责人、创建人或协助人员
+        // 使用SQLite兼容的JSON查询方式
         where[Op.or] = [
           { assigneeId: userId },
           { publisherId: userId },
-          { assistantIds: { [Op.contains]: [userId] } }
+          sequelize.literal(`json_extract(assistant_ids, '$') LIKE '%"${userId}"%'`)
         ];
+        break;
+      case 'reviewed':
+        // 我审核的任务
+        where.reviewerId = userId;
         break;
     }
   }
@@ -117,10 +122,25 @@ function buildTaskFilters(query, projectId, userId) {
 
   // 搜索关键词
   if (query.search) {
-    where[Op.or] = [
-      { title: { [Op.like]: `%${query.search}%` } },
-      { description: { [Op.like]: `%${query.search}%` } }
-    ];
+    // 如果已经有 Op.or 条件（比如 participated），需要合并
+    if (where[Op.or]) {
+      // 将现有的 Op.or 条件和搜索条件合并
+      where[Op.and] = [
+        { [Op.or]: where[Op.or] },
+        {
+          [Op.or]: [
+            { title: { [Op.like]: `%${query.search}%` } },
+            { description: { [Op.like]: `%${query.search}%` } }
+          ]
+        }
+      ];
+      delete where[Op.or];
+    } else {
+      where[Op.or] = [
+        { title: { [Op.like]: `%${query.search}%` } },
+        { description: { [Op.like]: `%${query.search}%` } }
+      ];
+    }
   }
 
   return where;
@@ -1410,8 +1430,13 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
       return res.redirect('/tasks');
     }
 
-    // 检查权限：只有管理员或任务发布者可以编辑
-    if (req.session.user?.role !== 'admin' && task.publisherId !== req.session.userId) {
+    // 检查权限：管理员、任务发布者、负责人或审核人可以编辑
+    const hasPermission = req.session.user?.role === 'admin' ||
+                         task.publisherId === req.session.userId ||
+                         task.assigneeId === req.session.userId ||
+                         task.reviewerId === req.session.userId;
+
+    if (!hasPermission) {
       req.flash('error', '您没有权限编辑此任务');
       return res.redirect(`/tasks/${taskId}`);
     }
@@ -1514,8 +1539,13 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       return res.redirect('/tasks');
     }
 
-    // 检查权限：只有管理员或任务发布者可以编辑
-    if (req.session.user?.role !== 'admin' && task.publisherId !== req.session.userId) {
+    // 检查权限：管理员、任务发布者、负责人或审核人可以编辑
+    const hasPermission = req.session.user?.role === 'admin' ||
+                         task.publisherId === req.session.userId ||
+                         task.assigneeId === req.session.userId ||
+                         task.reviewerId === req.session.userId;
+
+    if (!hasPermission) {
       req.flash('error', '您没有权限编辑此任务');
       return res.redirect(`/tasks/${taskId}`);
     }
@@ -1797,7 +1827,7 @@ router.post('/:id/quick-update', requireAuth, requireProjectSelection, validateP
       });
     }
 
-    // 检查权限：只有管理员、任务发布者、负责人或审核人可以更改
+    // 检查权限：管理员、任务发布者、负责人或审核人可以更改
     const hasPermission = req.session.user?.role === 'admin' ||
                          task.publisherId === req.session.userId ||
                          task.assigneeId === req.session.userId ||
@@ -1940,7 +1970,7 @@ router.post('/:id/status', requireAuth, async (req, res) => {
       });
     }
 
-    // 检查权限：只有管理员、任务发布者、负责人或审核人可以更改状态
+    // 检查权限：管理员、任务发布者、负责人或审核人可以更改状态
     const hasPermission = req.session.user?.role === 'admin' ||
                          task.publisherId === req.session.userId ||
                          task.assigneeId === req.session.userId ||

@@ -180,7 +180,29 @@
                                             <li><a class="dropdown-item" href="/tasks/create?parent=<%= task.id %>">
                                                 <i class="fas fa-plus me-2"></i>添加子任务
                                             </a></li>
-                                            <% if (user && (user.role === 'admin' || task.publisherId === user.id)) { %>
+                                            <%
+                                                // 检查当前用户是否有编辑权限
+                                                let canEdit = false;
+                                                if (user) {
+                                                    // 管理员始终有权限
+                                                    if (user.role === 'admin') {
+                                                        canEdit = true;
+                                                    }
+                                                    // 我创建的任务
+                                                    else if (task.publisherId === user.id) {
+                                                        canEdit = true;
+                                                    }
+                                                    // 我负责的任务
+                                                    else if (task.assigneeId === user.id) {
+                                                        canEdit = true;
+                                                    }
+                                                    // 我审核的任务
+                                                    else if (task.reviewerId === user.id) {
+                                                        canEdit = true;
+                                                    }
+                                                }
+                                            %>
+                                            <% if (canEdit) { %>
                                                 <li><hr class="dropdown-divider"></li>
                                                 <li><a class="dropdown-item" href="/tasks/<%= task.id %>/edit">
                                                     <i class="fas fa-edit me-2"></i>编辑

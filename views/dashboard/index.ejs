@@ -153,87 +153,96 @@
             </div>
         </div>
 
-        <!-- 我的任务 -->
-        <div class="card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">
-                    <i class="fas fa-list me-2"></i>
-                    我的任务
-                </h5>
-                <a href="/tasks" class="btn btn-outline-primary btn-sm">
-                    查看全部
-                </a>
+        <!-- 我负责的任务 -->
+        <% if (typeof myTasks !== 'undefined' && myTasks.assigned && myTasks.assigned.length > 0) { %>
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-user-check me-2 text-primary"></i>
+                    我负责的任务
+                </h6>
             </div>
             <div class="card-body">
-                <% if (recentTasks && recentTasks.length > 0) { %>
-                    <div class="list-group list-group-flush">
-                        <% recentTasks.forEach(task => { %>
-                            <div class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1">
-                                            <a href="/tasks/<%= task.id %>" class="text-decoration-none text-dark task-title-link">
-                                                <%= task.title %>
-                                            </a>
-                                        </h6>
-                                        <small class="text-muted">
-                                            <%
-                                            const stars = '⭐'.repeat(task.starLevel || 1);
-                                            const urgencyIcons = {
-                                                'urgent': '🔥',
-                                                'important': '⚡',
-                                                'normal': '📅',
-                                                'delayed': '🕐',
-                                                'frozen': '❄️'
-                                            };
-                                            const urgencyIcon = urgencyIcons[task.urgencyLevel] || '📅';
-
-                                            // 判断任务类型：我创建的 vs 我负责的
-                                            const isMyCreated = task.publisherId === user.id;
-                                            const isMyAssigned = task.assigneeId === user.id;
-                                            %>
-                                            <% if (isMyCreated && isMyAssigned) { %>
-                                                <span class="badge bg-info me-1" style="font-size: 0.7rem;">我创建+负责</span>
-                                            <% } else if (isMyCreated) { %>
-                                                <span class="badge bg-secondary me-1" style="font-size: 0.7rem;">我创建</span>
-                                            <% } else if (isMyAssigned) { %>
-                                                <span class="badge bg-primary me-1" style="font-size: 0.7rem;">我负责</span>
-                                            <% } %>
-                                            <%= stars %> <%= task.starLevel || 1 %>星任务 • <%= urgencyIcon %> <%= task.urgencyLevel === 'urgent' ? '紧急' : task.urgencyLevel === 'important' ? '重要' : task.urgencyLevel === 'delayed' ? '延后' : task.urgencyLevel === 'frozen' ? '冻结' : '普通' %>
-                                            <% if (task.project) { %>
-                                                • <%= task.project.name %>
-                                            <% } %>
-                                        </small>
-                                    </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <%
-                                        const statusBadges = {
-                                            'draft': { class: 'bg-secondary', text: '草稿' },
-                                            'published': { class: 'bg-primary', text: '已发布' },
-                                            'in_progress': { class: 'bg-warning', text: '进行中' },
-                                            'review': { class: 'bg-info', text: '待审核' },
-                                            'completed': { class: 'bg-success', text: '已完成' },
-                                            'cancelled': { class: 'bg-danger', text: '已取消' }
-                                        };
-                                        const statusBadge = statusBadges[task.status] || statusBadges.draft;
-                                        %>
-                                        <span class="badge <%= statusBadge.class %>"><%= statusBadge.text %></span>
-                                        <a href="/tasks/<%= task.id %>/edit" class="btn btn-outline-secondary btn-sm" title="编辑任务">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        <% }); %>
-                    </div>
-                <% } else { %>
-                    <div class="text-center py-4">
-                        <i class="fas fa-tasks fa-2x text-muted mb-2"></i>
-                        <p class="text-muted mb-0">暂无任务</p>
-                    </div>
-                <% } %>
+                <div class="list-group list-group-flush">
+                    <% myTasks.assigned.forEach(task => { %>
+                        <%- include('../partials/task-item', { task: task }) %>
+                    <% }); %>
+                </div>
             </div>
         </div>
+        <% } %>
+
+        <!-- 我创建的任务 -->
+        <% if (typeof myTasks !== 'undefined' && myTasks.created && myTasks.created.length > 0) { %>
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-plus-circle me-2 text-success"></i>
+                    我创建的任务
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <% myTasks.created.forEach(task => { %>
+                        <%- include('../partials/task-item', { task: task }) %>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- 我审核的任务 -->
+        <% if (typeof myTasks !== 'undefined' && myTasks.review && myTasks.review.length > 0) { %>
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-clipboard-check me-2 text-warning"></i>
+                    我审核的任务
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <% myTasks.review.forEach(task => { %>
+                        <%- include('../partials/task-item', { task: task }) %>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- 我参与的任务 -->
+        <% if (typeof myTasks !== 'undefined' && myTasks.participated && myTasks.participated.length > 0) { %>
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-users me-2 text-info"></i>
+                    我参与的任务
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <% myTasks.participated.forEach(task => { %>
+                        <%- include('../partials/task-item', { task: task }) %>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- 暂无任务提示 -->
+        <% if (typeof myTasks === 'undefined' ||
+               ((!myTasks.assigned || myTasks.assigned.length === 0) &&
+                (!myTasks.created || myTasks.created.length === 0) &&
+                (!myTasks.review || myTasks.review.length === 0) &&
+                (!myTasks.participated || myTasks.participated.length === 0))) { %>
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">暂无相关任务</h5>
+                <p class="text-muted mb-0">您还没有负责、创建、审核或参与的任务</p>
+            </div>
+        </div>
+        <% } %>
 
         <!-- 最新活动 -->
         <div class="card">

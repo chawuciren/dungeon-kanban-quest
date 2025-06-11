@@ -191,7 +191,29 @@
                                             <li><a class="dropdown-item" href="/tasks/create?parent=<%= task.id %>">
                                                 <i class="fas fa-plus me-2"></i>添加子任务
                                             </a></li>
-                                            <% if (user && (user.role === 'admin' || task.publisherId === user.id)) { %>
+                                            <%
+                                                // 检查当前用户是否有编辑权限
+                                                let canEdit = false;
+                                                if (user) {
+                                                    // 管理员始终有权限
+                                                    if (user.role === 'admin') {
+                                                        canEdit = true;
+                                                    }
+                                                    // 我创建的任务
+                                                    else if (task.publisherId === user.id) {
+                                                        canEdit = true;
+                                                    }
+                                                    // 我负责的任务
+                                                    else if (task.assigneeId === user.id) {
+                                                        canEdit = true;
+                                                    }
+                                                    // 我审核的任务
+                                                    else if (task.reviewerId === user.id) {
+                                                        canEdit = true;
+                                                    }
+                                                }
+                                            %>
+                                            <% if (canEdit) { %>
                                                 <li><hr class="dropdown-divider"></li>
                                                 <li><a class="dropdown-item" href="/tasks/<%= task.id %>/edit">
                                                     <i class="fas fa-edit me-2"></i>编辑
@@ -525,6 +547,9 @@
             // 设置迭代数据
             window.subtaskSprints = <%-JSON.stringify(sprints || [])%>;
 
+            // 设置当前用户信息
+            window.currentUser = <%-JSON.stringify(user || null)%>;
+
             // 初始化快速编辑字段，保存原始值
             $('.quick-edit-field').each(function() {
                 const $select = $(this);
@@ -749,6 +774,31 @@ function getTaskTypeBadgeColor(taskType) {
     return colorMap[taskType] || 'secondary';
 }
 
+// 检查用户是否有编辑任务的权限
+function canEditTask(task) {
+    const user = window.currentUser;
+    if (!user) return false;
+
+    // 管理员始终有权限
+    if (user.role === 'admin') {
+        return true;
+    }
+    // 我创建的任务
+    if (task.publisherId === user.id) {
+        return true;
+    }
+    // 我负责的任务
+    if (task.assigneeId === user.id) {
+        return true;
+    }
+    // 我审核的任务
+    if (task.reviewerId === user.id) {
+        return true;
+    }
+
+    return false;
+}
+
 // 生成子任务HTML
 function generateSubtasksHtml(subtasks, level) {
     let html = '';
@@ -879,13 +929,18 @@ function generateSubtasksHtml(subtasks, level) {
                                         <li><a class="dropdown-item" href="/tasks/create?parent=${task.id}">
                                             <i class="fas fa-plus me-2"></i>添加子任务
                                         </a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" href="/tasks/${task.id}/edit">
-                                            <i class="fas fa-edit me-2"></i>编辑
-                                        </a></li>
-                                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteTask('${task.id}', '${task.title}')">
-                                            <i class="fas fa-trash me-2"></i>删除
-                                        </a></li>
+                                        ${canEditTask(task) ? `
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item" href="/tasks/${task.id}/edit">
+                                                <i class="fas fa-edit me-2"></i>编辑
+                                            </a></li>
+                                            <li><a class="dropdown-item text-warning" href="#" onclick="toggleArchiveTask('${task.id}', ${task.isArchived ? 'false' : 'true'})">
+                                                <i class="fas fa-${task.isArchived ? 'box-open' : 'archive'} me-2"></i>${task.isArchived ? '取消归档' : '归档'}
+                                            </a></li>
+                                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteTask('${task.id}', '${task.title}')">
+                                                <i class="fas fa-trash me-2"></i>删除
+                                            </a></li>
+                                        ` : ''}
                                     </ul>
                                 </div>
                             </div>

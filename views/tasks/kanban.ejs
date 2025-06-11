@@ -58,7 +58,29 @@
                                                     <%= task.title %>
                                                 </a>
                                             </h6>
-                                            <% if (user && (user.role === 'admin' || task.publisherId === user.id)) { %>
+                                            <%
+                                                // 检查当前用户是否有编辑权限
+                                                let canEdit = false;
+                                                if (user) {
+                                                    // 管理员始终有权限
+                                                    if (user.role === 'admin') {
+                                                        canEdit = true;
+                                                    }
+                                                    // 我创建的任务
+                                                    else if (task.publisherId === user.id) {
+                                                        canEdit = true;
+                                                    }
+                                                    // 我负责的任务
+                                                    else if (task.assigneeId === user.id) {
+                                                        canEdit = true;
+                                                    }
+                                                    // 我审核的任务
+                                                    else if (task.reviewerId === user.id) {
+                                                        canEdit = true;
+                                                    }
+                                                }
+                                            %>
+                                            <% if (canEdit) { %>
                                                 <div class="dropdown">
                                                     <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
                                                         <i class="fas fa-ellipsis-v"></i>

@@ -1041,6 +1041,9 @@ function initGanttChart() {
     window.sprints = <%- JSON.stringify(sprints || []) %>;
     console.log('迭代数据:', window.sprints);
 
+    // 设置当前用户信息
+    window.currentUser = <%- JSON.stringify(user || null) %>;
+
     if (tasks.length === 0) {
         document.getElementById('unified-gantt-body').innerHTML = '<div class="alert alert-info text-center py-5"><i class="fas fa-info-circle me-2"></i>暂无任务数据，请先创建一些任务</div>';
         return;
@@ -2010,6 +2013,31 @@ function buildTaskTree(tasks) {
     return rootTasks;
 }
 
+// 检查用户是否有编辑任务的权限
+function canEditTask(taskData) {
+    const user = window.currentUser;
+    if (!user) return false;
+
+    // 管理员始终有权限
+    if (user.role === 'admin') {
+        return true;
+    }
+    // 我创建的任务
+    if (taskData.publisherId === user.id) {
+        return true;
+    }
+    // 我负责的任务
+    if (taskData.assigneeId === user.id) {
+        return true;
+    }
+    // 我审核的任务
+    if (taskData.reviewerId === user.id) {
+        return true;
+    }
+
+    return false;
+}
+
 // 渲染树形节点
 function renderTaskTreeNodes(nodes, level) {
     return nodes.map(task => {
@@ -2165,21 +2193,23 @@ function renderTaskTreeNodes(nodes, level) {
                                     <li><a class="dropdown-item" href="/tasks/create?parent=${taskData.id}">
                                         <i class="fas fa-plus me-2"></i>添加子任务
                                     </a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="/tasks/${taskData.id}/edit">
-                                        <i class="fas fa-edit me-2"></i>编辑
-                                    </a></li>
-                                    ${taskData.isArchived ?
-                                        `<li><a class="dropdown-item text-info" href="#" onclick="toggleArchiveTask('${taskData.id}', false)">
-                                            <i class="fas fa-box-open me-2"></i>取消归档
-                                        </a></li>` :
-                                        `<li><a class="dropdown-item text-warning" href="#" onclick="toggleArchiveTask('${taskData.id}', true)">
-                                            <i class="fas fa-archive me-2"></i>归档
-                                        </a></li>`
-                                    }
-                                    <li><a class="dropdown-item text-danger" href="#" onclick="deleteTask('${taskData.id}', '${task.name}')">
-                                        <i class="fas fa-trash me-2"></i>删除
-                                    </a></li>
+                                    ${canEditTask(taskData) ? `
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="/tasks/${taskData.id}/edit">
+                                            <i class="fas fa-edit me-2"></i>编辑
+                                        </a></li>
+                                        ${taskData.isArchived ?
+                                            `<li><a class="dropdown-item text-info" href="#" onclick="toggleArchiveTask('${taskData.id}', false)">
+                                                <i class="fas fa-box-open me-2"></i>取消归档
+                                            </a></li>` :
+                                            `<li><a class="dropdown-item text-warning" href="#" onclick="toggleArchiveTask('${taskData.id}', true)">
+                                                <i class="fas fa-archive me-2"></i>归档
+                                            </a></li>`
+                                        }
+                                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteTask('${taskData.id}', '${task.name}')">
+                                            <i class="fas fa-trash me-2"></i>删除
+                                        </a></li>
+                                    ` : ''}
                                 </ul>
                             </div>
                         </div>
