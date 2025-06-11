@@ -143,43 +143,89 @@ router.get('/dashboard', async (req, res) => {
 
 
 
-    // 构建任务查询条件 - 显示用户的所有任务，不限制项目
-    const taskWhere = {
-      [Op.or]: [
-        { publisherId: req.session.userId },
-        { assigneeId: req.session.userId }
-      ]
+    // 基础查询条件 - 排除已归档的任务
+    const baseWhere = {
+      archived: { [Op.ne]: true } // 排除已归档的任务
     };
 
-    // 获取用户的任务统计
-    const taskStats = await BountyTask.findAll({
-      where: taskWhere,
+    // 分别获取不同类型的任务
+    const taskInclude = [
+      {
+        model: Project,
+        as: 'project',
+        attributes: ['name', 'key']
+      }
+    ];
+
+    // 我负责的任务
+    const myAssignedTasks = await BountyTask.findAll({
+      where: {
+        ...baseWhere,
+        assigneeId: req.session.userId
+      },
+      include: taskInclude,
+      order: [['updatedAt', 'DESC']],
+      limit: 3
+    });
+
+    // 我创建的任务
+    const myCreatedTasks = await BountyTask.findAll({
+      where: {
+        ...baseWhere,
+        publisherId: req.session.userId
+      },
+      include: taskInclude,
+      order: [['updatedAt', 'DESC']],
+      limit: 3
+    });
+
+    // 我审核的任务
+    const myReviewTasks = await BountyTask.findAll({
+      where: {
+        ...baseWhere,
+        reviewerId: req.session.userId
+      },
+      include: taskInclude,
+      order: [['updatedAt', 'DESC']],
+      limit: 3
+    });
+
+    // 我参与的任务（通过协助人员字段）
+    const myParticipatedTasks = await BountyTask.findAll({
+      where: {
+        ...baseWhere,
+        assistants: {
+          [Op.like]: `%${req.session.userId}%` // 简单的字符串匹配，实际可能需要更复杂的JSON查询
+        }
+      },
+      include: taskInclude,
+      order: [['updatedAt', 'DESC']],
+      limit: 3
+    });
+
+    // 获取用户的任务统计（用于统计卡片）
+    const allMyTasks = await BountyTask.findAll({
+      where: {
+        ...baseWhere,
+        [Op.or]: [
+          { publisherId: req.session.userId },
+          { assigneeId: req.session.userId },
+          { reviewerId: req.session.userId },
+          { assistants: { [Op.like]: `%${req.session.userId}%` } }
+        ]
+      },
       attributes: ['status'],
       raw: true
     });
 
     // 统计任务数量
-    const totalTasks = taskStats.filter(task =>
-      ['in_progress', 'pending_review'].includes(task.status)
+    const totalTasks = allMyTasks.filter(task =>
+      ['in_progress', 'review'].includes(task.status)
     ).length;
 
-    const completedTasks = taskStats.filter(task =>
+    const completedTasks = allMyTasks.filter(task =>
       task.status === 'completed'
     ).length;
-
-    // 获取用户最近的任务（最多5个）
-    const recentTasks = await BountyTask.findAll({
-      where: taskWhere,
-      include: [
-        {
-          model: Project,
-          as: 'project',
-          attributes: ['name', 'key']
-        }
-      ],
-      order: [['updatedAt', 'DESC']],
-      limit: 5
-    });
 
     // 获取用户最近的活动记录（最多10个）
     const { ActivityLog } = require('../models');
@@ -244,7 +290,12 @@ router.get('/dashboard', async (req, res) => {
         total: totalTasks,
         completed: completedTasks
       },
-      recentTasks,
+      myTasks: {
+        assigned: myAssignedTasks,
+        created: myCreatedTasks,
+        review: myReviewTasks,
+        participated: myParticipatedTasks
+      },
       recentActivities,
       userProjects,
       selectedProject: res.locals.selectedProject
@@ -515,6 +566,15 @@ router.get('/select-project/:id/tasks', async (req, res) => {
     if (hasAccess) {
       req.session.selectedProjectId = projectId;
       req.flash('success', '项目选择成功');
+
+      // 检查是否有保存的重定向URL，如果有则使用，否则跳转到任务列表
+      const redirectUrl = req.session.redirectAfterProjectSelection;
+      if (redirectUrl) {
+        // 清除保存的重定向URL
+        delete req.session.redirectAfterProjectSelection;
+        return res.redirect(redirectUrl);
+      }
+
       // 直接跳转到任务列表
       res.redirect('/tasks');
     } else {
@@ -585,6 +645,14 @@ router.get('/select-project/:id', async (req, res) => {
     if (hasAccess) {
       req.session.selectedProjectId = projectId;
       req.flash('success', '项目选择成功');
+
+      // 检查是否有保存的重定向URL
+      const redirectUrl = req.session.redirectAfterProjectSelection;
+      if (redirectUrl) {
+        // 清除保存的重定向URL
+        delete req.session.redirectAfterProjectSelection;
+        return res.redirect(redirectUrl);
+      }
     } else {
       req.flash('error', '您没有权限访问此项目');
     }

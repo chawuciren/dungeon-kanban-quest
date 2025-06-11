@@ -14,7 +14,7 @@
                     <% if (user.role !== 'admin') { %>
                         <div class="alert alert-warning">
                             <i class="fas fa-exclamation-triangle me-2"></i>
-                            请选择一个项目开始您的旅程！
+                            请选择一个项目开始工作！
                         </div>
                     <% } %>
 
@@ -26,16 +26,50 @@
                                          onclick="selectProject('<%= project.id %>')">
                                         <div class="card-body text-center">
                                             <div class="mb-3">
-                                                <i class="fas fa-map fa-3x text-primary"></i>
+                                                <span class="badge bg-<%
+                                                    if (project.projectType === 'construction') { %>primary<%
+                                                    } else if (project.projectType === 'maintenance') { %>warning<%
+                                                    } else if (project.projectType === 'exploration') { %>info<%
+                                                    } else if (project.projectType === 'racing') { %>success<%
+                                                    } else if (project.projectType === 'hybrid') { %>secondary<%
+                                                    } else { %>secondary<% } %>" style="font-size: 2rem; padding: 1rem;">
+                                                    <%
+                                                    if (project.projectType === 'construction') { %>🏗️<%
+                                                    } else if (project.projectType === 'maintenance') { %>🔧<%
+                                                    } else if (project.projectType === 'exploration') { %>🗺️<%
+                                                    } else if (project.projectType === 'racing') { %>🏁<%
+                                                    } else if (project.projectType === 'hybrid') { %>🔄<%
+                                                    } else { %>📋<% } %>
+                                                </span>
                                             </div>
                                             <h5 class="card-title"><%= project.name %></h5>
                                             <p class="card-text text-muted">
                                                 <small>项目代码: <%= project.key %></small>
                                             </p>
+                                            <% if (project.description) { %>
+                                                <p class="card-text text-muted small mb-2">
+                                                    <%= project.description.length > 60 ? project.description.substring(0, 60) + '...' : project.description %>
+                                                </p>
+                                            <% } %>
+                                            <div class="mb-2">
+                                                <small class="text-muted">
+                                                    <%
+                                                    const stars = '⭐'.repeat(project.starLevel || 1);
+                                                    const typeNames = {
+                                                        'exploration': '探索项目',
+                                                        'construction': '建设项目',
+                                                        'racing': '竞速项目',
+                                                        'maintenance': '维护项目',
+                                                        'hybrid': '混合项目'
+                                                    };
+                                                    %>
+                                                    <%= stars %> <%= project.starLevel || 1 %>星 • <%= typeNames[project.projectType] || '其他项目' %>
+                                                </small>
+                                            </div>
                                             <div class="mt-3">
                                                 <button class="btn btn-primary btn-sm">
                                                     <i class="fas fa-arrow-right me-1"></i>
-                                                    进入探险
+                                                    选择项目
                                                 </button>
                                             </div>
                                         </div>
@@ -45,7 +79,7 @@
                         </div>
                     <% } else { %>
                         <div class="text-center py-5">
-                            <i class="fas fa-map-marked-alt fa-4x text-muted mb-3"></i>
+                            <i class="fas fa-folder fa-4x text-muted mb-3"></i>
                             <h5 class="text-muted">暂无可用项目</h5>
                             <% if (user.role !== 'admin') { %>
                                 <p class="text-muted">
@@ -55,7 +89,7 @@
                                 <div class="mt-4">
                                     <a href="/dashboard" class="btn btn-secondary">
                                         <i class="fas fa-arrow-left me-1"></i>
-                                        返回大厅
+                                        返回仪表盘
                                     </a>
                                 </div>
                             <% } else { %>

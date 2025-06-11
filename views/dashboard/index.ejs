@@ -103,11 +103,11 @@
                                             <%
                                             const stars = '⭐'.repeat(project.starLevel || 1);
                                             const typeNames = {
-                                                'web': '网站',
-                                                'mobile': '移动应用',
-                                                'desktop': '桌面应用',
-                                                'api': 'API服务',
-                                                'other': '其他'
+                                                'exploration': '探索',
+                                                'construction': '建设',
+                                                'racing': '竞速',
+                                                'maintenance': '维护',
+                                                'hybrid': '混合'
                                             };
                                             %>
                                             <%= stars %> <%= project.starLevel || 1 %>星 • <%= typeNames[project.projectType] || '其他' %>
@@ -168,39 +168,61 @@
                 <% if (recentTasks && recentTasks.length > 0) { %>
                     <div class="list-group list-group-flush">
                         <% recentTasks.forEach(task => { %>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-1"><%= task.title %></h6>
-                                    <small class="text-muted">
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">
+                                            <a href="/tasks/<%= task.id %>" class="text-decoration-none text-dark task-title-link">
+                                                <%= task.title %>
+                                            </a>
+                                        </h6>
+                                        <small class="text-muted">
+                                            <%
+                                            const stars = '⭐'.repeat(task.starLevel || 1);
+                                            const urgencyIcons = {
+                                                'urgent': '🔥',
+                                                'important': '⚡',
+                                                'normal': '📅',
+                                                'delayed': '🕐',
+                                                'frozen': '❄️'
+                                            };
+                                            const urgencyIcon = urgencyIcons[task.urgencyLevel] || '📅';
+
+                                            // 判断任务类型：我创建的 vs 我负责的
+                                            const isMyCreated = task.publisherId === user.id;
+                                            const isMyAssigned = task.assigneeId === user.id;
+                                            %>
+                                            <% if (isMyCreated && isMyAssigned) { %>
+                                                <span class="badge bg-info me-1" style="font-size: 0.7rem;">我创建+负责</span>
+                                            <% } else if (isMyCreated) { %>
+                                                <span class="badge bg-secondary me-1" style="font-size: 0.7rem;">我创建</span>
+                                            <% } else if (isMyAssigned) { %>
+                                                <span class="badge bg-primary me-1" style="font-size: 0.7rem;">我负责</span>
+                                            <% } %>
+                                            <%= stars %> <%= task.starLevel || 1 %>星任务 • <%= urgencyIcon %> <%= task.urgencyLevel === 'urgent' ? '紧急' : task.urgencyLevel === 'important' ? '重要' : task.urgencyLevel === 'delayed' ? '延后' : task.urgencyLevel === 'frozen' ? '冻结' : '普通' %>
+                                            <% if (task.project) { %>
+                                                • <%= task.project.name %>
+                                            <% } %>
+                                        </small>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
                                         <%
-                                        const stars = '⭐'.repeat(task.starLevel || 1);
-                                        const urgencyIcons = {
-                                            'urgent': '🔥',
-                                            'important': '⚡',
-                                            'normal': '📅',
-                                            'delayed': '🕐',
-                                            'frozen': '❄️'
+                                        const statusBadges = {
+                                            'draft': { class: 'bg-secondary', text: '草稿' },
+                                            'published': { class: 'bg-primary', text: '已发布' },
+                                            'in_progress': { class: 'bg-warning', text: '进行中' },
+                                            'review': { class: 'bg-info', text: '待审核' },
+                                            'completed': { class: 'bg-success', text: '已完成' },
+                                            'cancelled': { class: 'bg-danger', text: '已取消' }
                                         };
-                                        const urgencyIcon = urgencyIcons[task.urgencyLevel] || '📅';
+                                        const statusBadge = statusBadges[task.status] || statusBadges.draft;
                                         %>
-                                        <%= stars %> <%= task.starLevel || 1 %>星任务 • <%= urgencyIcon %> <%= task.urgencyLevel === 'urgent' ? '紧急' : task.urgencyLevel === 'important' ? '重要' : task.urgencyLevel === 'delayed' ? '延后' : task.urgencyLevel === 'frozen' ? '冻结' : '普通' %>
-                                        <% if (task.project) { %>
-                                            • <%= task.project.name %>
-                                        <% } %>
-                                    </small>
+                                        <span class="badge <%= statusBadge.class %>"><%= statusBadge.text %></span>
+                                        <a href="/tasks/<%= task.id %>/edit" class="btn btn-outline-secondary btn-sm" title="编辑任务">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
                                 </div>
-                                <%
-                                const statusBadges = {
-                                    'draft': { class: 'bg-secondary', text: '草稿' },
-                                    'published': { class: 'bg-primary', text: '已发布' },
-                                    'in_progress': { class: 'bg-warning', text: '进行中' },
-                                    'review': { class: 'bg-info', text: '待审核' },
-                                    'completed': { class: 'bg-success', text: '已完成' },
-                                    'cancelled': { class: 'bg-danger', text: '已取消' }
-                                };
-                                const statusBadge = statusBadges[task.status] || statusBadges.draft;
-                                %>
-                                <span class="badge <%= statusBadge.class %>"><%= statusBadge.text %></span>
                             </div>
                         <% }); %>
                     </div>
@@ -297,6 +319,25 @@
         </div>
     </div>
 </div>
+
+<style>
+.task-title-link {
+    transition: color 0.2s ease;
+}
+
+.task-title-link:hover {
+    color: #0d6efd !important;
+    text-decoration: underline !important;
+}
+
+.list-group-item {
+    transition: background-color 0.2s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+</style>
 
 <script>
 $(document).ready(function() {

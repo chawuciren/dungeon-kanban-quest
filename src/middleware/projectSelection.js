@@ -27,6 +27,8 @@ const requireProjectSelection = (req, res, next) => {
     }
 
     // 普通请求重定向到项目选择页面
+    // 保存用户原本想要访问的URL
+    req.session.redirectAfterProjectSelection = req.originalUrl;
     req.flash('warning', '请先选择项目');
     return res.redirect('/select-project');
   }

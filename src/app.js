@@ -146,13 +146,27 @@ app.use(async (req, res, next) => {
         if (req.session.user?.role === 'admin') {
           // 管理员可以看到所有项目
           userProjects = await Project.findAll({
-            attributes: ['id', 'name', 'key'],
+            attributes: ['id', 'name', 'key', 'description', 'projectType', 'starLevel', 'color'],
             order: [['name', 'ASC']]
           });
         } else {
-          // 普通用户只能看到自己参与的项目
-          userProjects = await Project.findAll({
-            attributes: ['id', 'name', 'key'],
+          // 普通用户只能看到自己有权限的项目（owner、leader或active member）
+          const { Op } = require('sequelize');
+
+          // 首先获取用户作为owner或leader的项目
+          const ownedProjects = await Project.findAll({
+            attributes: ['id', 'name', 'key', 'description', 'projectType', 'starLevel', 'color'],
+            where: {
+              [Op.or]: [
+                { ownerId: req.session.userId },
+                { leaderId: req.session.userId }
+              ]
+            }
+          });
+
+          // 然后获取用户作为active member的项目
+          const memberProjects = await Project.findAll({
+            attributes: ['id', 'name', 'key', 'description', 'projectType', 'starLevel', 'color'],
             include: [{
               model: User,
               as: 'members',
@@ -162,9 +176,16 @@ app.use(async (req, res, next) => {
                 where: { status: 'active' },
                 attributes: []
               }
-            }],
-            order: [['name', 'ASC']]
+            }]
           });
+
+          // 合并并去重
+          const allProjects = [...ownedProjects, ...memberProjects];
+          const uniqueProjects = allProjects.filter((project, index, self) =>
+            index === self.findIndex(p => p.id === project.id)
+          );
+
+          userProjects = uniqueProjects.sort((a, b) => a.name.localeCompare(b.name));
         }
 
         res.locals.userProjects = userProjects;
