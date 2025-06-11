@@ -1,0 +1,273 @@
+<%
+// 设置默认值，避免变量未定义错误
+const safeTaskId = typeof taskId !== 'undefined' ? taskId : '';
+const safeParentCommentId = typeof parentCommentId !== 'undefined' ? parentCommentId : '';
+const safeReplyToUserId = typeof replyToUserId !== 'undefined' ? replyToUserId : '';
+const safeReplyToUser = typeof replyToUser !== 'undefined' ? replyToUser : null;
+const safeEditorId = typeof editorId !== 'undefined' ? editorId : 'commentEditor';
+const safePlaceholder = typeof placeholder !== 'undefined' ? placeholder : '写下您的评论...';
+const safeSubmitText = typeof submitText !== 'undefined' ? submitText : '发布评论';
+const safeProjectMembers = typeof projectMembers !== 'undefined' ? projectMembers : [];
+%>
+
+<!-- 评论编辑器组件 -->
+<div class="comment-editor" id="<%= safeEditorId %>">
+    <div class="card">
+        <div class="card-body">
+            <form class="comment-form" data-task-id="<%= safeTaskId %>" data-parent-id="<%= safeParentCommentId %>" data-reply-to="<%= safeReplyToUserId %>">
+                <!-- 回复提示 -->
+                <% if (safeReplyToUser) { %>
+                    <div class="reply-indicator mb-2">
+                        <small class="text-muted">
+                            <i class="fas fa-reply me-1"></i>
+                            回复 <strong><%= safeReplyToUser.firstName %> <%= safeReplyToUser.lastName %></strong>
+                            <button type="button" class="btn btn-link btn-sm p-0 ms-2 cancel-reply">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </small>
+                    </div>
+                <% } %>
+
+                <!-- 富文本编辑器 -->
+                <div class="rich-editor mb-3">
+                    <div class="rich-editor-toolbar">
+                        <button type="button" class="rich-editor-btn" data-command="bold" title="粗体">
+                            <i class="fas fa-bold"></i>
+                        </button>
+                        <button type="button" class="rich-editor-btn" data-command="italic" title="斜体">
+                            <i class="fas fa-italic"></i>
+                        </button>
+                        <button type="button" class="rich-editor-btn" data-command="underline" title="下划线">
+                            <i class="fas fa-underline"></i>
+                        </button>
+                        <span class="rich-editor-separator"></span>
+                        <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="无序列表">
+                            <i class="fas fa-list-ul"></i>
+                        </button>
+                        <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="有序列表">
+                            <i class="fas fa-list-ol"></i>
+                        </button>
+                        <span class="rich-editor-separator"></span>
+                        <button type="button" class="rich-editor-btn" data-command="createLink" title="插入链接">
+                            <i class="fas fa-link"></i>
+                        </button>
+                        <button type="button" class="rich-editor-btn insert-image-btn" title="插入图片">
+                            <i class="fas fa-image"></i>
+                        </button>
+                        <span class="rich-editor-separator"></span>
+                        <button type="button" class="rich-editor-btn mention-btn" title="@提醒">
+                            <i class="fas fa-at"></i>
+                        </button>
+                        <button type="button" class="rich-editor-btn" data-command="removeFormat" title="清除格式">
+                            <i class="fas fa-remove-format"></i>
+                        </button>
+                    </div>
+                    <div class="rich-editor-content" contenteditable="true" placeholder="<%= safePlaceholder %>">
+                        <% if (safeReplyToUser) { %>@<%= safeReplyToUser.firstName %><%= safeReplyToUser.lastName %> <% } %>
+                    </div>
+                </div>
+
+                <!-- 隐藏的textarea用于提交数据 -->
+                <textarea class="form-control d-none comment-content" name="content" required></textarea>
+
+                <!-- 图片上传隐藏表单 -->
+                <input type="file" class="image-upload" accept="image/*" style="display: none;">
+
+                <!-- @用户选择下拉框 -->
+                <div class="mention-dropdown" style="display: none;">
+                    <div class="dropdown-menu show">
+                        <% if (safeProjectMembers && safeProjectMembers.length > 0) { %>
+                            <% safeProjectMembers.forEach(member => { %>
+                                <button type="button" class="dropdown-item mention-item" 
+                                        data-user-id="<%= member.id %>" 
+                                        data-username="<%= member.firstName %><%= member.lastName %>">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1">
+                                            <div class="fw-medium"><%= member.firstName %> <%= member.lastName %></div>
+                                            <small class="text-muted">
+                                                <% if (member.role === 'product_manager') { %>产品经理
+                                                <% } else if (member.role === 'developer') { %>开发者
+                                                <% } else if (member.role === 'tester') { %>测试工程师
+                                                <% } else if (member.role === 'ui_designer') { %>UI设计师
+                                                <% } else if (member.role === 'devops') { %>运维工程师
+                                                <% } else if (member.role === 'client') { %>客户
+                                                <% } else { %><%= member.role %><% } %>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </button>
+                            <% }); %>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="comment-tips">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            支持富文本格式，使用@可以提醒项目成员
+                        </small>
+                    </div>
+                    <div class="comment-actions">
+                        <button type="button" class="btn btn-outline-secondary btn-sm cancel-comment">
+                            <i class="fas fa-times me-1"></i>取消
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-sm ms-2 submit-comment">
+                            <i class="fas fa-paper-plane me-1"></i>
+                            <%= safeSubmitText %>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+/* 评论编辑器样式 */
+.comment-editor {
+    margin-bottom: 1rem;
+}
+
+.comment-editor .card {
+    border: 1px solid #e1e5e9;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.rich-editor {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    background-color: #fff;
+}
+
+.rich-editor-toolbar {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    border-radius: 0.375rem 0.375rem 0 0;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.rich-editor-btn {
+    border: none;
+    background: none;
+    padding: 0.375rem;
+    border-radius: 0.25rem;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rich-editor-btn:hover {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.rich-editor-btn.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.rich-editor-separator {
+    width: 1px;
+    height: 24px;
+    background-color: #dee2e6;
+    margin: 0 0.25rem;
+}
+
+.rich-editor-content {
+    min-height: 100px;
+    max-height: 300px;
+    padding: 0.75rem;
+    overflow-y: auto;
+    line-height: 1.5;
+    border-radius: 0 0 0.375rem 0.375rem;
+}
+
+.rich-editor-content:empty:before {
+    content: attr(placeholder);
+    color: #6c757d;
+    font-style: italic;
+}
+
+.rich-editor-content:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* 回复提示样式 */
+.reply-indicator {
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+    border-left: 3px solid #007bff;
+}
+
+.cancel-reply {
+    color: #6c757d !important;
+    text-decoration: none !important;
+}
+
+.cancel-reply:hover {
+    color: #dc3545 !important;
+}
+
+/* @提醒下拉框样式 */
+.mention-dropdown {
+    position: absolute;
+    z-index: 1050;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    background-color: white;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.mention-item {
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem 1rem;
+}
+
+.mention-item:hover {
+    background-color: #f8f9fa;
+}
+
+.mention-item:focus {
+    background-color: #e9ecef;
+}
+
+/* 响应式设计 */
+@media (max-width: 576px) {
+    .rich-editor-toolbar {
+        padding: 0.375rem;
+    }
+    
+    .rich-editor-btn {
+        width: 28px;
+        height: 28px;
+        padding: 0.25rem;
+    }
+    
+    .comment-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .comment-actions .btn {
+        width: 100%;
+    }
+}
+</style>

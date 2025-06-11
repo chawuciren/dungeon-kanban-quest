@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { BountyTask, Project, User, Sprint, sequelize } = require('../models');
+const { BountyTask, Project, User, Sprint, TaskComment, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const logger = require('../config/logger');
 const { requireProjectSelection, validateProjectAccess } = require('../middleware/projectSelection');
@@ -1120,6 +1120,68 @@ router.get('/:id', async (req, res) => {
       });
     }
 
+    // 获取任务评论（分页加载，默认显示前20条主评论）
+    const commentsPage = parseInt(req.query.commentsPage) || 1;
+    const commentsLimit = 20;
+    const commentsOffset = (commentsPage - 1) * commentsLimit;
+
+    // 获取主评论（level = 0）
+    const mainComments = await TaskComment.findAll({
+      where: {
+        taskId: task.id,
+        level: 0
+      },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'firstName', 'lastName', 'role']
+        },
+        {
+          model: TaskComment,
+          as: 'replies',
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['id', 'username', 'firstName', 'lastName', 'role']
+            },
+            {
+              model: User,
+              as: 'replyToUser',
+              attributes: ['id', 'username', 'firstName', 'lastName']
+            }
+          ],
+          order: [['createdAt', 'ASC']],
+          limit: 3 // 默认只显示前3条回复
+        }
+      ],
+      order: [['createdAt', 'DESC']],
+      limit: commentsLimit,
+      offset: commentsOffset
+    });
+
+    // 统计评论总数
+    const totalComments = await TaskComment.count({
+      where: { taskId: task.id }
+    });
+
+    // 获取项目成员列表（用于@功能）
+    const { ProjectMember } = require('../models');
+    const projectMembers = await ProjectMember.findAll({
+      where: {
+        projectId: task.projectId,
+        status: 'active'
+      },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'firstName', 'lastName', 'role']
+        }
+      ]
+    });
+
     // 检查当前用户是否可以接单
     const canBid = task.status === 'published' &&
                   (!req.session.userId || task.publisherId !== req.session.userId) &&
@@ -1131,7 +1193,16 @@ router.get('/:id', async (req, res) => {
       subtasks,
       siblingTasks,
       assistants,
-      canBid
+      canBid,
+      comments: mainComments,
+      totalComments,
+      projectMembers: projectMembers.map(pm => pm.user),
+      commentsPagination: {
+        page: commentsPage,
+        totalPages: Math.ceil(totalComments / commentsLimit),
+        hasNext: commentsPage * commentsLimit < totalComments,
+        hasPrev: commentsPage > 1
+      }
     });
 
   } catch (error) {
@@ -2324,6 +2395,297 @@ router.post('/upload-image', requireAuth, handleTaskImageUpload, async (req, res
   } catch (error) {
     logger.error('任务图片上传失败:', error);
     res.status(500).json({ error: '图片上传失败' });
+  }
+});
+
+// ==================== 评论相关接口 ====================
+
+// 创建评论
+router.post('/:id/comments', requireAuth, async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const { content, parentCommentId, replyToUserId } = req.body;
+
+    // 验证必填字段
+    if (!content || content.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: '评论内容不能为空'
+      });
+    }
+
+    // 验证任务是否存在
+    const task = await BountyTask.findByPk(taskId);
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: '任务不存在'
+      });
+    }
+
+    // 检查用户是否是项目成员
+    const { ProjectMember } = require('../models');
+    const membership = await ProjectMember.findOne({
+      where: {
+        projectId: task.projectId,
+        userId: req.session.userId,
+        status: 'active'
+      }
+    });
+
+    if (!membership && req.session.user?.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: '只有项目成员可以评论'
+      });
+    }
+
+    // 确定评论层级
+    let level = 0;
+    if (parentCommentId) {
+      const parentComment = await TaskComment.findByPk(parentCommentId);
+      if (!parentComment) {
+        return res.status(400).json({
+          success: false,
+          message: '父评论不存在'
+        });
+      }
+      level = 1; // 所有回复都是第1层
+    }
+
+    // 创建评论
+    const comment = await TaskComment.create({
+      taskId,
+      userId: req.session.userId,
+      content: content.trim(),
+      parentCommentId: parentCommentId || null,
+      replyToUserId: replyToUserId || null,
+      level
+    });
+
+    // 获取完整的评论信息（包含用户信息）
+    const fullComment = await TaskComment.findByPk(comment.id, {
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'firstName', 'lastName', 'role']
+        },
+        {
+          model: User,
+          as: 'replyToUser',
+          attributes: ['id', 'username', 'firstName', 'lastName']
+        }
+      ]
+    });
+
+    // 记录活动日志
+    const ActivityLogger = require('../utils/activityLogger');
+    await ActivityLogger.log({
+      userId: req.session.userId,
+      actionType: 'comment_added',
+      description: `在任务"${task.title}"中添加了评论`,
+      entityType: 'task',
+      entityId: taskId,
+      projectId: task.projectId,
+      metadata: {
+        commentId: comment.id,
+        isReply: !!parentCommentId
+      }
+    }, req);
+
+    res.json({
+      success: true,
+      message: '评论发布成功',
+      data: fullComment
+    });
+
+  } catch (error) {
+    logger.error('创建评论失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '评论发布失败，请稍后重试'
+    });
+  }
+});
+
+// 编辑评论
+router.put('/:id/comments/:commentId', requireAuth, async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const { content } = req.body;
+
+    // 验证必填字段
+    if (!content || content.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: '评论内容不能为空'
+      });
+    }
+
+    // 查找评论
+    const comment = await TaskComment.findByPk(commentId);
+    if (!comment) {
+      return res.status(404).json({
+        success: false,
+        message: '评论不存在'
+      });
+    }
+
+    // 检查权限：只有评论作者可以编辑
+    if (comment.userId !== req.session.userId) {
+      return res.status(403).json({
+        success: false,
+        message: '您只能编辑自己的评论'
+      });
+    }
+
+    // 更新评论
+    await comment.update({
+      content: content.trim(),
+      isEdited: true,
+      editedAt: new Date()
+    });
+
+    // 获取更新后的完整评论信息
+    const updatedComment = await TaskComment.findByPk(commentId, {
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'firstName', 'lastName', 'role']
+        },
+        {
+          model: User,
+          as: 'replyToUser',
+          attributes: ['id', 'username', 'firstName', 'lastName']
+        }
+      ]
+    });
+
+    res.json({
+      success: true,
+      message: '评论更新成功',
+      data: updatedComment
+    });
+
+  } catch (error) {
+    logger.error('编辑评论失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '评论更新失败，请稍后重试'
+    });
+  }
+});
+
+// 删除评论
+router.delete('/:id/comments/:commentId', requireAuth, async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const { commentId } = req.params;
+
+    // 查找评论
+    const comment = await TaskComment.findByPk(commentId, {
+      include: [
+        {
+          model: BountyTask,
+          as: 'task',
+          attributes: ['id', 'publisherId', 'assigneeId', 'reviewerId']
+        }
+      ]
+    });
+
+    if (!comment) {
+      return res.status(404).json({
+        success: false,
+        message: '评论不存在'
+      });
+    }
+
+    // 检查权限：评论作者、管理员、任务负责人、创建人、审核人可以删除
+    const hasPermission = comment.userId === req.session.userId ||
+                         req.session.user?.role === 'admin' ||
+                         comment.task.publisherId === req.session.userId ||
+                         comment.task.assigneeId === req.session.userId ||
+                         comment.task.reviewerId === req.session.userId;
+
+    if (!hasPermission) {
+      return res.status(403).json({
+        success: false,
+        message: '您没有权限删除此评论'
+      });
+    }
+
+    // 删除评论（级联删除回复）
+    await comment.destroy();
+
+    res.json({
+      success: true,
+      message: '评论删除成功'
+    });
+
+  } catch (error) {
+    logger.error('删除评论失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '评论删除失败，请稍后重试'
+    });
+  }
+});
+
+// 获取更多回复
+router.get('/:id/comments/:commentId/replies', async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    // 获取回复列表
+    const replies = await TaskComment.findAll({
+      where: {
+        parentCommentId: commentId
+      },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'firstName', 'lastName', 'role']
+        },
+        {
+          model: User,
+          as: 'replyToUser',
+          attributes: ['id', 'username', 'firstName', 'lastName']
+        }
+      ],
+      order: [['createdAt', 'ASC']],
+      limit,
+      offset
+    });
+
+    // 统计总回复数
+    const totalReplies = await TaskComment.count({
+      where: { parentCommentId: commentId }
+    });
+
+    res.json({
+      success: true,
+      data: replies,
+      pagination: {
+        page,
+        totalPages: Math.ceil(totalReplies / limit),
+        total: totalReplies,
+        hasNext: page * limit < totalReplies,
+        hasPrev: page > 1
+      }
+    });
+
+  } catch (error) {
+    logger.error('获取回复列表失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '获取回复列表失败'
+    });
   }
 });
 

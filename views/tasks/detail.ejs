@@ -308,6 +308,75 @@ const currentStatus = statusConfig[task.status] || statusConfig['draft'];
                             <% } %>
                         </div>
                     <% } %>
+
+                    <!-- 评论区块 -->
+                    <div class="mb-4">
+                        <h5 class="d-flex align-items-center justify-content-between">
+                            <span>
+                                <i class="fas fa-comments me-2"></i>
+                                评论 (<%= totalComments || 0 %>)
+                            </span>
+                            <% if (commentsPagination && commentsPagination.totalPages > 1) { %>
+                                <small class="text-muted">
+                                    第 <%= commentsPagination.page %> 页，共 <%= commentsPagination.totalPages %> 页
+                                </small>
+                            <% } %>
+                        </h5>
+
+                        <!-- 新增评论编辑器 -->
+                        <% if (user) { %>
+                            <%- include('../partials/comment-editor', {
+                                taskId: task.id,
+                                editorId: 'mainCommentEditor',
+                                placeholder: '写下您的评论...',
+                                submitText: '发布评论',
+                                projectMembers: projectMembers || [],
+                                parentCommentId: null,
+                                replyToUserId: null,
+                                replyToUser: null
+                            }) %>
+                        <% } else { %>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                请先登录后再发表评论
+                            </div>
+                        <% } %>
+
+                        <!-- 评论列表 -->
+                        <%- include('../partials/comment-list', {
+                            comments: comments || [],
+                            user: user
+                        }) %>
+
+                        <!-- 评论分页 -->
+                        <% if (commentsPagination && commentsPagination.totalPages > 1) { %>
+                            <nav aria-label="评论分页" class="mt-4">
+                                <ul class="pagination justify-content-center">
+                                    <% if (commentsPagination.hasPrev) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?commentsPage=<%= commentsPagination.page - 1 %>#comments">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                    <% } %>
+
+                                    <% for (let i = Math.max(1, commentsPagination.page - 2); i <= Math.min(commentsPagination.totalPages, commentsPagination.page + 2); i++) { %>
+                                        <li class="page-item <%= i === commentsPagination.page ? 'active' : '' %>">
+                                            <a class="page-link" href="?commentsPage=<%= i %>#comments"><%= i %></a>
+                                        </li>
+                                    <% } %>
+
+                                    <% if (commentsPagination.hasNext) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?commentsPage=<%= commentsPagination.page + 1 %>#comments">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                            </nav>
+                        <% } %>
+                    </div>
                 </div>
             </div>
         </div>
@@ -532,7 +601,526 @@ const currentStatus = statusConfig[task.status] || statusConfig['draft'];
 <script>
 $(document).ready(function() {
     // 页面初始化
+    initCommentSystem();
 });
+
+// 初始化评论系统
+function initCommentSystem() {
+    // 初始化所有评论编辑器
+    $('.comment-editor').each(function() {
+        initCommentEditor($(this));
+    });
+
+    // 绑定回复按钮事件
+    $(document).on('click', '.reply-btn', function() {
+        const commentId = $(this).data('comment-id');
+        const userId = $(this).data('user-id');
+        const username = $(this).data('username');
+        showReplyEditor(commentId, userId, username);
+    });
+
+    // 绑定编辑评论按钮事件
+    $(document).on('click', '.edit-comment-btn', function() {
+        const commentId = $(this).data('comment-id');
+        editComment(commentId);
+    });
+
+    // 绑定删除评论按钮事件
+    $(document).on('click', '.delete-comment-btn', function() {
+        const commentId = $(this).data('comment-id');
+        deleteComment(commentId);
+    });
+
+    // 绑定加载更多回复按钮事件
+    $(document).on('click', '.load-more-replies-btn', function() {
+        const commentId = $(this).data('comment-id');
+        loadMoreReplies(commentId);
+    });
+}
+
+// 初始化评论编辑器
+function initCommentEditor($editor) {
+    const $form = $editor.find('.comment-form');
+    const $richEditor = $editor.find('.rich-editor-content');
+    const $textarea = $editor.find('.comment-content');
+    const $toolbar = $editor.find('.rich-editor-toolbar');
+    const $imageUpload = $editor.find('.image-upload');
+    const $mentionDropdown = $editor.find('.mention-dropdown');
+
+    // 同步内容到隐藏的textarea
+    function syncContent() {
+        $textarea.val($richEditor.html());
+    }
+
+    // 监听内容变化
+    $richEditor.on('input paste', function() {
+        setTimeout(syncContent, 10);
+    });
+
+    // 工具栏按钮事件
+    $toolbar.on('click', '.rich-editor-btn', function(e) {
+        e.preventDefault();
+        const command = $(this).data('command');
+
+        if (command) {
+            if (command === 'createLink') {
+                const url = prompt('请输入链接地址:');
+                if (url) {
+                    document.execCommand(command, false, url);
+                }
+            } else {
+                document.execCommand(command, false, null);
+            }
+            updateToolbarState($toolbar);
+            syncContent();
+        }
+    });
+
+    // 插入图片按钮
+    $toolbar.on('click', '.insert-image-btn', function(e) {
+        e.preventDefault();
+        $imageUpload.click();
+    });
+
+    // @提醒按钮
+    $toolbar.on('click', '.mention-btn', function(e) {
+        e.preventDefault();
+        insertMention($richEditor, $mentionDropdown);
+    });
+
+    // 图片上传处理
+    $imageUpload.on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            uploadImage(file, $richEditor);
+            $(this).val(''); // 清空文件输入
+        }
+    });
+
+    // @用户选择
+    $mentionDropdown.on('click', '.mention-item', function() {
+        const username = $(this).data('username');
+        const userId = $(this).data('user-id');
+        insertUserMention($richEditor, username, userId);
+        $mentionDropdown.hide();
+    });
+
+    // 表单提交
+    $form.on('submit', function(e) {
+        e.preventDefault();
+        submitComment($form);
+    });
+
+    // 取消按钮
+    $editor.on('click', '.cancel-comment, .cancel-reply', function() {
+        if ($editor.attr('id') === 'mainCommentEditor') {
+            // 主编辑器只清空内容
+            $richEditor.html('');
+            syncContent();
+        } else {
+            // 回复编辑器直接隐藏
+            $editor.hide();
+        }
+    });
+
+    // 更新工具栏状态
+    $richEditor.on('mouseup keyup', function() {
+        updateToolbarState($toolbar);
+    });
+
+    // 初始同步
+    syncContent();
+}
+
+// 更新工具栏按钮状态
+function updateToolbarState($toolbar) {
+    $toolbar.find('.rich-editor-btn[data-command]').each(function() {
+        const command = $(this).data('command');
+        if (document.queryCommandState(command)) {
+            $(this).addClass('active');
+        } else {
+            $(this).removeClass('active');
+        }
+    });
+}
+
+// 显示回复编辑器
+function showReplyEditor(parentCommentId, replyToUserId, replyToUsername) {
+    // 隐藏其他回复编辑器
+    $('.reply-editor-container').hide().empty();
+
+    // 创建回复编辑器HTML
+    const editorHtml = `
+        <div class="comment-editor mt-3" id="replyEditor_${parentCommentId}">
+            <div class="card">
+                <div class="card-body">
+                    <form class="comment-form" data-task-id="<%= task.id %>" data-parent-id="${parentCommentId}" data-reply-to="${replyToUserId}">
+                        <div class="reply-indicator mb-2">
+                            <small class="text-muted">
+                                <i class="fas fa-reply me-1"></i>
+                                回复 <strong>${replyToUsername}</strong>
+                                <button type="button" class="btn btn-link btn-sm p-0 ms-2 cancel-reply">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </small>
+                        </div>
+                        <div class="rich-editor mb-3">
+                            <div class="rich-editor-toolbar">
+                                <button type="button" class="rich-editor-btn" data-command="bold" title="粗体">
+                                    <i class="fas fa-bold"></i>
+                                </button>
+                                <button type="button" class="rich-editor-btn" data-command="italic" title="斜体">
+                                    <i class="fas fa-italic"></i>
+                                </button>
+                                <button type="button" class="rich-editor-btn" data-command="underline" title="下划线">
+                                    <i class="fas fa-underline"></i>
+                                </button>
+                                <span class="rich-editor-separator"></span>
+                                <button type="button" class="rich-editor-btn mention-btn" title="@提醒">
+                                    <i class="fas fa-at"></i>
+                                </button>
+                                <button type="button" class="rich-editor-btn" data-command="removeFormat" title="清除格式">
+                                    <i class="fas fa-remove-format"></i>
+                                </button>
+                            </div>
+                            <div class="rich-editor-content" contenteditable="true" placeholder="写下您的回复...">
+                                @${replyToUsername}
+                            </div>
+                        </div>
+                        <textarea class="form-control d-none comment-content" name="content" required></textarea>
+                        <input type="file" class="image-upload" accept="image/*" style="display: none;">
+                        <div class="mention-dropdown" style="display: none;">
+                            <div class="dropdown-menu show">
+                                <% if (projectMembers && projectMembers.length > 0) { %>
+                                    <% projectMembers.forEach(member => { %>
+                                        <button type="button" class="dropdown-item mention-item"
+                                                data-user-id="<%= member.id %>"
+                                                data-username="<%= member.firstName %><%= member.lastName %>">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1">
+                                                    <div class="fw-medium"><%= member.firstName %> <%= member.lastName %></div>
+                                                    <small class="text-muted"><%= member.role %></small>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    <% }); %>
+                                <% } %>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-outline-secondary btn-sm cancel-reply me-2">
+                                <i class="fas fa-times me-1"></i>取消
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-sm submit-comment">
+                                <i class="fas fa-paper-plane me-1"></i>发布回复
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 插入到对应评论的回复容器中
+    const $container = $(`.comment-item[data-comment-id="${parentCommentId}"] .reply-editor-container`);
+    $container.html(editorHtml).show();
+
+    // 初始化新创建的编辑器
+    initCommentEditor($container.find('.comment-editor'));
+
+    // 聚焦到编辑器
+    $container.find('.rich-editor-content').focus();
+}
+
+// 提交评论
+function submitComment($form) {
+    const taskId = $form.data('task-id');
+    const parentCommentId = $form.data('parent-id') || null;
+    const replyToUserId = $form.data('reply-to') || null;
+    const content = $form.find('.comment-content').val().trim();
+
+    if (!content) {
+        KanbanApp.showAlert('请输入评论内容', 'warning');
+        return;
+    }
+
+    const $submitBtn = $form.find('.submit-comment');
+    const originalText = $submitBtn.html();
+
+    // 禁用提交按钮
+    $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>发布中...');
+
+    $.ajax({
+        url: `/tasks/${taskId}/comments`,
+        method: 'POST',
+        data: {
+            content: content,
+            parentCommentId: parentCommentId,
+            replyToUserId: replyToUserId
+        },
+        success: function(response) {
+            if (response.success) {
+                KanbanApp.showAlert('评论发布成功', 'success');
+                // 刷新页面以显示新评论
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                KanbanApp.showAlert(response.message || '评论发布失败', 'danger');
+            }
+        },
+        error: function(xhr) {
+            const response = xhr.responseJSON;
+            KanbanApp.showAlert(response?.message || '评论发布失败', 'danger');
+        },
+        complete: function() {
+            // 恢复提交按钮
+            $submitBtn.prop('disabled', false).html(originalText);
+        }
+    });
+}
+
+// 编辑评论
+function editComment(commentId) {
+    // 获取评论内容
+    const $commentItem = $(`.comment-item[data-comment-id="${commentId}"], .comment-reply[data-comment-id="${commentId}"]`);
+    const $contentDiv = $commentItem.find('.comment-content').first();
+    const originalContent = $contentDiv.html();
+
+    // 创建编辑表单
+    const editFormHtml = `
+        <div class="edit-comment-form">
+            <div class="rich-editor mb-3">
+                <div class="rich-editor-toolbar">
+                    <button type="button" class="rich-editor-btn" data-command="bold" title="粗体">
+                        <i class="fas fa-bold"></i>
+                    </button>
+                    <button type="button" class="rich-editor-btn" data-command="italic" title="斜体">
+                        <i class="fas fa-italic"></i>
+                    </button>
+                    <button type="button" class="rich-editor-btn" data-command="underline" title="下划线">
+                        <i class="fas fa-underline"></i>
+                    </button>
+                    <span class="rich-editor-separator"></span>
+                    <button type="button" class="rich-editor-btn" data-command="removeFormat" title="清除格式">
+                        <i class="fas fa-remove-format"></i>
+                    </button>
+                </div>
+                <div class="rich-editor-content" contenteditable="true">${originalContent}</div>
+            </div>
+            <textarea class="form-control d-none edit-content" required></textarea>
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-outline-secondary btn-sm cancel-edit me-2">
+                    <i class="fas fa-times me-1"></i>取消
+                </button>
+                <button type="button" class="btn btn-primary btn-sm save-edit" data-comment-id="${commentId}">
+                    <i class="fas fa-save me-1"></i>保存
+                </button>
+            </div>
+        </div>
+    `;
+
+    // 替换内容区域
+    $contentDiv.hide().after(editFormHtml);
+
+    // 初始化编辑器
+    const $editForm = $commentItem.find('.edit-comment-form');
+    const $richEditor = $editForm.find('.rich-editor-content');
+    const $textarea = $editForm.find('.edit-content');
+
+    // 同步内容
+    function syncEditContent() {
+        $textarea.val($richEditor.html());
+    }
+
+    $richEditor.on('input', syncEditContent);
+    syncEditContent();
+
+    // 取消编辑
+    $editForm.on('click', '.cancel-edit', function() {
+        $editForm.remove();
+        $contentDiv.show();
+    });
+
+    // 保存编辑
+    $editForm.on('click', '.save-edit', function() {
+        const content = $textarea.val().trim();
+        if (!content) {
+            KanbanApp.showAlert('请输入评论内容', 'warning');
+            return;
+        }
+
+        const $saveBtn = $(this);
+        const originalText = $saveBtn.html();
+        $saveBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>保存中...');
+
+        $.ajax({
+            url: `/tasks/<%= task.id %>/comments/${commentId}`,
+            method: 'PUT',
+            data: { content: content },
+            success: function(response) {
+                if (response.success) {
+                    KanbanApp.showAlert('评论更新成功', 'success');
+                    // 更新显示内容
+                    $contentDiv.html(content);
+                    $editForm.remove();
+                    $contentDiv.show();
+
+                    // 添加编辑标记
+                    const $header = $commentItem.find('.comment-header .comment-time').first();
+                    if (!$header.find('.fa-edit').length) {
+                        $header.find('small').append(' <span class="ms-1" title="已编辑"><i class="fas fa-edit"></i></span>');
+                    }
+                } else {
+                    KanbanApp.showAlert(response.message || '评论更新失败', 'danger');
+                }
+            },
+            error: function(xhr) {
+                const response = xhr.responseJSON;
+                KanbanApp.showAlert(response?.message || '评论更新失败', 'danger');
+            },
+            complete: function() {
+                $saveBtn.prop('disabled', false).html(originalText);
+            }
+        });
+    });
+
+    // 聚焦到编辑器
+    $richEditor.focus();
+}
+
+// 删除评论
+function deleteComment(commentId) {
+    if (!confirm('确定要删除这条评论吗？此操作不可撤销。')) {
+        return;
+    }
+
+    $.ajax({
+        url: `/tasks/<%= task.id %>/comments/${commentId}`,
+        method: 'DELETE',
+        success: function(response) {
+            if (response.success) {
+                KanbanApp.showAlert('评论删除成功', 'success');
+                // 移除评论元素
+                $(`.comment-item[data-comment-id="${commentId}"], .comment-reply[data-comment-id="${commentId}"]`).fadeOut(300, function() {
+                    $(this).remove();
+                    // 更新评论计数
+                    updateCommentCount();
+                });
+            } else {
+                KanbanApp.showAlert(response.message || '评论删除失败', 'danger');
+            }
+        },
+        error: function(xhr) {
+            const response = xhr.responseJSON;
+            KanbanApp.showAlert(response?.message || '评论删除失败', 'danger');
+        }
+    });
+}
+
+// 加载更多回复
+function loadMoreReplies(commentId) {
+    const $btn = $(`.load-more-replies-btn[data-comment-id="${commentId}"]`);
+    const originalText = $btn.html();
+
+    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>加载中...');
+
+    $.ajax({
+        url: `/tasks/<%= task.id %>/comments/${commentId}/replies`,
+        method: 'GET',
+        data: { page: 2, limit: 10 }, // 加载第2页开始的回复
+        success: function(response) {
+            if (response.success && response.data.length > 0) {
+                // 这里需要渲染更多回复，简化处理直接刷新页面
+                window.location.reload();
+            } else {
+                $btn.hide();
+            }
+        },
+        error: function() {
+            KanbanApp.showAlert('加载回复失败', 'danger');
+        },
+        complete: function() {
+            $btn.prop('disabled', false).html(originalText);
+        }
+    });
+}
+
+// 更新评论计数
+function updateCommentCount() {
+    const totalComments = $('.comment-item, .comment-reply').length;
+    $('.comments-section h5 span').html(`<i class="fas fa-comments me-2"></i>评论 (${totalComments})`);
+}
+
+// 上传图片
+function uploadImage(file, $richEditor) {
+    const formData = new FormData();
+    formData.append('taskImage', file);
+
+    $.ajax({
+        url: '/tasks/upload-image',
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            if (response.success) {
+                // 插入图片到编辑器
+                const img = document.createElement('img');
+                img.src = response.location;
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+
+                // 获取当前选择或光标位置
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    range.insertNode(img);
+                    range.collapse(false);
+                } else {
+                    $richEditor[0].appendChild(img);
+                }
+            } else {
+                KanbanApp.showAlert('图片上传失败: ' + (response.error || '未知错误'), 'danger');
+            }
+        },
+        error: function() {
+            KanbanApp.showAlert('图片上传失败', 'danger');
+        }
+    });
+}
+
+// 插入@提醒
+function insertMention($richEditor, $mentionDropdown) {
+    // 简化实现：直接显示用户列表
+    const rect = $richEditor[0].getBoundingClientRect();
+    $mentionDropdown.css({
+        position: 'absolute',
+        top: rect.bottom + 'px',
+        left: rect.left + 'px'
+    }).show();
+}
+
+// 插入用户提醒
+function insertUserMention($richEditor, username, userId) {
+    const mention = `@${username} `;
+
+    // 获取当前选择或光标位置
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const textNode = document.createTextNode(mention);
+        range.insertNode(textNode);
+        range.setStartAfter(textNode);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    } else {
+        $richEditor.append(mention);
+    }
+
+    $richEditor.focus();
+}</script>
 
 // 显示完成任务模态框
 function showCompleteModal() {
@@ -640,6 +1228,159 @@ function updateTaskStatus(newStatus, message) {
 .rich-text-content table th {
     background-color: #f8f9fa;
     font-weight: 600;
+}
+
+/* 评论系统样式 */
+.comments-section {
+    margin-top: 2rem;
+}
+
+.comment-item {
+    margin-bottom: 1.5rem;
+}
+
+.comment-main {
+    background-color: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.comment-author {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.comment-role .badge {
+    font-size: 0.7rem;
+}
+
+.comment-time {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.comment-content {
+    margin-bottom: 0.75rem;
+    color: #333;
+}
+
+.comment-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comment-buttons .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-decoration: none;
+}
+
+.comment-buttons .btn:hover {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.comment-buttons .btn.text-danger:hover {
+    color: #dc3545 !important;
+}
+
+/* 回复样式 */
+.comment-replies {
+    margin-top: 1rem;
+    margin-left: 40px;
+    border-left: 2px solid #e1e5e9;
+    padding-left: 20px;
+    position: relative;
+}
+
+.comment-reply {
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.reply-connector {
+    position: absolute;
+    left: -22px;
+    top: 1rem;
+    width: 20px;
+    height: 2px;
+    background-color: #e1e5e9;
+}
+
+.reply-content {
+    background-color: #f8f9fa;
+    border: 1px solid #e1e5e9;
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+}
+
+.reply-to {
+    color: #007bff;
+    font-size: 0.875rem;
+}
+
+.load-more-replies {
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+.load-more-replies .btn {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+/* 无评论状态 */
+.no-comments {
+    color: #6c757d;
+    padding: 3rem 1rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .comment-replies {
+        margin-left: 20px;
+        padding-left: 15px;
+    }
+
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .comment-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .comment-replies {
+        margin-left: 15px;
+        padding-left: 10px;
+    }
+
+    .comment-main,
+    .reply-content {
+        padding: 0.75rem;
+    }
+}
+
+/* 紫色徽章样式 */
+.badge.bg-purple {
+    background-color: #6f42c1 !important;
 }
 </style>
 

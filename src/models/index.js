@@ -11,6 +11,7 @@ const ProjectMember = require('./ProjectMember');
 const BountyTask = require('./BountyTask');
 const Sprint = require('./Sprint');
 const ActivityLog = require('./ActivityLog');
+const TaskComment = require('./TaskComment');
 
 // 定义模型关联关系
 
@@ -222,6 +223,50 @@ Sprint.hasMany(BountyTask, {
 BountyTask.belongsTo(Sprint, {
   foreignKey: 'sprintId',
   as: 'sprint'
+});
+
+// TaskComment 和 BountyTask 的关联 (N:1)
+BountyTask.hasMany(TaskComment, {
+  foreignKey: 'taskId',
+  as: 'comments',
+  onDelete: 'CASCADE'
+});
+TaskComment.belongsTo(BountyTask, {
+  foreignKey: 'taskId',
+  as: 'task'
+});
+
+// TaskComment 和 User 的关联 (N:1) - 评论作者
+User.hasMany(TaskComment, {
+  foreignKey: 'userId',
+  as: 'comments',
+  onDelete: 'CASCADE'
+});
+TaskComment.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user'
+});
+
+// TaskComment 和 User 的关联 (N:1) - 回复目标用户
+User.hasMany(TaskComment, {
+  foreignKey: 'replyToUserId',
+  as: 'repliedComments',
+  onDelete: 'SET NULL'
+});
+TaskComment.belongsTo(User, {
+  foreignKey: 'replyToUserId',
+  as: 'replyToUser'
+});
+
+// TaskComment 自关联 (父子评论)
+TaskComment.hasMany(TaskComment, {
+  foreignKey: 'parentCommentId',
+  as: 'replies',
+  onDelete: 'CASCADE'
+});
+TaskComment.belongsTo(TaskComment, {
+  foreignKey: 'parentCommentId',
+  as: 'parentComment'
 });
 
 // ActivityLog 和 User 的关联 (N:1) - 活动记录属于用户
@@ -664,6 +709,7 @@ module.exports = {
   BountyTask,
   Sprint,
   ActivityLog,
+  TaskComment,
   syncDatabase,
   createDefaultData
 };

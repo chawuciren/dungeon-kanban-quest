@@ -1,0 +1,191 @@
+<!-- 评论列表组件 -->
+<div class="comments-section">
+    <% if (comments && comments.length > 0) { %>
+        <div class="comments-list">
+            <% comments.forEach(comment => { %>
+                <div class="comment-item" data-comment-id="<%= comment.id %>">
+                    <!-- 主评论 -->
+                    <div class="comment-main">
+                        <div class="comment-header">
+                            <div class="comment-author">
+                                <i class="fas fa-user-circle me-2 text-primary"></i>
+                                <strong><%= comment.user.firstName %> <%= comment.user.lastName %></strong>
+                                <span class="comment-role ms-2">
+                                    <% if (comment.user.role === 'product_manager') { %>
+                                        <span class="badge bg-info">产品经理</span>
+                                    <% } else if (comment.user.role === 'developer') { %>
+                                        <span class="badge bg-primary">开发者</span>
+                                    <% } else if (comment.user.role === 'tester') { %>
+                                        <span class="badge bg-warning">测试工程师</span>
+                                    <% } else if (comment.user.role === 'ui_designer') { %>
+                                        <span class="badge bg-success">UI设计师</span>
+                                    <% } else if (comment.user.role === 'devops') { %>
+                                        <span class="badge bg-dark">运维工程师</span>
+                                    <% } else if (comment.user.role === 'client') { %>
+                                        <span class="badge bg-purple">客户</span>
+                                    <% } else if (comment.user.role === 'admin') { %>
+                                        <span class="badge bg-danger">管理员</span>
+                                    <% } %>
+                                </span>
+                            </div>
+                            <div class="comment-time">
+                                <small class="text-muted">
+                                    <%= comment.getFormattedTime() %>
+                                    <% if (comment.isEdited) { %>
+                                        <span class="ms-1" title="已编辑">
+                                            <i class="fas fa-edit"></i>
+                                        </span>
+                                    <% } %>
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="comment-content rich-text-content">
+                            <%- comment.content %>
+                        </div>
+                        
+                        <div class="comment-actions">
+                            <div class="comment-stats">
+                                <% if (comment.likesCount > 0) { %>
+                                    <span class="likes-count">
+                                        <i class="fas fa-thumbs-up text-primary me-1"></i>
+                                        <%= comment.likesCount %>
+                                    </span>
+                                <% } %>
+                            </div>
+                            <div class="comment-buttons">
+                                <button type="button" class="btn btn-link btn-sm reply-btn" 
+                                        data-comment-id="<%= comment.id %>" 
+                                        data-user-id="<%= comment.user.id %>"
+                                        data-username="<%= comment.user.firstName %><%= comment.user.lastName %>">
+                                    <i class="fas fa-reply me-1"></i>回复
+                                </button>
+                                
+                                <% if (user && comment.canEdit(user.id)) { %>
+                                    <button type="button" class="btn btn-link btn-sm edit-comment-btn" 
+                                            data-comment-id="<%= comment.id %>">
+                                        <i class="fas fa-edit me-1"></i>编辑
+                                    </button>
+                                <% } %>
+                                
+                                <% if (user && comment.canDelete(user.id, user.role)) { %>
+                                    <button type="button" class="btn btn-link btn-sm text-danger delete-comment-btn" 
+                                            data-comment-id="<%= comment.id %>">
+                                        <i class="fas fa-trash me-1"></i>删除
+                                    </button>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 回复列表 -->
+                    <% if (comment.replies && comment.replies.length > 0) { %>
+                        <div class="comment-replies">
+                            <% comment.replies.forEach(reply => { %>
+                                <div class="comment-reply" data-comment-id="<%= reply.id %>">
+                                    <div class="reply-connector"></div>
+                                    <div class="reply-content">
+                                        <div class="comment-header">
+                                            <div class="comment-author">
+                                                <i class="fas fa-user-circle me-2 text-secondary"></i>
+                                                <strong><%= reply.user.firstName %> <%= reply.user.lastName %></strong>
+                                                <% if (reply.replyToUser) { %>
+                                                    <span class="reply-to ms-1">
+                                                        回复 <strong><%= reply.replyToUser.firstName %> <%= reply.replyToUser.lastName %></strong>
+                                                    </span>
+                                                <% } %>
+                                                <span class="comment-role ms-2">
+                                                    <% if (reply.user.role === 'product_manager') { %>
+                                                        <span class="badge bg-info">产品经理</span>
+                                                    <% } else if (reply.user.role === 'developer') { %>
+                                                        <span class="badge bg-primary">开发者</span>
+                                                    <% } else if (reply.user.role === 'tester') { %>
+                                                        <span class="badge bg-warning">测试工程师</span>
+                                                    <% } else if (reply.user.role === 'ui_designer') { %>
+                                                        <span class="badge bg-success">UI设计师</span>
+                                                    <% } else if (reply.user.role === 'devops') { %>
+                                                        <span class="badge bg-dark">运维工程师</span>
+                                                    <% } else if (reply.user.role === 'client') { %>
+                                                        <span class="badge bg-purple">客户</span>
+                                                    <% } else if (reply.user.role === 'admin') { %>
+                                                        <span class="badge bg-danger">管理员</span>
+                                                    <% } %>
+                                                </span>
+                                            </div>
+                                            <div class="comment-time">
+                                                <small class="text-muted">
+                                                    <%= reply.getFormattedTime() %>
+                                                    <% if (reply.isEdited) { %>
+                                                        <span class="ms-1" title="已编辑">
+                                                            <i class="fas fa-edit"></i>
+                                                        </span>
+                                                    <% } %>
+                                                </small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="comment-content rich-text-content">
+                                            <%- reply.content %>
+                                        </div>
+                                        
+                                        <div class="comment-actions">
+                                            <div class="comment-stats">
+                                                <% if (reply.likesCount > 0) { %>
+                                                    <span class="likes-count">
+                                                        <i class="fas fa-thumbs-up text-primary me-1"></i>
+                                                        <%= reply.likesCount %>
+                                                    </span>
+                                                <% } %>
+                                            </div>
+                                            <div class="comment-buttons">
+                                                <button type="button" class="btn btn-link btn-sm reply-btn" 
+                                                        data-comment-id="<%= comment.id %>" 
+                                                        data-user-id="<%= reply.user.id %>"
+                                                        data-username="<%= reply.user.firstName %><%= reply.user.lastName %>">
+                                                    <i class="fas fa-reply me-1"></i>回复
+                                                </button>
+                                                
+                                                <% if (user && reply.canEdit(user.id)) { %>
+                                                    <button type="button" class="btn btn-link btn-sm edit-comment-btn" 
+                                                            data-comment-id="<%= reply.id %>">
+                                                        <i class="fas fa-edit me-1"></i>编辑
+                                                    </button>
+                                                <% } %>
+                                                
+                                                <% if (user && reply.canDelete(user.id, user.role)) { %>
+                                                    <button type="button" class="btn btn-link btn-sm text-danger delete-comment-btn" 
+                                                            data-comment-id="<%= reply.id %>">
+                                                        <i class="fas fa-trash me-1"></i>删除
+                                                    </button>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                            
+                            <!-- 查看更多回复按钮 -->
+                            <% if (comment.replies.length >= 3) { %>
+                                <div class="load-more-replies">
+                                    <button type="button" class="btn btn-link btn-sm load-more-replies-btn" 
+                                            data-comment-id="<%= comment.id %>">
+                                        <i class="fas fa-chevron-down me-1"></i>
+                                        查看更多回复
+                                    </button>
+                                </div>
+                            <% } %>
+                        </div>
+                    <% } %>
+
+                    <!-- 回复编辑器插入位置 -->
+                    <div class="reply-editor-container" style="display: none;"></div>
+                </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <div class="no-comments text-center py-4">
+            <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+            <p class="text-muted mb-0">暂无评论，来发表第一条评论吧！</p>
+        </div>
+    <% } %>
+</div>
