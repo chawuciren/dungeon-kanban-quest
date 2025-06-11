@@ -1197,6 +1197,7 @@ router.get('/:id', async (req, res) => {
       comments: mainComments,
       totalComments,
       projectMembers: projectMembers.map(pm => pm.user),
+      user: req.session.user, // 添加用户信息
       commentsPagination: {
         page: commentsPage,
         totalPages: Math.ceil(totalComments / commentsLimit),
@@ -2637,9 +2638,22 @@ router.delete('/:id/comments/:commentId', requireAuth, async (req, res) => {
 router.get('/:id/comments/:commentId/replies', async (req, res) => {
   try {
     const { commentId } = req.params;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const offset = (page - 1) * limit;
+
+    // 支持两种分页方式：
+    // 1. 传统的page+limit方式
+    // 2. 直接的offset+limit方式
+    let offset, limit;
+
+    if (req.query.offset !== undefined) {
+      // 使用offset+limit方式
+      offset = parseInt(req.query.offset) || 0;
+      limit = parseInt(req.query.limit) || 10;
+    } else {
+      // 使用page+limit方式（向后兼容）
+      const page = parseInt(req.query.page) || 1;
+      limit = parseInt(req.query.limit) || 10;
+      offset = (page - 1) * limit;
+    }
 
     // 获取回复列表
     const replies = await TaskComment.findAll({
@@ -2668,15 +2682,23 @@ router.get('/:id/comments/:commentId/replies', async (req, res) => {
       where: { parentCommentId: commentId }
     });
 
+    // 计算分页信息
+    const page = Math.floor(offset / limit) + 1;
+    const totalPages = Math.ceil(totalReplies / limit);
+    const hasNext = offset + limit < totalReplies;
+    const hasPrev = offset > 0;
+
     res.json({
       success: true,
       data: replies,
       pagination: {
         page,
-        totalPages: Math.ceil(totalReplies / limit),
+        totalPages,
         total: totalReplies,
-        hasNext: page * limit < totalReplies,
-        hasPrev: page > 1
+        offset,
+        limit,
+        hasNext,
+        hasPrev
       }
     });
 

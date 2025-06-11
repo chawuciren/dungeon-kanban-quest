@@ -599,6 +599,26 @@ const currentStatus = statusConfig[task.status] || statusConfig['draft'];
 </div>
 
 <script>
+// 全局变量
+window.taskId = '<%= task.id %>';
+window.projectMembersData = <%- JSON.stringify(projectMembers || []) %>;
+window.currentUserId = '<%- typeof user !== 'undefined' && user ? user.id : 'null' %>';
+window.currentUserRole = '<%- typeof user !== 'undefined' && user ? user.role : '' %>';
+
+// 角色文本映射函数
+function getRoleText(role) {
+    const roleMap = {
+        'product_manager': '产品经理',
+        'developer': '开发者',
+        'tester': '测试工程师',
+        'ui_designer': 'UI设计师',
+        'devops': '运维工程师',
+        'client': '客户',
+        'admin': '管理员'
+    };
+    return roleMap[role] || role;
+}
+
 $(document).ready(function() {
     // 页面初始化
     initCommentSystem();
@@ -749,12 +769,33 @@ function showReplyEditor(parentCommentId, replyToUserId, replyToUsername) {
     // 隐藏其他回复编辑器
     $('.reply-editor-container').hide().empty();
 
+    // 获取项目成员数据（从页面中获取）
+    const projectMembers = window.projectMembersData || [];
+
+    // 生成项目成员选项HTML
+    let memberOptionsHtml = '';
+    projectMembers.forEach(member => {
+        const roleText = getRoleText(member.role);
+        memberOptionsHtml += `
+            <button type="button" class="dropdown-item mention-item"
+                    data-user-id="${member.id}"
+                    data-username="${member.firstName}${member.lastName}">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <div class="fw-medium">${member.firstName} ${member.lastName}</div>
+                        <small class="text-muted">${roleText}</small>
+                    </div>
+                </div>
+            </button>
+        `;
+    });
+
     // 创建回复编辑器HTML
     const editorHtml = `
         <div class="comment-editor mt-3" id="replyEditor_${parentCommentId}">
             <div class="card">
                 <div class="card-body">
-                    <form class="comment-form" data-task-id="<%= task.id %>" data-parent-id="${parentCommentId}" data-reply-to="${replyToUserId}">
+                    <form class="comment-form" data-task-id="${window.taskId}" data-parent-id="${parentCommentId}" data-reply-to="${replyToUserId}">
                         <div class="reply-indicator mb-2">
                             <small class="text-muted">
                                 <i class="fas fa-reply me-1"></i>
@@ -791,20 +832,7 @@ function showReplyEditor(parentCommentId, replyToUserId, replyToUsername) {
                         <input type="file" class="image-upload" accept="image/*" style="display: none;">
                         <div class="mention-dropdown" style="display: none;">
                             <div class="dropdown-menu show">
-                                <% if (projectMembers && projectMembers.length > 0) { %>
-                                    <% projectMembers.forEach(member => { %>
-                                        <button type="button" class="dropdown-item mention-item"
-                                                data-user-id="<%= member.id %>"
-                                                data-username="<%= member.firstName %><%= member.lastName %>">
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-grow-1">
-                                                    <div class="fw-medium"><%= member.firstName %> <%= member.lastName %></div>
-                                                    <small class="text-muted"><%= member.role %></small>
-                                                </div>
-                                            </div>
-                                        </button>
-                                    <% }); %>
-                                <% } %>
+                                ${memberOptionsHtml}
                             </div>
                         </div>
                         <div class="d-flex justify-content-end">
@@ -955,7 +983,7 @@ function editComment(commentId) {
         $saveBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>保存中...');
 
         $.ajax({
-            url: `/tasks/<%= task.id %>/comments/${commentId}`,
+            url: `/tasks/${window.taskId}/comments/${commentId}`,
             method: 'PUT',
             data: { content: content },
             success: function(response) {
@@ -996,7 +1024,7 @@ function deleteComment(commentId) {
     }
 
     $.ajax({
-        url: `/tasks/<%= task.id %>/comments/${commentId}`,
+        url: `/tasks/${window.taskId}/comments/${commentId}`,
         method: 'DELETE',
         success: function(response) {
             if (response.success) {
@@ -1022,27 +1050,231 @@ function deleteComment(commentId) {
 function loadMoreReplies(commentId) {
     const $btn = $(`.load-more-replies-btn[data-comment-id="${commentId}"]`);
     const originalText = $btn.html();
+    const $repliesContainer = $(`.comment-replies[data-comment-id="${commentId}"]`);
 
     $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>加载中...');
 
+    // 计算当前已显示的回复数量（排除"加载更多"按钮）
+    const currentRepliesCount = $repliesContainer.find('.comment-reply').length;
+    const limit = 10; // 每次加载10条
+
+    // 使用offset参数精确控制数据获取
     $.ajax({
-        url: `/tasks/<%= task.id %>/comments/${commentId}/replies`,
+        url: `/tasks/${window.taskId}/comments/${commentId}/replies`,
         method: 'GET',
-        data: { page: 2, limit: 10 }, // 加载第2页开始的回复
+        data: {
+            offset: currentRepliesCount, // 从当前已显示数量开始
+            limit: limit
+        },
         success: function(response) {
             if (response.success && response.data.length > 0) {
-                // 这里需要渲染更多回复，简化处理直接刷新页面
-                window.location.reload();
+                // 渲染新的回复
+                response.data.forEach(function(reply) {
+                    const replyHtml = renderReplyHtml(reply);
+                    $btn.parent().before(replyHtml);
+                });
+
+                // 检查是否还有更多回复
+                const newTotalDisplayed = currentRepliesCount + response.data.length;
+                if (newTotalDisplayed >= response.pagination.total) {
+                    $btn.hide(); // 所有回复都已显示
+                } else {
+                    $btn.prop('disabled', false).html(originalText);
+                }
             } else {
-                $btn.hide();
+                $btn.hide(); // 没有更多回复
             }
         },
         error: function() {
             KanbanApp.showAlert('加载回复失败', 'danger');
-        },
-        complete: function() {
             $btn.prop('disabled', false).html(originalText);
         }
+    });
+}
+
+// 渲染回复HTML - 与原始模板保持一致
+function renderReplyHtml(reply) {
+    const userDisplayName = reply.user.firstName + ' ' + reply.user.lastName;
+
+    // 创建主容器
+    const $replyDiv = $('<div class="comment-reply"></div>').attr('data-comment-id', reply.id);
+
+    // 创建连接线
+    const $connector = $('<div class="reply-connector"></div>');
+    $replyDiv.append($connector);
+
+    // 创建回复内容容器
+    const $content = $('<div class="reply-content"></div>');
+
+    // 创建头部
+    const $header = $('<div class="comment-header"></div>');
+
+    // 创建作者信息
+    const $author = $('<div class="comment-author"></div>');
+
+    // 添加用户图标
+    const $userIcon = $('<i class="fas fa-user-circle me-2 text-secondary"></i>');
+    $author.append($userIcon);
+
+    // 添加用户名
+    const $authorName = $('<strong></strong>').text(userDisplayName);
+    $author.append($authorName);
+
+    // 添加回复目标信息（如果有）
+    if (reply.replyToUser) {
+        const $replyTo = $('<span class="reply-to ms-1"></span>');
+        const $replyToStrong = $('<strong></strong>').text(reply.replyToUser.firstName + ' ' + reply.replyToUser.lastName);
+        $replyTo.text('回复 ').append($replyToStrong);
+        $author.append($replyTo);
+    }
+
+    // 添加角色徽章
+    const $roleSpan = $('<span class="comment-role ms-2"></span>');
+    const roleBadge = getRoleBadgeHtml(reply.user.role);
+    if (roleBadge) {
+        $roleSpan.html(roleBadge);
+        $author.append($roleSpan);
+    }
+
+    // 创建时间信息
+    const $time = $('<div class="comment-time"></div>');
+    const $timeSmall = $('<small class="text-muted"></small>');
+    $timeSmall.text(formatDateTime(reply.createdAt));
+
+    // 添加编辑标记（如果有）
+    if (reply.isEdited) {
+        const $editedSpan = $('<span class="ms-1"></span>').attr('title', '已编辑');
+        const $editIcon = $('<i class="fas fa-edit"></i>');
+        $editedSpan.append($editIcon);
+        $timeSmall.append($editedSpan);
+    }
+
+    $time.append($timeSmall);
+
+    $header.append($author, $time);
+    $content.append($header);
+
+    // 创建评论内容
+    const $commentContent = $('<div class="comment-content rich-text-content"></div>').html(reply.content);
+    $content.append($commentContent);
+
+    // 创建操作区域
+    const $actions = $('<div class="comment-actions"></div>');
+
+    // 统计信息
+    const $stats = $('<div class="comment-stats"></div>');
+    if (reply.likesCount > 0) {
+        const $likes = $('<span class="likes-count"></span>')
+            .html(`<i class="fas fa-thumbs-up text-primary me-1"></i>${reply.likesCount}`);
+        $stats.append($likes);
+    }
+
+    // 按钮组
+    const $buttons = $('<div class="comment-buttons"></div>');
+
+    // 回复按钮
+    const $replyBtn = $('<button type="button" class="btn btn-link btn-sm reply-btn"></button>')
+        .attr('data-comment-id', reply.parentCommentId)
+        .attr('data-user-id', reply.user.id)
+        .attr('data-username', reply.user.firstName + reply.user.lastName)
+        .html('<i class="fas fa-reply me-1"></i>回复');
+    $buttons.append($replyBtn);
+
+    // 编辑按钮（仅作者可见）
+    if (reply.userId === window.currentUserId) {
+        const $editBtn = $('<button type="button" class="btn btn-link btn-sm edit-comment-btn"></button>')
+            .attr('data-comment-id', reply.id)
+            .html('<i class="fas fa-edit me-1"></i>编辑');
+        $buttons.append($editBtn);
+    }
+
+    // 删除按钮（作者和管理员可见）
+    if (reply.userId === window.currentUserId || window.currentUserRole === 'admin') {
+        const $deleteBtn = $('<button type="button" class="btn btn-link btn-sm text-danger delete-comment-btn"></button>')
+            .attr('data-comment-id', reply.id)
+            .html('<i class="fas fa-trash me-1"></i>删除');
+        $buttons.append($deleteBtn);
+    }
+
+    $actions.append($stats, $buttons);
+    $content.append($actions);
+    $replyDiv.append($content);
+
+    return $replyDiv[0].outerHTML;
+}
+
+// 获取角色信息
+function getRoleInfo(role) {
+    const roleMap = {
+        'admin': { name: '管理员', class: 'bg-danger' },
+        'client': { name: '客户', class: 'bg-purple' },
+        'product_manager': { name: '产品经理', class: 'bg-primary' },
+        'developer': { name: '开发', class: 'bg-success' },
+        'tester': { name: '测试', class: 'bg-warning' },
+        'designer': { name: '设计师', class: 'bg-info' },
+        'ops': { name: '运维', class: 'bg-dark' }
+    };
+    return roleMap[role] || { name: '成员', class: 'bg-secondary' };
+}
+
+// 获取角色徽章HTML - 与原始模板保持一致
+function getRoleBadgeHtml(role) {
+    switch (role) {
+        case 'product_manager':
+            return '<span class="badge bg-info">产品经理</span>';
+        case 'developer':
+            return '<span class="badge bg-primary">开发者</span>';
+        case 'tester':
+            return '<span class="badge bg-warning">测试工程师</span>';
+        case 'ui_designer':
+            return '<span class="badge bg-success">UI设计师</span>';
+        case 'devops':
+            return '<span class="badge bg-dark">运维工程师</span>';
+        case 'client':
+            return '<span class="badge bg-purple">客户</span>';
+        case 'admin':
+            return '<span class="badge bg-danger">管理员</span>';
+        default:
+            return null; // 不显示徽章
+    }
+}
+
+// 格式化日期时间
+function formatDateTime(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now - date;
+
+    // 小于1分钟
+    if (diff < 60000) {
+        return '刚刚';
+    }
+
+    // 小于1小时
+    if (diff < 3600000) {
+        const minutes = Math.floor(diff / 60000);
+        return `${minutes}分钟前`;
+    }
+
+    // 小于24小时
+    if (diff < 86400000) {
+        const hours = Math.floor(diff / 3600000);
+        return `${hours}小时前`;
+    }
+
+    // 小于7天
+    if (diff < 604800000) {
+        const days = Math.floor(diff / 86400000);
+        return `${days}天前`;
+    }
+
+    // 超过7天显示具体日期
+    return date.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
     });
 }
 
@@ -1120,7 +1352,7 @@ function insertUserMention($richEditor, username, userId) {
     }
 
     $richEditor.focus();
-}</script>
+}
 
 // 显示完成任务模态框
 function showCompleteModal() {
@@ -1143,7 +1375,7 @@ function rejectTask() {
 
 // 更新任务状态
 function updateTaskStatus(newStatus, message) {
-    const taskId = '<%= task.id %>';
+    const taskId = window.taskId;
 
     $.ajax({
         url: `/tasks/${taskId}/status`,

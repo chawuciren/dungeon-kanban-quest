@@ -80,7 +80,7 @@
 
                     <!-- 回复列表 -->
                     <% if (comment.replies && comment.replies.length > 0) { %>
-                        <div class="comment-replies">
+                        <div class="comment-replies" data-comment-id="<%= comment.id %>">
                             <% comment.replies.forEach(reply => { %>
                                 <div class="comment-reply" data-comment-id="<%= reply.id %>">
                                     <div class="reply-connector"></div>

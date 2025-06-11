@@ -236,14 +236,20 @@
                                 <i class="fas fa-user me-1"></i>
                                 <%= user.firstName %>
                             </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/profile">个人资料</a></li>
+                            <ul class="dropdown-menu" style="transform: translateX(-50px);">
+                                <li><a class="dropdown-item" href="/profile">
+                                    <i class="fas fa-user me-1"></i>
+                                    个人资料
+                                </a></li>
                                 <li><a class="dropdown-item" href="/settings">
                                     <i class="fas fa-cog me-1"></i>
                                     用户设置
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/logout">退出登录</a></li>
+                                <li><a class="dropdown-item" href="/logout">
+                                    <i class="fas fa-sign-out-alt me-1"></i>
+                                    退出登录
+                                </a></li>
                             </ul>
                         </li>
                     <% } else { %>
