@@ -102,7 +102,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">
-                <i class="fas fa-gamepad me-2"></i>
+                <i class="fas fa-project-diagram me-2"></i>
                 <%= config.app.name %>
             </a>
 
@@ -120,7 +120,7 @@
                                href="#" id="projectSelector" role="button" data-bs-toggle="dropdown"
                                data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="<%= selectedProject ? '当前项目: ' + selectedProject.name : '选择项目' %>">
-                                <i class="fas fa-globe me-1"></i>
+                                <i class="fas fa-folder-open me-1"></i>
                                 <%= selectedProject ? selectedProject.name : '选择项目' %>
                                 <% if (!selectedProject && user.role !== 'admin') { %>
                                     <i class="fas fa-exclamation-triangle ms-1 text-warning"></i>
@@ -133,7 +133,7 @@
                                         <li>
                                             <a class="dropdown-item <%= selectedProject && selectedProject.id === project.id ? 'active' : '' %>"
                                                href="/select-project/<%= project.id %>">
-                                                <i class="fas fa-map me-2"></i>
+                                                <i class="fas fa-folder me-2"></i>
                                                 <%= project.name %>
                                                 <% if (selectedProject && selectedProject.id === project.id) { %>
                                                     <i class="fas fa-check ms-2 text-success"></i>
@@ -165,7 +165,7 @@
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/dashboard') ? 'active' : '' %>" href="/dashboard"
                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="仪表盘 - 查看整体状况">
-                                <i class="fas fa-home me-1"></i>
+                                <i class="fas fa-tachometer-alt me-1"></i>
                                 仪表盘
                             </a>
                         </li>
@@ -176,7 +176,7 @@
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/projects') ? 'active' : '' %>" href="/projects"
                             data-bs-toggle="tooltip" data-bs-placement="bottom" title="项目管理">
-                                <i class="fas fa-map me-1"></i>
+                                <i class="fas fa-briefcase me-1"></i>
                                 项目
                             </a>
                         </li>
@@ -187,7 +187,7 @@
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/tasks') ? 'active' : '' %>" href="/tasks"
                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="任务">
-                                <i class="fas fa-beer me-1"></i>
+                                <i class="fas fa-tasks me-1"></i>
                                 任务
                             </a>
                         </li>
@@ -201,7 +201,7 @@
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/leaderboard') ? 'active' : '' %>" href="/leaderboard"
                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="榜单">
-                                <i class="fas fa-crown me-1"></i>
+                                <i class="fas fa-chart-bar me-1"></i>
                                 榜单
                             </a>
                         </li>
@@ -212,7 +212,7 @@
                         <li class="nav-item">
                             <a class="nav-link <%= currentUrl.startsWith('/organizations') ? 'active' : '' %>" href="/organizations"
                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="组织 - 组织管理">
-                                <i class="fas fa-shield-alt me-1"></i>
+                                <i class="fas fa-building me-1"></i>
                                 组织
                             </a>
                         </li>
