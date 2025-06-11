@@ -870,19 +870,21 @@
     background-color: #dc3545;
 }
 
-/* 今天线 */
-.gantt-today-line {
+/* 今天线 - 新的实现方式 */
+.today-line-marker {
     position: absolute;
-    top: 70px; /* 默认值，会被JavaScript动态调整 */
+    left: 50%;
+    top: 0;
     bottom: 0;
     width: 2px;
     background-color: #dc3545;
-    z-index: 100;
+    transform: translateX(-50%);
+    z-index: 10;
     pointer-events: none;
-    display: none; /* 默认隐藏，由JavaScript控制显示 */
 }
 
-.gantt-today-line::before {
+/* 在时间轴的今天格子中添加标签 */
+.gantt-timeline-day-cell.today .today-line-marker::before {
     content: '今天';
     position: absolute;
     top: -25px;
@@ -894,6 +896,18 @@
     font-size: 0.7rem;
     font-weight: 500;
     white-space: nowrap;
+}
+
+/* 保留原有的今天线样式用于兼容 */
+.gantt-today-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #dc3545;
+    z-index: 50;
+    pointer-events: none;
+    display: none;
 }
 
 /* 自定义甘特图样式以匹配界面风格 */
@@ -1037,6 +1051,9 @@ function initGanttChart() {
     // 甘特图数据
     const tasks = <%- JSON.stringify(ganttTasks) %>;
 
+    // 保存到全局变量供其他函数使用
+    window.ganttTasks = tasks;
+
     // 获取迭代数据
     window.sprints = <%- JSON.stringify(sprints || []) %>;
     console.log('迭代数据:', window.sprints);
@@ -1095,6 +1112,7 @@ function renderUnifiedGanttChart(tasks, viewMode = 'Day') {
     setGanttContainerWidth(dateRange, viewMode);
 
     // 渲染今天线
+    console.log('准备渲染今天线，dateRange:', dateRange);
     renderTodayLine(dateRange);
 
     // 初始化交互功能
@@ -1748,9 +1766,8 @@ function renderTaskBarNodes(nodes, dateRange, container, level) {
     });
 }
 
-// 渲染今天线
+// 渲染今天线 - 新的实现方式：直接在日期格子内添加线条
 function renderTodayLine(dateRange) {
-    const todayLine = document.getElementById('gantt-today-line');
     const today = new Date();
     const todayStr = today.toISOString().split('T')[0];
 
@@ -1764,113 +1781,201 @@ function renderTodayLine(dateRange) {
     console.log('今天的索引:', todayIndex, '总天数:', dateRange.totalDays);
 
     if (todayIndex >= 0) {
-        // 等待DOM渲染完成后再计算位置
+        // 等待DOM渲染完成后再添加今天线
         setTimeout(() => {
-            const timeline = document.getElementById('gantt-timeline');
-            const ganttContainer = document.getElementById('unified-gantt-container') || document.getElementById('gantt-container');
+            // 先清除之前的今天线
+            document.querySelectorAll('.today-line-marker').forEach(el => el.remove());
 
-            if (timeline && ganttContainer) {
-                // 根据视图模式选择不同的计算方式
-                if (currentViewMode === 'Week') {
-                    // 周视图：基于周单元格计算
-                    const weekRow = timeline.querySelector('.gantt-timeline-week-row');
-                    if (weekRow) {
-                        const weekCells = weekRow.querySelectorAll('.gantt-timeline-week-cell');
-                        const todayWeekCell = weekRow.querySelector('.gantt-timeline-week-cell.has-today');
+            // 在时间轴的今天格子中添加标记
+            addTodayLineToTimeline(todayIndex);
 
-                        if (todayWeekCell) {
-                            const cellRect = todayWeekCell.getBoundingClientRect();
-                            const containerRect = ganttContainer.getBoundingClientRect();
+            // 在每个任务行的今天格子中添加线条
+            addTodayLineToTaskRows(todayIndex);
 
-                            // 计算今天在这周中的位置
-                            const todayWeekNumber = getWeekNumber(today);
-                            const weekDates = dateRange.dates.filter(date => getWeekNumber(date) === todayWeekNumber);
-                            const todayIndexInWeek = weekDates.findIndex(date =>
-                                date.toISOString().split('T')[0] === todayStr
-                            );
-
-                            const cellWidth = cellRect.width;
-                            const dayWidth = cellWidth / weekDates.length;
-                            const position = cellRect.left - containerRect.left + (todayIndexInWeek * dayWidth) + (dayWidth / 2);
-
-                            todayLine.style.left = `${position}px`;
-                            todayLine.style.top = `${timeline.offsetHeight}px`;
-                            todayLine.style.display = 'block';
-
-                            console.log('周视图今天线位置:', {
-                                todayWeekNumber,
-                                todayIndexInWeek,
-                                weekDates: weekDates.length,
-                                position: position + 'px'
-                            });
-                        }
-                    }
-                } else if (currentViewMode === 'Month') {
-                    // 月视图：基于月单元格计算
-                    const monthRow = timeline.querySelector('.gantt-timeline-month-row');
-                    if (monthRow) {
-                        const monthCells = monthRow.querySelectorAll('.gantt-timeline-month-header.month-view');
-                        const todayMonthCell = monthRow.querySelector('.gantt-timeline-month-header.month-view.has-today');
-
-                        if (todayMonthCell) {
-                            const cellRect = todayMonthCell.getBoundingClientRect();
-                            const containerRect = ganttContainer.getBoundingClientRect();
-
-                            // 计算今天在这个月中的位置
-                            const todayMonth = today.getMonth();
-                            const todayYear = today.getFullYear();
-                            const monthDates = dateRange.dates.filter(date =>
-                                date.getMonth() === todayMonth && date.getFullYear() === todayYear
-                            );
-                            const todayIndexInMonth = monthDates.findIndex(date =>
-                                date.toISOString().split('T')[0] === todayStr
-                            );
-
-                            const cellWidth = cellRect.width;
-                            const dayWidth = cellWidth / monthDates.length;
-                            const position = cellRect.left - containerRect.left + (todayIndexInMonth * dayWidth) + (dayWidth / 2);
-
-                            todayLine.style.left = `${position}px`;
-                            todayLine.style.top = `${timeline.offsetHeight}px`;
-                            todayLine.style.display = 'block';
-
-                            console.log('月视图今天线位置:', {
-                                todayMonth: todayMonth + 1,
-                                todayIndexInMonth,
-                                monthDates: monthDates.length,
-                                position: position + 'px'
-                            });
-                        }
-                    }
-                } else {
-                    // 日视图：基于日期单元格计算
-                    const dayRow = timeline.querySelector('.gantt-timeline-day-row');
-                    if (dayRow) {
-                        const dayCells = dayRow.querySelectorAll('.gantt-timeline-day-cell');
-
-                        if (dayCells[todayIndex]) {
-                            const todayCell = dayCells[todayIndex];
-                            const cellRect = todayCell.getBoundingClientRect();
-                            const containerRect = ganttContainer.getBoundingClientRect();
-
-                            const position = cellRect.left - containerRect.left + (cellRect.width / 2);
-
-                            todayLine.style.left = `${position}px`;
-                            todayLine.style.top = `${timeline.offsetHeight}px`;
-                            todayLine.style.display = 'block';
-
-                            console.log('日视图今天线位置:', {
-                                todayIndex,
-                                position: position + 'px'
-                            });
-                        }
-                    }
-                }
-            }
-        }, 300); // 增加延迟确保DOM完全渲染
+        }, 300);
     } else {
-        todayLine.style.display = 'none';
+        // 清除今天线
+        document.querySelectorAll('.today-line-marker').forEach(el => el.remove());
         console.log('今天不在当前日期范围内');
+    }
+}
+
+// 在时间轴的今天格子中添加标记
+function addTodayLineToTimeline(todayIndex) {
+    const timeline = document.getElementById('gantt-timeline');
+    if (!timeline) return;
+
+    if (currentViewMode === 'Day') {
+        // 日视图：在日期单元格中添加标记
+        const dayRow = timeline.querySelector('.gantt-timeline-day-row');
+        if (dayRow) {
+            const dayCells = dayRow.querySelectorAll('.gantt-timeline-day-cell');
+            if (dayCells[todayIndex]) {
+                const todayCell = dayCells[todayIndex];
+
+                // 创建今天线标记
+                const todayMarker = document.createElement('div');
+                todayMarker.className = 'today-line-marker';
+                todayMarker.style.cssText = `
+                    position: absolute;
+                    left: 50%;
+                    top: 0;
+                    bottom: 0;
+                    width: 2px;
+                    background-color: #dc3545;
+                    transform: translateX(-50%);
+                    z-index: 10;
+                    pointer-events: none;
+                `;
+
+                // 确保单元格有相对定位
+                todayCell.style.position = 'relative';
+                todayCell.appendChild(todayMarker);
+
+                console.log('在时间轴日期格子中添加了今天线');
+            }
+        }
+    }
+}
+
+// 在每个任务行的今天格子中添加线条
+function addTodayLineToTaskRows(todayIndex) {
+    // 获取所有甘特图行
+    const ganttRows = document.querySelectorAll('.unified-gantt-row');
+
+    ganttRows.forEach(row => {
+        const ganttBarsSection = row.querySelector('.gantt-bars-section');
+        if (ganttBarsSection) {
+            const cells = ganttBarsSection.querySelectorAll('.gantt-cell');
+            if (cells[todayIndex]) {
+                const todayCell = cells[todayIndex];
+
+                // 创建今天线
+                const todayLine = document.createElement('div');
+                todayLine.className = 'today-line-marker';
+                todayLine.style.cssText = `
+                    position: absolute;
+                    left: 50%;
+                    top: 0;
+                    bottom: 0;
+                    width: 2px;
+                    background-color: #dc3545;
+                    transform: translateX(-50%);
+                    z-index: 5;
+                    pointer-events: none;
+                `;
+
+                // 确保单元格有相对定位
+                todayCell.style.position = 'relative';
+                todayCell.appendChild(todayLine);
+            }
+        }
+    });
+
+    console.log(`在 ${ganttRows.length} 个任务行中添加了今天线`);
+}
+
+// 滚动到今天的位置
+function scrollToToday() {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
+    console.log('滚动到今天:', todayStr);
+
+    // 获取甘特图主容器
+    const ganttContainer = document.getElementById('unified-gantt-container');
+    const ganttBodyContainer = document.querySelector('.unified-gantt-body-container');
+
+    if (!ganttContainer) {
+        console.warn('未找到甘特图容器');
+        return;
+    }
+
+    // 获取当前任务数据来计算日期范围
+    const tasks = window.ganttTasks || [];
+    if (tasks.length === 0) {
+        console.warn('没有任务数据');
+        return;
+    }
+
+    const dateRange = calculateDateRange(tasks, currentViewMode);
+    const todayIndex = dateRange.dates.findIndex(date =>
+        date.toISOString().split('T')[0] === todayStr
+    );
+
+    console.log('今天的索引:', todayIndex, '总天数:', dateRange.totalDays);
+
+    if (todayIndex >= 0) {
+        let scrollLeft = 0;
+
+        if (currentViewMode === 'Day') {
+            // 日视图：使用固定宽度计算（每天70px）
+            const dayWidth = 70;
+            const leftPanelWidth = 400; // 左侧任务列表宽度
+
+            // 计算今天的位置，减去左侧面板宽度
+            const todayPosition = todayIndex * dayWidth;
+
+            // 滚动到今天的位置，让今天居中显示
+            const containerWidth = ganttContainer.clientWidth;
+            const centerOffset = (containerWidth - leftPanelWidth) / 2;
+            scrollLeft = todayPosition - centerOffset;
+
+            console.log('日视图滚动计算:', {
+                todayIndex,
+                dayWidth,
+                todayPosition,
+                containerWidth,
+                centerOffset,
+                scrollLeft
+            });
+
+        } else if (currentViewMode === 'Week' || currentViewMode === 'Month') {
+            // 周视图和月视图：基于百分比计算
+            const ganttBarsSection = document.querySelector('.gantt-bars-section');
+            if (ganttBarsSection) {
+                const totalWidth = ganttBarsSection.scrollWidth;
+                const todayPosition = (todayIndex / dateRange.totalDays) * totalWidth;
+
+                const containerWidth = ganttContainer.clientWidth;
+                const leftPanelWidth = 400;
+                const centerOffset = (containerWidth - leftPanelWidth) / 2;
+                scrollLeft = todayPosition - centerOffset;
+
+                console.log('周/月视图滚动计算:', {
+                    todayIndex,
+                    totalDays: dateRange.totalDays,
+                    totalWidth,
+                    todayPosition,
+                    scrollLeft
+                });
+            }
+        }
+
+        // 确保滚动位置不为负数
+        scrollLeft = Math.max(0, scrollLeft);
+
+        // 滚动甘特图主体容器
+        if (ganttBodyContainer) {
+            ganttBodyContainer.scrollTo({
+                left: scrollLeft,
+                behavior: 'smooth'
+            });
+            console.log('滚动甘特图主体容器到位置:', scrollLeft);
+        } else {
+            // 备用方案：滚动整个甘特图容器
+            ganttContainer.scrollTo({
+                left: scrollLeft,
+                behavior: 'smooth'
+            });
+            console.log('滚动整个甘特图容器到位置:', scrollLeft);
+        }
+
+    } else {
+        console.warn('今天不在当前日期范围内');
+
+        // 如果今天不在范围内，提示用户
+        alert('今天不在当前甘特图的日期范围内。请调整任务的日期范围或切换到包含今天的视图。');
     }
 }
 
@@ -1938,11 +2043,7 @@ function bindEventListeners() {
 
     // 今天按钮
     document.getElementById('todayBtn').addEventListener('click', function() {
-        // 滚动到今天线的位置
-        const todayLine = document.getElementById('gantt-today-line');
-        if (todayLine && todayLine.style.display !== 'none') {
-            todayLine.scrollIntoView({ behavior: 'smooth', inline: 'center' });
-        }
+        scrollToToday();
     });
 
     // 初始化下拉菜单定位修复
