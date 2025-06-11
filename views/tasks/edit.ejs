@@ -59,8 +59,46 @@ const getValue = (field, defaultValue = '') => {
                         <div class="row">
                             <div class="col-12 mb-3">
                                 <label for="description" class="form-label">任务描述 <span class="text-danger">*</span></label>
-                                <textarea class="form-control" id="description" name="description" rows="4" required><%= getValue('description') %></textarea>
+                                <div class="rich-editor">
+                                    <div class="rich-editor-toolbar">
+                                        <button type="button" class="rich-editor-btn" data-command="bold" title="粗体">
+                                            <i class="fas fa-bold"></i>
+                                        </button>
+                                        <button type="button" class="rich-editor-btn" data-command="italic" title="斜体">
+                                            <i class="fas fa-italic"></i>
+                                        </button>
+                                        <button type="button" class="rich-editor-btn" data-command="underline" title="下划线">
+                                            <i class="fas fa-underline"></i>
+                                        </button>
+                                        <span class="rich-editor-separator"></span>
+                                        <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="无序列表">
+                                            <i class="fas fa-list-ul"></i>
+                                        </button>
+                                        <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="有序列表">
+                                            <i class="fas fa-list-ol"></i>
+                                        </button>
+                                        <span class="rich-editor-separator"></span>
+                                        <button type="button" class="rich-editor-btn" data-command="createLink" title="插入链接">
+                                            <i class="fas fa-link"></i>
+                                        </button>
+                                        <button type="button" class="rich-editor-btn" id="insertImageBtn" title="插入图片">
+                                            <i class="fas fa-image"></i>
+                                        </button>
+                                        <span class="rich-editor-separator"></span>
+                                        <button type="button" class="rich-editor-btn" data-command="removeFormat" title="清除格式">
+                                            <i class="fas fa-remove-format"></i>
+                                        </button>
+                                    </div>
+                                    <div class="rich-editor-content" contenteditable="true" id="richEditor">
+                                        <%- getValue('description') %>
+                                    </div>
+                                </div>
+                                <textarea class="form-control d-none" id="description" name="description" required><%- getValue('description') %></textarea>
                                 <div class="invalid-feedback">请输入任务描述</div>
+                                <div class="form-text">支持富文本编辑，可插入图片、链接等内容</div>
+
+                                <!-- 图片上传隐藏表单 -->
+                                <input type="file" id="imageUpload" accept="image/*" style="display: none;">
                             </div>
                         </div>
 
@@ -548,6 +586,124 @@ const getValue = (field, defaultValue = '') => {
 <!-- 页面特定JavaScript - 必须在jQuery加载之后 -->
 <script>
 $(document).ready(function() {
+    // 初始化简单富文本编辑器
+    function initRichEditor() {
+        const editor = document.getElementById('richEditor');
+        const textarea = document.getElementById('description');
+        const toolbar = document.querySelector('.rich-editor-toolbar');
+        const imageUpload = document.getElementById('imageUpload');
+        const insertImageBtn = document.getElementById('insertImageBtn');
+
+        // 同步内容到隐藏的textarea
+        function syncContent() {
+            textarea.value = editor.innerHTML;
+        }
+
+        // 监听内容变化
+        editor.addEventListener('input', syncContent);
+        editor.addEventListener('paste', function(e) {
+            setTimeout(syncContent, 10); // 延迟同步，确保粘贴内容已处理
+        });
+
+        // 工具栏按钮事件
+        toolbar.addEventListener('click', function(e) {
+            if (e.target.classList.contains('rich-editor-btn') || e.target.parentElement.classList.contains('rich-editor-btn')) {
+                e.preventDefault();
+                const btn = e.target.classList.contains('rich-editor-btn') ? e.target : e.target.parentElement;
+                const command = btn.getAttribute('data-command');
+
+                if (command) {
+                    if (command === 'createLink') {
+                        const url = prompt('请输入链接地址:');
+                        if (url) {
+                            document.execCommand(command, false, url);
+                        }
+                    } else {
+                        document.execCommand(command, false, null);
+                    }
+
+                    // 更新按钮状态
+                    updateToolbarState();
+                    syncContent();
+                }
+            }
+        });
+
+        // 插入图片按钮
+        insertImageBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            imageUpload.click();
+        });
+
+        // 图片上传处理
+        imageUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('taskImage', file);
+
+                fetch('/tasks/upload-image', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        // 插入图片到编辑器
+                        const img = document.createElement('img');
+                        img.src = result.location;
+                        img.style.maxWidth = '100%';
+                        img.style.height = 'auto';
+
+                        // 获取当前选择或光标位置
+                        const selection = window.getSelection();
+                        if (selection.rangeCount > 0) {
+                            const range = selection.getRangeAt(0);
+                            range.insertNode(img);
+                            range.collapse(false);
+                        } else {
+                            editor.appendChild(img);
+                        }
+
+                        syncContent();
+                    } else {
+                        alert('图片上传失败: ' + (result.error || '未知错误'));
+                    }
+                })
+                .catch(error => {
+                    console.error('图片上传错误:', error);
+                    alert('图片上传失败');
+                });
+
+                // 清空文件输入
+                imageUpload.value = '';
+            }
+        });
+
+        // 更新工具栏按钮状态
+        function updateToolbarState() {
+            const buttons = toolbar.querySelectorAll('.rich-editor-btn[data-command]');
+            buttons.forEach(btn => {
+                const command = btn.getAttribute('data-command');
+                if (document.queryCommandState(command)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // 监听选择变化以更新工具栏状态
+        editor.addEventListener('mouseup', updateToolbarState);
+        editor.addEventListener('keyup', updateToolbarState);
+
+        // 初始同步
+        syncContent();
+    }
+
+    // 初始化富文本编辑器
+    initRichEditor();
+
     <% if (!task) { %>
     // 设置默认日期为当天（仅创建模式）
     const today = new Date().toISOString().split('T')[0];
@@ -579,6 +735,13 @@ $(document).ready(function() {
 
     // 表单验证
     $('form').on('submit', function(e) {
+        // 确保富文本编辑器内容同步到textarea
+        const editor = document.getElementById('richEditor');
+        const textarea = document.getElementById('description');
+        if (editor && textarea) {
+            textarea.value = editor.innerHTML;
+        }
+
         const form = this;
         if (!form.checkValidity()) {
             e.preventDefault();

@@ -39,6 +39,54 @@
     <!-- jQuery -->
     <script src="/js/jquery-3.7.0.min.js"></script>
 
+    <!-- 简单富文本编辑器样式 -->
+    <style>
+        .rich-editor {
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            background: white;
+        }
+        .rich-editor-toolbar {
+            border-bottom: 1px solid #ced4da;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 0.375rem 0.375rem 0 0;
+        }
+        .rich-editor-content {
+            min-height: 200px;
+            padding: 12px;
+            outline: none;
+            border-radius: 0 0 0.375rem 0.375rem;
+        }
+        .rich-editor-content:focus {
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .rich-editor-btn {
+            border: none;
+            background: none;
+            padding: 4px 8px;
+            margin: 0 2px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .rich-editor-btn:hover {
+            background: #e9ecef;
+        }
+        .rich-editor-btn.active {
+            background: #007bff;
+            color: white;
+        }
+        .rich-editor-separator {
+            display: inline-block;
+            width: 1px;
+            height: 20px;
+            background: #dee2e6;
+            margin: 0 4px;
+            vertical-align: middle;
+        }
+    </style>
+
     <!-- 自定义JS -->
     <script src="/js/main.js"></script>
 

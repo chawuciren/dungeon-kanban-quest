@@ -124,7 +124,7 @@
                                         <!-- 任务描述 -->
                                         <% if (task.description) { %>
                                             <p class="card-text text-muted small mb-2">
-                                                <%= task.description.length > 60 ?
+                                                <%- task.description.length > 60 ?
                                                     task.description.substring(0, 60) + '...' :
                                                     task.description %>
                                             </p>

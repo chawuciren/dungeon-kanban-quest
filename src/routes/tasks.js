@@ -5,6 +5,7 @@ const { Op } = require('sequelize');
 const logger = require('../config/logger');
 const { requireProjectSelection, validateProjectAccess } = require('../middleware/projectSelection');
 const { getUserSettings, applyUserSettingsToQuery, getPaginationParams, getGanttParams } = require('../utils/userSettings');
+const { handleTaskImageUpload } = require('../middleware/upload');
 
 // 认证中间件
 const requireAuth = (req, res, next) => {
@@ -1074,7 +1075,7 @@ router.get('/:id', async (req, res) => {
         {
           model: BountyTask,
           as: 'parentTask',
-          attributes: ['id', 'title']
+          attributes: ['id', 'title', 'status']
         }
       ]
     });
@@ -1086,6 +1087,27 @@ router.get('/:id', async (req, res) => {
 
     // 获取子任务
     const subtasks = await getSubtasks(task.id, 2);
+
+    // 获取同级任务（如果有父任务）
+    let siblingTasks = [];
+    if (task.parentTaskId) {
+      siblingTasks = await BountyTask.findAll({
+        where: {
+          parentTaskId: task.parentTaskId,
+          id: { [Op.ne]: task.id } // 排除当前任务
+        },
+        include: [
+          {
+            model: User,
+            as: 'assignee',
+            attributes: ['id', 'username', 'firstName', 'lastName']
+          }
+        ],
+        attributes: ['id', 'title', 'status', 'starLevel'],
+        order: [['createdAt', 'ASC']],
+        limit: 10 // 限制显示数量
+      });
+    }
 
     // 获取协助人员信息
     let assistants = [];
@@ -1107,6 +1129,7 @@ router.get('/:id', async (req, res) => {
       title: task.title,
       task,
       subtasks,
+      siblingTasks,
       assistants,
       canBid
     });
@@ -2280,6 +2303,27 @@ router.post('/:id/unarchive', requireAuth, async (req, res) => {
 
     req.flash('error', '取消归档任务失败');
     res.redirect('/tasks');
+  }
+});
+
+// 任务图片上传接口
+router.post('/upload-image', requireAuth, handleTaskImageUpload, async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: '没有上传文件' });
+    }
+
+    // 返回图片URL
+    const imageUrl = `/uploads/task-images/${req.file.filename}`;
+
+    res.json({
+      success: true,
+      location: imageUrl // TinyMCE需要location字段
+    });
+
+  } catch (error) {
+    logger.error('任务图片上传失败:', error);
+    res.status(500).json({ error: '图片上传失败' });
   }
 });
 

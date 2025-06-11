@@ -42,7 +42,19 @@ const currentStatus = statusConfig[task.status] || statusConfig['draft'];
 
                     <!-- 任务标题 -->
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h2 class="mb-0"><%= task.title %></h2>
+                        <h2 class="mb-0">
+                            <span class="me-2">
+                                <%= task.taskType === 'requirement' ? '📋' :
+                                    task.taskType === 'epic' ? '🏰' :
+                                    task.taskType === 'story' ? '📖' :
+                                    task.taskType === 'dev_task' ? '⚔️' :
+                                    task.taskType === 'design_task' ? '🎨' :
+                                    task.taskType === 'test_task' ? '🏹' :
+                                    task.taskType === 'devops_task' ? '⚙️' :
+                                    task.taskType === 'bug' ? '🐛' : '📝' %>
+                            </span>
+                            <%= task.title %>
+                        </h2>
                         <div class="task-actions">
                             <!-- 接单按钮 -->
                             <% if (canBid) { %>
@@ -145,46 +157,155 @@ const currentStatus = statusConfig[task.status] || statusConfig['draft'];
                     <!-- 任务描述 -->
                     <div class="mb-4">
                         <h5>任务描述</h5>
-                        <div class="border rounded p-3 bg-light">
-                            <%= task.description %>
+                        <div class="border rounded p-3 bg-light rich-text-content">
+                            <%- task.description %>
                         </div>
                     </div>
 
-                    <!-- 子任务列表 -->
-                    <% if (subtasks && subtasks.length > 0) { %>
+                    <!-- 任务关系 -->
+                    <% if (task.parentTask || (subtasks && subtasks.length > 0) || (siblingTasks && siblingTasks.length > 0)) { %>
                         <div class="mb-4">
-                            <h5>子任务 (<%= subtasks.length %>)</h5>
-                            <div class="list-group">
-                                <% subtasks.forEach(subtask => { %>
-                                    <a href="/tasks/<%= subtask.id %>" class="list-group-item list-group-item-action">
+                            <h5><i class="fas fa-sitemap me-2"></i>任务关系</h5>
+
+                            <!-- 父任务信息 -->
+                            <% if (task.parentTask) { %>
+                                <div class="card mb-3">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-level-up-alt me-2"></i>父任务
+                                        </h6>
+                                    </div>
+                                    <div class="card-body py-2">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div>
-                                                <h6 class="mb-1"><%= subtask.title %></h6>
-                                                <small class="text-muted">
-                                                    <%= '⭐'.repeat(subtask.starLevel) %>
-                                                </small>
+                                                <a href="/tasks/<%= task.parentTask.id %>" class="text-decoration-none">
+                                                    <strong><%= task.parentTask.title %></strong>
+                                                </a>
+                                                <% if (task.parentTask.status) { %>
+                                                    <%
+                                                    const parentStatus = statusConfig[task.parentTask.status] || statusConfig['draft'];
+                                                    %>
+                                                    <span class="badge bg-<%= parentStatus.class %> ms-2">
+                                                        <%= parentStatus.text %>
+                                                    </span>
+                                                <% } %>
                                             </div>
-                                            <div class="text-end">
-                                                <%
-                                                const subtaskStatus = statusConfig[subtask.status] || statusConfig['draft'];
-                                                %>
-                                                <span class="badge bg-<%= subtaskStatus.class %>">
-                                                    <%= subtaskStatus.text %>
-                                                </span>
-                                                <div class="mt-1">
-                                                    <small class="text-muted">
-                                                        <% if (subtask.rewardCurrency === 'diamond') { %>💎
-                                                        <% } else if (subtask.rewardCurrency === 'gold') { %>🥇
-                                                        <% } else if (subtask.rewardCurrency === 'silver') { %>🥈
-                                                        <% } else { %>🥉<% } %>
-                                                        <%= subtask.totalBudget %>
-                                                    </small>
-                                                </div>
-                                            </div>
+                                            <a href="/tasks/<%= task.parentTask.id %>" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-external-link-alt me-1"></i>查看
+                                            </a>
                                         </div>
-                                    </a>
-                                <% }) %>
-                            </div>
+                                    </div>
+                                </div>
+                            <% } %>
+
+                            <!-- 同级任务 -->
+                            <% if (siblingTasks && siblingTasks.length > 0) { %>
+                                <div class="card mb-3">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-equals me-2"></i>同级任务 (<%= siblingTasks.length %>)
+                                        </h6>
+                                    </div>
+                                    <div class="card-body py-2">
+                                        <div class="row g-2">
+                                            <% siblingTasks.forEach(sibling => { %>
+                                                <div class="col-12">
+                                                    <div class="d-flex justify-content-between align-items-center py-1">
+                                                        <div>
+                                                            <a href="/tasks/<%= sibling.id %>" class="text-decoration-none">
+                                                                <%= sibling.title %>
+                                                            </a>
+                                                            <%
+                                                            const siblingStatus = statusConfig[sibling.status] || statusConfig['draft'];
+                                                            %>
+                                                            <span class="badge bg-<%= siblingStatus.class %> ms-2">
+                                                                <%= siblingStatus.text %>
+                                                            </span>
+                                                        </div>
+                                                        <small class="text-muted">
+                                                            <%= '⭐'.repeat(sibling.starLevel) %>
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            <% }) %>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } %>
+
+                            <!-- 子任务概览 -->
+                            <% if (subtasks && subtasks.length > 0) { %>
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-level-down-alt me-2"></i>子任务 (<%= subtasks.length %>)
+                                            </h6>
+                                            <% if (task.level < 3) { %>
+                                                <a href="/tasks/create?parent=<%= task.id %>" class="btn btn-outline-success btn-sm">
+                                                    <i class="fas fa-plus me-1"></i>添加子任务
+                                                </a>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                    <div class="card-body py-2">
+                                        <!-- 子任务状态统计 -->
+                                        <%
+                                        const subtaskStats = {};
+                                        subtasks.forEach(subtask => {
+                                            const status = subtask.status || 'draft';
+                                            subtaskStats[status] = (subtaskStats[status] || 0) + 1;
+                                        });
+                                        %>
+                                        <div class="row g-2 mb-3">
+                                            <% Object.keys(subtaskStats).forEach(status => { %>
+                                                <%
+                                                const statusInfo = statusConfig[status] || statusConfig['draft'];
+                                                %>
+                                                <div class="col-auto">
+                                                    <span class="badge bg-<%= statusInfo.class %>">
+                                                        <%= statusInfo.text %>: <%= subtaskStats[status] %>
+                                                    </span>
+                                                </div>
+                                            <% }) %>
+                                        </div>
+
+                                        <!-- 子任务列表 -->
+                                        <div class="list-group list-group-flush">
+                                            <% subtasks.forEach(subtask => { %>
+                                                <div class="list-group-item px-0 py-2">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div class="flex-grow-1">
+                                                            <a href="/tasks/<%= subtask.id %>" class="text-decoration-none">
+                                                                <strong><%= subtask.title %></strong>
+                                                            </a>
+                                                            <div class="mt-1">
+                                                                <small class="text-muted">
+                                                                    <%= '⭐'.repeat(subtask.starLevel) %>
+                                                                    <% if (subtask.assignee) { %>
+                                                                        | 负责人: <%= subtask.assignee.firstName %> <%= subtask.assignee.lastName %>
+                                                                    <% } %>
+                                                                    <% if (subtask.dueDate) { %>
+                                                                        | 截止: <%= new Date(subtask.dueDate).toLocaleDateString('zh-CN') %>
+                                                                    <% } %>
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="text-end">
+                                                            <%
+                                                            const subtaskStatus = statusConfig[subtask.status] || statusConfig['draft'];
+                                                            %>
+                                                            <span class="badge bg-<%= subtaskStatus.class %>">
+                                                                <%= subtaskStatus.text %>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <% }) %>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } %>
                         </div>
                     <% } %>
                 </div>
@@ -248,6 +369,30 @@ const currentStatus = statusConfig[task.status] || statusConfig['draft'];
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
+                        <div class="col-12">
+                            <strong>任务类型：</strong>
+                            <span class="ms-2">
+                                <span class="badge bg-<%=
+                                    task.taskType === 'requirement' ? 'info' :
+                                    task.taskType === 'epic' ? 'purple' :
+                                    task.taskType === 'story' ? 'primary' :
+                                    task.taskType === 'dev_task' ? 'primary' :
+                                    task.taskType === 'design_task' ? 'success' :
+                                    task.taskType === 'test_task' ? 'warning' :
+                                    task.taskType === 'devops_task' ? 'dark' :
+                                    task.taskType === 'bug' ? 'danger' : 'secondary'
+                                %>">
+                                    <%= task.taskType === 'requirement' ? '📋 需求' :
+                                        task.taskType === 'epic' ? '🏰 史诗' :
+                                        task.taskType === 'story' ? '📖 用户故事' :
+                                        task.taskType === 'dev_task' ? '⚔️ 开发任务' :
+                                        task.taskType === 'design_task' ? '🎨 设计任务' :
+                                        task.taskType === 'test_task' ? '🏹 测试任务' :
+                                        task.taskType === 'devops_task' ? '⚙️ 运维任务' :
+                                        task.taskType === 'bug' ? '🐛 缺陷' : '📝 通用任务' %>
+                                </span>
+                            </span>
+                        </div>
                         <div class="col-12">
                             <strong>发布者：</strong>
                             <span class="ms-2"><%= task.publisher.firstName %> <%= task.publisher.lastName %></span>
@@ -434,5 +579,68 @@ function updateTaskStatus(newStatus, message) {
     });
 }
 </script>
+
+<style>
+/* 富文本内容样式 */
+.rich-text-content {
+    line-height: 1.6;
+}
+
+.rich-text-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.rich-text-content p {
+    margin-bottom: 1rem;
+}
+
+.rich-text-content ul, .rich-text-content ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+}
+
+.rich-text-content blockquote {
+    border-left: 4px solid #007bff;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: #6c757d;
+}
+
+.rich-text-content code {
+    background-color: #f8f9fa;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+}
+
+.rich-text-content pre {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.rich-text-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.rich-text-content table th,
+.rich-text-content table td {
+    border: 1px solid #dee2e6;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.rich-text-content table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+</style>
 
 <%- include('../partials/footer') %>
