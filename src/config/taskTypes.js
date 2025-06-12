@@ -46,7 +46,7 @@ const taskTypeConfig = {
     description: '代码开发、功能实现相关任务',
     level: 3,
     canHaveChildren: ['bug'],
-    allowedRoles: ['admin', 'product_manager', 'developer'],
+    allowedRoles: ['admin', 'product_manager', 'developer', 'ui_designer', 'devops'],
     defaultAssigneeRole: 'developer'
   },
 
@@ -58,7 +58,7 @@ const taskTypeConfig = {
     description: 'UI/UX设计、原型设计相关任务',
     level: 3,
     canHaveChildren: ['bug'],
-    allowedRoles: ['admin', 'product_manager', 'ui_designer'],
+    allowedRoles: ['admin', 'product_manager', 'ui_designer', 'developer', 'devops'],
     defaultAssigneeRole: 'ui_designer'
   },
 
@@ -70,7 +70,7 @@ const taskTypeConfig = {
     description: '测试用例编写、功能测试相关任务',
     level: 3,
     canHaveChildren: ['bug'],
-    allowedRoles: ['admin', 'product_manager', 'tester'],
+    allowedRoles: ['admin', 'product_manager', 'tester', 'developer', 'ui_designer', 'devops'],
     defaultAssigneeRole: 'tester'
   },
 
@@ -82,7 +82,7 @@ const taskTypeConfig = {
     description: '部署、监控、运维相关任务',
     level: 3,
     canHaveChildren: ['bug'],
-    allowedRoles: ['admin', 'product_manager', 'devops'],
+    allowedRoles: ['admin', 'product_manager', 'devops', 'developer', 'ui_designer'],
     defaultAssigneeRole: 'devops'
   },
 
@@ -106,7 +106,7 @@ const taskTypeConfig = {
     description: '系统缺陷、问题修复',
     level: 'flexible', // 灵活层级，取决于父任务
     canHaveChildren: [],
-    allowedRoles: ['admin', 'product_manager', 'tester'],
+    allowedRoles: ['admin', 'product_manager', 'tester', 'developer', 'ui_designer', 'devops'],
     defaultAssigneeRole: 'developer',
     canBeChildOf: ['epic', 'story', 'requirement', 'dev_task', 'design_task', 'test_task', 'devops_task', 'task']
   }

@@ -143,31 +143,31 @@ const getValue = (field, defaultValue = '') => {
                                         <option value="requirement" <%= getValue('taskType', !task ? defaultTaskType : '') === 'requirement' ? 'selected' : '' %>>📋 需求</option>
                                     <% } %>
 
-                                    <!-- 开发任务 - 管理员、产品经理、开发者可创建 -->
-                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'developer')) { %>
+                                    <!-- 开发任务 - 管理员、产品经理、开发者、UI设计师、运维工程师可创建 -->
+                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'developer' || user.role === 'ui_designer' || user.role === 'devops')) { %>
                                         <option value="dev_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'dev_task' ? 'selected' : '' %>>⚔️ 开发任务</option>
                                     <% } %>
 
-                                    <!-- 设计任务 - 管理员、产品经理、UI设计师可创建 -->
-                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'ui_designer')) { %>
+                                    <!-- 设计任务 - 管理员、产品经理、UI设计师、开发者、运维工程师可创建 -->
+                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'ui_designer' || user.role === 'developer' || user.role === 'devops')) { %>
                                         <option value="design_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'design_task' ? 'selected' : '' %>>🎨 设计任务</option>
                                     <% } %>
 
-                                    <!-- 测试任务 - 管理员、产品经理、测试员可创建 -->
-                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'tester')) { %>
+                                    <!-- 测试任务 - 管理员、产品经理、测试员、开发者、UI设计师、运维工程师可创建 -->
+                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'tester' || user.role === 'developer' || user.role === 'ui_designer' || user.role === 'devops')) { %>
                                         <option value="test_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'test_task' ? 'selected' : '' %>>🏹 测试任务</option>
                                     <% } %>
 
-                                    <!-- 运维任务 - 管理员、产品经理、运维工程师可创建 -->
-                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'devops')) { %>
+                                    <!-- 运维任务 - 管理员、产品经理、运维工程师、开发者、UI设计师可创建 -->
+                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'devops' || user.role === 'developer' || user.role === 'ui_designer')) { %>
                                         <option value="devops_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'devops_task' ? 'selected' : '' %>>⚙️ 运维任务</option>
                                     <% } %>
 
                                     <!-- 通用任务 - 所有角色都可创建 -->
                                     <option value="task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'task' ? 'selected' : '' %>>📝 通用任务</option>
 
-                                    <!-- Bug - 管理员、产品经理、测试员可创建 -->
-                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'tester')) { %>
+                                    <!-- Bug - 管理员、产品经理、测试员、开发者、UI设计师、运维工程师可创建 -->
+                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'tester' || user.role === 'developer' || user.role === 'ui_designer' || user.role === 'devops')) { %>
                                         <option value="bug" <%= getValue('taskType', !task ? defaultTaskType : '') === 'bug' ? 'selected' : '' %>>🐛 缺陷</option>
                                     <% } %>
                                 </select>
