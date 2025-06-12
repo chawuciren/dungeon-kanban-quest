@@ -1722,12 +1722,27 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       isArchived: isArchived === 'true' || isArchived === true
     };
 
-    // 根据状态变更自动设置时间字段
+    // 根据状态变更自动设置时间字段和进度
     if (oldStatus !== newStatus) {
       if (newStatus === 'in_progress' && !task.startDate && !startDate) {
         updateData.startDate = new Date();
       } else if (newStatus === 'completed' && !task.completedAt) {
         updateData.completedAt = new Date();
+      }
+
+      // 根据状态自动设置进度百分比
+      const statusProgressMap = {
+        'draft': 0,
+        'published': 0,
+        'in_progress': updateData.progress || task.progress || 50, // 保持当前进度或默认50%
+        'review': 90,
+        'completed': 100,
+        'cancelled': updateData.progress || task.progress || 0 // 保持当前进度
+      };
+
+      // 只有在用户没有手动设置进度时才自动设置
+      if (progress === undefined) {
+        updateData.progress = statusProgressMap[newStatus] || task.progress || 0;
       }
     }
 
@@ -1969,7 +1984,7 @@ router.post('/:id/quick-update', requireAuth, requireProjectSelection, validateP
     }
 
     // 验证字段和值
-    const allowedFields = ['status', 'assigneeId', 'urgencyLevel', 'sprintId'];
+    const allowedFields = ['status', 'assigneeId', 'urgencyLevel', 'sprintId', 'progress'];
     if (!allowedFields.includes(field)) {
       return res.status(400).json({
         success: false,
@@ -2009,8 +2024,45 @@ router.post('/:id/quick-update', requireAuth, requireProjectSelection, validateP
     // 保存旧值用于活动记录
     const oldValue = task[field];
 
+    // 准备更新数据
+    let updateData = { [field]: value || null };
+
+    // 如果是状态字段更新，同时更新相关字段
+    if (field === 'status' && oldValue !== value) {
+      // 根据状态变更自动设置时间字段和进度
+      if (value === 'in_progress' && !task.startDate) {
+        updateData.startDate = new Date();
+      } else if (value === 'completed' && !task.completedAt) {
+        updateData.completedAt = new Date();
+      }
+
+      // 根据状态自动设置进度百分比
+      const statusProgressMap = {
+        'draft': 0,
+        'published': 0,
+        'in_progress': task.progress || 50, // 保持当前进度或默认50%
+        'review': 90,
+        'completed': 100,
+        'cancelled': task.progress || 0 // 保持当前进度
+      };
+
+      updateData.progress = statusProgressMap[value] || task.progress || 0;
+    }
+
+    // 如果是进度字段，验证范围
+    if (field === 'progress') {
+      const progressValue = parseInt(value);
+      if (isNaN(progressValue) || progressValue < 0 || progressValue > 100) {
+        return res.status(400).json({
+          success: false,
+          message: '进度值必须在0-100之间'
+        });
+      }
+      updateData.progress = progressValue;
+    }
+
     // 更新字段
-    await task.update({ [field]: value || null });
+    await task.update(updateData);
 
     // 记录活动
     const ActivityLogger = require('../utils/activityLogger');
@@ -2123,13 +2175,25 @@ router.post('/:id/status', requireAuth, async (req, res) => {
     const oldStatus = task.status;
     let updateData = { status };
 
-    // 根据状态变更自动设置时间字段
+    // 根据状态变更自动设置时间字段和进度
     if (oldStatus !== status) {
       if (status === 'in_progress' && !task.startDate) {
         updateData.startDate = new Date();
       } else if (status === 'completed' && !task.completedAt) {
         updateData.completedAt = new Date();
       }
+
+      // 根据状态自动设置进度百分比
+      const statusProgressMap = {
+        'draft': 0,
+        'published': 0,
+        'in_progress': task.progress || 50, // 保持当前进度或默认50%
+        'review': 90,
+        'completed': 100,
+        'cancelled': task.progress || 0 // 保持当前进度
+      };
+
+      updateData.progress = statusProgressMap[status] || task.progress || 0;
     }
 
     await task.update(updateData);
@@ -2246,7 +2310,8 @@ router.post('/:id/start', requireAuth, async (req, res) => {
 
     await task.update({
       status: 'in_progress',
-      startDate: task.startDate || new Date()
+      startDate: task.startDate || new Date(),
+      progress: task.progress || 50  // 如果当前进度为0，则设为50%
     });
 
     req.flash('success', '任务已开始！');
@@ -2287,7 +2352,8 @@ router.post('/:id/complete', requireAuth, async (req, res) => {
 
     let updateData = {
       status: task.reviewerId ? 'review' : 'completed',
-      completedAt: new Date()
+      completedAt: new Date(),
+      progress: task.reviewerId ? 90 : 100  // 如果有审核人则设为90%，否则设为100%
     };
 
     if (actualHours) {
