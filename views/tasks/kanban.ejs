@@ -78,6 +78,14 @@
                                                     else if (task.reviewerId === user.id) {
                                                         canEdit = true;
                                                     }
+                                                    // 项目所有者
+                                                    else if (task.project && task.project.ownerId === user.id) {
+                                                        canEdit = true;
+                                                    }
+                                                    // 项目负责人
+                                                    else if (task.project && task.project.leaderId === user.id) {
+                                                        canEdit = true;
+                                                    }
                                                 }
                                             %>
                                             <% if (canEdit) { %>

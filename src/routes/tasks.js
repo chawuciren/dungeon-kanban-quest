@@ -246,7 +246,7 @@ router.get('/list', requireProjectSelection, validateProjectAccess, async (req, 
           {
             model: Project,
             as: 'project',
-            attributes: ['id', 'name', 'key'],
+            attributes: ['id', 'name', 'key', 'ownerId', 'leaderId'],
             include: [
               {
                 model: User,
@@ -303,7 +303,7 @@ router.get('/list', requireProjectSelection, validateProjectAccess, async (req, 
           {
             model: Project,
             as: 'project',
-            attributes: ['id', 'name', 'key'],
+            attributes: ['id', 'name', 'key', 'ownerId', 'leaderId'],
             include: [
               {
                 model: User,
@@ -429,7 +429,7 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
           {
             model: Project,
             as: 'project',
-            attributes: ['id', 'name', 'key'],
+            attributes: ['id', 'name', 'key', 'ownerId', 'leaderId'],
             include: [
               {
                 model: User,
@@ -486,7 +486,7 @@ router.get('/tree', requireProjectSelection, validateProjectAccess, async (req, 
           {
             model: Project,
             as: 'project',
-            attributes: ['id', 'name', 'key'],
+            attributes: ['id', 'name', 'key', 'ownerId', 'leaderId'],
             include: [
               {
                 model: User,
@@ -609,7 +609,7 @@ router.get('/kanban', requireProjectSelection, validateProjectAccess, async (req
           {
             model: Project,
             as: 'project',
-            attributes: ['id', 'name', 'key']
+            attributes: ['id', 'name', 'key', 'ownerId', 'leaderId']
           }
         ]
       });
@@ -646,7 +646,7 @@ router.get('/kanban', requireProjectSelection, validateProjectAccess, async (req
           {
             model: Project,
             as: 'project',
-            attributes: ['id', 'name', 'key']
+            attributes: ['id', 'name', 'key', 'ownerId', 'leaderId']
           }
         ],
         order
@@ -741,7 +741,7 @@ router.get('/gantt', requireProjectSelection, validateProjectAccess, async (req,
           {
             model: Project,
             as: 'project',
-            attributes: ['id', 'name', 'key'],
+            attributes: ['id', 'name', 'key', 'ownerId', 'leaderId'],
             include: [
               {
                 model: User,
@@ -795,7 +795,7 @@ router.get('/gantt', requireProjectSelection, validateProjectAccess, async (req,
           {
             model: Project,
             as: 'project',
-            attributes: ['id', 'name', 'key'],
+            attributes: ['id', 'name', 'key', 'ownerId', 'leaderId'],
             include: [
               {
                 model: User,
@@ -1070,7 +1070,7 @@ router.get('/:id', async (req, res) => {
         {
           model: Project,
           as: 'project',
-          attributes: ['id', 'name', 'key', 'description']
+          attributes: ['id', 'name', 'key', 'description', 'ownerId', 'leaderId']
         },
         {
           model: BountyTask,
@@ -1235,7 +1235,7 @@ router.get('/:id/subtasks', async (req, res) => {
         {
           model: Project,
           as: 'project',
-          attributes: ['id', 'name', 'key'],
+          attributes: ['id', 'name', 'key', 'ownerId', 'leaderId'],
           include: [
             {
               model: User,
@@ -1525,11 +1525,22 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
       return res.redirect('/tasks');
     }
 
-    // 检查权限：管理员、任务发布者、负责人或审核人可以编辑
+    // 获取任务所属项目信息（用于检查项目负责人权限）
+    let project = null;
+    if (task.projectId) {
+      const { Project } = require('../models');
+      project = await Project.findByPk(task.projectId, {
+        attributes: ['id', 'ownerId', 'leaderId']
+      });
+    }
+
+    // 检查权限：管理员、任务发布者、负责人、审核人、项目所有者或项目负责人可以编辑
     const hasPermission = req.session.user?.role === 'admin' ||
                          task.publisherId === req.session.userId ||
                          task.assigneeId === req.session.userId ||
-                         task.reviewerId === req.session.userId;
+                         task.reviewerId === req.session.userId ||
+                         (project && project.ownerId === req.session.userId) ||
+                         (project && project.leaderId === req.session.userId);
 
     if (!hasPermission) {
       req.flash('error', '您没有权限编辑此任务');
@@ -1634,11 +1645,22 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       return res.redirect('/tasks');
     }
 
-    // 检查权限：管理员、任务发布者、负责人或审核人可以编辑
+    // 获取任务所属项目信息（用于检查项目负责人权限）
+    let project = null;
+    if (task.projectId) {
+      const { Project } = require('../models');
+      project = await Project.findByPk(task.projectId, {
+        attributes: ['id', 'ownerId', 'leaderId']
+      });
+    }
+
+    // 检查权限：管理员、任务发布者、负责人、审核人、项目所有者或项目负责人可以编辑
     const hasPermission = req.session.user?.role === 'admin' ||
                          task.publisherId === req.session.userId ||
                          task.assigneeId === req.session.userId ||
-                         task.reviewerId === req.session.userId;
+                         task.reviewerId === req.session.userId ||
+                         (project && project.ownerId === req.session.userId) ||
+                         (project && project.leaderId === req.session.userId);
 
     if (!hasPermission) {
       req.flash('error', '您没有权限编辑此任务');
@@ -1922,11 +1944,22 @@ router.post('/:id/quick-update', requireAuth, requireProjectSelection, validateP
       });
     }
 
-    // 检查权限：管理员、任务发布者、负责人或审核人可以更改
+    // 获取任务所属项目信息（用于检查项目负责人权限）
+    let project = null;
+    if (task.projectId) {
+      const { Project } = require('../models');
+      project = await Project.findByPk(task.projectId, {
+        attributes: ['id', 'ownerId', 'leaderId']
+      });
+    }
+
+    // 检查权限：管理员、任务发布者、负责人、审核人、项目所有者或项目负责人可以更改
     const hasPermission = req.session.user?.role === 'admin' ||
                          task.publisherId === req.session.userId ||
                          task.assigneeId === req.session.userId ||
-                         task.reviewerId === req.session.userId;
+                         task.reviewerId === req.session.userId ||
+                         (project && project.ownerId === req.session.userId) ||
+                         (project && project.leaderId === req.session.userId);
 
     if (!hasPermission) {
       return res.status(403).json({

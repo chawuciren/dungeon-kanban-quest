@@ -211,6 +211,14 @@
                                                     else if (task.reviewerId === user.id) {
                                                         canEdit = true;
                                                     }
+                                                    // 项目所有者
+                                                    else if (task.project && task.project.ownerId === user.id) {
+                                                        canEdit = true;
+                                                    }
+                                                    // 项目负责人
+                                                    else if (task.project && task.project.leaderId === user.id) {
+                                                        canEdit = true;
+                                                    }
                                                 }
                                             %>
                                             <% if (canEdit) { %>
@@ -793,6 +801,14 @@ function canEditTask(task) {
     }
     // 我审核的任务
     if (task.reviewerId === user.id) {
+        return true;
+    }
+    // 项目所有者
+    if (task.project && task.project.ownerId === user.id) {
+        return true;
+    }
+    // 项目负责人
+    if (task.project && task.project.leaderId === user.id) {
         return true;
     }
 
