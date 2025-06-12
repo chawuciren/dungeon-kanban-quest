@@ -6,6 +6,7 @@ const logger = require('../config/logger');
 const { requireProjectSelection, validateProjectAccess } = require('../middleware/projectSelection');
 const { getUserSettings, applyUserSettingsToQuery, getPaginationParams, getGanttParams } = require('../utils/userSettings');
 const { handleTaskImageUpload } = require('../middleware/upload');
+const TaskHoursService = require('../services/taskHoursService');
 
 // 认证中间件
 const requireAuth = (req, res, next) => {
@@ -1187,6 +1188,32 @@ router.get('/:id', async (req, res) => {
                   (!req.session.userId || task.publisherId !== req.session.userId) &&
                   !task.assigneeId;
 
+    // 计算工时统计信息
+    let hoursInfo = null;
+    try {
+      hoursInfo = await TaskHoursService.calculateTotalHours(task.id);
+    } catch (error) {
+      logger.warn('计算工时统计失败:', error);
+      // 如果计算失败，使用默认值
+      hoursInfo = {
+        task: {
+          estimated: parseFloat(task.estimatedHours || 0),
+          actual: parseFloat(task.actualHours || 0),
+          efficiency: 0
+        },
+        subtasks: {
+          estimated: 0,
+          actual: 0,
+          count: subtasks ? subtasks.length : 0
+        },
+        total: {
+          estimated: parseFloat(task.estimatedHours || 0),
+          actual: parseFloat(task.actualHours || 0),
+          efficiency: 0
+        }
+      };
+    }
+
     res.render('tasks/detail', {
       title: task.title,
       task,
@@ -1198,6 +1225,7 @@ router.get('/:id', async (req, res) => {
       totalComments,
       projectMembers: projectMembers.map(pm => pm.user),
       user: req.session.user, // 添加用户信息
+      hoursInfo, // 添加工时统计信息
       commentsPagination: {
         page: commentsPage,
         totalPages: Math.ceil(totalComments / commentsLimit),

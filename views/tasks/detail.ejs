@@ -399,41 +399,100 @@ const currentStatus = statusConfig[task.status] || statusConfig['draft'];
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div class="text-center mb-3">
-                        <div class="display-6 fw-bold text-info">
-                            <i class="fas fa-clock me-2"></i>
-                            <%= task.estimatedHours || 0 %>
-                        </div>
-                        <small class="text-muted">预估工时（小时）</small>
-                    </div>
-
-                    <% if (task.actualHours) { %>
-                    <div class="row text-center">
-                        <div class="col-6">
-                            <div class="border-end">
-                                <div class="fw-bold text-success"><%= task.actualHours %></div>
+                    <!-- 本任务工时 -->
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-2">
+                            <i class="fas fa-user me-1"></i>本任务工时
+                        </h6>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="border-end">
+                                    <div class="fw-bold text-info"><%= hoursInfo.task.estimated.toFixed(1) %></div>
+                                    <small class="text-muted">预估工时</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="fw-bold text-success"><%= hoursInfo.task.actual.toFixed(1) %></div>
                                 <small class="text-muted">实际工时</small>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="fw-bold <%= task.actualHours <= task.estimatedHours ? 'text-success' : 'text-warning' %>">
-                                <%= task.estimatedHours > 0 ? Math.round((task.estimatedHours / task.actualHours) * 100) : 0 %>%
-                            </div>
-                            <small class="text-muted">工时效率</small>
-                        </div>
                     </div>
 
-                    <hr>
-                    <small class="text-muted">
-                        <i class="fas fa-info-circle me-1"></i>
-                        工时效率 = 预估工时 / 实际工时 × 100%
-                    </small>
+                    <!-- 子任务工时汇总 -->
+                    <% if (hoursInfo.subtasks.count > 0) { %>
+                        <hr class="my-3">
+
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-2">
+                                <i class="fas fa-level-down-alt me-1"></i>子任务工时汇总 (<%= hoursInfo.subtasks.count %>个)
+                            </h6>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="border-end">
+                                        <div class="fw-bold text-info"><%= hoursInfo.subtasks.estimated.toFixed(1) %></div>
+                                        <small class="text-muted">预估工时</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="fw-bold text-success"><%= hoursInfo.subtasks.actual.toFixed(1) %></div>
+                                    <small class="text-muted">实际工时</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+
+                        <!-- 总计工时 -->
+                        <div class="mb-3">
+                            <h6 class="text-primary mb-2">
+                                <i class="fas fa-calculator me-1"></i>总计工时
+                            </h6>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="border-end">
+                                        <div class="display-6 fw-bold text-primary"><%= hoursInfo.total.estimated.toFixed(1) %></div>
+                                        <small class="text-muted">预估总计</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="display-6 fw-bold text-success"><%= hoursInfo.total.actual.toFixed(1) %></div>
+                                    <small class="text-muted">实际总计</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 工时效率 -->
+                        <% if (hoursInfo.total.actual > 0) { %>
+                            <div class="text-center mb-3">
+                                <div class="fw-bold <%= hoursInfo.total.efficiency >= 80 ? 'text-success' : hoursInfo.total.efficiency >= 60 ? 'text-warning' : 'text-danger' %> fs-4">
+                                    <%= hoursInfo.total.efficiency.toFixed(1) %>%
+                                </div>
+                                <small class="text-muted">整体工时效率</small>
+                            </div>
+                        <% } %>
                     <% } else { %>
-                    <div class="text-center text-muted">
-                        <i class="fas fa-hourglass-start fa-2x mb-2"></i>
-                        <p class="mb-0">任务进行中，暂无实际工时数据</p>
-                    </div>
+                        <!-- 无子任务时的工时效率 -->
+                        <% if (hoursInfo.task.actual > 0) { %>
+                            <hr class="my-3">
+                            <div class="text-center mb-3">
+                                <div class="fw-bold <%= hoursInfo.task.efficiency >= 80 ? 'text-success' : hoursInfo.task.efficiency >= 60 ? 'text-warning' : 'text-danger' %> fs-4">
+                                    <%= hoursInfo.task.efficiency.toFixed(1) %>%
+                                </div>
+                                <small class="text-muted">工时效率</small>
+                            </div>
+                        <% } %>
                     <% } %>
+
+                    <!-- 说明信息 -->
+                    <div class="alert alert-light border-0 mb-0">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            工时效率 = 预估工时 ÷ 实际工时 × 100%<br>
+                            <% if (hoursInfo.subtasks.count > 0) { %>
+                                总计工时 = 本任务工时 + 所有子任务工时（递归统计）
+                            <% } %>
+                        </small>
+                    </div>
                 </div>
             </div>
 
