@@ -1352,14 +1352,9 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       return res.redirect('back');
     }
 
-    // 检查用户是否有权限创建指定类型的任务
-    const { canCreateTaskType } = require('../config/taskTypes');
-    const userRole = req.session.user?.role;
-
-    if (!canCreateTaskType(userRole, taskType)) {
-      req.flash('error', `您没有权限创建${taskType}类型的任务`);
-      return res.redirect('back');
-    }
+    // 检查用户是否有权限创建任务（简化权限检查）
+    // 只要用户能访问到创建页面，就允许创建所有类型的任务
+    // 权限检查已在中间件中完成
 
     // 计算任务层级
     let level = 0;
@@ -1702,16 +1697,9 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       return res.redirect('back');
     }
 
-    // 检查用户是否有权限编辑为指定类型的任务（如果任务类型发生变化）
-    if (taskType !== task.taskType) {
-      const { canCreateTaskType } = require('../config/taskTypes');
-      const userRole = req.session.user?.role;
-
-      if (!canCreateTaskType(userRole, taskType)) {
-        req.flash('error', `您没有权限将任务修改为${taskType}类型`);
-        return res.redirect('back');
-      }
-    }
+    // 检查用户是否有权限编辑任务类型（简化权限检查）
+    // 只要用户有编辑任务的权限，就允许修改为所有类型的任务
+    // 权限检查已在上面完成
 
     // 处理协助人员ID数组
     let processedAssistantIds = [];

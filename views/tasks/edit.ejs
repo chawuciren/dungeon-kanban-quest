@@ -128,51 +128,19 @@ const getValue = (field, defaultValue = '') => {
                                     const defaultTaskType = !task && userSettings && userSettings.defaultTaskType ? userSettings.defaultTaskType : 'task';
                                     %>
 
-                                    <!-- 史诗 - 管理员、产品经理、客户可创建 -->
-                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'client')) { %>
-                                        <option value="epic" <%= getValue('taskType', !task ? defaultTaskType : '') === 'epic' ? 'selected' : '' %>>🏰 史诗</option>
-                                    <% } %>
-
-                                    <!-- 用户故事 - 管理员、产品经理、客户可创建 -->
-                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'client')) { %>
-                                        <option value="story" <%= getValue('taskType', !task ? defaultTaskType : '') === 'story' ? 'selected' : '' %>>📖 用户故事</option>
-                                    <% } %>
-
-                                    <!-- 需求 - 管理员、产品经理可创建 -->
-                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager')) { %>
-                                        <option value="requirement" <%= getValue('taskType', !task ? defaultTaskType : '') === 'requirement' ? 'selected' : '' %>>📋 需求</option>
-                                    <% } %>
-
-                                    <!-- 开发任务 - 管理员、产品经理、开发者、UI设计师、运维工程师可创建 -->
-                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'developer' || user.role === 'ui_designer' || user.role === 'devops')) { %>
-                                        <option value="dev_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'dev_task' ? 'selected' : '' %>>⚔️ 开发任务</option>
-                                    <% } %>
-
-                                    <!-- 设计任务 - 管理员、产品经理、UI设计师、开发者、运维工程师可创建 -->
-                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'ui_designer' || user.role === 'developer' || user.role === 'devops')) { %>
-                                        <option value="design_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'design_task' ? 'selected' : '' %>>🎨 设计任务</option>
-                                    <% } %>
-
-                                    <!-- 测试任务 - 管理员、产品经理、测试员、开发者、UI设计师、运维工程师可创建 -->
-                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'tester' || user.role === 'developer' || user.role === 'ui_designer' || user.role === 'devops')) { %>
-                                        <option value="test_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'test_task' ? 'selected' : '' %>>🏹 测试任务</option>
-                                    <% } %>
-
-                                    <!-- 运维任务 - 管理员、产品经理、运维工程师、开发者、UI设计师可创建 -->
-                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'devops' || user.role === 'developer' || user.role === 'ui_designer')) { %>
-                                        <option value="devops_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'devops_task' ? 'selected' : '' %>>⚙️ 运维任务</option>
-                                    <% } %>
-
-                                    <!-- 通用任务 - 所有角色都可创建 -->
+                                    <!-- 所有任务类型都可选择 -->
+                                    <option value="epic" <%= getValue('taskType', !task ? defaultTaskType : '') === 'epic' ? 'selected' : '' %>>🏰 史诗</option>
+                                    <option value="story" <%= getValue('taskType', !task ? defaultTaskType : '') === 'story' ? 'selected' : '' %>>📖 用户故事</option>
+                                    <option value="requirement" <%= getValue('taskType', !task ? defaultTaskType : '') === 'requirement' ? 'selected' : '' %>>📋 需求</option>
+                                    <option value="dev_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'dev_task' ? 'selected' : '' %>>⚔️ 开发任务</option>
+                                    <option value="design_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'design_task' ? 'selected' : '' %>>🎨 设计任务</option>
+                                    <option value="test_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'test_task' ? 'selected' : '' %>>🏹 测试任务</option>
+                                    <option value="devops_task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'devops_task' ? 'selected' : '' %>>⚙️ 运维任务</option>
                                     <option value="task" <%= getValue('taskType', !task ? defaultTaskType : '') === 'task' ? 'selected' : '' %>>📝 通用任务</option>
-
-                                    <!-- Bug - 管理员、产品经理、测试员、开发者、UI设计师、运维工程师可创建 -->
-                                    <% if (user && (user.role === 'admin' || user.role === 'product_manager' || user.role === 'tester' || user.role === 'developer' || user.role === 'ui_designer' || user.role === 'devops')) { %>
-                                        <option value="bug" <%= getValue('taskType', !task ? defaultTaskType : '') === 'bug' ? 'selected' : '' %>>🐛 缺陷</option>
-                                    <% } %>
+                                    <option value="bug" <%= getValue('taskType', !task ? defaultTaskType : '') === 'bug' ? 'selected' : '' %>>🐛 缺陷</option>
                                 </select>
                                 <div class="invalid-feedback">请选择任务类型</div>
-                                <div class="form-text">根据您的角色显示可创建的任务类型</div>
+                                <div class="form-text">选择适合的任务类型</div>
                             </div>
                         </div>
 
