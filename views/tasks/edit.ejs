@@ -152,7 +152,18 @@ const getValue = (field, defaultValue = '') => {
                                     <select class="form-select" id="parentTaskId" name="parentTaskId">
                                         <option value="">无父任务（根任务）</option>
                                         <% projectTasks.forEach(projectTask => { %>
-                                            <option value="<%= projectTask.id %>" <%= getValue('parentTaskId', task ? task.parentTaskId : '') === projectTask.id ? 'selected' : '' %>>
+                                            <%
+                                            // 修复父任务选择的默认值逻辑
+                                            let currentParentTaskId = '';
+                                            if (formData && formData.parentTaskId !== undefined) {
+                                                // 如果有表单数据，使用表单数据
+                                                currentParentTaskId = formData.parentTaskId;
+                                            } else if (task && task.parentTaskId !== undefined) {
+                                                // 如果是编辑模式且任务有父任务，使用任务的父任务ID
+                                                currentParentTaskId = task.parentTaskId;
+                                            }
+                                            %>
+                                            <option value="<%= projectTask.id %>" <%= currentParentTaskId == projectTask.id ? 'selected' : '' %>>
                                                 <%= projectTask.title %>
                                                 <% if (projectTask.taskType !== 'task') { %>
                                                     （<%= projectTask.taskType === 'requirement' ? '📋 需求' :

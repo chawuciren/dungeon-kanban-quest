@@ -1717,6 +1717,37 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
     const oldStatus = task.status;
     const newStatus = status || task.status;
 
+    // 处理父任务ID - 修复父任务信息丢失问题
+    let finalParentTaskId = task.parentTaskId; // 默认保持原有的父任务
+    let level = task.level || 0;
+
+    if (parentTaskId !== undefined) {
+      // 只有当表单明确提供了parentTaskId时才处理父任务变更
+      if (parentTaskId && parentTaskId.trim() !== '') {
+        // 设置新的父任务
+        if (parentTaskId !== task.parentTaskId) {
+          const parentTask = await BountyTask.findByPk(parentTaskId);
+          if (!parentTask) {
+            req.flash('error', '父任务不存在');
+            return res.redirect('back');
+          }
+          level = (parentTask.level || 0) + 1;
+
+          // 检查层级限制
+          if (level > 3) {
+            req.flash('error', '任务层级不能超过4级');
+            return res.redirect('back');
+          }
+        }
+        finalParentTaskId = parentTaskId;
+      } else if (parentTaskId === '' || parentTaskId === null) {
+        // 明确选择了"无父任务"，移除父任务关系
+        finalParentTaskId = null;
+        level = 0;
+      }
+      // 如果parentTaskId为undefined，保持原有的父任务不变
+    }
+
     // 状态变更时的自动字段更新
     let updateData = {
       title,
@@ -1725,7 +1756,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       starLevel: parseInt(starLevel),
       urgencyLevel,
       status: newStatus,
-      parentTaskId: parentTaskId && parentTaskId.trim() !== '' ? parentTaskId : null,
+      parentTaskId: finalParentTaskId,
       assigneeId: assigneeId && assigneeId.trim() !== '' ? assigneeId : null,
       assistantIds: processedAssistantIds,
       reviewerId: reviewerId && reviewerId.trim() !== '' ? reviewerId : null,
@@ -1735,6 +1766,7 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
       progress: progress !== undefined ? parseInt(progress) : task.progress,
       startDate: startDate || null,
       dueDate: dueDate || null,
+      level,
       isArchived: isArchived === 'true' || isArchived === true
     };
 
