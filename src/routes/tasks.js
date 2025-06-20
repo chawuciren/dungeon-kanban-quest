@@ -998,12 +998,11 @@ router.get('/create', requireAuth, requireProjectSelection, validateProjectAcces
     if (req.session.selectedProjectId && !parentTask) {
       projectTasks = await BountyTask.findAll({
         where: {
-          projectId: req.session.selectedProjectId,
-          parentTaskId: null // 只显示根任务作为父任务选项
+          projectId: req.session.selectedProjectId
         },
-        attributes: ['id', 'title', 'taskType'],
-        order: [['createdAt', 'DESC']],
-        limit: 50
+        attributes: ['id', 'title', 'taskType', 'level'],
+        order: [['level', 'ASC'], ['createdAt', 'DESC']],
+        limit: 100
       });
     }
 
@@ -1604,16 +1603,40 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
     // 获取当前项目的任务列表（用于父任务选择）
     let projectTasks = [];
     if (task.projectId) {
-      projectTasks = await BountyTask.findAll({
+      // 获取所有可能作为父任务的任务（排除当前任务本身和它的子任务）
+      const allProjectTasks = await BountyTask.findAll({
         where: {
           projectId: task.projectId,
-          parentTaskId: null, // 只显示根任务作为父任务选项
           id: { [Op.ne]: task.id } // 排除当前任务本身
         },
-        attributes: ['id', 'title', 'taskType'],
-        order: [['createdAt', 'DESC']],
-        limit: 50
+        attributes: ['id', 'title', 'taskType', 'parentTaskId', 'level'],
+        order: [['level', 'ASC'], ['createdAt', 'DESC']]
       });
+
+      // 过滤掉当前任务的子任务（防止循环引用）
+      const taskSubtaskIds = await getSubtaskIds(task.id);
+      projectTasks = allProjectTasks.filter(t => !taskSubtaskIds.includes(t.id));
+
+      // 限制数量
+      projectTasks = projectTasks.slice(0, 100);
+    }
+
+    // 获取子任务ID的递归函数
+    async function getSubtaskIds(parentId) {
+      const subtasks = await BountyTask.findAll({
+        where: { parentTaskId: parentId },
+        attributes: ['id']
+      });
+
+      let allSubtaskIds = subtasks.map(t => t.id);
+
+      // 递归获取子任务的子任务
+      for (const subtask of subtasks) {
+        const childIds = await getSubtaskIds(subtask.id);
+        allSubtaskIds = allSubtaskIds.concat(childIds);
+      }
+
+      return allSubtaskIds;
     }
 
     // 获取保存的表单数据（如果有）

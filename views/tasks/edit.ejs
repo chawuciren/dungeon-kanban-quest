@@ -162,9 +162,13 @@ const getValue = (field, defaultValue = '') => {
                                                 // 如果是编辑模式且任务有父任务，使用任务的父任务ID
                                                 currentParentTaskId = task.parentTaskId;
                                             }
+
+                                            // 根据层级添加缩进
+                                            const level = projectTask.level || 0;
+                                            const indent = '　'.repeat(level); // 使用全角空格缩进
                                             %>
                                             <option value="<%= projectTask.id %>" <%= currentParentTaskId == projectTask.id ? 'selected' : '' %>>
-                                                <%= projectTask.title %>
+                                                <%= indent %><%= projectTask.title %>
                                                 <% if (projectTask.taskType !== 'task') { %>
                                                     （<%= projectTask.taskType === 'requirement' ? '📋 需求' :
                                                          projectTask.taskType === 'epic' ? '🏰 史诗' :
@@ -478,6 +482,100 @@ const getValue = (field, defaultValue = '') => {
                     </form>
                 </div>
             </div>
+
+            <% if (task) { %>
+            <!-- 危险操作区域 -->
+            <%
+                // 检查当前用户是否有删除权限
+                let canDelete = false;
+                if (user) {
+                    // 管理员始终有权限
+                    if (user.role === 'admin') {
+                        canDelete = true;
+                    }
+                    // 我创建的任务
+                    else if (task.publisherId === user.id) {
+                        canDelete = true;
+                    }
+                    // 我负责的任务
+                    else if (task.assigneeId === user.id) {
+                        canDelete = true;
+                    }
+                    // 我审核的任务
+                    else if (task.reviewerId === user.id) {
+                        canDelete = true;
+                    }
+                    // 项目所有者
+                    else if (task.project && task.project.ownerId === user.id) {
+                        canDelete = true;
+                    }
+                    // 项目负责人
+                    else if (task.project && task.project.leaderId === user.id) {
+                        canDelete = true;
+                    }
+                }
+            %>
+            <% if (canDelete) { %>
+            <div class="card mt-4 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        危险操作
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>注意：</strong>以下操作具有风险性，请谨慎操作。
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>归档任务</h6>
+                            <p class="text-muted small">归档任务将从常规视图中隐藏，但保留数据。</p>
+                            <% if (task.isArchived) { %>
+                                <button type="button" class="btn btn-info btn-sm" onclick="toggleArchiveTask('<%= task.id %>', false)">
+                                    <i class="fas fa-box-open me-1"></i>
+                                    取消归档
+                                </button>
+                            <% } else { %>
+                                <button type="button" class="btn btn-warning btn-sm" onclick="toggleArchiveTask('<%= task.id %>', true)">
+                                    <i class="fas fa-archive me-1"></i>
+                                    归档任务
+                                </button>
+                            <% } %>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>删除任务</h6>
+                            <p class="text-muted small">删除任务将永久删除所有相关数据，此操作不可恢复。</p>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteTask()">
+                                <i class="fas fa-trash me-1"></i>
+                                删除任务
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 编辑说明 -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        编辑说明
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>修改任务状态会影响相关人员的工作流程</li>
+                        <li>更改负责人或审核人会发送通知给相关人员</li>
+                        <li>归档任务会从常规视图中隐藏，需要在筛选器中选择"已归档"才能查看</li>
+                        <li>删除任务将同时删除所有相关的评论、附件和子任务数据</li>
+                        <li>如果任务有子任务，需要先删除所有子任务才能删除父任务</li>
+                    </ul>
+                </div>
+            </div>
+            <% } %>
+            <% } %>
     </div>
 </div>
 
@@ -812,4 +910,73 @@ $(document).ready(function() {
         updateAssistantSelection();
     }, 100);
 });
+
+<% if (task) { %>
+// 归档/取消归档任务函数
+function toggleArchiveTask(taskId, isArchive) {
+    const action = isArchive ? '归档' : '取消归档';
+    const confirmMessage = isArchive
+        ? '确定要归档此任务吗？\n\n归档后的任务将从常规视图中隐藏，需要在筛选器中选择"已归档"才能查看。'
+        : '确定要取消归档此任务吗？\n\n取消归档后的任务将重新显示在常规视图中。';
+
+    if (confirm(confirmMessage)) {
+        const url = isArchive ? `/tasks/${taskId}/archive` : `/tasks/${taskId}/unarchive`;
+
+        // 发送AJAX请求
+        $.ajax({
+            url: url,
+            method: 'POST',
+            dataType: 'json',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    // 刷新页面以更新任务状态
+                    window.location.reload();
+                } else {
+                    alert(response.message || `${action}失败`);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('归档操作错误:', { xhr, status, error });
+                const errorMsg = xhr.responseJSON?.message || `${action}失败：${error}`;
+                alert(errorMsg);
+            }
+        });
+    }
+}
+
+// 删除任务函数
+function deleteTask() {
+    const taskTitle = '<%= task.title %>';
+    const confirmText = prompt(`删除任务是不可恢复的操作！\n\n请输入任务标题 "${taskTitle}" 来确认删除：`);
+
+    if (confirmText === taskTitle) {
+        if (confirm('最后确认：确定要永久删除这个任务及其所有数据吗？\n\n这将删除：\n- 所有评论和附件\n- 所有子任务\n- 所有相关统计数据')) {
+            // 创建表单并提交
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/tasks/<%= task.id %>/delete';
+
+            // 添加CSRF token（如果需要）
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken.getAttribute('content');
+                form.appendChild(csrfInput);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    } else if (confirmText !== null) {
+        alert('任务标题不匹配，删除操作已取消。');
+    }
+}
+<% } %>
 </script>
