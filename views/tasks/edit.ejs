@@ -343,7 +343,6 @@ const getValue = (field, defaultValue = '') => {
                                 <div class="col-md-4 mb-3">
                                     <label for="assigneeId" class="form-label">负责人 <span class="text-danger">*</span></label>
                                     <select class="form-select" id="assigneeId" name="assigneeId" required>
-                                        <option value="">选择负责人</option>
                                         <% projectMembers.forEach(member => { %>
                                             <option value="<%= member.user.id %>" <%= getValue('assigneeId') === member.user.id ? 'selected' : '' %>>
                                                 <%= member.user.firstName %> <%= member.user.lastName %>
@@ -411,7 +410,6 @@ const getValue = (field, defaultValue = '') => {
                                 <div class="col-md-4 mb-3">
                                     <label for="reviewerId" class="form-label">审核人 <span class="text-danger">*</span></label>
                                     <select class="form-select" id="reviewerId" name="reviewerId" required>
-                                        <option value="">选择审核人</option>
                                         <% projectMembers.forEach(member => { %>
                                             <option value="<%= member.user.id %>" <%= getValue('reviewerId') === member.user.id ? 'selected' : '' %>>
                                                 <%= member.user.firstName %> <%= member.user.lastName %>
@@ -662,7 +660,16 @@ const getValue = (field, defaultValue = '') => {
 
 <!-- 页面特定JavaScript - 必须在jQuery加载之后 -->
 <script>
+// 全局数据
+window.projectMembers = <%- JSON.stringify(projectMembers || []) %>;
+window.sprints = <%- JSON.stringify(sprints || []) %>;
+window.projectTasks = <%- JSON.stringify(projectTasks || []) %>;
+
 $(document).ready(function() {
+    // 延迟初始化 Select2，确保所有依赖都已加载
+    setTimeout(function() {
+        initTaskEditSelect2();
+    }, 100);
     // 初始化简单富文本编辑器
     function initRichEditor() {
         const editor = document.getElementById('richEditor');
@@ -910,6 +917,146 @@ $(document).ready(function() {
         updateAssistantSelection();
     }, 100);
 });
+
+// 初始化任务编辑页面的 Select2 组件
+function initTaskEditSelect2() {
+    console.log('开始初始化任务编辑 Select2 组件');
+
+    // 获取全局数据
+    const projectMembers = window.projectMembers || [];
+    const sprints = window.sprints || [];
+    const projectTasks = window.projectTasks || [];
+
+    console.log('项目成员数据:', projectMembers);
+    console.log('迭代数据:', sprints);
+    console.log('项目任务数据:', projectTasks);
+
+    // 初始化负责人选择器（支持拼音搜索）
+    try {
+        const $assigneeSelect = $('#assigneeId');
+        if ($assigneeSelect.length > 0) {
+            console.log('初始化负责人选择器');
+
+            // 构建用户数据
+            const userData = [];
+            projectMembers.forEach(member => {
+                // 去除姓名之间的空格
+                const fullName = `${member.user.firstName || ''}${member.user.lastName || ''}`.trim() || member.user.username || '';
+
+                userData.push({
+                    id: member.user.id,
+                    firstName: member.user.firstName || '',
+                    lastName: member.user.lastName || '',
+                    username: member.user.username || '',
+                    role: member.user.role || 'member'
+                });
+            });
+
+            // 使用拼音搜索组件
+            if (typeof Select2Pinyin !== 'undefined' && Select2Pinyin.initUser) {
+                Select2Pinyin.initUser($assigneeSelect, userData, {
+                    placeholder: '选择负责人...',
+                    allowClear: false, // 负责人不允许为空
+                    width: '100%'
+                });
+                console.log('负责人拼音搜索初始化成功');
+            } else {
+                // 降级到普通 Select2
+                $assigneeSelect.select2({
+                    placeholder: '选择负责人...',
+                    allowClear: false,
+                    width: '100%',
+                    theme: 'bootstrap-5'
+                });
+                console.log('负责人普通 Select2 初始化成功');
+            }
+        }
+    } catch (error) {
+        console.error('负责人选择器初始化失败:', error);
+    }
+
+    // 初始化审核人选择器（支持拼音搜索）
+    try {
+        const $reviewerSelect = $('#reviewerId');
+        if ($reviewerSelect.length > 0) {
+            console.log('初始化审核人选择器');
+
+            // 构建用户数据
+            const userData = [];
+            projectMembers.forEach(member => {
+                // 去除姓名之间的空格
+                const fullName = `${member.user.firstName || ''}${member.user.lastName || ''}`.trim() || member.user.username || '';
+
+                userData.push({
+                    id: member.user.id,
+                    firstName: member.user.firstName || '',
+                    lastName: member.user.lastName || '',
+                    username: member.user.username || '',
+                    role: member.user.role || 'member'
+                });
+            });
+
+            // 使用拼音搜索组件
+            if (typeof Select2Pinyin !== 'undefined' && Select2Pinyin.initUser) {
+                Select2Pinyin.initUser($reviewerSelect, userData, {
+                    placeholder: '选择审核人...',
+                    allowClear: false, // 审核人不允许为空
+                    width: '100%'
+                });
+                console.log('审核人拼音搜索初始化成功');
+            } else {
+                // 降级到普通 Select2
+                $reviewerSelect.select2({
+                    placeholder: '选择审核人...',
+                    allowClear: false,
+                    width: '100%',
+                    theme: 'bootstrap-5'
+                });
+                console.log('审核人普通 Select2 初始化成功');
+            }
+        }
+    } catch (error) {
+        console.error('审核人选择器初始化失败:', error);
+    }
+
+    // 初始化迭代选择器（支持搜索）
+    try {
+        const $sprintSelect = $('#sprintId');
+        if ($sprintSelect.length > 0) {
+            console.log('初始化迭代选择器');
+
+            $sprintSelect.select2({
+                placeholder: '选择迭代...',
+                allowClear: true, // 迭代允许为空
+                width: '100%',
+                theme: 'bootstrap-5'
+            });
+            console.log('迭代选择器初始化成功');
+        }
+    } catch (error) {
+        console.error('迭代选择器初始化失败:', error);
+    }
+
+    // 初始化父任务选择器（支持搜索）
+    try {
+        const $parentTaskSelect = $('#parentTaskId');
+        if ($parentTaskSelect.length > 0) {
+            console.log('初始化父任务选择器');
+
+            $parentTaskSelect.select2({
+                placeholder: '选择父任务...',
+                allowClear: true, // 父任务允许为空
+                width: '100%',
+                theme: 'bootstrap-5'
+            });
+            console.log('父任务选择器初始化成功');
+        }
+    } catch (error) {
+        console.error('父任务选择器初始化失败:', error);
+    }
+
+    console.log('任务编辑 Select2 初始化完成');
+}
 
 <% if (task) { %>
 // 归档/取消归档任务函数

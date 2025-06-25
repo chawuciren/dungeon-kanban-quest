@@ -247,9 +247,98 @@
 <script>
 // 筛选器自动提交功能
 $(document).ready(function() {
+    // 延迟初始化筛选器的 Select2，确保所有依赖都已加载
+    setTimeout(function() {
+        initFilterSelect2();
+    }, 200);
+
     // 筛选表单自动提交（当选择框改变时）
     $('#filterForm select').change(function() {
         $('#filterForm').submit();
     });
+
+    // 绑定 Select2 的 change 事件
+    $('#filterForm select').on('select2:select select2:unselect select2:clear', function(e) {
+        $('#filterForm').submit();
+    });
 });
+
+// 初始化筛选器的 Select2 组件
+function initFilterSelect2() {
+    console.log('开始初始化筛选器 Select2 组件');
+
+    // 获取项目成员数据（如果存在）
+    const projectMembers = window.projectMembers || [];
+    console.log('筛选器项目成员数据:', projectMembers);
+
+    // 初始化所有筛选器下拉框
+    $('#filterForm select').each(function() {
+        const $select = $(this);
+        const fieldName = $select.attr('name');
+
+        console.log('初始化筛选器字段:', fieldName);
+
+        // 根据字段类型设置不同的配置
+        let config = {
+            placeholder: '请选择...',
+            allowClear: true,
+            width: '100%',
+            minimumResultsForSearch: Infinity // 大部分筛选器不需要搜索
+        };
+
+        // 特殊字段的配置
+        switch(fieldName) {
+            case 'assigneeId':
+            case 'creatorId':
+            case 'reviewerId':
+                // 用户相关字段支持拼音搜索
+                config.minimumResultsForSearch = 0;
+
+                // 如果是用户选择器且有项目成员数据，为选项添加拼音信息
+                if (projectMembers.length > 0) {
+                    console.log('为用户选择器添加拼音信息:', fieldName);
+
+                    // 修改现有选项的文本，添加拼音信息
+                    $select.find('option[value!=""]').each(function() {
+                        const $option = $(this);
+                        const userId = $option.val();
+                        const currentText = $option.text().trim();
+
+                        // 查找对应的项目成员
+                        const member = projectMembers.find(m => m.id === userId);
+                        if (member) {
+                            // 去除姓名之间的空格
+                            const fullName = `${member.firstName || ''}${member.lastName || ''}`.trim() || member.username || '';
+
+                            // 生成包含拼音的显示文本
+                            if (window.Select2Pinyin && window.Select2Pinyin.generatePinyinText) {
+                                const displayText = window.Select2Pinyin.generatePinyinText(fullName);
+                                $option.text(displayText);
+                                console.log('更新选项文本:', currentText, '->', displayText);
+                            }
+                        }
+                    });
+                }
+                break;
+            case 'sprintId':
+                // 迭代字段支持搜索
+                config.minimumResultsForSearch = 0;
+                break;
+        }
+
+        // 普通 Select2 初始化
+        try {
+            if (typeof Select2Pinyin !== 'undefined' && Select2Pinyin.init) {
+                Select2Pinyin.init($select, config);
+            } else {
+                $select.select2(config);
+            }
+            console.log('普通 Select2 初始化成功:', fieldName);
+        } catch (error) {
+            console.error('Select2 初始化失败:', fieldName, error);
+        }
+    });
+
+    console.log('筛选器 Select2 初始化完成');
+}
 </script>

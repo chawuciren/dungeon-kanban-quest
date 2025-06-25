@@ -14,6 +14,10 @@
     <link href="/css/fontawesome.all.min.css" rel="stylesheet">
     <link href="/css/fontawesome-fix.css" rel="stylesheet">
 
+    <!-- Select2 CSS -->
+    <link href="/css/select2.min.css" rel="stylesheet">
+    <link href="/css/select2-bootstrap-5-theme.min.css" rel="stylesheet">
+
     <!-- 自定义CSS -->
     <link href="/css/main.css" rel="stylesheet">
 
@@ -38,6 +42,16 @@
 
     <!-- jQuery -->
     <script src="/js/jquery-3.7.0.min.js"></script>
+
+    <!-- Select2 JS -->
+    <script src="/js/select2.min.js"></script>
+    <script src="/js/select2-zh-CN.js"></script>
+
+    <!-- Pinyin Pro -->
+    <script src="/js/pinyin-pro.js"></script>
+
+    <!-- Select2 拼音搜索组件 -->
+    <script src="/js/select2-pinyin.js"></script>
 
     <!-- 简单富文本编辑器样式 -->
     <style>
@@ -84,6 +98,83 @@
             background: #dee2e6;
             margin: 0 4px;
             vertical-align: middle;
+        }
+
+        /* Select2 自定义样式 */
+        .select2-container--bootstrap-5 .select2-selection--single {
+            height: calc(1.5em + 0.75rem + 2px);
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+            padding: 0;
+            line-height: 1.5;
+            color: #212529;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+            height: calc(1.5em + 0.75rem);
+            right: 0.75rem;
+        }
+
+        .select2-container--bootstrap-5 .select2-dropdown {
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .select2-container--bootstrap-5 .select2-results__option[aria-selected=true] {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .select2-container--bootstrap-5 .select2-results__option--highlighted[aria-selected] {
+            background-color: #e9ecef;
+            color: #212529;
+        }
+
+        .select2-container--bootstrap-5 .select2-search--dropdown .select2-search__field {
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            padding: 0.375rem 0.75rem;
+        }
+
+        /* 高亮搜索匹配 */
+        .select2-results mark {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 0;
+        }
+
+        /* 小尺寸 Select2 - 用于任务列表的快速编辑 */
+        .select2-container--bootstrap-5.select2-container--small .select2-selection--single,
+        .select2-container--bootstrap-5 .select2-selection--single.select2-selection--small {
+            height: calc(1.5em + 0.5rem + 2px);
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .select2-container--bootstrap-5.select2-container--small .select2-selection--single .select2-selection__rendered,
+        .select2-container--bootstrap-5 .select2-selection--single.select2-selection--small .select2-selection__rendered {
+            line-height: 1.5;
+            padding: 0;
+        }
+
+        .select2-container--bootstrap-5.select2-container--small .select2-selection--single .select2-selection__arrow,
+        .select2-container--bootstrap-5 .select2-selection--single.select2-selection--small .select2-selection__arrow {
+            height: calc(1.5em + 0.5rem);
+            right: 0.5rem;
+        }
+
+        /* 确保在任务卡片中的 Select2 有正确的层级 */
+        .task-card .select2-container {
+            z-index: 1050;
+        }
+
+        .task-card .select2-dropdown {
+            z-index: 1060;
         }
     </style>
 

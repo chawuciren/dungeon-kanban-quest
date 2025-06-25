@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select2 拼音搜索测试</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="public/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Select2 CSS -->
+    <link href="public/css/select2.min.css" rel="stylesheet">
+    <link href="public/css/select2-bootstrap-5-theme.min.css" rel="stylesheet">
+    
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+        }
+        
+        .test-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .select2-container--bootstrap-5 .select2-selection--single {
+            height: calc(1.5em + 0.75rem + 2px);
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+        }
+        
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+            padding: 0;
+            line-height: 1.5;
+            color: #212529;
+        }
+        
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+            height: calc(1.5em + 0.75rem);
+            right: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Select2 拼音搜索测试</h1>
+        
+        <div class="test-section">
+            <h3>测试1: 基本 Select2</h3>
+            <label for="basic-select" class="form-label">基本选择器</label>
+            <select id="basic-select" class="form-select">
+                <option value="">请选择</option>
+                <option value="1">张三</option>
+                <option value="2">李四</option>
+                <option value="3">王五</option>
+                <option value="4">赵六</option>
+                <option value="5">陈七</option>
+            </select>
+        </div>
+        
+        <div class="test-section">
+            <h3>测试2: 拼音搜索 Select2</h3>
+            <label for="pinyin-select" class="form-label">拼音搜索选择器</label>
+            <select id="pinyin-select" class="form-select">
+                <option value="">请选择</option>
+            </select>
+        </div>
+        
+        <div class="test-section">
+            <h3>测试3: 用户选择器</h3>
+            <label for="user-select" class="form-label">用户选择器</label>
+            <select id="user-select" class="form-select">
+                <option value="">请选择用户</option>
+            </select>
+        </div>
+        
+        <div class="test-section">
+            <h3>调试信息</h3>
+            <div id="debug-info" class="alert alert-info">
+                <h5>加载状态:</h5>
+                <ul id="load-status"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="public/js/jquery-3.7.0.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="public/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Select2 JS -->
+    <script src="public/js/select2.min.js"></script>
+    <script src="public/js/select2-zh-CN.js"></script>
+    
+    <!-- Pinyin Pro -->
+    <script src="public/js/pinyin-pro.js"></script>
+    
+    <!-- Select2 拼音搜索组件 -->
+    <script src="public/js/select2-pinyin.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            const $loadStatus = $('#load-status');
+            
+            // 检查依赖加载状态
+            function checkDependencies() {
+                $loadStatus.append('<li>jQuery: ' + (typeof $ !== 'undefined' ? '✅' : '❌') + '</li>');
+                $loadStatus.append('<li>Select2: ' + (typeof $.fn.select2 !== 'undefined' ? '✅' : '❌') + '</li>');
+
+                // 检查多种可能的 pinyin-pro 全局变量
+                let pinyinStatus = '❌';
+                if (typeof window.pinyinPro !== 'undefined') {
+                    pinyinStatus = '✅ (window.pinyinPro)';
+                } else if (typeof window.pinyin !== 'undefined') {
+                    pinyinStatus = '✅ (window.pinyin)';
+                } else if (typeof window.PinyinPro !== 'undefined') {
+                    pinyinStatus = '✅ (window.PinyinPro)';
+                }
+                $loadStatus.append('<li>Pinyin-Pro: ' + pinyinStatus + '</li>');
+
+                $loadStatus.append('<li>Select2Pinyin: ' + (typeof window.Select2Pinyin !== 'undefined' ? '✅' : '❌') + '</li>');
+            }
+            
+            checkDependencies();
+            
+            // 测试数据
+            const testUsers = [
+                { id: '1', firstName: '张', lastName: '三', username: 'zhangsan', role: 'developer' },
+                { id: '2', firstName: '李', lastName: '四', username: 'lisi', role: 'tester' },
+                { id: '3', firstName: '王', lastName: '五', username: 'wangwu', role: 'designer' },
+                { id: '4', firstName: '赵', lastName: '六', username: 'zhaoliu', role: 'manager' },
+                { id: '5', firstName: '杨', lastName: '谢忠', username: 'yangxiezhong', role: 'developer' }
+            ];
+            
+            // 测试1: 基本 Select2
+            try {
+                $('#basic-select').select2({
+                    theme: 'bootstrap-5',
+                    placeholder: '请选择...',
+                    allowClear: true
+                });
+                $loadStatus.append('<li>基本 Select2 初始化: ✅</li>');
+            } catch (error) {
+                $loadStatus.append('<li>基本 Select2 初始化: ❌ ' + error.message + '</li>');
+            }
+            
+            // 测试2: 拼音搜索 Select2
+            try {
+                if (typeof window.Select2Pinyin !== 'undefined') {
+                    // 添加选项
+                    const $pinyinSelect = $('#pinyin-select');
+                    testUsers.forEach(user => {
+                        const fullName = `${user.firstName}${user.lastName}`; // 去除空格
+                        $pinyinSelect.append(`<option value="${user.id}">${fullName}</option>`);
+                    });
+                    
+                    // 初始化拼音搜索
+                    window.Select2Pinyin.init('#pinyin-select', {
+                        theme: 'bootstrap-5',
+                        placeholder: '请选择（支持拼音搜索）...',
+                        allowClear: true
+                    });
+                    $loadStatus.append('<li>拼音搜索 Select2 初始化: ✅</li>');
+                } else {
+                    throw new Error('Select2Pinyin 组件未加载');
+                }
+            } catch (error) {
+                $loadStatus.append('<li>拼音搜索 Select2 初始化: ❌ ' + error.message + '</li>');
+            }
+            
+            // 测试3: 用户选择器
+            try {
+                if (typeof window.Select2Pinyin !== 'undefined' && window.Select2Pinyin.initUser) {
+                    window.Select2Pinyin.initUser('#user-select', testUsers, {
+                        theme: 'bootstrap-5',
+                        placeholder: '请选择用户（支持拼音搜索）...',
+                        allowClear: true
+                    });
+                    $loadStatus.append('<li>用户选择器初始化: ✅</li>');
+                } else {
+                    throw new Error('Select2Pinyin.initUser 方法未找到');
+                }
+            } catch (error) {
+                $loadStatus.append('<li>用户选择器初始化: ❌ ' + error.message + '</li>');
+            }
+
+            // 测试拼音转换功能
+            if (typeof window.Select2Pinyin !== 'undefined' && window.Select2Pinyin.convertToPinyin) {
+                const testNames = ['张三', '李四', '杨谢忠', '王小明'];
+                testNames.forEach(name => {
+                    const pinyin = window.Select2Pinyin.convertToPinyin(name);
+                    $loadStatus.append('<li>拼音转换: ' + name + ' -> ' + JSON.stringify(pinyin) + '</li>');
+
+                    const displayText = window.Select2Pinyin.generatePinyinText(name);
+                    $loadStatus.append('<li>显示文本: ' + name + ' -> ' + displayText + '</li>');
+                });
+            }
+            
+            // 绑定事件监听
+            $('select').on('select2:select', function(e) {
+                console.log('选择了:', e.params.data);
+                $loadStatus.append('<li>选择事件: ' + JSON.stringify(e.params.data) + '</li>');
+            });
+        });
+    </script>
+</body>
+</html>

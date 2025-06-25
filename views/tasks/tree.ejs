@@ -558,24 +558,47 @@
             // 设置当前用户信息
             window.currentUser = <%-JSON.stringify(user || null)%>;
 
+            // 设置项目成员数据
+            window.projectMembers = <%-JSON.stringify(projectMembers || [])%>;
+
             // 初始化快速编辑字段，保存原始值
             $('.quick-edit-field').each(function() {
                 const $select = $(this);
                 $select.data('original-value', $select.val());
+                $select.data('is-initializing', true); // 标记正在初始化
             });
+
+            // 延迟初始化 Select2，确保所有依赖都已加载
+            setTimeout(function() {
+                initTreeSelect2();
+            }, 100);
 
             // 初始化下拉菜单定位修复
             initDropdownFix();
 
-            // 快速编辑字段处理
-            $(document).on('change', '.quick-edit-field', function() {
-                const $select = $(this);
+            // 快速编辑处理函数
+            function handleQuickEdit($select) {
+                // 如果正在初始化，跳过处理
+                if ($select.data('is-initializing')) {
+                    console.log('跳过初始化时的编辑事件');
+                    return;
+                }
+
+                // 防止重复触发
+                if ($select.data('is-updating')) {
+                    console.log('正在更新中，跳过重复请求');
+                    return;
+                }
+
                 const taskId = $select.data('task-id');
                 const field = $select.data('field');
                 const value = $select.val();
                 const originalValue = $select.data('original-value');
 
                 console.log('快速编辑触发:', { taskId, field, value, originalValue });
+
+                // 标记正在更新
+                $select.data('is-updating', true);
 
                 // 禁用选择框并显示加载状态
                 $select.prop('disabled', true);
@@ -619,9 +642,141 @@
                         // 恢复选择框状态
                         $select.prop('disabled', false);
                         $select.removeClass('loading');
+                        $select.removeData('is-updating');
                     }
                 });
+            }
+
+            // 绑定原生 change 事件（用于非 Select2 的下拉框）
+            $(document).on('change', '.quick-edit-field', function() {
+                const $select = $(this);
+
+                // 如果是 Select2，跳过（由 Select2 事件处理）
+                if ($select.hasClass('select2-hidden-accessible')) {
+                    return;
+                }
+
+                handleQuickEdit($select);
             });
+
+            // 绑定 Select2 的 change 事件到快速编辑逻辑
+            $(document).on('select2:select select2:unselect select2:clear', '.quick-edit-field', function(e) {
+                const $select = $(this);
+
+                console.log('Select2 事件触发:', $select.attr('data-field'), $select.val());
+                handleQuickEdit($select);
+            });
+
+        // 初始化树形图的 Select2 组件
+        function initTreeSelect2() {
+            console.log('开始初始化树形图 Select2 组件');
+
+            // 获取项目成员数据
+            const projectMembers = window.projectMembers || [];
+            console.log('项目成员数据:', projectMembers);
+
+            // 初始化负责人选择器（支持拼音搜索）
+            $('.quick-edit-field[data-field="assigneeId"]').each(function() {
+                const $select = $(this);
+                const taskId = $select.data('task-id');
+                const currentValue = $select.val(); // 保存当前选中值
+
+                console.log('初始化负责人选择器:', taskId, '当前值:', currentValue);
+
+                // 构建用户数据 - 从全局项目成员数据中提取
+                const userData = [];
+
+                // 从现有的 option 元素中提取数据，并添加拼音信息
+                $select.find('option').each(function() {
+                    const $option = $(this);
+                    const userId = $option.val();
+                    const userName = $option.text().trim();
+
+                    // 跳过空值选项，负责人不允许为空
+                    if (userId && userName) {
+                        // 尝试从全局数据中找到对应的用户信息
+                        const memberInfo = projectMembers.find(m => m.id === userId);
+
+                        userData.push({
+                            id: userId,
+                            firstName: memberInfo ? memberInfo.firstName : userName.replace(/\s+/g, '').charAt(0) || '',
+                            lastName: memberInfo ? memberInfo.lastName : userName.replace(/\s+/g, '').substring(1) || '',
+                            username: memberInfo ? memberInfo.username : '',
+                            role: 'member'
+                        });
+                    }
+                });
+
+                console.log('用户数据:', userData);
+
+                // 使用拼音搜索组件
+                try {
+                    if (typeof Select2Pinyin !== 'undefined' && Select2Pinyin.initUser) {
+                        console.log('使用拼音搜索组件');
+
+                        // 设置当前选中值
+                        $select.data('selected-value', currentValue);
+
+                        Select2Pinyin.initUser($select, userData, {
+                            placeholder: '选择负责人...',
+                            allowClear: false, // 负责人不允许为空
+                            width: '100%',
+                            containerCssClass: 'select2-container--small'
+                        });
+
+                        // 恢复选中值（不触发 change 事件）
+                        if (currentValue) {
+                            $select.val(currentValue);
+                        }
+                    } else {
+                        console.log('使用普通 Select2');
+                        // 普通 Select2 初始化
+                        $select.select2({
+                            placeholder: '选择负责人...',
+                            allowClear: false, // 负责人不允许为空
+                            width: '100%',
+                            theme: 'bootstrap-5',
+                            containerCssClass: 'select2-container--small'
+                        });
+                    }
+
+                    // 初始化完成后清除标记
+                    setTimeout(() => {
+                        $select.removeData('is-initializing');
+                    }, 100);
+
+                    console.log('负责人 Select2 初始化成功:', taskId);
+                } catch (error) {
+                    console.error('负责人 Select2 初始化失败:', error);
+                }
+            });
+
+            // 初始化迭代选择器
+            try {
+                $('.quick-edit-field[data-field="sprintId"]').each(function() {
+                    const $select = $(this);
+                    console.log('初始化迭代选择器:', $select.data('task-id'));
+
+                    $select.select2({
+                        placeholder: '选择迭代...',
+                        allowClear: false, // 去掉迭代的清空按钮
+                        width: '100%',
+                        theme: 'bootstrap-5',
+                        containerCssClass: 'select2-container--small'
+                    });
+
+                    // 初始化完成后清除标记
+                    setTimeout(() => {
+                        $select.removeData('is-initializing');
+                    }, 100);
+                });
+                console.log('迭代选择器初始化完成');
+            } catch (error) {
+                console.error('迭代选择器初始化失败:', error);
+            }
+
+            console.log('树形图 Select2 初始化完成');
+        }
 
             // 全部展开
             $('#expandAll').click(function() {
