@@ -462,79 +462,7 @@ $(document).ready(function() {
     // 初始化下拉菜单定位修复
     initDropdownFix();
 
-    // 快速编辑处理函数
-    function handleQuickEdit($select) {
-        // 如果正在初始化，跳过处理
-        if ($select.data('is-initializing')) {
-            console.log('跳过初始化时的编辑事件');
-            return;
-        }
 
-        // 防止重复触发
-        if ($select.data('is-updating')) {
-            console.log('正在更新中，跳过重复请求');
-            return;
-        }
-
-        const taskId = $select.data('task-id');
-        const field = $select.data('field');
-        const value = $select.val();
-        const originalValue = $select.data('original-value');
-
-        console.log('快速编辑触发:', { taskId, field, value, originalValue });
-
-        // 标记正在更新
-        $select.data('is-updating', true);
-
-        // 禁用选择框并显示加载状态
-        $select.prop('disabled', true);
-        $select.addClass('loading');
-
-        // 发送AJAX请求
-        $.ajax({
-            url: `/tasks/${taskId}/quick-update`,
-            method: 'POST',
-            dataType: 'json',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                field: field,
-                value: value
-            },
-            beforeSend: function(xhr) {
-                console.log('发送AJAX请求:', `/tasks/${taskId}/quick-update`);
-            },
-            success: function(response) {
-                console.log('AJAX成功响应:', response);
-                if (response.success) {
-                    // 显示成功提示
-                    showToast('success', response.message);
-                    // 更新原始值
-                    $select.data('original-value', value);
-                } else {
-                    // 恢复原始值
-                    $select.val($select.data('original-value'));
-                    showToast('error', response.message || '更新失败');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX错误:', { xhr, status, error });
-                console.error('响应文本:', xhr.responseText);
-                // 恢复原始值
-                $select.val($select.data('original-value'));
-                const errorMsg = xhr.responseJSON?.message || `网络错误：${error}`;
-                showToast('error', errorMsg);
-            },
-            complete: function() {
-                // 恢复选择框状态
-                $select.prop('disabled', false);
-                $select.removeClass('loading');
-                $select.removeData('is-updating');
-            }
-        });
-    }
 
     // 绑定原生 change 事件（用于非 Select2 的下拉框）
     $('.quick-edit-field').change(function() {
@@ -648,6 +576,80 @@ function toggleArchiveTask(taskId, isArchive) {
             }
         });
     }
+}
+
+// 快速编辑处理函数（全局函数）
+function handleQuickEdit($select) {
+    // 如果正在初始化，跳过处理
+    if ($select.data('is-initializing')) {
+        console.log('跳过初始化时的编辑事件');
+        return;
+    }
+
+    // 防止重复触发
+    if ($select.data('is-updating')) {
+        console.log('正在更新中，跳过重复请求');
+        return;
+    }
+
+    const taskId = $select.data('task-id');
+    const field = $select.data('field');
+    const value = $select.val();
+    const originalValue = $select.data('original-value');
+
+    console.log('快速编辑触发:', { taskId, field, value, originalValue });
+
+    // 标记正在更新
+    $select.data('is-updating', true);
+
+    // 禁用选择框并显示加载状态
+    $select.prop('disabled', true);
+    $select.addClass('loading');
+
+    // 发送AJAX请求
+    $.ajax({
+        url: `/tasks/${taskId}/quick-update`,
+        method: 'POST',
+        dataType: 'json',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: {
+            field: field,
+            value: value
+        },
+        beforeSend: function(xhr) {
+            console.log('发送AJAX请求:', `/tasks/${taskId}/quick-update`);
+        },
+        success: function(response) {
+            console.log('AJAX成功响应:', response);
+            if (response.success) {
+                // 显示成功提示
+                showToast('success', response.message);
+                // 更新原始值
+                $select.data('original-value', value);
+            } else {
+                // 恢复原始值
+                $select.val($select.data('original-value'));
+                showToast('error', response.message || '更新失败');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX错误:', { xhr, status, error });
+            console.error('响应文本:', xhr.responseText);
+            // 恢复原始值
+            $select.val($select.data('original-value'));
+            const errorMsg = xhr.responseJSON?.message || `网络错误：${error}`;
+            showToast('error', errorMsg);
+        },
+        complete: function() {
+            // 恢复选择框状态
+            $select.prop('disabled', false);
+            $select.removeClass('loading');
+            $select.removeData('is-updating');
+        }
+    });
 }
 
 // 删除任务函数
@@ -813,6 +815,17 @@ function initTaskListSelect2() {
         console.log('Select2 事件触发:', $select.attr('data-field'), $select.val());
         handleQuickEdit($select);
     });
+
+    // 清理所有剩余的初始化标记（防止有些字段没有被Select2初始化）
+    setTimeout(() => {
+        $('.quick-edit-field').each(function() {
+            const $select = $(this);
+            if ($select.data('is-initializing')) {
+                console.log('清理剩余的初始化标记:', $select.attr('data-field'), $select.attr('data-task-id'));
+                $select.removeData('is-initializing');
+            }
+        });
+    }, 200);
 
     console.log('任务列表 Select2 初始化完成');
 }
