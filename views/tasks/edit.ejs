@@ -12,6 +12,8 @@ const getValue = (field, defaultValue = '') => {
     }
     return defaultValue;
 };
+
+
 %>
 
 <div class="row justify-content-center">
@@ -344,7 +346,7 @@ const getValue = (field, defaultValue = '') => {
                                     <label for="assigneeId" class="form-label">负责人 <span class="text-danger">*</span></label>
                                     <select class="form-select" id="assigneeId" name="assigneeId" required>
                                         <% projectMembers.forEach(member => { %>
-                                            <option value="<%= member.user.id %>" <%= getValue('assigneeId') === member.user.id ? 'selected' : '' %>>
+                                            <option value="<%= member.user.id %>" <%= getValue('assigneeId') == member.user.id ? 'selected' : '' %>>
                                                 <%= member.user.firstName %> <%= member.user.lastName %>
                                                 <% if (member.user.role === 'product_manager') { %>（产品经理）
                                                 <% } else if (member.user.role === 'developer') { %>（开发者）
@@ -374,11 +376,23 @@ const getValue = (field, defaultValue = '') => {
                                             <% projectMembers.forEach(member => { %>
                                                 <div class="assistant-item" data-user-id="<%= member.user.id %>">
                                                     <div class="d-flex align-items-center">
+                                                        <%
+                                                        // 检查参与人是否被选中
+                                                        let isAssistantChecked = false;
+                                                        const assistantIds = getValue('assistantIds');
+                                                        if (assistantIds && Array.isArray(assistantIds)) {
+                                                            // 表单数据中的assistantIds（字符串数组）
+                                                            isAssistantChecked = assistantIds.includes(String(member.user.id));
+                                                        } else if (task && task.assistantIds && Array.isArray(task.assistantIds)) {
+                                                            // 任务数据中的assistantIds（可能是数字数组）
+                                                            isAssistantChecked = task.assistantIds.includes(member.user.id) || task.assistantIds.includes(String(member.user.id));
+                                                        }
+                                                        %>
                                                         <input class="form-check-input me-3" type="checkbox"
                                                                name="assistantIds"
                                                                value="<%= member.user.id %>"
                                                                id="assistant_<%= member.user.id %>"
-                                                               <%= getValue('assistantIds') && Array.isArray(getValue('assistantIds')) && getValue('assistantIds').includes(member.user.id) ? 'checked' : (task && task.assistantIds && task.assistantIds.includes(member.user.id) ? 'checked' : '') %>>
+                                                               <%= isAssistantChecked ? 'checked' : '' %>>
                                                         <div class="flex-grow-1">
                                                             <div class="d-flex justify-content-between align-items-center">
                                                                 <span class="fw-medium">
@@ -411,7 +425,7 @@ const getValue = (field, defaultValue = '') => {
                                     <label for="reviewerId" class="form-label">审核人 <span class="text-danger">*</span></label>
                                     <select class="form-select" id="reviewerId" name="reviewerId" required>
                                         <% projectMembers.forEach(member => { %>
-                                            <option value="<%= member.user.id %>" <%= getValue('reviewerId') === member.user.id ? 'selected' : '' %>>
+                                            <option value="<%= member.user.id %>" <%= getValue('reviewerId') == member.user.id ? 'selected' : '' %>>
                                                 <%= member.user.firstName %> <%= member.user.lastName %>
                                                 <% if (member.user.role === 'product_manager') { %>（产品经理）
                                                 <% } else if (member.user.role === 'developer') { %>（开发者）
@@ -952,6 +966,10 @@ function initTaskEditSelect2() {
                 });
             });
 
+            // 获取当前选中的值（在Select2初始化之前）
+            const currentAssigneeId = $assigneeSelect.val();
+            console.log('负责人当前选中值:', currentAssigneeId);
+
             // 使用拼音搜索组件
             if (typeof Select2Pinyin !== 'undefined' && Select2Pinyin.initUser) {
                 Select2Pinyin.initUser($assigneeSelect, userData, {
@@ -969,6 +987,12 @@ function initTaskEditSelect2() {
                     theme: 'bootstrap-5'
                 });
                 console.log('负责人普通 Select2 初始化成功');
+            }
+
+            // 恢复选中值
+            if (currentAssigneeId) {
+                $assigneeSelect.val(currentAssigneeId).trigger('change');
+                console.log('负责人选中值已恢复:', currentAssigneeId);
             }
         }
     } catch (error) {
@@ -996,6 +1020,10 @@ function initTaskEditSelect2() {
                 });
             });
 
+            // 获取当前选中的值（在Select2初始化之前）
+            const currentReviewerId = $reviewerSelect.val();
+            console.log('审核人当前选中值:', currentReviewerId);
+
             // 使用拼音搜索组件
             if (typeof Select2Pinyin !== 'undefined' && Select2Pinyin.initUser) {
                 Select2Pinyin.initUser($reviewerSelect, userData, {
@@ -1013,6 +1041,12 @@ function initTaskEditSelect2() {
                     theme: 'bootstrap-5'
                 });
                 console.log('审核人普通 Select2 初始化成功');
+            }
+
+            // 恢复选中值
+            if (currentReviewerId) {
+                $reviewerSelect.val(currentReviewerId).trigger('change');
+                console.log('审核人选中值已恢复:', currentReviewerId);
             }
         }
     } catch (error) {
