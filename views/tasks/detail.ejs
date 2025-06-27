@@ -740,7 +740,35 @@ function initCommentEditor($editor) {
     }
 
     // 监听内容变化
-    $richEditor.on('input paste', function() {
+    $richEditor.on('input', function() {
+        setTimeout(syncContent, 10);
+    });
+
+    // 处理粘贴事件，特别是粘贴图片
+    $richEditor.on('paste', function(e) {
+        const clipboardData = e.originalEvent.clipboardData || window.clipboardData;
+
+        if (clipboardData && clipboardData.items) {
+            // 检查剪贴板中是否有图片
+            for (let i = 0; i < clipboardData.items.length; i++) {
+                const item = clipboardData.items[i];
+
+                if (item.type.indexOf('image') !== -1) {
+                    // 阻止默认粘贴行为
+                    e.preventDefault();
+
+                    // 获取图片文件
+                    const file = item.getAsFile();
+                    if (file) {
+                        console.log('检测到粘贴图片:', file.name || 'clipboard-image', file.size);
+                        uploadImage(file, $richEditor);
+                    }
+                    return;
+                }
+            }
+        }
+
+        // 如果不是图片，正常处理粘贴并同步内容
         setTimeout(syncContent, 10);
     });
 
@@ -1039,6 +1067,35 @@ function editComment(commentId) {
     }
 
     $richEditor.on('input', syncEditContent);
+
+    // 处理粘贴事件，特别是粘贴图片
+    $richEditor.on('paste', function(e) {
+        const clipboardData = e.originalEvent.clipboardData || window.clipboardData;
+
+        if (clipboardData && clipboardData.items) {
+            // 检查剪贴板中是否有图片
+            for (let i = 0; i < clipboardData.items.length; i++) {
+                const item = clipboardData.items[i];
+
+                if (item.type.indexOf('image') !== -1) {
+                    // 阻止默认粘贴行为
+                    e.preventDefault();
+
+                    // 获取图片文件
+                    const file = item.getAsFile();
+                    if (file) {
+                        console.log('编辑评论时检测到粘贴图片:', file.name || 'clipboard-image', file.size);
+                        uploadImage(file, $richEditor);
+                    }
+                    return;
+                }
+            }
+        }
+
+        // 如果不是图片，正常处理粘贴并同步内容
+        setTimeout(syncEditContent, 10);
+    });
+
     syncEditContent();
 
     // 工具栏按钮事件
@@ -1389,9 +1446,20 @@ function updateCommentCount() {
 
 // 上传图片
 function uploadImage(file, $richEditor) {
-    console.log('开始上传图片:', file.name, '编辑器:', $richEditor.length);
+    const fileName = file.name || `clipboard-image-${Date.now()}.png`;
+    console.log('开始上传图片:', fileName, '编辑器:', $richEditor.length);
+
+    // 如果是粘贴的图片且没有文件名，创建一个新的File对象
+    let uploadFile = file;
+    if (!file.name && file.type.startsWith('image/')) {
+        const extension = file.type.split('/')[1] || 'png';
+        uploadFile = new File([file], `clipboard-image-${Date.now()}.${extension}`, {
+            type: file.type
+        });
+    }
+
     const formData = new FormData();
-    formData.append('taskImage', file);
+    formData.append('taskImage', uploadFile);
 
     $.ajax({
         url: '/tasks/upload-image',
