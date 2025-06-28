@@ -996,14 +996,75 @@ router.get('/create', requireAuth, requireProjectSelection, validateProjectAcces
     // 获取当前项目的任务列表（用于父任务选择）
     let projectTasks = [];
     if (req.session.selectedProjectId && !parentTask) {
-      projectTasks = await BountyTask.findAll({
+      const allTasks = await BountyTask.findAll({
         where: {
-          projectId: req.session.selectedProjectId
+          projectId: req.session.selectedProjectId,
+          isArchived: false // 排除已归档的任务
         },
-        attributes: ['id', 'title', 'taskType', 'level'],
-        order: [['level', 'ASC'], ['createdAt', 'DESC']],
-        limit: 100
+        attributes: ['id', 'title', 'taskType', 'level', 'parentTaskId', 'createdAt'],
+        order: [['createdAt', 'ASC']] // 先按创建时间排序，后面会重新排序
       });
+
+      // 进行树形排序
+      projectTasks = sortTasksInTreeOrder(allTasks);
+    }
+
+    // 树形排序函数
+    function sortTasksInTreeOrder(tasks) {
+      const taskMap = new Map();
+      const rootTasks = [];
+
+      // 建立任务映射和查找根任务
+      tasks.forEach(task => {
+        taskMap.set(task.id, { ...task.dataValues, children: [] });
+        if (!task.parentTaskId) {
+          rootTasks.push(task.id);
+        }
+      });
+
+      // 建立父子关系
+      tasks.forEach(task => {
+        if (task.parentTaskId && taskMap.has(task.parentTaskId)) {
+          taskMap.get(task.parentTaskId).children.push(task.id);
+        }
+      });
+
+      // 递归排序并展平
+      const result = [];
+
+      function addTaskAndChildren(taskId, level = 0) {
+        const task = taskMap.get(taskId);
+        if (task) {
+          task.level = level; // 更新层级
+          result.push(task);
+
+          // 按创建时间排序子任务
+          task.children.sort((a, b) => {
+            const taskA = taskMap.get(a);
+            const taskB = taskMap.get(b);
+            return new Date(taskA.createdAt) - new Date(taskB.createdAt);
+          });
+
+          // 递归添加子任务
+          task.children.forEach(childId => {
+            addTaskAndChildren(childId, level + 1);
+          });
+        }
+      }
+
+      // 按创建时间排序根任务
+      rootTasks.sort((a, b) => {
+        const taskA = taskMap.get(a);
+        const taskB = taskMap.get(b);
+        return new Date(taskA.createdAt) - new Date(taskB.createdAt);
+      });
+
+      // 添加所有根任务及其子任务
+      rootTasks.forEach(rootId => {
+        addTaskAndChildren(rootId);
+      });
+
+      return result;
     }
 
     // 获取当前项目的迭代列表
@@ -1239,6 +1300,8 @@ router.get('/:id', async (req, res) => {
     res.redirect('/tasks');
   }
 });
+
+
 
 // 获取子任务（AJAX接口）
 router.get('/:id/subtasks', async (req, res) => {
@@ -1607,18 +1670,19 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
       const allProjectTasks = await BountyTask.findAll({
         where: {
           projectId: task.projectId,
-          id: { [Op.ne]: task.id } // 排除当前任务本身
+          id: { [Op.ne]: task.id }, // 排除当前任务本身
+          isArchived: false // 排除已归档的任务
         },
-        attributes: ['id', 'title', 'taskType', 'parentTaskId', 'level'],
-        order: [['level', 'ASC'], ['createdAt', 'DESC']]
+        attributes: ['id', 'title', 'taskType', 'parentTaskId', 'level', 'createdAt'],
+        order: [['createdAt', 'ASC']] // 先按创建时间排序，后面会重新排序
       });
 
       // 过滤掉当前任务的子任务（防止循环引用）
       const taskSubtaskIds = await getSubtaskIds(task.id);
-      projectTasks = allProjectTasks.filter(t => !taskSubtaskIds.includes(t.id));
+      const filteredTasks = allProjectTasks.filter(t => !taskSubtaskIds.includes(t.id));
 
-      // 限制数量
-      projectTasks = projectTasks.slice(0, 100);
+      // 进行树形排序
+      projectTasks = sortTasksInTreeOrder(filteredTasks);
     }
 
     // 获取子任务ID的递归函数
@@ -1639,6 +1703,64 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
       return allSubtaskIds;
     }
 
+    // 树形排序函数
+    function sortTasksInTreeOrder(tasks) {
+      const taskMap = new Map();
+      const rootTasks = [];
+
+      // 建立任务映射和查找根任务
+      tasks.forEach(task => {
+        taskMap.set(task.id, { ...task.dataValues, children: [] });
+        if (!task.parentTaskId) {
+          rootTasks.push(task.id);
+        }
+      });
+
+      // 建立父子关系
+      tasks.forEach(task => {
+        if (task.parentTaskId && taskMap.has(task.parentTaskId)) {
+          taskMap.get(task.parentTaskId).children.push(task.id);
+        }
+      });
+
+      // 递归排序并展平
+      const result = [];
+
+      function addTaskAndChildren(taskId, level = 0) {
+        const task = taskMap.get(taskId);
+        if (task) {
+          task.level = level; // 更新层级
+          result.push(task);
+
+          // 按创建时间排序子任务
+          task.children.sort((a, b) => {
+            const taskA = taskMap.get(a);
+            const taskB = taskMap.get(b);
+            return new Date(taskA.createdAt) - new Date(taskB.createdAt);
+          });
+
+          // 递归添加子任务
+          task.children.forEach(childId => {
+            addTaskAndChildren(childId, level + 1);
+          });
+        }
+      }
+
+      // 按创建时间排序根任务
+      rootTasks.sort((a, b) => {
+        const taskA = taskMap.get(a);
+        const taskB = taskMap.get(b);
+        return new Date(taskA.createdAt) - new Date(taskB.createdAt);
+      });
+
+      // 添加所有根任务及其子任务
+      rootTasks.forEach(rootId => {
+        addTaskAndChildren(rootId);
+      });
+
+      return result;
+    }
+
     // 获取保存的表单数据（如果有）
     const formData = req.session.formData;
     delete req.session.formData; // 使用后删除
@@ -1649,6 +1771,7 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
       projectMembers,
       projectTasks,
       sprints,
+      defaultProjectId: task.projectId, // 传递项目ID
       user: req.session.user, // 传递用户信息用于权限检查
       formData // 传递表单数据用于恢复
     });

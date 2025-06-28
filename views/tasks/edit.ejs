@@ -165,9 +165,14 @@ const getValue = (field, defaultValue = '') => {
                                                 currentParentTaskId = task.parentTaskId;
                                             }
 
-                                            // 根据层级添加缩进
+                                            // 根据层级添加更明显的缩进和连接线
                                             const level = projectTask.level || 0;
-                                            const indent = '　'.repeat(level); // 使用全角空格缩进
+                                            let indent = '';
+                                            if (level > 0) {
+                                                // 使用树形连接线符号
+                                                const baseIndent = '　'.repeat(level - 1); // 基础缩进
+                                                indent = baseIndent + '├─ '; // 树形连接线
+                                            }
                                             %>
                                             <option value="<%= projectTask.id %>" <%= currentParentTaskId == projectTask.id ? 'selected' : '' %>>
                                                 <%= indent %><%= projectTask.title %>
