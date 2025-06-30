@@ -350,6 +350,7 @@ const getValue = (field, defaultValue = '') => {
                                 <div class="col-md-4 mb-3">
                                     <label for="assigneeId" class="form-label">负责人 <span class="text-danger">*</span></label>
                                     <select class="form-select" id="assigneeId" name="assigneeId" required>
+                                        <option value="">请选择负责人</option>
                                         <% projectMembers.forEach(member => { %>
                                             <option value="<%= member.user.id %>" <%= getValue('assigneeId') == member.user.id ? 'selected' : '' %>>
                                                 <%= member.user.firstName %> <%= member.user.lastName %>
@@ -429,6 +430,7 @@ const getValue = (field, defaultValue = '') => {
                                 <div class="col-md-4 mb-3">
                                     <label for="reviewerId" class="form-label">审核人 <span class="text-danger">*</span></label>
                                     <select class="form-select" id="reviewerId" name="reviewerId" required>
+                                        <option value="">请选择审核人</option>
                                         <% projectMembers.forEach(member => { %>
                                             <option value="<%= member.user.id %>" <%= getValue('reviewerId') == member.user.id ? 'selected' : '' %>>
                                                 <%= member.user.firstName %> <%= member.user.lastName %>
@@ -978,16 +980,16 @@ function initTaskEditSelect2() {
             // 使用拼音搜索组件
             if (typeof Select2Pinyin !== 'undefined' && Select2Pinyin.initUser) {
                 Select2Pinyin.initUser($assigneeSelect, userData, {
-                    placeholder: '选择负责人...',
-                    allowClear: false, // 负责人不允许为空
+                    placeholder: '请选择负责人...',
+                    allowClear: true, // 允许清空以便重新选择
                     width: '100%'
                 });
                 console.log('负责人拼音搜索初始化成功');
             } else {
                 // 降级到普通 Select2
                 $assigneeSelect.select2({
-                    placeholder: '选择负责人...',
-                    allowClear: false,
+                    placeholder: '请选择负责人...',
+                    allowClear: true,
                     width: '100%',
                     theme: 'bootstrap-5'
                 });
@@ -1032,16 +1034,16 @@ function initTaskEditSelect2() {
             // 使用拼音搜索组件
             if (typeof Select2Pinyin !== 'undefined' && Select2Pinyin.initUser) {
                 Select2Pinyin.initUser($reviewerSelect, userData, {
-                    placeholder: '选择审核人...',
-                    allowClear: false, // 审核人不允许为空
+                    placeholder: '请选择审核人...',
+                    allowClear: true, // 允许清空以便重新选择
                     width: '100%'
                 });
                 console.log('审核人拼音搜索初始化成功');
             } else {
                 // 降级到普通 Select2
                 $reviewerSelect.select2({
-                    placeholder: '选择审核人...',
-                    allowClear: false,
+                    placeholder: '请选择审核人...',
+                    allowClear: true,
                     width: '100%',
                     theme: 'bootstrap-5'
                 });

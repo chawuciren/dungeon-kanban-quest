@@ -1388,6 +1388,15 @@ router.get('/:id/subtasks', async (req, res) => {
 // 创建任务处理
 router.post('/create', requireAuth, requireProjectSelection, validateProjectAccess, async (req, res) => {
   try {
+    logger.info('开始处理任务创建请求', {
+      userId: req.session.userId,
+      projectId: req.session.selectedProjectId,
+      bodyKeys: Object.keys(req.body),
+      hasTitle: !!req.body.title,
+      hasAssigneeId: !!req.body.assigneeId,
+      hasReviewerId: !!req.body.reviewerId
+    });
+
     const {
       title,
       description,
@@ -1404,13 +1413,51 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       reviewerId
     } = req.body;
 
+    logger.info('提取的表单数据', {
+      title: title || 'undefined',
+      assigneeId: assigneeId || 'undefined',
+      reviewerId: reviewerId || 'undefined',
+      taskType: taskType || 'undefined',
+      starLevel: starLevel || 'undefined',
+      urgencyLevel: urgencyLevel || 'undefined'
+    });
+
     // 使用当前选中的项目ID
     const projectId = req.session.selectedProjectId;
 
+    logger.info('项目ID获取完成', { projectId });
+
     // 验证必填字段
-    if (!title || !description || !projectId || !taskType || !starLevel || !urgencyLevel ||
-        !estimatedHours || !startDate || !dueDate || !assigneeId || !reviewerId) {
-      req.flash('error', '请填写所有必填字段');
+    const missingFields = [];
+    if (!title || title.trim() === '') missingFields.push('任务标题');
+    if (!description || description.trim() === '') missingFields.push('任务描述');
+    if (!projectId) missingFields.push('项目ID');
+    if (!taskType || taskType.trim() === '') missingFields.push('任务类型');
+    if (!starLevel) missingFields.push('星级难度');
+    if (!urgencyLevel || urgencyLevel.trim() === '') missingFields.push('紧急程度');
+    if (!estimatedHours) missingFields.push('预估工时');
+    if (!startDate || startDate.trim() === '') missingFields.push('开始日期');
+    if (!dueDate || dueDate.trim() === '') missingFields.push('截止日期');
+    if (!assigneeId || assigneeId.trim() === '') missingFields.push('负责人');
+    if (!reviewerId || reviewerId.trim() === '') missingFields.push('审核人');
+
+    if (missingFields.length > 0) {
+      logger.error('任务创建失败 - 缺少必填字段:', {
+        missingFields,
+        receivedData: {
+          title: title ? '已填写' : '未填写',
+          description: description ? '已填写' : '未填写',
+          taskType: taskType || '未填写',
+          starLevel: starLevel || '未填写',
+          urgencyLevel: urgencyLevel || '未填写',
+          estimatedHours: estimatedHours || '未填写',
+          startDate: startDate || '未填写',
+          dueDate: dueDate || '未填写',
+          assigneeId: assigneeId || '未填写',
+          reviewerId: reviewerId || '未填写'
+        }
+      });
+      req.flash('error', `请填写以下必填字段：${missingFields.join('、')}`);
       return res.redirect('back');
     }
 
@@ -1418,22 +1465,30 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
     // 只要用户能访问到创建页面，就允许创建所有类型的任务
     // 权限检查已在中间件中完成
 
+    logger.info('开始验证必填字段');
+
     // 计算任务层级
     let level = 0;
     if (parentTaskId) {
+      logger.info('查找父任务', { parentTaskId });
       const parentTask = await BountyTask.findByPk(parentTaskId);
       if (!parentTask) {
+        logger.error('父任务不存在', { parentTaskId });
         req.flash('error', '父任务不存在');
         return res.redirect('back');
       }
       level = (parentTask.level || 0) + 1;
+      logger.info('父任务找到，计算层级', { parentTaskLevel: parentTask.level, newLevel: level });
 
       // 检查层级限制
       if (level > 3) {
+        logger.error('任务层级超限', { level });
         req.flash('error', '任务层级不能超过4级');
         return res.redirect('back');
       }
     }
+
+    logger.info('层级验证完成，开始处理协助人员');
 
 
 
@@ -1447,22 +1502,26 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
       }
     }
 
+    logger.info('协助人员处理完成，开始创建任务', {
+      processedAssistantIds: processedAssistantIds.length,
+      level
+    });
+
     // 创建任务
     const task = await BountyTask.create({
-      title,
-      description,
+      title: title.trim(),
+      description: description.trim(),
       taskType: taskType || 'task',
       starLevel: parseInt(starLevel),
       urgencyLevel,
       status: 'draft',
       projectId,
       publisherId: req.session.userId,
-      assigneeId: assigneeId && assigneeId.trim() !== '' ? assigneeId : null,
+      assigneeId: assigneeId.trim(), // 必填字段，不转为null
       assistantIds: processedAssistantIds,
-      reviewerId: reviewerId && reviewerId.trim() !== '' ? reviewerId : null,
-      parentTaskId: parentTaskId || null,
+      reviewerId: reviewerId.trim(), // 必填字段，不转为null
+      parentTaskId: parentTaskId && parentTaskId.trim() !== '' ? parentTaskId : null,
       sprintId: sprintId && sprintId.trim() !== '' ? sprintId : null,
-
       estimatedHours: estimatedHours ? parseFloat(estimatedHours) : null,
       startDate: startDate || null,
       dueDate: dueDate || null,
@@ -1483,7 +1542,23 @@ router.post('/create', requireAuth, requireProjectSelection, validateProjectAcce
     res.redirect(`/tasks/${task.id}`);
 
   } catch (error) {
-    logger.error('创建任务失败:', error);
+    logger.error('创建任务失败:', {
+      error: error.message,
+      stack: error.stack,
+      name: error.name,
+      receivedData: {
+        title: req.body.title,
+        description: req.body.description ? '已填写' : '未填写',
+        taskType: req.body.taskType,
+        starLevel: req.body.starLevel,
+        urgencyLevel: req.body.urgencyLevel,
+        assigneeId: req.body.assigneeId,
+        reviewerId: req.body.reviewerId,
+        estimatedHours: req.body.estimatedHours,
+        startDate: req.body.startDate,
+        dueDate: req.body.dueDate
+      }
+    });
 
     // 处理验证错误
     if (error.name === 'SequelizeValidationError') {
@@ -1837,9 +1912,36 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
     }
 
     // 验证必填字段
-    if (!title || !description || !taskType || !starLevel || !urgencyLevel ||
-        !estimatedHours || !startDate || !dueDate || !assigneeId || !reviewerId) {
-      req.flash('error', '请填写所有必填字段');
+    const missingFields = [];
+    if (!title || title.trim() === '') missingFields.push('任务标题');
+    if (!description || description.trim() === '') missingFields.push('任务描述');
+    if (!taskType || taskType.trim() === '') missingFields.push('任务类型');
+    if (!starLevel) missingFields.push('星级难度');
+    if (!urgencyLevel || urgencyLevel.trim() === '') missingFields.push('紧急程度');
+    if (!estimatedHours) missingFields.push('预估工时');
+    if (!startDate || startDate.trim() === '') missingFields.push('开始日期');
+    if (!dueDate || dueDate.trim() === '') missingFields.push('截止日期');
+    if (!assigneeId || assigneeId.trim() === '') missingFields.push('负责人');
+    if (!reviewerId || reviewerId.trim() === '') missingFields.push('审核人');
+
+    if (missingFields.length > 0) {
+      logger.error('任务编辑失败 - 缺少必填字段:', {
+        taskId,
+        missingFields,
+        receivedData: {
+          title: title ? '已填写' : '未填写',
+          description: description ? '已填写' : '未填写',
+          taskType: taskType || '未填写',
+          starLevel: starLevel || '未填写',
+          urgencyLevel: urgencyLevel || '未填写',
+          estimatedHours: estimatedHours || '未填写',
+          startDate: startDate || '未填写',
+          dueDate: dueDate || '未填写',
+          assigneeId: assigneeId || '未填写',
+          reviewerId: reviewerId || '未填写'
+        }
+      });
+      req.flash('error', `请填写以下必填字段：${missingFields.join('、')}`);
       return res.redirect('back');
     }
 

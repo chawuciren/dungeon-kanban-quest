@@ -67,11 +67,16 @@ const BountyTask = sequelize.define('BountyTask', {
   },
   assigneeId: {
     type: DataTypes.UUID,
-    allowNull: true,
+    allowNull: false,
     field: 'assignee_id',
     references: {
       model: 'users',
       key: 'id'
+    },
+    validate: {
+      notEmpty: {
+        msg: '负责人不能为空'
+      }
     }
   },
   // 协助人员（可以有多个）
@@ -85,11 +90,16 @@ const BountyTask = sequelize.define('BountyTask', {
   // 审核人员
   reviewerId: {
     type: DataTypes.UUID,
-    allowNull: true,
+    allowNull: false,
     field: 'reviewer_id',
     references: {
       model: 'users',
       key: 'id'
+    },
+    validate: {
+      notEmpty: {
+        msg: '审核人不能为空'
+      }
     }
   },
   parentTaskId: {
